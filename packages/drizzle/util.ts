@@ -1,6 +1,6 @@
 import { integer, text } from "drizzle-orm/sqlite-core";
 import { sql } from "drizzle-orm";
-import { generateId } from "@workspace/utils";
+import { customNanoid } from "@workspace/utils";
 
 export const timestamps = {
   createdAt: integer("created_at", { mode: "timestamp_ms" })
@@ -12,4 +12,6 @@ export const timestamps = {
     .notNull(),
 };
 
-export const id = text("id").primaryKey().$defaultFn(generateId);
+export const id = text("id")
+  .primaryKey()
+  .$defaultFn(() => customNanoid(10));

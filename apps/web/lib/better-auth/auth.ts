@@ -3,12 +3,7 @@ import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { nextCookies } from "better-auth/next-js";
 import { anonymous, organization, username } from "better-auth/plugins";
-import { getBaseURL } from "@/lib/get-base-url";
-import { nanoid } from "nanoid";
-
-export function generateId() {
-  return nanoid(10);
-}
+import { getBaseURL, customNanoid } from "@workspace/utils";
 
 export const auth = betterAuth({
   baseURL: getBaseURL(),
@@ -18,7 +13,7 @@ export const auth = betterAuth({
   }),
   advanced: {
     database: {
-      generateId: generateId,
+      generateId: () => customNanoid(10),
     },
   },
   emailAndPassword: {

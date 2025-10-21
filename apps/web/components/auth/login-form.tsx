@@ -10,7 +10,7 @@ import HeroImage from "../marketing/hero-image";
 import GestLoginButton from "./gest-login-button";
 import { useSearchParams, useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
-import { authClient } from "@/lib/auth-client";
+import { authClient } from "@/lib/better-auth/auth-client";
 import { Loader2, AlertCircle, Info } from "lucide-react";
 import Link from "next/link";
 

@@ -11,15 +11,15 @@
     "./db": "./index.ts"
   },
   "devDependencies": {
-    "drizzle-kit": "^0.31.4",
-    "@workspace/utils": "workspace:*"
+    "@workspace/utils": "workspace:*",
+    "drizzle-kit": "^0.31.5"
   },
   "dependencies": {
     "@libsql/client": "^0.15.15",
-    "dotenv": "^17.2.2",
-    "drizzle-orm": "^0.44.5",
-    "nanoid": "^5.1.6",
     "@workspace/eslint-config": "workspace:^",
-    "@workspace/typescript-config": "workspace:*"
+    "@workspace/typescript-config": "workspace:*",
+    "dotenv": "^17.2.3",
+    "drizzle-orm": "^0.44.6",
+    "nanoid": "^5.1.6"
   }
 }
