@@ -1,0 +1,7 @@
+{
+  "name": "@workspace/turso",
+  "type": "module",
+  "scripts": {
+    "dev": "turso dev -f db/local.db"
+  }
+}

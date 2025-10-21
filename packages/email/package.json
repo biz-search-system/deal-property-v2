@@ -1,0 +1,33 @@
+{
+  "name": "@workspace/email",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "clean": "rm -rf .turbo",
+    "dev": "email dev --dir ./src/templates -p 3333"
+  },
+  "dependencies": {
+    "@react-email/components": "0.3.2",
+    "lucide-react": "^0.462.0",
+    "react-email": "4.2.3",
+    "resend": "^6.1.2",
+    "react": "19.1.1",
+    "react-dom": "19.1.1"
+  },
+  "devDependencies": {
+    "@react-email/preview-server": "4.2.3",
+    "@types/react": "^19.0.1",
+    "@types/react-dom": "^19.0.1",
+    "typescript": "^5.4.4"
+  },
+  "exports": {
+    "./resend": {
+      "import": "./src/resend.ts",
+      "require": "./src/resend.ts"
+    },
+    "./templates/*": {
+      "import": "./src/templates/*.tsx",
+      "require": "./src/templates/*.tsx"
+    }
+  }
+}

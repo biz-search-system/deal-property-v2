@@ -1,0 +1,28 @@
+{
+  "name": "shadcn-ui-monorepo",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "build": "turbo build",
+    "dev": "turbo dev",
+    "lint": "turbo lint",
+    "clean": "turbo clean && find . -name '.next' -type d -prune -exec rm -rf {} + 2>/dev/null || true",
+    "delete": "pnpm clean && rm -rf node_modules .turbo && find . -mindepth 2 -name 'node_modules' -type d -exec rm -rf {} + 2>/dev/null || true",
+    "reset": "pnpm delete && pnpm install",
+    "format": "prettier --write \"**/*.{ts,tsx,md}\"",
+    "check-types": "turbo check-types",
+    "check-build": "turbo check-types build",
+    "generate-auth-schema": "turbo run generate-auth-schema --filter=web"
+  },
+  "devDependencies": {
+    "@workspace/eslint-config": "workspace:*",
+    "@workspace/typescript-config": "workspace:*",
+    "prettier": "^3.6.2",
+    "turbo": "^2.5.8",
+    "typescript": "5.9.3"
+  },
+  "packageManager": "pnpm@10.18.0",
+  "engines": {
+    "node": ">=20"
+  }
+}

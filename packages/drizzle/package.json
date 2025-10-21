@@ -1,0 +1,25 @@
+{
+  "name": "@workspace/drizzle",
+  "type": "module",
+  "scripts": {
+    "generate": "drizzle-kit generate",
+    "migrate": "drizzle-kit migrate",
+    "gm": "drizzle-kit generate && drizzle-kit migrate",
+    "dev": "drizzle-kit studio"
+  },
+  "exports": {
+    "./db": "./index.ts"
+  },
+  "devDependencies": {
+    "drizzle-kit": "^0.31.4",
+    "@workspace/utils": "workspace:*"
+  },
+  "dependencies": {
+    "@libsql/client": "^0.15.15",
+    "dotenv": "^17.2.2",
+    "drizzle-orm": "^0.44.5",
+    "nanoid": "^5.1.6",
+    "@workspace/eslint-config": "workspace:^",
+    "@workspace/typescript-config": "workspace:*"
+  }
+}
