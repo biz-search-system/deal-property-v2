@@ -88,10 +88,10 @@ pnpm dlx shadcn@latest add button -c apps/web
 アプリ内でコンポーネントを使用するには、`@workspace/ui` パッケージからインポートします：
 
 ```tsx
-import { Button } from "@workspace/ui/components/button"
+import { Button } from "@workspace/ui/components/button";
 
 export default function Page() {
-  return <Button>クリック</Button>
+  return <Button>クリック</Button>;
 }
 ```
 
@@ -117,6 +117,7 @@ pnpm add <package-name> --filter=web
 
 # UIパッケージにインストール
 pnpm add <package-name> --filter=@workspace/ui
+pnpm add <package-name> --filter=@workspace/drizzle
 
 # 開発依存としてインストール
 pnpm add -D <package-name> --filter=web
