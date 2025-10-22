@@ -38,3 +38,5 @@ npm-debug.log*
 # my selected files
 .claude/
 .cursor/
+*S.md
+*E.md
