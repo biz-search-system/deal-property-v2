@@ -8,7 +8,13 @@
     "dev": "drizzle-kit studio"
   },
   "exports": {
-    "./db": "./index.ts"
+    "./db": "./index.ts",
+    "./zod/*": {
+      "types": "./zod/index.ts",
+      "default": "./zod/index.ts"
+    },
+    "./types/*": "./types/*.ts",
+    "./schemas/*": "./schemas/*.ts"
   },
   "devDependencies": {
     "@workspace/utils": "workspace:*",
@@ -21,6 +27,7 @@
     "dotenv": "^17.2.3",
     "drizzle-orm": "^0.44.6",
     "drizzle-zod": "^0.8.3",
-    "nanoid": "^5.1.6"
+    "nanoid": "^5.1.6",
+    "zod": "^4.1.12"
   }
 }

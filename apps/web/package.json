@@ -14,6 +14,7 @@
     "generate-auth-schema": "pnpx @better-auth/cli@latest generate --config ./lib/better-auth/auth.ts --output ../../packages/drizzle/schemas/auth.ts --yes"
   },
   "dependencies": {
+    "@hookform/resolvers": "^5.2.2",
     "@workspace/drizzle": "workspace:*",
     "@workspace/ui": "workspace:*",
     "@workspace/utils": "workspace:*",
@@ -26,7 +27,8 @@
     "react-dom": "^19.2.0",
     "react-hook-form": "^7.65.0",
     "sonner": "^2.0.7",
-    "swr": "^2.3.6"
+    "swr": "^2.3.6",
+    "zod": "^4.1.12"
   },
   "devDependencies": {
     "@types/node": "^24.9.1",

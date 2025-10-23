@@ -1,2 +1,2 @@
-export * from "./constants/index.js";
-export * from "./functions/index.js";
+export * from "./constants";
+export * from "./functions";

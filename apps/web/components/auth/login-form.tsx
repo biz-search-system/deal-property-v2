@@ -1,12 +1,12 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { cn } from "@/lib/utils";
-import HeroImage from "../marketing/hero-image";
+import { Button } from "@workspace/ui/components/button";
+import { Card, CardContent } from "@workspace/ui/components/card";
+import { Input } from "@workspace/ui/components/input";
+import { Label } from "@workspace/ui/components/label";
+import { Alert, AlertDescription } from "@workspace/ui/components/alert";
+import { cn } from "@workspace/utils";
+import HeroImage from "@/components/hero-image";
 import GestLoginButton from "./gest-login-button";
 import { useSearchParams, useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
@@ -59,7 +59,7 @@ export function LoginForm({
       if (pendingInvitation && !invitationId) {
         try {
           const invitationData = JSON.parse(
-            decodeURIComponent(pendingInvitation.split("=")[1])
+            decodeURIComponent(pendingInvitation?.split("=")[1] || "")
           );
           // メールアドレスを自動セット
           if (invitationData.email) {
@@ -124,7 +124,7 @@ export function LoginForm({
         if (pendingInvitationCookie) {
           try {
             const invitationData = JSON.parse(
-              decodeURIComponent(pendingInvitationCookie.split("=")[1])
+              decodeURIComponent(pendingInvitationCookie?.split("=")[1] || "")
             );
 
             const acceptResponse = await fetch("/api/auth/accept-invitation", {
