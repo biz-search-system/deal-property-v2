@@ -1,7 +1,7 @@
 import "server-only";
 
 import { headers } from "next/headers";
-import { auth } from "./auth";
+import { auth } from "../better-auth/auth";
 import { redirect } from "next/navigation";
 
 export const verifySession = async () => {

@@ -15,6 +15,8 @@
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
+    "@tabler/icons-react": "^3.35.0",
+    "@vercel/edge-config": "^1.4.2",
     "@workspace/drizzle": "workspace:*",
     "@workspace/ui": "workspace:*",
     "@workspace/utils": "workspace:*",

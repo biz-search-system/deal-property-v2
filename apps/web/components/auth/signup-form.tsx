@@ -21,9 +21,11 @@ import { toast } from "sonner";
 import Link from "next/link";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { signupSchema } from "@workspace/drizzle/zod/auth";
 import { authClient } from "@/lib/better-auth/auth-client";
-import { Signup } from "@workspace/drizzle/types/auth";
+import { Signup } from "@/lib/types/auth";
+import { signupSchema } from "@/lib/zod/schemas/auth";
+// import { signupSchema } from "@workspace/drizzle/zod/auth";
+// import { Signup } from "@workspace/drizzle/types/auth";
 
 interface SignupFormProps {
   className?: string;

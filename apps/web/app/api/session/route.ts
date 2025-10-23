@@ -1,4 +1,4 @@
-import { verifySession } from "@/lib/better-auth/sesstion";
+import { verifySession } from "@/lib/data/sesstion";
 import { VerifiedSessionResponse } from "@/lib/types/user";
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
