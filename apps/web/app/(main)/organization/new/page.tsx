@@ -1,5 +1,5 @@
-import { CreateOrganizationForm } from "@/app/(main)/organization/components/create-organization-form";
-import { Button } from "@/components/ui/button";
+import { CreateOrganizationForm } from "@/components/organizations/create-organization-form";
+import { Button } from "@workspace/ui/components/button";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 

@@ -1,4 +1,9 @@
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "@workspace/ui/components/tabs";
 import { Users, Mail, UserPlus } from "lucide-react";
 import { MembersTab } from "./components/members-tab";
 import { InvitationsTab } from "./components/invitations-tab";

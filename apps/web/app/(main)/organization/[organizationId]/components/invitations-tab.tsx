@@ -7,7 +7,7 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
+} from "@workspace/ui/components/card";
 import {
   Table,
   TableBody,
@@ -15,10 +15,10 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
-import { Button } from "@/components/ui/button";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Badge } from "@/components/ui/badge";
+} from "@workspace/ui/components/table";
+import { Button } from "@workspace/ui/components/button";
+import { Alert, AlertDescription } from "@workspace/ui/components/alert";
+import { Badge } from "@workspace/ui/components/badge";
 import { Loader2, XCircle, AlertCircle, CheckCircle } from "lucide-react";
 import { useOrganizationInvitations } from "@/lib/swr/organization";
 import { cancelInvitationAction } from "@/lib/actions/organization";

@@ -4,14 +4,14 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
+} from "@workspace/ui/components/card";
 import MarketingSection, {
   MarketingSectionDescription,
   MarketingSectionHeader,
   MarketingSectionTitle,
   MarketingSectionContent,
 } from "@/components/marketing/marketing-section";
-import { Skeleton } from "@/components/ui/skeleton";
+import { Skeleton } from "@workspace/ui/components/skeleton";
 
 export default function FeaturesSection() {
   const features = [
