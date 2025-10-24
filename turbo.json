@@ -29,6 +29,12 @@
     },
     "clean": {
       "cache": false
+    },
+    "gm": {
+      "cache": false
+    },
+    "migrate": {
+      "cache": false
     }
   }
 }
