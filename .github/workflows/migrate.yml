@@ -4,7 +4,7 @@ name: Apply schema migrations
 on:
   push:
     branches:
-      - main-test
+      - main
 
 jobs:
   apply_migrations:
