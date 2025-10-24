@@ -1,5 +1,6 @@
 "use client";
 
+import React from "react";
 import { Separator } from "@workspace/ui/components/separator";
 import { SidebarTrigger } from "@workspace/ui/components/sidebar";
 import {
@@ -20,7 +21,7 @@ import {
 import { Button } from "@workspace/ui/components/button";
 import { usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
-import { ChevronsUpDown, Plus } from "lucide-react";
+import { ChevronsUpDown, Plus, SlashIcon } from "lucide-react";
 import { useOrganizationName } from "@/lib/swr/organization";
 import { useSession } from "@/lib/swr/session";
 import { AppConfig } from "@/app.config";
@@ -168,9 +169,9 @@ export function SiteHeader() {
                   const monthlyBasePath = "/properties/monthly";
 
                   return (
-                    <BreadcrumbItem key={breadcrumb.href}>
-                      {isYear || isMonth ? (
-                        <>
+                    <React.Fragment key={breadcrumb.href}>
+                      <BreadcrumbItem>
+                        {isYear || isMonth ? (
                           <div className="flex items-center gap-1">
                             <span className="text-foreground">
                               {breadcrumb.label}
@@ -221,14 +222,9 @@ export function SiteHeader() {
                               </DropdownMenuContent>
                             </DropdownMenu>
                           </div>
-                          {index < breadcrumbs.length - 1 && (
-                            <BreadcrumbSeparator />
-                          )}
-                        </>
-                      ) : breadcrumb.isActive ? (
-                        <BreadcrumbPage>{breadcrumb.label}</BreadcrumbPage>
-                      ) : isNonLinkable ? (
-                        <>
+                        ) : breadcrumb.isActive ? (
+                          <BreadcrumbPage>{breadcrumb.label}</BreadcrumbPage>
+                        ) : isNonLinkable ? (
                           <span
                             className={
                               breadcrumb.href === "/properties/monthly"
@@ -238,23 +234,20 @@ export function SiteHeader() {
                           >
                             {breadcrumb.label}
                           </span>
-                          {index < breadcrumbs.length - 1 && (
-                            <BreadcrumbSeparator />
-                          )}
-                        </>
-                      ) : (
-                        <>
+                        ) : (
                           <BreadcrumbLink asChild>
                             <Link href={breadcrumb.href}>
                               {breadcrumb.label}
                             </Link>
                           </BreadcrumbLink>
-                          {index < breadcrumbs.length - 1 && (
-                            <BreadcrumbSeparator />
-                          )}
-                        </>
+                        )}
+                      </BreadcrumbItem>
+                      {index < breadcrumbs.length - 1 && (
+                        <BreadcrumbSeparator>
+                          <SlashIcon />
+                        </BreadcrumbSeparator>
                       )}
-                    </BreadcrumbItem>
+                    </React.Fragment>
                   );
                 })}
               </BreadcrumbList>
