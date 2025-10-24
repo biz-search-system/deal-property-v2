@@ -1,6 +1,9 @@
-import { AppSidebar } from "@workspace/ui/components/app-sidebar";
-import { SiteHeader } from "@/components/site-header";
-import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
+import { AppSidebar } from "@/components/nav/app-sidebar";
+import { SiteHeader } from "@/components/nav/site-header";
+import {
+  SidebarInset,
+  SidebarProvider,
+} from "@workspace/ui/components/sidebar";
 
 export default async function Layout({
   children,

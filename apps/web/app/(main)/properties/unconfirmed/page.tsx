@@ -1,8 +1,8 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+import { Card, CardContent } from "@workspace/ui/components/card";
+import { Badge } from "@workspace/ui/components/badge";
 import {
   Table,
   TableBody,
@@ -10,23 +10,23 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+} from "@workspace/ui/components/table";
+import { Button } from "@workspace/ui/components/button";
+import { Input } from "@workspace/ui/components/input";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
+} from "@workspace/ui/components/select";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { PropertyDetailModal } from "@/components/property-detail-modal";
+} from "@workspace/ui/components/dropdown-menu";
+import { PropertyDetailModal } from "@/components/property/property-detail-modal";
 import {
   BUSINESS_STATUS,
   DOCUMENT_STATUS,
@@ -133,9 +133,7 @@ export default function UnconfirmedPropertiesPage() {
           </div>
           <div className="rounded-lg bg-muted/50 p-3 border">
             <div className="flex items-center justify-between">
-              <span className="text-xs text-muted-foreground">
-                A金額合計
-              </span>
+              <span className="text-xs text-muted-foreground">A金額合計</span>
               <p className="text-sm font-bold">
                 {formatCurrency(totals.aAmount)}
               </p>
@@ -241,17 +239,26 @@ export default function UnconfirmedPropertiesPage() {
                         {formatCurrency(property.profit)}
                       </TableCell>
                       <TableCell className="text-[10px] p-1">
-                        <Badge variant="outline" className="text-[9px] px-1 py-0">
+                        <Badge
+                          variant="outline"
+                          className="text-[9px] px-1 py-0"
+                        >
                           {truncateText(property.contractType)}
                         </Badge>
                       </TableCell>
                       <TableCell className="text-[10px] p-1">
-                        <Badge variant="outline" className="text-[9px] px-1 py-0">
+                        <Badge
+                          variant="outline"
+                          className="text-[9px] px-1 py-0"
+                        >
                           {truncateText(property.bCompany)}
                         </Badge>
                       </TableCell>
                       <TableCell className="text-[10px] p-1">
-                        <Badge variant="outline" className="text-[9px] px-1 py-0">
+                        <Badge
+                          variant="outline"
+                          className="text-[9px] px-1 py-0"
+                        >
                           {truncateText(property.brokerCompany)}
                         </Badge>
                       </TableCell>
@@ -272,7 +279,9 @@ export default function UnconfirmedPropertiesPage() {
                             </SelectTrigger>
                             <SelectContent>
                               {Object.values(BUSINESS_STATUS)
-                                .filter((s) => s !== BUSINESS_STATUS.BC_UNCONFIRMED)
+                                .filter(
+                                  (s) => s !== BUSINESS_STATUS.BC_UNCONFIRMED
+                                )
                                 .map((status) => (
                                   <SelectItem
                                     key={status}
@@ -396,7 +405,9 @@ export default function UnconfirmedPropertiesPage() {
                           <DropdownMenuContent align="end">
                             <DropdownMenuItem
                               onClick={() => {
-                                router.push(`/properties/unconfirmed/${property.id}`);
+                                router.push(
+                                  `/properties/unconfirmed/${property.id}`
+                                );
                               }}
                             >
                               <Eye className="h-3 w-3" />

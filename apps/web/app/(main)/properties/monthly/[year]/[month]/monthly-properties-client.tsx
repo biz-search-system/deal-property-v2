@@ -2,8 +2,8 @@
 
 import { useState, useMemo } from "react";
 import { useRouter } from "next/navigation";
-import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+import { Card, CardContent } from "@workspace/ui/components/card";
+import { Badge } from "@workspace/ui/components/badge";
 import {
   Table,
   TableBody,
@@ -11,31 +11,36 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+} from "@workspace/ui/components/table";
+import { Button } from "@workspace/ui/components/button";
+import { Input } from "@workspace/ui/components/input";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+} from "@workspace/ui/components/select";
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "@workspace/ui/components/tabs";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+} from "@workspace/ui/components/dropdown-menu";
 import { MoreVertical, Eye, Edit } from "lucide-react";
-import { PropertyDetailModal } from "@/components/property-detail-modal";
+import { PropertyDetailModal } from "@/components/property/property-detail-modal";
 import {
   BUSINESS_STATUS,
   DOCUMENT_STATUS,
   Property,
 } from "../../../data/property";
-import { MonthPicker } from "@/components/month-picker";
+import { MonthPicker } from "@/components/property/month-picker";
 
 interface MonthlyPropertiesClientProps {
   year: string;
@@ -49,7 +54,8 @@ export function MonthlyPropertiesClient({
   properties,
 }: MonthlyPropertiesClientProps) {
   const router = useRouter();
-  const [selectedAccount, setSelectedAccount] = useState<string>("サンプル企業C");
+  const [selectedAccount, setSelectedAccount] =
+    useState<string>("サンプル企業C");
   const [editingMemo, setEditingMemo] = useState<{
     id: number;
     value: string;
@@ -416,11 +422,7 @@ export function MonthlyPropertiesClient({
               <TableCell className="text-[10px] p-1 sticky right-0 bg-background">
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="h-5 w-5 p-0"
-                    >
+                    <Button variant="ghost" size="sm" className="h-5 w-5 p-0">
                       <MoreVertical className="h-3 w-3" />
                       <span className="sr-only">操作メニュー</span>
                     </Button>
@@ -428,7 +430,9 @@ export function MonthlyPropertiesClient({
                   <DropdownMenuContent align="end">
                     <DropdownMenuItem
                       onClick={() => {
-                        router.push(`/properties/monthly/${year}/${month}/${property.id}`);
+                        router.push(
+                          `/properties/monthly/${year}/${month}/${property.id}`
+                        );
                       }}
                     >
                       <Eye className="h-3 w-3" />
@@ -519,9 +523,15 @@ export function MonthlyPropertiesClient({
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="サンプル企業C">サンプル企業C</SelectItem>
-                        <SelectItem value="サンプル企業B">サンプル企業B</SelectItem>
-                        <SelectItem value="サンプル企業A">サンプル企業A</SelectItem>
+                        <SelectItem value="サンプル企業C">
+                          サンプル企業C
+                        </SelectItem>
+                        <SelectItem value="サンプル企業B">
+                          サンプル企業B
+                        </SelectItem>
+                        <SelectItem value="サンプル企業A">
+                          サンプル企業A
+                        </SelectItem>
                       </SelectContent>
                     </Select>
                   </div>

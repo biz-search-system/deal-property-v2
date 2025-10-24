@@ -3,9 +3,9 @@
 import { use } from "react";
 import { notFound, useRouter } from "next/navigation";
 import { properties } from "../../data/property";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Separator } from "@/components/ui/separator";
+import { Button } from "@workspace/ui/components/button";
+import { Badge } from "@workspace/ui/components/badge";
+import { Separator } from "@workspace/ui/components/separator";
 import {
   ArrowLeft,
   Building2,
@@ -325,9 +325,7 @@ export default function PropertyDetailPage({
                     <div className="text-xs text-muted-foreground mb-1">
                       使用口座会社
                     </div>
-                    <div className="font-medium">
-                      {property.account || "-"}
-                    </div>
+                    <div className="font-medium">{property.account || "-"}</div>
                   </div>
                   <Separator />
                   <div>
@@ -375,13 +373,7 @@ export default function PropertyDetailPage({
   );
 }
 
-function ProgressItem({
-  label,
-  item,
-}: {
-  label: string;
-  item: CheckItem;
-}) {
+function ProgressItem({ label, item }: { label: string; item: CheckItem }) {
   return (
     <div className="flex items-start justify-between gap-4">
       <div className="flex items-center gap-2">
@@ -391,9 +383,7 @@ function ProgressItem({
           <X className="h-4 w-4 text-muted-foreground flex-shrink-0" />
         )}
         <span
-          className={
-            item.checked ? "text-foreground" : "text-muted-foreground"
-          }
+          className={item.checked ? "text-foreground" : "text-muted-foreground"}
         >
           {label}
         </span>

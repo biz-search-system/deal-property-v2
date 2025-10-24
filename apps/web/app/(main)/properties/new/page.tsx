@@ -2,27 +2,27 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
+import { Button } from "@workspace/ui/components/button";
+import { Input } from "@workspace/ui/components/input";
+import { Label } from "@workspace/ui/components/label";
+import { Textarea } from "@workspace/ui/components/textarea";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
+} from "@workspace/ui/components/select";
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
   DropdownMenuContent,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Badge } from "@/components/ui/badge";
-import { Separator } from "@/components/ui/separator";
+} from "@workspace/ui/components/dropdown-menu";
+import { Badge } from "@workspace/ui/components/badge";
+import { Separator } from "@workspace/ui/components/separator";
 import { ArrowLeft, ChevronDown } from "lucide-react";
-import { SettlementDatePicker } from "@/components/settlement-date-picker";
+import { SettlementDatePicker } from "@/components/property/settlement-date-picker";
 import {
   ASSIGNEES,
   CONTRACT_TYPES,
@@ -264,7 +264,9 @@ export default function NewPropertyPage() {
 
               <div className="rounded-lg bg-muted/50 p-4">
                 <div className="flex items-center justify-between">
-                  <span className="text-sm font-medium">利益見込み（自動計算）</span>
+                  <span className="text-sm font-medium">
+                    利益見込み（自動計算）
+                  </span>
                   <span className="text-2xl font-bold text-green-600">
                     ¥{calculateProfit().toLocaleString()}万
                   </span>
@@ -344,7 +346,10 @@ export default function NewPropertyPage() {
 
                 <div className="space-y-2">
                   <Label htmlFor="brokerCompany">仲介会社</Label>
-                  <Select value={brokerCompany} onValueChange={setBrokerCompany}>
+                  <Select
+                    value={brokerCompany}
+                    onValueChange={setBrokerCompany}
+                  >
                     <SelectTrigger>
                       <SelectValue placeholder="選択してください" />
                     </SelectTrigger>
