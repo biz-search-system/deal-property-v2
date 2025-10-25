@@ -1,11 +1,9 @@
-"use client";
-
-import { use } from "react";
-import { notFound, useRouter } from "next/navigation";
-import { properties } from "../../data/property";
+import { notFound } from "next/navigation";
+import Link from "next/link";
 import { Button } from "@workspace/ui/components/button";
 import { Badge } from "@workspace/ui/components/badge";
 import { Separator } from "@workspace/ui/components/separator";
+import { Card, CardContent, CardHeader, CardTitle } from "@workspace/ui/components/card";
 import {
   ArrowLeft,
   Building2,
@@ -15,42 +13,146 @@ import {
   Users,
   Check,
   X,
+  Edit,
 } from "lucide-react";
+import { getPropertyById } from "@/lib/data/property";
 import { format } from "date-fns";
 import { ja } from "date-fns/locale";
-import type { CheckItem } from "../../data/property";
+import type { Metadata } from "next";
 
-export default function PropertyDetailPage({
-  params,
-}: {
-  params: Promise<{ id: string }>;
-}) {
-  const router = useRouter();
-  const resolvedParams = use(params);
-  const property = properties.find((p) => p.id === Number(resolvedParams.id));
+export async function generateMetadata({ params }: PageProps<"/properties/unconfirmed/[id]">): Promise<Metadata> {
+  const { id } = await params;
+  const property = await getPropertyById(id);
+
+  if (!property) {
+    return {
+      title: "案件が見つかりません",
+    };
+  }
+
+  return {
+    title: `${property.propertyName} - 案件詳細`,
+  };
+}
+
+export default async function PropertyDetailPage({ params }: PageProps<"/properties/unconfirmed/[id]">) {
+  const { id } = await params;
+  const property = await getPropertyById(id);
 
   if (!property) {
     notFound();
   }
 
-  const formatCurrency = (value: number) => {
-    return `¥${(value / 10000).toLocaleString()}万`;
+  const formatCurrency = (value: number | null | undefined) => {
+    if (!value) return "-";
+    return `${value.toLocaleString()}万円`;
   };
 
-  const formatDate = (dateString: string | null) => {
-    if (!dateString) return "-";
+  const formatDate = (date: Date | string | null | undefined) => {
+    if (!date) return "-";
     try {
-      const date = new Date(dateString);
-      return format(date, "yyyy年M月d日(E)", { locale: ja });
+      const dateObj = typeof date === "string" ? new Date(date) : date;
+      return format(dateObj, "yyyy年M月d日(E)", { locale: ja });
     } catch {
-      return dateString;
+      return "-";
     }
   };
 
-  const getStatusColor = (status: string) => {
-    if (status.includes("完了")) return "default";
-    if (status.includes("確定")) return "secondary";
-    return "outline";
+  const formatDateTime = (date: Date | string | null | undefined) => {
+    if (!date) return "-";
+    try {
+      const dateObj = typeof date === "string" ? new Date(date) : date;
+      return format(dateObj, "yyyy/MM/dd HH:mm", { locale: ja });
+    } catch {
+      return "-";
+    }
+  };
+
+  // 利益計算
+  const profit = (property.amountExit || 0) - (property.amountA || 0) + (property.commission || 0);
+
+  // ステータスのラベル取得
+  const getProgressStatusLabel = (status: string | null) => {
+    const labels: Record<string, string> = {
+      bc_before_confirmed: "BC確定前",
+      contract_cb_waiting: "契約CB待ち",
+      bc_contract_waiting: "BC契約待ち",
+      settlement_date_waiting: "決済日待ち",
+      settlement_cb_waiting: "精算CB待ち",
+      settlement_waiting: "決済待ち",
+      settlement_completed: "決済完了",
+    };
+    return status ? labels[status] || status : "-";
+  };
+
+  const getDocumentStatusLabel = (status: string | null) => {
+    const labels: Record<string, string> = {
+      waiting_request: "営業依頼待ち",
+      in_progress: "書類取得中",
+      all_completed: "全書類取得完了",
+    };
+    return status ? labels[status] || status : "-";
+  };
+
+  const getContractTypeLabel = (type: string | null) => {
+    const labels: Record<string, string> = {
+      ab_bc: "AB・BC",
+      ac: "AC",
+      iyaku: "違約",
+      shirahaku: "白紙",
+      mitei: "未定",
+      jisha: "自社仕入れ",
+      bengoshi: "弁護士",
+      kaichu: "買仲",
+      iyaku_yotei: "違約予定",
+    };
+    return type ? labels[type] || type : "-";
+  };
+
+  const getCompanyBLabel = (company: string | null) => {
+    const labels: Record<string, string> = {
+      ms: "エムズ",
+      life: "ライフ",
+      legit: "レイジット",
+      esc: "エスク",
+      trader: "取引業者",
+      shine: "シャイン",
+      second: "セカンド",
+    };
+    return company ? labels[company] || company : "-";
+  };
+
+  const getBrokerCompanyLabel = (company: string | null) => {
+    const labels: Record<string, string> = {
+      legit: "レイジット",
+      tousei: "TOUSEI",
+      esc: "エスク",
+      shine: "シャイン",
+      nbf: "NBF",
+      rd: "RD",
+      ms: "エムズ",
+    };
+    return company ? labels[company] || company : "-";
+  };
+
+  const getAccountCompanyLabel = (company: string | null) => {
+    const labels: Record<string, string> = {
+      legit: "レイジット",
+      life: "ライフ",
+      ms: "エムズ",
+    };
+    return company ? labels[company] || company : "-";
+  };
+
+  const getBankAccountLabel = (account: string | null) => {
+    const labels: Record<string, string> = {
+      gmo_main: "GMOメイン",
+      gmo_sub: "GMOサブ",
+      rakuten: "楽天",
+      gmo: "GMO",
+      mizuho: "みずほ",
+    };
+    return account ? labels[account] || account : "-";
   };
 
   return (
