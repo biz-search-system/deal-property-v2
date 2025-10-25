@@ -26,6 +26,10 @@ export const auth = betterAuth({
     username(),
     nextCookies(),
     organization({
+      // チーム機能を有効化
+      teams: {
+        enabled: true,
+      },
       async sendInvitationEmail(data) {
         const invitationId = data.id;
         const inviterEmail = data.inviter.user.email;
