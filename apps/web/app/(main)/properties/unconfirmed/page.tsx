@@ -1,119 +1,25 @@
-"use client";
-
-import { useState, useMemo } from "react";
 import { Card, CardContent } from "@workspace/ui/components/card";
-import { Badge } from "@workspace/ui/components/badge";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@workspace/ui/components/table";
-import { Button } from "@workspace/ui/components/button";
-import { Input } from "@workspace/ui/components/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@workspace/ui/components/select";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@workspace/ui/components/dropdown-menu";
-import { PropertyDetailModal } from "@/components/property/property-detail-modal";
-import {
-  BUSINESS_STATUS,
-  DOCUMENT_STATUS,
-  properties,
-  Property,
-} from "../data/property";
-import { MoreVertical, Eye, Edit } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { getProperties } from "@/lib/data/property";
+import { UnconfirmedPropertiesTable } from "@/components/property/unconfirmed-properties-table";
 
-export default function UnconfirmedPropertiesPage() {
-  const router = useRouter();
-  const [editingMemo, setEditingMemo] = useState<{
-    id: number;
-    value: string;
-  } | null>(null);
-  const [editingBusinessStatus, setEditingBusinessStatus] = useState<{
-    id: number;
-    value: string;
-  } | null>(null);
-  const [editingDocumentStatus, setEditingDocumentStatus] = useState<{
-    id: number;
-    value: string;
-  } | null>(null);
-  const [selectedProperty, setSelectedProperty] = useState<Property | null>(
-    null
-  );
-  const [modalOpen, setModalOpen] = useState(false);
-
+export default async function UnconfirmedPropertiesPage() {
   // BC確定前の案件のみフィルター
-  const unconfirmedProperties = useMemo(() => {
-    return properties
-      .filter((p) => p.businessStatus === BUSINESS_STATUS.BC_UNCONFIRMED)
-      .sort(
-        (a, b) =>
-          new Date(b.aContractDate).getTime() -
-          new Date(a.aContractDate).getTime()
-      );
-  }, []);
+  const allProperties = await getProperties();
+  const unconfirmedProperties = allProperties.filter(
+    (p) => p.progressStatus === "bc_before_confirmed"
+  );
 
   // 集計計算
-  const totals = useMemo(() => {
-    return {
-      profitEstimate: unconfirmedProperties.reduce(
-        (sum, p) => sum + p.profit,
-        0
-      ),
-      aAmount: unconfirmedProperties.reduce((sum, p) => sum + p.aAmount, 0),
-      count: unconfirmedProperties.length,
-    };
-  }, [unconfirmedProperties]);
+  const totals = {
+    profitEstimate: unconfirmedProperties.reduce(
+      (sum, p) => sum + (p.profit || 0),
+      0
+    ),
+    count: unconfirmedProperties.length,
+  };
 
   const formatCurrency = (value: number) => {
     return value ? `${(value / 10000).toFixed(0)}万` : "-";
-  };
-
-  const truncateText = (text: string, maxLength: number = 5) => {
-    if (!text) return "-";
-    return text.length > maxLength ? text.substring(0, maxLength) : text;
-  };
-
-  const getDocumentStatusColor = (status: string) => {
-    if (status === DOCUMENT_STATUS.ALL_ACQUIRED) return "default";
-    if (status === DOCUMENT_STATUS.ACQUIRING) return "secondary";
-    return "outline";
-  };
-
-  const handleMemoSave = (propertyId: number) => {
-    console.log("Saving memo for property", propertyId, editingMemo?.value);
-    setEditingMemo(null);
-  };
-
-  const handleBusinessStatusSave = (propertyId: number) => {
-    console.log(
-      "Saving business status",
-      propertyId,
-      editingBusinessStatus?.value
-    );
-    setEditingBusinessStatus(null);
-  };
-
-  const handleDocumentStatusSave = (propertyId: number) => {
-    console.log(
-      "Saving document status",
-      propertyId,
-      editingDocumentStatus?.value
-    );
-    setEditingDocumentStatus(null);
   };
 
   return (

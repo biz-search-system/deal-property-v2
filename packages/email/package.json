@@ -8,6 +8,8 @@
   },
   "dependencies": {
     "@react-email/components": "0.5.7",
+    "@types/node": "^24.9.1",
+    "dotenv": "^17.2.3",
     "lucide-react": "^0.546.0",
     "react": "19.2.0",
     "react-dom": "19.2.0",
@@ -25,9 +27,13 @@
       "import": "./src/resend.ts",
       "require": "./src/resend.ts"
     },
-    "./templates/*": {
-      "import": "./src/templates/*.tsx",
-      "require": "./src/templates/*.tsx"
+    "./templates/invitation": {
+      "import": "./src/templates/invitation.tsx",
+      "require": "./src/templates/invitation.tsx"
+    },
+    "./templates/biz-search-invite": {
+      "import": "./src/templates/biz-search-invite.tsx",
+      "require": "./src/templates/biz-search-invite.tsx"
     }
   }
 }
