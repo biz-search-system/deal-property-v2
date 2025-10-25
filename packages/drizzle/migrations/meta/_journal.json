@@ -29,6 +29,13 @@
       "when": 1761402757370,
       "tag": "0003_soft_swordsman",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "6",
+      "when": 1761408675584,
+      "tag": "0004_slimy_guardsmen",
+      "breakpoints": true
     }
   ]
 }

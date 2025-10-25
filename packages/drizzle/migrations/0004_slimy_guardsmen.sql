@@ -1,0 +1,2 @@
+ALTER TABLE `properties` ADD `organization_id` text NOT NULL DEFAULT '' REFERENCES organizations(id);--> statement-breakpoint
+CREATE INDEX `idx_properties_organization_id` ON `properties` (`organization_id`);

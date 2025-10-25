@@ -1,4 +1,4 @@
-import { relations } from "drizzle-orm";
+import { relations, sql } from "drizzle-orm";
 import {
   sqliteTable,
   text,
@@ -74,7 +74,7 @@ export const properties = sqliteTable(
     updatedBy: text("updated_by")
       .notNull()
       .references(() => users.id, { onDelete: "cascade" }),
-    ...timestamps(),
+    ...timestamps,
   },
   (table) => [
     index("idx_properties_organization_id").on(table.organizationId),
@@ -100,7 +100,7 @@ export const propertyStaff = sqliteTable(
     userId: text("user_id")
       .notNull()
       .references(() => users.id, { onDelete: "cascade" }),
-    createdAt: timestamps().createdAt,
+    createdAt: timestamps.createdAt,
   },
   (table) => [
     index("idx_property_staff_property_id").on(table.propertyId),
@@ -191,7 +191,7 @@ export const contractProgress = sqliteTable("contract_progress", {
   bcDescriptionCbDoneBy: text("bc_description_cb_done_by").references(
     () => users.id
   ),
-  ...timestamps(),
+  ...timestamps,
 });
 
 /**
@@ -211,7 +211,7 @@ export const documentProgress = sqliteTable("document_progress", {
   updatedBy: text("updated_by")
     .notNull()
     .references(() => users.id),
-  ...timestamps(),
+  ...timestamps,
 });
 
 /**
@@ -307,7 +307,7 @@ export const settlementProgress = sqliteTable("settlement_progress", {
     .default(false),
   ledgerEntryAt: integer("ledger_entry_at", { mode: "timestamp_ms" }),
   ledgerEntryBy: text("ledger_entry_by").references(() => users.id),
-  ...timestamps(),
+  ...timestamps,
 });
 
 /**
@@ -328,7 +328,9 @@ export const propertyProgressHistory = sqliteTable(
     changedBy: text("changed_by")
       .notNull()
       .references(() => users.id),
-    changedAt: timestamps.createdAt,
+    changedAt: integer("changed_at", { mode: "timestamp_ms" })
+      .default(sql`(cast(unixepoch('subsecond') * 1000 as integer))`)
+      .notNull(),
   },
   (table) => [
     index("idx_property_progress_history_property_id").on(table.propertyId),
