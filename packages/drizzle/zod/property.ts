@@ -11,41 +11,66 @@ import {
 // ==================== 案件テーブル ====================
 
 export const propertyInsertSchema = createInsertSchema(properties, {
-  propertyName: (schema) =>
-    schema
-      .trim()
-      .min(1, "物件名は必須です")
-      .max(100, "物件名は100文字以内で入力してください"),
-  roomNumber: (schema) =>
-    schema.trim().max(20, "号室は20文字以内で入力してください").optional(),
-  ownerName: (schema) =>
-    schema
-      .trim()
-      .min(1, "オーナー名は必須です")
-      .max(100, "オーナー名は100文字以内で入力してください"),
-  amountA: (schema) =>
-    schema.nonnegative("A金額は0以上で入力してください").optional(),
-  amountExit: (schema) =>
-    schema.nonnegative("出口金額は0以上で入力してください").optional(),
-  commission: (schema) =>
-    schema.nonnegative("仲手等は0以上で入力してください").optional(),
-  profit: (schema) => schema.optional(),
-  bcDeposit: (schema) =>
-    schema.nonnegative("BC手付は0以上で入力してください").optional(),
-  buyerCompany: (schema) =>
-    schema
-      .trim()
-      .max(100, "買取業者は100文字以内で入力してください")
-      .optional(),
-  mortgageBank: (schema) =>
-    schema
-      .trim()
-      .max(100, "抵当銀行は100文字以内で入力してください")
-      .optional(),
-  listType: (schema) =>
-    schema.trim().max(50, "名簿種別は50文字以内で入力してください").optional(),
-  notes: (schema) =>
-    schema.trim().max(1000, "備考は1000文字以内で入力してください").optional(),
+  propertyName: z
+    .string()
+    .trim()
+    .min(1, "物件名は必須です")
+    .max(100, "物件名は100文字以内で入力してください"),
+  roomNumber: z
+    .string()
+    .trim()
+    .max(20, "号室は20文字以内で入力してください")
+    .nullable()
+    .optional(),
+  ownerName: z
+    .string()
+    .trim()
+    .min(1, "オーナー名は必須です")
+    .max(100, "オーナー名は100文字以内で入力してください"),
+  amountA: z
+    .number()
+    .nonnegative("A金額は0以上で入力してください")
+    .nullable()
+    .optional(),
+  amountExit: z
+    .number()
+    .nonnegative("出口金額は0以上で入力してください")
+    .nullable()
+    .optional(),
+  commission: z
+    .number()
+    .nonnegative("仲手等は0以上で入力してください")
+    .nullable()
+    .optional(),
+  bcDeposit: z
+    .number()
+    .nonnegative("BC手付は0以上で入力してください")
+    .nullable()
+    .optional(),
+  buyerCompany: z
+    .string()
+    .trim()
+    .max(100, "買取業者は100文字以内で入力してください")
+    .nullable()
+    .optional(),
+  mortgageBank: z
+    .string()
+    .trim()
+    .max(100, "抵当銀行は100文字以内で入力してください")
+    .nullable()
+    .optional(),
+  listType: z
+    .string()
+    .trim()
+    .max(50, "名簿種別は50文字以内で入力してください")
+    .nullable()
+    .optional(),
+  notes: z
+    .string()
+    .trim()
+    .max(1000, "備考は1000文字以内で入力してください")
+    .nullable()
+    .optional(),
 });
 
 export const propertySelectSchema = createSelectSchema(properties);

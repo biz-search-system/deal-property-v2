@@ -18,7 +18,7 @@ ER図は [er-diagram-visual.md](./er-diagram-visual.md) を参照してくださ
 
 ### 1.1 ユーザー関連テーブル (Better Auth管理)
 
-ユーザー認証は Better Auth により管理されています。
+ユーザー認証と組織管理は Better Auth により管理されています。
 詳細は `packages/drizzle/schemas/auth.ts` を参照してください。
 
 #### 認証方式
@@ -27,14 +27,30 @@ ER図は [er-diagram-visual.md](./er-diagram-visual.md) を参照してくださ
 
 #### 主要テーブル
 
-- **users**: ユーザー情報
-- **sessions**: セッション管理
-- **accounts**: 外部プロバイダー連携
+- **user**: ユーザー情報
+- **session**: セッション管理
+  - `activeOrganizationId`: 現在作業対象の組織ID（Active Organization）
+- **account**: 外部プロバイダー連携
+- **organization**: 組織情報（レイジット、エスク、TOUSEI）
+- **member**: 組織メンバー情報
+  - `role`: ユーザーの権限（owner / admin / member）
+- **invitation**: 組織への招待情報
 
-**MVPの権限設計**:
+**MVPの組織・権限設計**:
 
-- 全ユーザーが全案件の閲覧・編集が可能
-- 組織による権限分離はPhase 1以降で実装予定
+- **組織（organization）**: 会社単位（レイジット、エスク、TOUSEI）
+- **チーム**: Better Auth の Team 機能を使用（営業チーム、事務チーム）
+- **権限（member.role）**:
+  - `owner`: システムオーナー（経営者）。全組織のデータにアクセス可能
+  - `admin`: 管理者。チームメンバーの招待・削除が可能
+  - `member`: 一般メンバー。案件の作成・編集が可能
+- **Active Organization**: ユーザーが現在作業対象としている組織（`session.activeOrganizationId`）
+  - システムオーナー（owner）は「全社」表示（`activeOrganizationId = null`）または特定組織を選択可能
+  - 一般ユーザー（admin/member）は所属組織から選択
+- **データアクセス制御**:
+  - 案件（properties）は `organization_id` で組織に紐付けられます
+  - ユーザーは Active Organization で選択中の組織の案件のみ閲覧・編集可能
+  - システムオーナー（owner）は Active Organization が null の場合、全組織の案件を閲覧可能
 
 ---
 
@@ -49,6 +65,7 @@ ER図は [er-diagram-visual.md](./er-diagram-visual.md) を参照してくださ
 | カラム名 | 型 | NULL | 説明 |
 |---------|-----|------|------|
 | id | string | NOT NULL | 案件ID (PK) |
+| organization_id | string | NOT NULL | 管理組織ID (FK) |
 | property_name | string | NOT NULL | 物件名 |
 | room_number | string | NULL | 号室 |
 | owner_name | string | NOT NULL | オーナー名 |
@@ -167,6 +184,7 @@ profit = amount_exit - amount_a + commission
 
 #### インデックス
 
+- `idx_properties_organization_id` ON (organization_id)
 - `idx_properties_progress_status` ON (progress_status)
 - `idx_properties_document_status` ON (document_status)
 - `idx_properties_settlement_date` ON (settlement_date)
@@ -445,27 +463,31 @@ progress_status (進捗ステータス) と同じ値:
 
 ### 2.1 案件関連
 
-#### 2.1.1 properties → property_staff (1対多)
+#### 2.1.1 organization → properties (1対多)
+
+1つの組織（会社）は複数の案件を管理できます。案件は必ず1つの組織に所属します。
+
+#### 2.1.2 properties → property_staff (1対多)
 
 1つの案件に対して複数の担当者を紐付けることができます。
 
-#### 2.1.2 users → property_staff (1対多)
+#### 2.1.3 users → property_staff (1対多)
 
 1人のユーザーは複数の案件を担当できます。
 
-#### 2.1.3 properties → contract_progress (1対1)
+#### 2.1.4 properties → contract_progress (1対1)
 
 1つの案件に対して1つの契約進捗レコードが存在します。
 
-#### 2.1.4 properties → document_progress (1対1)
+#### 2.1.5 properties → document_progress (1対1)
 
 1つの案件に対して1つの書類進捗レコードが存在します。
 
-#### 2.1.5 properties → settlement_progress (1対1)
+#### 2.1.6 properties → settlement_progress (1対1)
 
 1つの案件に対して1つの決済進捗レコードが存在します。
 
-#### 2.1.6 properties → property_progress_history (1対多)
+#### 2.1.7 properties → property_progress_history (1対多)
 
 1つの案件に対して複数の進捗履歴レコードが存在します。進捗ステータスが変更されるたびに履歴が記録されます。
 

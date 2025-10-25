@@ -14,6 +14,7 @@
 erDiagram
     %% ユーザー関連 (Better Auth管理)
     users ||--o{ property_staff : "manages"
+    organization ||--o{ properties : "has"
 
     %% 案件関連
     properties ||--o{ property_staff : "assigned to"
@@ -30,9 +31,18 @@ erDiagram
         timestamp created_at "作成日時"
     }
 
+    %% 組織テーブル (Better Auth)
+    organization {
+        string id PK "組織ID"
+        string name "組織名"
+        string slug UK "組織スラッグ"
+        timestamp created_at "作成日時"
+    }
+
     %% 案件テーブル
     properties {
         string id PK "案件ID"
+        string organization_id FK "管理組織ID"
         string property_name "物件名"
         string room_number "号室"
         string owner_name "オーナー名"
