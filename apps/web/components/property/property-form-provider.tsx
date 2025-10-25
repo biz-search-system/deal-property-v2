@@ -78,7 +78,7 @@ export default function PropertyFormProvider({
         }
         await updateProperty({ ...data, id: defaultValues.id });
         toast.success("案件を更新しました");
-        router.push(`/properties/${defaultValues.id}`);
+        router.push("/properties/unconfirmed");
       }
     } catch (error) {
       toast.error(

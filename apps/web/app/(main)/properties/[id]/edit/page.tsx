@@ -1,3 +1,4 @@
+import { notFound } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@workspace/ui/components/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@workspace/ui/components/tabs";
 import PropertyFormProvider from "@/components/property/property-form-provider";
@@ -6,25 +7,55 @@ import BasicInfoTab from "@/components/property/tabs/basic-info-tab";
 import ContractProgressTab from "@/components/property/tabs/contract-progress-tab";
 import DocumentProgressTab from "@/components/property/tabs/document-progress-tab";
 import SettlementProgressTab from "@/components/property/tabs/settlement-progress-tab";
-import { getOrganizationUsers } from "@/lib/data/property";
+import { getPropertyById, getOrganizationUsers } from "@/lib/data/property";
+import type { Metadata } from "next";
 
-export const metadata = {
-  title: "案件登録",
-};
+export async function generateMetadata({ params }: PageProps<"/properties/[id]/edit">): Promise<Metadata> {
+  const { id } = await params;
+  const property = await getPropertyById(id);
 
-export default async function PropertyNewPage() {
-  const availableStaff = await getOrganizationUsers();
+  if (!property) {
+    return {
+      title: "案件が見つかりません",
+    };
+  }
+
+  return {
+    title: `${property.propertyName} - 編集`,
+  };
+}
+
+export default async function PropertyEditPage({ params }: PageProps<"/properties/[id]/edit">) {
+  const { id } = await params;
+
+  const [property, availableStaff] = await Promise.all([
+    getPropertyById(id),
+    getOrganizationUsers(),
+  ]);
+
+  if (!property) {
+    notFound();
+  }
+
+  // 担当者のIDリストを取得
+  const staffIds = property.staff.map((s) => s.userId);
 
   return (
     <div className="container mx-auto py-6 space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-bold">案件登録</h1>
+        <h1 className="text-3xl font-bold">案件編集</h1>
       </div>
 
-      <PropertyFormProvider mode="create">
+      <PropertyFormProvider
+        mode="edit"
+        defaultValues={{
+          ...property,
+          staffIds,
+        }}
+      >
         <Card>
           <CardHeader>
-            <CardTitle>案件情報</CardTitle>
+            <CardTitle>{property.propertyName}</CardTitle>
           </CardHeader>
           <CardContent>
             <Tabs defaultValue="basic" className="w-full">
@@ -52,7 +83,7 @@ export default async function PropertyNewPage() {
               </TabsContent>
             </Tabs>
 
-            <PropertyFormActions mode="create" />
+            <PropertyFormActions mode="edit" />
           </CardContent>
         </Card>
       </PropertyFormProvider>
