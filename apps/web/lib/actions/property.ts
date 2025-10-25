@@ -229,3 +229,84 @@ export async function deleteProperty(id: string) {
 
   revalidatePath("/properties");
 }
+
+/**
+ * 案件の進捗ステータスを更新（インライン編集用）
+ */
+export async function updatePropertyProgressStatus(data: {
+  id: string;
+  progressStatus: string;
+}) {
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  });
+
+  if (!session) {
+    throw new Error("認証が必要です");
+  }
+
+  await db
+    .update(properties)
+    .set({
+      progressStatus: data.progressStatus as InsertProperty["progressStatus"],
+      updatedBy: session.user.id,
+      updatedAt: new Date(),
+    })
+    .where(eq(properties.id, data.id));
+
+  revalidatePath("/properties");
+  revalidatePath("/properties/unconfirmed");
+}
+
+/**
+ * 案件の書類ステータスを更新（インライン編集用）
+ */
+export async function updatePropertyDocumentStatus(data: {
+  id: string;
+  documentStatus: string;
+}) {
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  });
+
+  if (!session) {
+    throw new Error("認証が必要です");
+  }
+
+  await db
+    .update(properties)
+    .set({
+      documentStatus: data.documentStatus as InsertProperty["documentStatus"],
+      updatedBy: session.user.id,
+      updatedAt: new Date(),
+    })
+    .where(eq(properties.id, data.id));
+
+  revalidatePath("/properties");
+  revalidatePath("/properties/unconfirmed");
+}
+
+/**
+ * 案件の備考を更新（インライン編集用）
+ */
+export async function updatePropertyNotes(data: { id: string; notes: string }) {
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  });
+
+  if (!session) {
+    throw new Error("認証が必要です");
+  }
+
+  await db
+    .update(properties)
+    .set({
+      notes: data.notes,
+      updatedBy: session.user.id,
+      updatedAt: new Date(),
+    })
+    .where(eq(properties.id, data.id));
+
+  revalidatePath("/properties");
+  revalidatePath("/properties/unconfirmed");
+}
