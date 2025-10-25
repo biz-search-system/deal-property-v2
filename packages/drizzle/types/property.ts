@@ -118,3 +118,34 @@ export type KeyStatus = (typeof keyStatus)[number];
 /** 管積口座振替手続きステータス */
 export const accountTransfer = ["none", "received", "sent"] as const;
 export type AccountTransfer = (typeof accountTransfer)[number];
+
+// ==================== テーブル型定義 ====================
+
+import type {
+  properties,
+  propertyStaff,
+  contractProgress,
+  documentProgress,
+  settlementProgress,
+  propertyProgressHistory,
+} from "../schemas/property";
+
+export type Property = typeof properties.$inferSelect;
+export type InsertProperty = typeof properties.$inferInsert;
+
+export type PropertyStaff = typeof propertyStaff.$inferSelect;
+export type InsertPropertyStaff = typeof propertyStaff.$inferInsert;
+
+export type ContractProgress = typeof contractProgress.$inferSelect;
+export type InsertContractProgress = typeof contractProgress.$inferInsert;
+
+export type DocumentProgress = typeof documentProgress.$inferSelect;
+export type InsertDocumentProgress = typeof documentProgress.$inferInsert;
+
+export type SettlementProgress = typeof settlementProgress.$inferSelect;
+export type InsertSettlementProgress = typeof settlementProgress.$inferInsert;
+
+export type PropertyProgressHistory =
+  typeof propertyProgressHistory.$inferSelect;
+export type InsertPropertyProgressHistory =
+  typeof propertyProgressHistory.$inferInsert;
