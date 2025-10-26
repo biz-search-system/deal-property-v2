@@ -1,26 +1,25 @@
-import { notFound } from "next/navigation";
-import Link from "next/link";
-import { Button } from "@workspace/ui/components/button";
+import { getPropertyById } from "@/lib/data/property";
 import { Badge } from "@workspace/ui/components/badge";
+import { Button } from "@workspace/ui/components/button";
 import { Separator } from "@workspace/ui/components/separator";
-import { Card, CardContent, CardHeader, CardTitle } from "@workspace/ui/components/card";
+import { format } from "date-fns";
+import { ja } from "date-fns/locale";
 import {
   ArrowLeft,
   Building2,
   Calendar,
+  Check,
   DollarSign,
   FileText,
   Users,
-  Check,
   X,
-  Edit,
 } from "lucide-react";
-import { getPropertyById } from "@/lib/data/property";
-import { format } from "date-fns";
-import { ja } from "date-fns/locale";
 import type { Metadata } from "next";
+import { notFound } from "next/navigation";
 
-export async function generateMetadata({ params }: PageProps<"/properties/unconfirmed/[id]">): Promise<Metadata> {
+export async function generateMetadata({
+  params,
+}: PageProps<"/properties/unconfirmed/[id]">): Promise<Metadata> {
   const { id } = await params;
   const property = await getPropertyById(id);
 
@@ -35,7 +34,9 @@ export async function generateMetadata({ params }: PageProps<"/properties/unconf
   };
 }
 
-export default async function PropertyDetailPage({ params }: PageProps<"/properties/unconfirmed/[id]">) {
+export default async function PropertyDetailPage({
+  params,
+}: PageProps<"/properties/unconfirmed/[id]">) {
   const { id } = await params;
   const property = await getPropertyById(id);
 
@@ -69,7 +70,10 @@ export default async function PropertyDetailPage({ params }: PageProps<"/propert
   };
 
   // 利益計算
-  const profit = (property.amountExit || 0) - (property.amountA || 0) + (property.commission || 0);
+  const profit =
+    (property.amountExit || 0) -
+    (property.amountA || 0) +
+    (property.commission || 0);
 
   // ステータスのラベル取得
   const getProgressStatusLabel = (status: string | null) => {

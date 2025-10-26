@@ -150,9 +150,10 @@ export async function getCurrentUserOrganizationInfo(organizationId: string) {
             headers: await headers(),
           });
 
-          isMember = teamMembers?.some(
-            (member: any) => member.userId === session.user.id
-          ) || false;
+          isMember =
+            teamMembers?.some(
+              (member: any) => member.userId === session.user.id
+            ) || false;
         } catch (error) {
           console.error(`Failed to get members for team ${team.id}:`, error);
         }
