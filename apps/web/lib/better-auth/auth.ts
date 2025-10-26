@@ -2,11 +2,36 @@ import { db } from "@workspace/drizzle/db";
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { nextCookies } from "better-auth/next-js";
-import { anonymous, organization, username } from "better-auth/plugins";
+import {
+  anonymous,
+  organization,
+  username,
+  emailOTP,
+  admin,
+  magicLink,
+} from "better-auth/plugins";
 import { getBaseURL, customNanoid } from "@workspace/utils";
 import { resend } from "@workspace/email/resend";
 import InvitationEmail from "@workspace/email/templates/invitation";
-import { getTeamName } from "../data/team";
+import PasswordResetEmail from "@workspace/email/templates/password-reset";
+import { eq } from "drizzle-orm";
+import { teams } from "@workspace/drizzle/schemas/auth";
+
+/**
+ * チーム名を取得
+ * @param teamId - チームID
+ * @returns - チーム名
+ */
+export async function getTeamName(teamId: string) {
+  const team = await db.query.teams.findFirst({
+    where: eq(teams.id, teamId),
+  });
+  if (!team) {
+    throw new Error("Team not found");
+  }
+
+  return team.name;
+}
 
 export const auth = betterAuth({
   baseURL: getBaseURL(),
@@ -59,5 +84,42 @@ export const auth = betterAuth({
         });
       },
     }),
+    emailOTP({
+      async sendVerificationOTP({ email, otp, type }) {
+        if (type === "sign-in") {
+          // Send the OTP for sign in
+          // const resetPasswordLink = `${getBaseURL()}/api/auth/forget-password?otp=${otp}&email=${email}&type=${type}`;
+          // await resend.emails.send({
+          //   from: "noreply@biz-search.tech",
+          //   to: email,
+          //   subject: `パスワードリセットのご案内`,
+          //   react: PasswordResetEmail({
+          //     email: email,
+          //     resetUrl: resetPasswordLink,
+          //   }),
+          // });
+        } else if (type === "email-verification") {
+          // Send the OTP for email verification
+        } else if (type === "forget-password") {
+          // Send the OTP for password reset
+          const resetPasswordLink = `${getBaseURL()}/api/auth/forget-password?otp=${otp}&email=${email}&type=${type}`;
+          await resend.emails.send({
+            from: "noreply@biz-search.tech",
+            to: email,
+            subject: `パスワードリセットのご案内`,
+            react: PasswordResetEmail({
+              email: email,
+              resetUrl: resetPasswordLink,
+            }),
+          });
+        }
+      },
+    }),
+    magicLink({
+      sendMagicLink: async ({ email, token, url }, request) => {
+        // send email to user
+      },
+    }),
+    admin(),
   ],
 });

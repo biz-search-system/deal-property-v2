@@ -88,23 +88,29 @@ export function SignupForm({
       }
 
       if (signupResult) {
-        // 2. 招待の受け入れ
-        const { data: acceptResult, error: acceptError } =
-          await authClient.organization.acceptInvitation({
-            invitationId,
-          });
+        // 招待IDがある場合は招待を受け入れる
+        if (invitationId) {
+          const { data: acceptResult, error: acceptError } =
+            await authClient.organization.acceptInvitation({
+              invitationId,
+            });
 
-        if (acceptError) {
-          console.error(acceptError);
-          toast.error(acceptError.message || "招待の受け入れに失敗しました");
-          return;
+          if (acceptError) {
+            console.error(acceptError);
+            toast.error(acceptError.message || "招待の受け入れに失敗しました");
+            return;
+          }
+
+          if (acceptResult) {
+            toast.success("アカウントの登録と組織への参加が完了しました！");
+            router.push("/properties/unconfirmed");
+            return;
+          }
         }
 
-        if (acceptResult) {
-          toast.success("アカウントの登録が完了しました！");
-          const redirectPath = `/properties/unconfirmed`;
-          router.push(redirectPath);
-        }
+        // 通常のサインアップ成功時
+        toast.success("アカウントの登録が完了しました！");
+        router.push("/properties/unconfirmed");
       }
     });
   };
@@ -192,25 +198,6 @@ export function SignupForm({
                     </FormItem>
                   )}
                 />
-
-                {/* <FormField
-                  control={form.control}
-                  name="password"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>パスワード</FormLabel>
-                      <FormControl>
-                        <Input
-                          type="password"
-                          placeholder="8文字以上"
-                          {...field}
-                          disabled={isPending}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                /> */}
                 <PasswordForm
                   form={form}
                   name="password"
@@ -235,7 +222,7 @@ export function SignupForm({
                   <Link
                     href={
                       isInvitation
-                        ? `/login?invitation=${invitationId}`
+                        ? `/login?invitationId=${invitationId}`
                         : "/login"
                     }
                     className="underline underline-offset-4"
