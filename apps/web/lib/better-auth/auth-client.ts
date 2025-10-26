@@ -13,7 +13,11 @@ export const authClient = createAuthClient({
   plugins: [
     anonymousClient(),
     inferAdditionalFields<typeof auth>(),
-    organizationClient(),
+    organizationClient({
+      teams: {
+        enabled: true,
+      },
+    }),
     usernameClient(),
   ],
 });
