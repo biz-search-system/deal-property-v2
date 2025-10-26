@@ -306,6 +306,7 @@ export async function inviteMemberAction(data: {
   email: string;
   role?: "member" | "owner" | "admin" | ("member" | "owner" | "admin")[];
   organizationId?: string;
+  teamId?: string;
 }) {
   try {
     // セッション認証
@@ -316,6 +317,7 @@ export async function inviteMemberAction(data: {
         email: data.email,
         role: data.role || "member",
         organizationId: data.organizationId,
+        teamId: data.teamId,
         resend: true,
       },
       headers: await headers(),

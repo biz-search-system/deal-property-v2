@@ -2,9 +2,12 @@ import { createAuthClient } from "better-auth/react";
 import { getBaseURL } from "@workspace/utils";
 import {
   anonymousClient,
+  emailOTPClient,
   inferAdditionalFields,
   organizationClient,
   usernameClient,
+  adminClient,
+  magicLinkClient,
 } from "better-auth/client/plugins";
 import type { auth } from "./auth";
 
@@ -13,7 +16,14 @@ export const authClient = createAuthClient({
   plugins: [
     anonymousClient(),
     inferAdditionalFields<typeof auth>(),
-    organizationClient(),
+    organizationClient({
+      teams: {
+        enabled: true,
+      },
+    }),
     usernameClient(),
+    emailOTPClient(),
+    adminClient(),
+    magicLinkClient(),
   ],
 });

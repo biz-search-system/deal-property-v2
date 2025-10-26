@@ -1,4 +1,4 @@
-import { timestamps } from "@/util";
+import { timestamps } from "../util";
 import { integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
 
 export const users = sqliteTable("users", {
@@ -13,6 +13,10 @@ export const users = sqliteTable("users", {
   isAnonymous: integer("is_anonymous", { mode: "boolean" }),
   username: text("username").unique(),
   displayUsername: text("display_username"),
+  role: text("role"),
+  banned: integer("banned", { mode: "boolean" }).default(false),
+  banReason: text("ban_reason"),
+  banExpires: integer("ban_expires", { mode: "timestamp_ms" }),
 });
 
 export const sessions = sqliteTable("sessions", {
@@ -27,6 +31,7 @@ export const sessions = sqliteTable("sessions", {
     .references(() => users.id, { onDelete: "cascade" }),
   activeOrganizationId: text("active_organization_id"),
   activeTeamId: text("active_team_id"),
+  impersonatedBy: text("impersonated_by"),
 });
 
 export const accounts = sqliteTable("accounts", {

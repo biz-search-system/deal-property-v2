@@ -68,7 +68,7 @@ export function OrganizationCardMenu({
   };
 
   return (
-    <>
+    <div onClick={(e) => e.stopPropagation()}>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button variant="ghost" size="sm" onClick={(e) => e.preventDefault()}>
@@ -120,6 +120,6 @@ export function OrganizationCardMenu({
         organizationName={organizationName}
         onClose={() => setShowDeleteDialog(false)}
       />
-    </>
+    </div>
   );
 }

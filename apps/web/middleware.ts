@@ -7,7 +7,6 @@ import { handleMaintenanceMode } from "@/lib/maintenance";
 const publicRoutes = [
   "/login",
   "/signup",
-  "/register",
   "/forgot-password",
   "/reset-password",
   "/verify-email",

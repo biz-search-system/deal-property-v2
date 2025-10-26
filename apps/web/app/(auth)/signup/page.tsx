@@ -1,5 +1,8 @@
 import { SignupForm } from "@/components/auth/signup-form";
+import { auth } from "@/lib/better-auth/auth";
 import { Metadata } from "next";
+import { headers } from "next/headers";
+import { redirect } from "next/navigation";
 
 export const metadata: Metadata = {
   title: "新規登録",
@@ -16,6 +19,21 @@ interface SignupPageProps {
 
 export default async function SignupPage({ searchParams }: SignupPageProps) {
   const params = await searchParams;
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  });
+  if (session && params.id) {
+    const result = await auth.api.acceptInvitation({
+      body: {
+        invitationId: params.id,
+      },
+      headers: await headers(),
+    });
+
+    if (result) {
+      redirect(`/properties/unconfirmed`);
+    }
+  }
 
   return (
     <div className="bg-muted flex min-h-svh flex-col items-center justify-center p-6 md:p-10">

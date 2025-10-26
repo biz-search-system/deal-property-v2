@@ -7,7 +7,7 @@ import {
   unique,
   index,
 } from "drizzle-orm/sqlite-core";
-import { timestamps, id } from "@/util";
+import { timestamps, id } from "../util";
 import { users, organizations } from "./auth";
 import {
   contractType,

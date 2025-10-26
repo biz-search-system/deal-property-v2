@@ -34,6 +34,10 @@
     "./templates/biz-search-invite": {
       "import": "./src/templates/biz-search-invite.tsx",
       "require": "./src/templates/biz-search-invite.tsx"
+    },
+    "./templates/password-reset": {
+      "import": "./src/templates/password-reset.tsx",
+      "require": "./src/templates/password-reset.tsx"
     }
   }
 }

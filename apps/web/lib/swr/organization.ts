@@ -5,6 +5,7 @@ import type {
   OrganizationMembersResponse,
   OrganizationNameResponse,
   OrganizationsWithUserRoleResponse,
+  CurrentUserOrganizationInfoResponse,
 } from "@/lib/types/organization";
 
 export const useOrganizationName = (organizationId: string | null) => {
@@ -59,6 +60,21 @@ export const useOrganizationsWithUserRole = () => {
     activeOrgId: data?.activeOrgId,
     isLoading,
     error,
+    mutate,
+  };
+};
+
+export const useCurrentUserOrganizationInfo = (organizationId: string | null) => {
+  const { data, error, isLoading, mutate } =
+    useSWR<CurrentUserOrganizationInfoResponse>(
+      organizationId ? `/api/organization/${organizationId}/current-user` : null,
+      fetcher
+    );
+
+  return {
+    data: data?.data,
+    isLoading,
+    error: error || data?.error,
     mutate,
   };
 };

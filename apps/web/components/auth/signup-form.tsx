@@ -24,6 +24,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { authClient } from "@/lib/better-auth/auth-client";
 import { Signup } from "@/lib/types/auth";
 import { signupSchema } from "@/lib/zod/schemas/auth";
+import PasswordForm from "./password-form";
 // import { signupSchema } from "@workspace/drizzle/zod/auth";
 // import { Signup } from "@workspace/drizzle/types/auth";
 
@@ -73,27 +74,43 @@ export function SignupForm({
         });
 
       if (signupError) {
+        if (
+          signupError.code === "USERNAME_IS_ALREADY_TAKEN_PLEASE_TRY_ANOTHER"
+        ) {
+          toast.error(
+            "このメールアドレスはすでに使用されています.ログインして招待を受け入れてください."
+          );
+          router.push(`/login?invitationId=${invitationId}`);
+          return;
+        }
         toast.error(signupError.message || "登録に失敗しました");
         return;
       }
 
       if (signupResult) {
-        // 2. 招待の受け入れ
-        const { data: acceptResult, error: acceptError } =
-          await authClient.organization.acceptInvitation({
-            invitationId,
-          });
+        // 招待IDがある場合は招待を受け入れる
+        if (invitationId) {
+          const { data: acceptResult, error: acceptError } =
+            await authClient.organization.acceptInvitation({
+              invitationId,
+            });
 
-        if (acceptError) {
-          toast.error(acceptError.message || "招待の受け入れに失敗しました");
-          return;
+          if (acceptError) {
+            console.error(acceptError);
+            toast.error(acceptError.message || "招待の受け入れに失敗しました");
+            return;
+          }
+
+          if (acceptResult) {
+            toast.success("アカウントの登録と組織への参加が完了しました！");
+            router.push("/properties/unconfirmed");
+            return;
+          }
         }
 
-        if (acceptResult) {
-          toast.success("アカウントの登録が完了しました！");
-          const redirectPath = `/organization/${acceptResult.invitation.organizationId}`;
-          router.push(redirectPath);
-        }
+        // 通常のサインアップ成功時
+        toast.success("アカウントの登録が完了しました！");
+        router.push("/properties/unconfirmed");
       }
     });
   };
@@ -181,24 +198,12 @@ export function SignupForm({
                     </FormItem>
                   )}
                 />
-
-                <FormField
-                  control={form.control}
+                <PasswordForm
+                  form={form}
                   name="password"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>パスワード</FormLabel>
-                      <FormControl>
-                        <Input
-                          type="password"
-                          placeholder="8文字以上"
-                          {...field}
-                          disabled={isPending}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
+                  mode="signup"
+                  autoComplete="new-password"
+                  placeholder="8文字以上の英数字で入力してください"
                 />
 
                 <Button type="submit" className="w-full" disabled={isPending}>
@@ -217,7 +222,7 @@ export function SignupForm({
                   <Link
                     href={
                       isInvitation
-                        ? `/login?invitation=${invitationId}`
+                        ? `/login?invitationId=${invitationId}`
                         : "/login"
                     }
                     className="underline underline-offset-4"
