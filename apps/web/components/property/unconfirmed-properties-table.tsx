@@ -110,7 +110,13 @@ export function UnconfirmedPropertiesTable({
   } | null>(null);
 
   const formatCurrency = (value: number | null) => {
-    return value ? `${(value / 10000).toFixed(0)}万` : "-";
+    if (value === null || value === undefined) return "-";
+    // 1万円未満の場合は円単位で表示
+    if (value < 10000) {
+      return `${value.toLocaleString()}円`;
+    }
+    // 1万円以上の場合は万円単位で表示
+    return `${(value / 10000).toFixed(0)}万`;
   };
 
   const truncateText = (text: string | null, maxLength: number = 5) => {
@@ -179,7 +185,10 @@ export function UnconfirmedPropertiesTable({
       <Table className="text-[10px]">
         <TableHeader className="sticky top-0 bg-background z-10">
           <TableRow>
-            <TableHead className="text-[10px] p-1 sticky left-0 bg-background z-20 min-w-[45px]">
+            <TableHead className="text-[10px] p-1 sticky left-0 bg-background z-20 min-w-[50px]">
+              管理組織
+            </TableHead>
+            <TableHead className="text-[10px] p-1 min-w-[45px]">
               担当
             </TableHead>
             <TableHead className="text-[10px] p-1 min-w-[65px]">
@@ -230,6 +239,13 @@ export function UnconfirmedPropertiesTable({
                     </Badge>
                   ))}
                 </div>
+              </TableCell>
+
+              {/* 管理組織 */}
+              <TableCell className="text-[10px] p-1">
+                <Badge variant="outline" className="text-[9px] px-1 py-0">
+                  {property.organization?.name || "-"}
+                </Badge>
               </TableCell>
 
               {/* 物件名 */}

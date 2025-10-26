@@ -10,6 +10,7 @@ import { eq } from "drizzle-orm";
 export async function getProperties() {
   return db.query.properties.findMany({
     with: {
+      organization: true,
       staff: {
         with: {
           user: true,
@@ -30,6 +31,7 @@ export async function getPropertyById(id: string) {
   return db.query.properties.findFirst({
     where: eq(properties.id, id),
     with: {
+      organization: true,
       staff: {
         with: {
           user: true,

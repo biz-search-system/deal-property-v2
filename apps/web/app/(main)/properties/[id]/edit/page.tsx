@@ -1,13 +1,26 @@
 import { notFound } from "next/navigation";
-import { Card, CardContent, CardHeader, CardTitle } from "@workspace/ui/components/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@workspace/ui/components/tabs";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "@workspace/ui/components/card";
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "@workspace/ui/components/tabs";
 import PropertyFormProvider from "@/components/property/property-form-provider";
 import PropertyFormActions from "@/components/property/property-form-actions";
 import BasicInfoTab from "@/components/property/tabs/basic-info-tab";
 import ContractProgressTab from "@/components/property/tabs/contract-progress-tab";
 import DocumentProgressTab from "@/components/property/tabs/document-progress-tab";
 import SettlementProgressTab from "@/components/property/tabs/settlement-progress-tab";
-import { getPropertyById, getOrganizationUsers } from "@/lib/data/property";
+import { getPropertyById } from "@/lib/data/property";
+import { getOrganizations, getSalesTeamMembers } from "@/lib/data/organization";
+import { auth } from "@/lib/better-auth/auth";
+import { headers } from "next/headers";
 import type { Metadata } from "next";
 
 export async function generateMetadata({ params }: PageProps<"/properties/[id]/edit">): Promise<Metadata> {
@@ -28,14 +41,27 @@ export async function generateMetadata({ params }: PageProps<"/properties/[id]/e
 export default async function PropertyEditPage({ params }: PageProps<"/properties/[id]/edit">) {
   const { id } = await params;
 
-  const [property, availableStaff] = await Promise.all([
-    getPropertyById(id),
-    getOrganizationUsers(),
-  ]);
+  // セッション取得
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  });
+
+  if (!session) {
+    throw new Error("Unauthorized");
+  }
+
+  // プロパティを取得
+  const property = await getPropertyById(id);
 
   if (!property) {
     notFound();
   }
+
+  // ユーザーが所属している組織一覧を取得
+  const organizations = await getOrganizations();
+
+  // 案件の組織IDに基づいて営業チームメンバーを取得
+  const availableStaff = await getSalesTeamMembers(property.organizationId);
 
   // 担当者のIDリストを取得
   const staffIds = property.staff.map((s) => s.userId);
@@ -67,7 +93,11 @@ export default async function PropertyEditPage({ params }: PageProps<"/propertie
               </TabsList>
 
               <TabsContent value="basic" className="mt-6">
-                <BasicInfoTab availableStaff={availableStaff} />
+                <BasicInfoTab
+                  availableStaff={availableStaff}
+                  organizations={organizations}
+                  defaultOrganizationId={property.organizationId}
+                />
               </TabsContent>
 
               <TabsContent value="contract" className="mt-6">

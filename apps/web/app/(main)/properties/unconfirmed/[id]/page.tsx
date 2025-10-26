@@ -16,6 +16,7 @@ import {
 } from "lucide-react";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import Link from "next/link";
 
 export async function generateMetadata({
   params,
@@ -69,10 +70,10 @@ export default async function PropertyDetailPage({
     }
   };
 
-  // 利益計算
+  // 利益計算（出口 - A金額 - 仲手等）
   const profit =
     (property.amountExit || 0) -
-    (property.amountA || 0) +
+    (property.amountA || 0) -
     (property.commission || 0);
 
   // ステータスのラベル取得
@@ -164,21 +165,16 @@ export default async function PropertyDetailPage({
       <div className="border-b">
         <div className="container max-w-6xl mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => router.push("/properties/unconfirmed")}
-              className="gap-2"
-            >
-              <ArrowLeft className="h-4 w-4" />
-              一覧に戻る
+            <Button variant="ghost" size="sm" asChild className="gap-2">
+              <Link href="/properties/unconfirmed">
+                <ArrowLeft className="h-4 w-4" />
+                一覧に戻る
+              </Link>
             </Button>
             <div className="flex gap-2">
-              <Badge variant={getStatusColor(property.businessStatus)}>
-                {property.businessStatus}
-              </Badge>
-              <Badge variant={getStatusColor(property.documentStatus)}>
-                {property.documentStatus}
+              <Badge>{getProgressStatusLabel(property.progressStatus)}</Badge>
+              <Badge variant="secondary">
+                {getDocumentStatusLabel(property.documentStatus)}
               </Badge>
             </div>
           </div>
@@ -197,17 +193,27 @@ export default async function PropertyDetailPage({
           </div>
         </div>
 
-        <div className="mb-8 flex items-center gap-2">
+        <div className="mb-4 flex items-center gap-2">
           <Users className="h-4 w-4 text-muted-foreground" />
           <span className="text-sm text-muted-foreground">担当:</span>
           <div className="flex gap-2">
-            {property.assignee.map((person, index) => (
-              <Badge key={index} variant="secondary">
-                {person}
+            {property.staff?.map((staffMember) => (
+              <Badge key={staffMember.user.id} variant="secondary">
+                {staffMember.user.name}
               </Badge>
             ))}
           </div>
         </div>
+
+        {/* 管理組織タイプは現在のスキーマに存在しないためコメントアウト
+        <div className="mb-8 flex items-center gap-2">
+          <Building2 className="h-4 w-4 text-muted-foreground" />
+          <span className="text-sm text-muted-foreground">管理組織:</span>
+          <Badge variant="outline">
+            {getManagementOrgTypeLabel(property.managementOrgType)}
+          </Badge>
+        </div>
+        */}
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           <div className="lg:col-span-2 space-y-8">
@@ -224,7 +230,7 @@ export default async function PropertyDetailPage({
                         入口金額（A金額）
                       </div>
                       <div className="text-2xl font-semibold">
-                        {formatCurrency(property.aAmount)}
+                        {formatCurrency(property.amountA)}
                       </div>
                     </div>
                     <div>
@@ -232,7 +238,7 @@ export default async function PropertyDetailPage({
                         出口金額
                       </div>
                       <div className="text-2xl font-semibold">
-                        {formatCurrency(property.exitAmount)}
+                        {formatCurrency(property.amountExit)}
                       </div>
                     </div>
                   </div>
@@ -260,11 +266,11 @@ export default async function PropertyDetailPage({
                     <div className="flex items-center justify-between">
                       <div className="text-sm font-medium">利益見込み</div>
                       <div className="text-3xl font-bold text-green-600">
-                        {formatCurrency(property.profit)}
+                        {formatCurrency(profit)}
                       </div>
                     </div>
                     <div className="text-xs text-muted-foreground mt-2">
-                      出口金額 - 入口金額 + 仲介手数料
+                      出口金額 - 入口金額 - 仲介手数料
                     </div>
                   </div>
                 </div>
@@ -283,7 +289,7 @@ export default async function PropertyDetailPage({
                       A契約日（AB契約日）
                     </div>
                     <div className="text-lg font-medium">
-                      {formatDate(property.aContractDate)}
+                      {formatDate(property.contractDateA)}
                     </div>
                   </div>
                   <Separator />
@@ -292,7 +298,7 @@ export default async function PropertyDetailPage({
                       BC契約日
                     </div>
                     <div className="text-lg font-medium">
-                      {formatDate(property.bcContractDate)}
+                      {formatDate(property.contractDateBc)}
                     </div>
                   </div>
                   <Separator />
@@ -321,15 +327,21 @@ export default async function PropertyDetailPage({
                   <div className="p-4 space-y-3">
                     <ProgressItem
                       label="契約書 保存完了"
-                      item={property.contractProgress.ab.contractSaved}
+                      checked={property.contractProgress?.abContractSaved || false}
+                      date={property.contractProgress?.abContractSavedAt ?
+                        formatDateTime(property.contractProgress.abContractSavedAt) : null}
                     />
                     <ProgressItem
                       label="委任状関係 保存完了"
-                      item={property.contractProgress.ab.proxyCompleted}
+                      checked={property.contractProgress?.abAuthorizationSaved || false}
+                      date={property.contractProgress?.abAuthorizationSavedAt ?
+                        formatDateTime(property.contractProgress.abAuthorizationSavedAt) : null}
                     />
                     <ProgressItem
                       label="売主身分証 保存完了"
-                      item={property.contractProgress.ab.sellerIdSaved}
+                      checked={property.contractProgress?.abSellerIdSaved || false}
+                      date={property.contractProgress?.abSellerIdSavedAt ?
+                        formatDateTime(property.contractProgress.abSellerIdSavedAt) : null}
                     />
                   </div>
                 </div>
@@ -341,31 +353,39 @@ export default async function PropertyDetailPage({
                   <div className="p-4 space-y-3">
                     <ProgressItem
                       label="BC売契作成"
-                      item={property.contractProgress.bc.bcContractCreated}
+                      checked={property.contractProgress?.bcContractCreated || false}
+                      date={property.contractProgress?.bcContractCreatedAt ?
+                        formatDateTime(property.contractProgress.bcContractCreatedAt) : null}
                     />
                     <ProgressItem
                       label="重説作成"
-                      item={
-                        property.contractProgress.bc.importantMattersCreated
-                      }
+                      checked={property.contractProgress?.bcDescriptionCreated || false}
+                      date={property.contractProgress?.bcDescriptionCreatedAt ?
+                        formatDateTime(property.contractProgress.bcDescriptionCreatedAt) : null}
                     />
                     <ProgressItem
                       label="BC売契送付"
-                      item={property.contractProgress.bc.bcContractSent}
+                      checked={property.contractProgress?.bcContractSent || false}
+                      date={property.contractProgress?.bcContractSentAt ?
+                        formatDateTime(property.contractProgress.bcContractSentAt) : null}
                     />
                     <ProgressItem
                       label="重説送付"
-                      item={property.contractProgress.bc.importantMattersSent}
+                      checked={property.contractProgress?.bcDescriptionSent || false}
+                      date={property.contractProgress?.bcDescriptionSentAt ?
+                        formatDateTime(property.contractProgress.bcDescriptionSentAt) : null}
                     />
                     <ProgressItem
                       label="BC売契CB完了"
-                      item={property.contractProgress.bc.bcContractCbCompleted}
+                      checked={property.contractProgress?.bcContractCbDone || false}
+                      date={property.contractProgress?.bcContractCbDoneAt ?
+                        formatDateTime(property.contractProgress.bcContractCbDoneAt) : null}
                     />
                     <ProgressItem
                       label="重説CB完了"
-                      item={
-                        property.contractProgress.bc.importantMattersCbCompleted
-                      }
+                      checked={property.contractProgress?.bcDescriptionCbDone || false}
+                      date={property.contractProgress?.bcDescriptionCbDoneAt ?
+                        formatDateTime(property.contractProgress.bcDescriptionCbDoneAt) : null}
                     />
                   </div>
                 </div>
@@ -385,7 +405,9 @@ export default async function PropertyDetailPage({
                     <div className="text-xs text-muted-foreground mb-1">
                       契約形態
                     </div>
-                    <div className="font-medium">{property.contractType}</div>
+                    <div className="font-medium">
+                      {getContractTypeLabel(property.contractType)}
+                    </div>
                   </div>
                   <Separator />
                   <div>
@@ -401,7 +423,9 @@ export default async function PropertyDetailPage({
                     <div className="text-xs text-muted-foreground mb-1">
                       B会社
                     </div>
-                    <div className="font-medium">{property.bCompany}</div>
+                    <div className="font-medium">
+                      {getCompanyBLabel(property.companyB)}
+                    </div>
                   </div>
                   <Separator />
                   <div>
@@ -409,7 +433,7 @@ export default async function PropertyDetailPage({
                       仲介会社
                     </div>
                     <div className="font-medium">
-                      {property.brokerCompany || "-"}
+                      {getBrokerCompanyLabel(property.brokerCompany)}
                     </div>
                   </div>
                   <Separator />
@@ -417,7 +441,9 @@ export default async function PropertyDetailPage({
                     <div className="text-xs text-muted-foreground mb-1">
                       抵当銀行
                     </div>
-                    <div className="font-medium">{property.mortgageBank}</div>
+                    <div className="font-medium">
+                      {property.mortgageBank || "-"}
+                    </div>
                   </div>
                 </div>
               </div>
@@ -431,7 +457,9 @@ export default async function PropertyDetailPage({
                     <div className="text-xs text-muted-foreground mb-1">
                       使用口座会社
                     </div>
-                    <div className="font-medium">{property.account || "-"}</div>
+                    <div className="font-medium">
+                      {getAccountCompanyLabel(property.accountCompany)}
+                    </div>
                   </div>
                   <Separator />
                   <div>
@@ -439,7 +467,7 @@ export default async function PropertyDetailPage({
                       使用銀行口座
                     </div>
                     <div className="font-medium">
-                      {property.bankAccount || "-"}
+                      {getBankAccountLabel(property.bankAccount)}
                     </div>
                   </div>
                 </div>
@@ -454,9 +482,9 @@ export default async function PropertyDetailPage({
                     <div className="text-xs text-muted-foreground mb-1">
                       名簿種別
                     </div>
-                    <div className="font-medium">{property.leadType}</div>
+                    <div className="font-medium">{property.listType || "-"}</div>
                   </div>
-                  {property.memo && (
+                  {property.notes && (
                     <>
                       <Separator />
                       <div>
@@ -464,7 +492,7 @@ export default async function PropertyDetailPage({
                           備考
                         </div>
                         <div className="text-sm leading-relaxed">
-                          {property.memo}
+                          {property.notes}
                         </div>
                       </div>
                     </>
@@ -479,26 +507,29 @@ export default async function PropertyDetailPage({
   );
 }
 
-function ProgressItem({ label, item }: { label: string; item: CheckItem }) {
+function ProgressItem({
+  label,
+  checked,
+  date,
+}: {
+  label: string;
+  checked: boolean;
+  date: string | null;
+}) {
   return (
     <div className="flex items-start justify-between gap-4">
       <div className="flex items-center gap-2">
-        {item.checked ? (
+        {checked ? (
           <Check className="h-4 w-4 text-green-600 flex-shrink-0" />
         ) : (
           <X className="h-4 w-4 text-muted-foreground flex-shrink-0" />
         )}
-        <span
-          className={item.checked ? "text-foreground" : "text-muted-foreground"}
-        >
+        <span className={checked ? "text-foreground" : "text-muted-foreground"}>
           {label}
         </span>
       </div>
-      {item.checked && (item.date || item.user) && (
-        <div className="text-xs text-muted-foreground text-right">
-          {item.date && <div>{item.date}</div>}
-          {item.user && <div>{item.user}</div>}
-        </div>
+      {checked && date && (
+        <div className="text-xs text-muted-foreground text-right">{date}</div>
       )}
     </div>
   );
