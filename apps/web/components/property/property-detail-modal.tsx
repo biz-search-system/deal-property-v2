@@ -43,43 +43,12 @@ import {
   BANK_ACCOUNTS,
 } from "@/app/(main)/properties/data/property";
 import { SettlementDatePicker } from "./settlement-date-picker";
-
-interface Property {
-  id: number;
-  assignee: string[];
-  propertyName: string;
-  roomNumber: string;
-  ownerName: string;
-  leadType: string;
-  aAmount: number;
-  exitAmount: number;
-  commission: number;
-  profit: number;
-  bcDeposit: number;
-  contractType: string;
-  aContractDate: string;
-  bcContractDate: string;
-  settlementDate: string | null;
-  buyerCompany: string;
-  bCompany: string;
-  brokerCompany: string;
-  mortgageBank: string;
-  account: "レイジット" | "ライフ" | "エムズ" | "";
-  ownershipTransfer: boolean;
-  accountTransfer: boolean;
-  documentSent: boolean;
-  workplaceDM: boolean;
-  transactionLedger: boolean;
-  managementCancel: boolean;
-  memo: string;
-  businessStatus: string;
-  documentStatus: string;
-}
+import type { PropertyWithRelations } from "@/lib/types/property";
 
 interface PropertyDetailModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  property?: Property | null;
+  property?: PropertyWithRelations | null;
 }
 
 type DocumentStatus = "空欄" | "依頼" | "取得完了" | "書類なし";
@@ -95,22 +64,21 @@ export function PropertyDetailModal({
   onOpenChange,
   property,
 }: PropertyDetailModalProps) {
-  const [aAmount, setAAmount] = useState(property?.aAmount || 0);
-  const [exitAmount, setExitAmount] = useState(property?.exitAmount || 0);
+  // 担当者の初期値を設定（staffリレーションから取得）
+  const initialAssignees = property?.staff?.map(s => s.user?.name).filter((name): name is string => !!name) || [];
+
+  const [aAmount, setAAmount] = useState(property?.amountA || 0);
+  const [exitAmount, setExitAmount] = useState(property?.amountExit || 0);
   const [commission, setCommission] = useState(property?.commission || 0);
-  const [assignees, setAssignees] = useState<string[]>(
-    property?.assignee || []
-  );
-  const [settlementDate, setSettlementDate] = useState<string | null>(
-    property?.settlementDate || null
-  );
-  const [aContractDate, setAContractDate] = useState<string>(
-    property?.aContractDate || ""
-  );
+  const [assignees, setAssignees] = useState<string[]>(initialAssignees);
+  const [settlementDate, setSettlementDate] = useState<string | null>(null);
+  const [aContractDate, setAContractDate] = useState<string>("");
   const [selectedAccountCompany, setSelectedAccountCompany] = useState<string>(
-    property?.account || ""
+    property?.accountCompany || ""
   );
-  const [selectedBankAccount, setSelectedBankAccount] = useState<string>("");
+  const [selectedBankAccount, setSelectedBankAccount] = useState<string>(
+    property?.bankAccount || ""
+  );
 
   // 契約進捗のチェック状態
   const [contractChecks, setContractChecks] = useState({
@@ -146,14 +114,30 @@ export function PropertyDetailModal({
   // モーダルが開いたとき、またはpropertyが変わったときにデフォルト値を更新
   useEffect(() => {
     if (property && open) {
-      setAAmount(property.aAmount);
-      setExitAmount(property.exitAmount);
-      setCommission(property.commission);
-      setAssignees(property.assignee || []);
-      setSettlementDate(property.settlementDate || null);
-      setAContractDate(property.aContractDate || "");
-      setSelectedAccountCompany(property.account || "");
-      setSelectedBankAccount("");
+      setAAmount(property.amountA || 0);
+      setExitAmount(property.amountExit || 0);
+      setCommission(property.commission || 0);
+      const staffNames = property.staff?.map(s => s.user?.name).filter((name): name is string => !!name) || [];
+      setAssignees(staffNames);
+
+      if (property.settlementDate) {
+        const date = new Date(property.settlementDate);
+        const dateStr = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+        setSettlementDate(dateStr);
+      } else {
+        setSettlementDate(null);
+      }
+
+      if (property.contractDateA) {
+        const date = new Date(property.contractDateA);
+        const dateStr = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+        setAContractDate(dateStr);
+      } else {
+        setAContractDate("");
+      }
+
+      setSelectedAccountCompany(property.accountCompany || "");
+      setSelectedBankAccount(property.bankAccount || "");
       // デモ用にいくつかチェック済みにする
       setContractChecks({
         contractSaved: true,
@@ -181,7 +165,7 @@ export function PropertyDetailModal({
 
   if (!property) return null;
 
-  const profit = exitAmount - aAmount + commission;
+  const profit = (exitAmount || 0) - (aAmount || 0) + (commission || 0);
 
   const toggleAssignee = (value: string, checked: boolean) => {
     if (checked) {
@@ -191,8 +175,14 @@ export function PropertyDetailModal({
     }
   };
 
-  const formatCurrency = (value: number) => {
-    return `¥${(value / 10000).toLocaleString()}万`;
+  const formatCurrency = (value: number | null | undefined) => {
+    if (value === null || value === undefined) return "-";
+    // 1万円未満の場合は円単位で表示
+    if (value < 10000) {
+      return `${value.toLocaleString()}円`;
+    }
+    // 1万円以上の場合は万円単位で表示
+    return `${(value / 10000).toFixed(0)}万`;
   };
 
   const DocumentStatusBadge = ({ status }: { status: DocumentStatus }) => {
@@ -262,7 +252,7 @@ export function PropertyDetailModal({
             <span className="text-xl">
               {property.propertyName} {property.roomNumber}
             </span>
-            <Badge variant="secondary">{property.businessStatus}</Badge>
+            <Badge variant="secondary">{property.progressStatus}</Badge>
             <Badge variant="outline">{property.documentStatus}</Badge>
           </DialogTitle>
         </DialogHeader>
@@ -333,7 +323,7 @@ export function PropertyDetailModal({
 
               <div className="space-y-2">
                 <Label>号室</Label>
-                <Input defaultValue={property.roomNumber} />
+                <Input defaultValue={property.roomNumber || ""} />
               </div>
 
               <div className="space-y-2">
@@ -347,7 +337,7 @@ export function PropertyDetailModal({
                 <Label>A金額（万円）</Label>
                 <Input
                   type="number"
-                  defaultValue={property.aAmount / 10000}
+                  defaultValue={(property.amountA || 0) / 10000}
                   onChange={(e) => setAAmount(Number(e.target.value) * 10000)}
                 />
               </div>
@@ -356,7 +346,7 @@ export function PropertyDetailModal({
                 <Label>出口金額（万円）</Label>
                 <Input
                   type="number"
-                  defaultValue={property.exitAmount / 10000}
+                  defaultValue={(property.amountExit || 0) / 10000}
                   onChange={(e) =>
                     setExitAmount(Number(e.target.value) * 10000)
                   }
@@ -367,7 +357,7 @@ export function PropertyDetailModal({
                 <Label>仲手等（万円）</Label>
                 <Input
                   type="number"
-                  defaultValue={property.commission / 10000}
+                  defaultValue={(property.commission || 0) / 10000}
                   onChange={(e) =>
                     setCommission(Number(e.target.value) * 10000)
                   }
@@ -377,7 +367,7 @@ export function PropertyDetailModal({
               <div className="space-y-2">
                 <Label>利益（自動計算）</Label>
                 <Input
-                  value={formatCurrency(profit)}
+                  value={`¥${formatCurrency(profit)}`}
                   readOnly
                   className="bg-muted font-semibold text-green-600"
                 />
@@ -407,7 +397,7 @@ export function PropertyDetailModal({
               <div className="space-y-2">
                 <Label>買取業者</Label>
                 <Input
-                  defaultValue={property.buyerCompany}
+                  defaultValue={property.buyerCompany || ""}
                   placeholder="入力中に候補が表示されます"
                   list="buyer-companies"
                 />
@@ -423,7 +413,7 @@ export function PropertyDetailModal({
 
               <div className="space-y-2">
                 <Label>契約形態</Label>
-                <Select defaultValue={property.contractType}>
+                <Select defaultValue={property.contractType || ""}>
                   <SelectTrigger>
                     <SelectValue placeholder="契約形態を選択してください" />
                   </SelectTrigger>
@@ -442,7 +432,7 @@ export function PropertyDetailModal({
 
               <div className="space-y-2">
                 <Label>B会社</Label>
-                <Select defaultValue={property.bCompany}>
+                <Select defaultValue={property.companyB || ""}>
                   <SelectTrigger>
                     <SelectValue placeholder="B会社を選択してください" />
                   </SelectTrigger>
@@ -485,7 +475,7 @@ export function PropertyDetailModal({
               <div className="space-y-2">
                 <Label>抵当銀行</Label>
                 <Input
-                  defaultValue={property.mortgageBank}
+                  defaultValue={property.mortgageBank || ""}
                   placeholder="入力中に候補が表示されます"
                   list="mortgage-banks"
                 />
@@ -502,13 +492,13 @@ export function PropertyDetailModal({
 
               <div className="space-y-2">
                 <Label>名簿種別</Label>
-                <Input defaultValue={property.leadType} />
+                <Input defaultValue={property.listType || ""} />
               </div>
             </div>
 
             <div className="space-y-2">
               <Label>備考</Label>
-              <Textarea defaultValue={property.memo} rows={3} />
+              <Textarea defaultValue={property.notes || ""} rows={3} />
             </div>
           </TabsContent>
 

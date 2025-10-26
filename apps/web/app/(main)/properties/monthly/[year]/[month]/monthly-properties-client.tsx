@@ -35,17 +35,13 @@ import {
 } from "@workspace/ui/components/dropdown-menu";
 import { MoreVertical, Eye, Edit } from "lucide-react";
 import { PropertyDetailModal } from "@/components/property/property-detail-modal";
-import {
-  BUSINESS_STATUS,
-  DOCUMENT_STATUS,
-  Property,
-} from "../../../data/property";
 import { MonthPicker } from "@/components/property/month-picker";
+import type { PropertyWithRelations } from "@/lib/types/property";
 
 interface MonthlyPropertiesClientProps {
   year: string;
   month: string;
-  properties: Property[];
+  properties: PropertyWithRelations[];
 }
 
 export function MonthlyPropertiesClient({
@@ -57,18 +53,18 @@ export function MonthlyPropertiesClient({
   const [selectedAccount, setSelectedAccount] =
     useState<string>("サンプル企業C");
   const [editingMemo, setEditingMemo] = useState<{
-    id: number;
+    id: string;
     value: string;
   } | null>(null);
   const [editingBusinessStatus, setEditingBusinessStatus] = useState<{
-    id: number;
+    id: string;
     value: string;
   } | null>(null);
   const [editingDocumentStatus, setEditingDocumentStatus] = useState<{
-    id: number;
+    id: string;
     value: string;
   } | null>(null);
-  const [selectedProperty, setSelectedProperty] = useState<Property | null>(
+  const [selectedProperty, setSelectedProperty] = useState<PropertyWithRelations | null>(
     null
   );
   const [modalOpen, setModalOpen] = useState(false);
@@ -82,19 +78,19 @@ export function MonthlyPropertiesClient({
   const categorizedProperties = useMemo(() => {
     return {
       confirmed: properties.filter(
-        (p) => p.businessStatus !== BUSINESS_STATUS.SETTLEMENT_COMPLETED
+        (p) => p.progressStatus !== "settlement_completed"
       ),
       completed: properties.filter(
-        (p) => p.businessStatus === BUSINESS_STATUS.SETTLEMENT_COMPLETED
+        (p) => p.progressStatus === "settlement_completed"
       ),
     };
   }, [properties]);
 
   // 集計計算
-  const calculateTotals = (properties: Property[]) => {
+  const calculateTotals = (properties: PropertyWithRelations[]) => {
     return {
-      profit: properties.reduce((sum, p) => sum + p.profit, 0),
-      bcDeposit: properties.reduce((sum, p) => sum + p.bcDeposit, 0),
+      profit: properties.reduce((sum, p) => sum + (p.profit || 0), 0),
+      bcDeposit: properties.reduce((sum, p) => sum + (p.bcDeposit || 0), 0),
       count: properties.length,
     };
   };
@@ -102,23 +98,30 @@ export function MonthlyPropertiesClient({
   // 口座別決済日集計
   const accountSettlementSummary = useMemo(() => {
     const filteredProperties = categorizedProperties.confirmed.filter(
-      (p) => p.account === selectedAccount
+      (p) => p.accountCompany === selectedAccount
     );
 
     // 決済日ごとにグループ化
     const grouped: { [key: string]: { total: number; count: number } } = {};
 
     filteredProperties.forEach((p) => {
-      const date = p.settlementDate || "";
-      if (!grouped[date]) {
-        grouped[date] = { total: 0, count: 0 };
+      // DateをISO文字列に変換、nullの場合は空文字列
+      const dateKey = p.settlementDate
+        ? (p.settlementDate instanceof Date
+          ? p.settlementDate.toISOString()
+          : new Date(p.settlementDate).toISOString())
+        : "";
+
+      if (!grouped[dateKey]) {
+        grouped[dateKey] = { total: 0, count: 0 };
       }
-      grouped[date].total += p.exitAmount;
-      grouped[date].count += 1;
+      grouped[dateKey].total += p.amountExit || 0;
+      grouped[dateKey].count += 1;
     });
 
     // ソートして配列に変換
     return Object.entries(grouped)
+      .filter(([date]) => date !== "") // 空の日付を除外
       .map(([date, data]) => ({
         date,
         total: data.total,
@@ -128,42 +131,112 @@ export function MonthlyPropertiesClient({
       .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
   }, [categorizedProperties.confirmed, selectedAccount]);
 
-  const formatCurrency = (value: number) => {
-    return value ? `${(value / 10000).toFixed(0)}万` : "-";
+  const formatCurrency = (value: number | null | undefined) => {
+    if (value === null || value === undefined) return "-";
+    // 1万円未満の場合は円単位で表示
+    if (value < 10000) {
+      return `${value.toLocaleString()}円`;
+    }
+    // 1万円以上の場合は万円単位で表示
+    return `${(value / 10000).toFixed(0)}万`;
   };
 
-  const formatDate = (dateString: string) => {
+  const formatDate = (dateString: string | Date | null): string => {
     if (!dateString) return "-";
-    const date = new Date(dateString);
+    const date: Date = typeof dateString === "string" ? new Date(dateString) : dateString;
     return `${date.getMonth() + 1}/${date.getDate()}`;
   };
 
-  const formatDateWithDay = (dateString: string) => {
+  const formatDateWithDay = (dateString: string | Date | null): string => {
     if (!dateString) return "-";
-    const date = new Date(dateString);
+    const date: Date = typeof dateString === "string" ? new Date(dateString) : dateString;
     const days = ["日", "月", "火", "水", "木", "金", "土"];
     return `${date.getMonth() + 1}/${date.getDate()}(${days[date.getDay()]})`;
   };
 
-  const truncateText = (text: string, maxLength: number = 5) => {
+  const truncateText = (text: string | null | undefined, maxLength: number = 5) => {
     if (!text) return "-";
     return text.length > maxLength ? text.substring(0, maxLength) : text;
   };
 
-  const getBusinessStatusColor = (status: string) => {
-    if (status === BUSINESS_STATUS.SETTLEMENT_COMPLETED) return "default";
-    if (
-      status === BUSINESS_STATUS.STATEMENT_COMPLETED_SETTLEMENT_WAITING ||
-      status === BUSINESS_STATUS.SETTLEMENT_CONFIRMED_STATEMENT_WAITING
-    )
+  const getProgressStatusLabel = (status: string) => {
+    const labels: Record<string, string> = {
+      bc_before_confirmed: "BC確定前",
+      contract_cb_waiting: "契約CB待ち",
+      bc_contract_waiting: "BC契約待ち",
+      settlement_date_waiting: "決済日待ち",
+      settlement_cb_waiting: "精算CB待ち",
+      settlement_waiting: "決済待ち",
+      settlement_completed: "決済完了",
+    };
+    return labels[status] || status;
+  };
+
+  const getDocumentStatusLabel = (status: string) => {
+    const labels: Record<string, string> = {
+      waiting_request: "営業依頼待ち",
+      in_progress: "書類取得中",
+      all_completed: "全書類取得完了",
+      completed: "取得完了",
+    };
+    return labels[status] || status;
+  };
+
+  const getProgressStatusColor = (status: string) => {
+    if (status === "settlement_completed") return "default";
+    if (status === "settlement_waiting" || status === "settlement_cb_waiting")
       return "secondary";
     return "outline";
   };
 
   const getDocumentStatusColor = (status: string) => {
-    if (status === DOCUMENT_STATUS.ALL_ACQUIRED) return "default";
-    if (status === DOCUMENT_STATUS.ACQUIRING) return "secondary";
+    if (status === "all_completed" || status === "completed") return "default";
+    if (status === "in_progress") return "secondary";
     return "outline";
+  };
+
+  const getContractTypeLabel = (type: string | null) => {
+    if (!type) return "-";
+    const labels: Record<string, string> = {
+      ab_bc: "AB・BC",
+      ac: "AC",
+      iyaku: "違約",
+      shirahaku: "白紙",
+      mitei: "未定",
+      jisha: "自社仕入れ",
+      bengoshi: "弁護士",
+      kaichu: "買仲",
+      iyaku_yotei: "違約予定",
+    };
+    return labels[type] || type;
+  };
+
+  const getCompanyBLabel = (company: string | null) => {
+    if (!company) return "-";
+    const labels: Record<string, string> = {
+      ms: "エムズ",
+      life: "ライフ",
+      legit: "レイジット",
+      esc: "エスク",
+      trader: "取引業者",
+      shine: "シャイン",
+      second: "セカンド",
+    };
+    return labels[company] || company;
+  };
+
+  const getBrokerCompanyLabel = (company: string | null) => {
+    if (!company) return "-";
+    const labels: Record<string, string> = {
+      legit: "レイジット",
+      tousei: "TOUSEI",
+      esc: "エスク",
+      shine: "シャイン",
+      nbf: "NBF",
+      rd: "RD",
+      ms: "エムズ",
+    };
+    return labels[company] || company;
   };
 
   const handleMonthChange = (date: Date) => {
@@ -172,17 +245,17 @@ export function MonthlyPropertiesClient({
     router.push(`/properties/monthly/${newYear}/${newMonth}`);
   };
 
-  const handlePropertyClick = (property: Property) => {
+  const handlePropertyClick = (property: PropertyWithRelations) => {
     setSelectedProperty(property);
     setModalOpen(true);
   };
 
-  const handleMemoSave = (propertyId: number) => {
+  const handleMemoSave = (propertyId: string) => {
     console.log("Saving memo for property", propertyId, editingMemo?.value);
     setEditingMemo(null);
   };
 
-  const handleBusinessStatusSave = (propertyId: number) => {
+  const handleBusinessStatusSave = (propertyId: string) => {
     console.log(
       "Saving business status",
       propertyId,
@@ -191,7 +264,7 @@ export function MonthlyPropertiesClient({
     setEditingBusinessStatus(null);
   };
 
-  const handleDocumentStatusSave = (propertyId: number) => {
+  const handleDocumentStatusSave = (propertyId: string) => {
     console.log(
       "Saving document status",
       propertyId,
@@ -201,18 +274,23 @@ export function MonthlyPropertiesClient({
   };
 
   // テーブルコンポーネント
-  const PropertiesTable = ({ properties }: { properties: Property[] }) => (
+  const PropertiesTable = ({ properties }: { properties: PropertyWithRelations[] }) => (
     <div className="overflow-auto max-h-[calc(100vh-500px)]">
       <Table className="text-[10px]">
         <TableHeader className="sticky top-0 bg-background z-10">
           <TableRow>
-            <TableHead className="text-[10px] p-1 sticky left-0 bg-background z-20 min-w-[45px]">
+            <TableHead className="text-[10px] p-1 sticky left-0 bg-background z-20 min-w-[50px]">
+              管理組織
+            </TableHead>
+            <TableHead className="text-[10px] p-1 sticky left-[50px] bg-background z-20 min-w-[45px]">
               担当
             </TableHead>
-            <TableHead className="text-[10px] p-1 min-w-[65px]">
+            <TableHead className="text-[10px] p-1 sticky left-[95px] bg-background z-20 min-w-[65px]">
               物件名
             </TableHead>
-            <TableHead className="text-[10px] p-1 w-[40px]">号室</TableHead>
+            <TableHead className="text-[10px] p-1 sticky left-[160px] bg-background z-20 w-[40px]">
+              号室
+            </TableHead>
             <TableHead className="text-[10px] p-1 min-w-[55px]">
               オーナー
             </TableHead>
@@ -244,32 +322,37 @@ export function MonthlyPropertiesClient({
           {properties.map((property) => (
             <TableRow key={property.id} className="hover:bg-muted/50">
               <TableCell className="text-[10px] p-1 sticky left-0 bg-background">
+                <Badge variant="outline" className="text-[9px] px-1 py-0">
+                  {property.organization?.name || property.organizationId?.slice(0, 3) || "レイジット"}
+                </Badge>
+              </TableCell>
+              <TableCell className="text-[10px] p-1 sticky left-[50px] bg-background">
                 <div className="flex gap-1 flex-wrap">
-                  {property.assignee.map((person, index) => (
+                  {property.staff?.map((staffMember: any, index: number) => (
                     <Badge
                       key={index}
-                      variant="outline"
+                      variant="secondary"
                       className="text-[9px] px-1 py-0"
                     >
-                      {person}
+                      {staffMember.user?.name || "担当者"}
                     </Badge>
                   ))}
                 </div>
               </TableCell>
-              <TableCell className="text-[10px] p-1">
+              <TableCell className="text-[10px] p-1 sticky left-[95px] bg-background">
                 {property.propertyName}
               </TableCell>
-              <TableCell className="text-[10px] p-1">
+              <TableCell className="text-[10px] p-1 sticky left-[160px] bg-background">
                 {property.roomNumber}
               </TableCell>
               <TableCell className="text-[10px] p-1">
                 {property.ownerName}
               </TableCell>
               <TableCell className="text-[10px] p-1 text-right">
-                {formatCurrency(property.aAmount)}
+                {formatCurrency(property.amountA)}
               </TableCell>
               <TableCell className="text-[10px] p-1 text-right">
-                {formatCurrency(property.exitAmount)}
+                {formatCurrency(property.amountExit)}
               </TableCell>
               <TableCell className="text-[10px] p-1 text-right">
                 {formatCurrency(property.commission)}
@@ -281,7 +364,7 @@ export function MonthlyPropertiesClient({
                 {formatCurrency(property.bcDeposit)}
               </TableCell>
               <TableCell className="text-[10px] p-1">
-                {formatDate(property.settlementDate || "")}
+                {formatDateWithDay(property.settlementDate || "")}
               </TableCell>
               <TableCell className="text-[10px] p-1">
                 <Badge variant="outline" className="text-[9px] px-1 py-0">
@@ -290,17 +373,17 @@ export function MonthlyPropertiesClient({
               </TableCell>
               <TableCell className="text-[10px] p-1">
                 <Badge variant="outline" className="text-[9px] px-1 py-0">
-                  {truncateText(property.contractType)}
+                  {truncateText(getContractTypeLabel(property.contractType))}
                 </Badge>
               </TableCell>
               <TableCell className="text-[10px] p-1">
                 <Badge variant="outline" className="text-[9px] px-1 py-0">
-                  {truncateText(property.bCompany)}
+                  {truncateText(getCompanyBLabel(property.companyB))}
                 </Badge>
               </TableCell>
               <TableCell className="text-[10px] p-1">
                 <Badge variant="outline" className="text-[9px] px-1 py-0">
-                  {truncateText(property.brokerCompany)}
+                  {truncateText(getBrokerCompanyLabel(property.brokerCompany))}
                 </Badge>
               </TableCell>
               <TableCell className="text-[10px] p-1">
@@ -319,31 +402,31 @@ export function MonthlyPropertiesClient({
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      {Object.values(BUSINESS_STATUS)
-                        .filter((s) => s !== BUSINESS_STATUS.BC_UNCONFIRMED)
+                      {["contract_cb_waiting", "bc_contract_waiting", "settlement_date_waiting",
+                        "settlement_cb_waiting", "settlement_waiting", "settlement_completed"]
                         .map((status) => (
                           <SelectItem
                             key={status}
                             value={status}
                             className="text-[10px]"
                           >
-                            {status}
+                            {getProgressStatusLabel(status)}
                           </SelectItem>
                         ))}
                     </SelectContent>
                   </Select>
                 ) : (
                   <Badge
-                    variant={getBusinessStatusColor(property.businessStatus)}
+                    variant={getProgressStatusColor(property.progressStatus)}
                     className="text-[9px] cursor-pointer px-1 py-0"
                     onClick={() =>
                       setEditingBusinessStatus({
                         id: property.id,
-                        value: property.businessStatus,
+                        value: property.progressStatus,
                       })
                     }
                   >
-                    {truncateText(property.businessStatus, 6)}
+                    {truncateText(getProgressStatusLabel(property.progressStatus), 6)}
                   </Badge>
                 )}
               </TableCell>
@@ -363,13 +446,13 @@ export function MonthlyPropertiesClient({
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      {Object.values(DOCUMENT_STATUS).map((status) => (
+                      {["waiting_request", "in_progress", "all_completed"].map((status) => (
                         <SelectItem
                           key={status}
                           value={status}
                           className="text-[10px]"
                         >
-                          {status}
+                          {getDocumentStatusLabel(status)}
                         </SelectItem>
                       ))}
                     </SelectContent>
@@ -385,7 +468,7 @@ export function MonthlyPropertiesClient({
                       })
                     }
                   >
-                    {truncateText(property.documentStatus, 6)}
+                    {truncateText(getDocumentStatusLabel(property.documentStatus), 6)}
                   </Badge>
                 )}
               </TableCell>
@@ -409,11 +492,11 @@ export function MonthlyPropertiesClient({
                   <div
                     className="cursor-pointer hover:bg-muted px-1 rounded text-[10px] truncate break-all max-w-[120px]"
                     onClick={() =>
-                      setEditingMemo({ id: property.id, value: property.memo })
+                      setEditingMemo({ id: property.id, value: property.notes || "" })
                     }
-                    title={property.memo}
+                    title={property.notes || ""}
                   >
-                    {property.memo || (
+                    {property.notes || (
                       <span className="text-muted-foreground">入力</span>
                     )}
                   </div>
