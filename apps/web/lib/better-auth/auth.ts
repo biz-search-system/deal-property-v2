@@ -30,6 +30,10 @@ export const auth = betterAuth({
       // チーム機能を有効化
       teams: {
         enabled: true,
+        // デフォルトチームの自動作成を無効化（必要に応じて有効化）
+        defaultTeam: {
+          enabled: false, // true にすると組織作成時に同名のチームが自動作成される
+        },
       },
       async sendInvitationEmail(data) {
         const invitationId = data.id;

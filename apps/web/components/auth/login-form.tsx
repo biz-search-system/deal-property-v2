@@ -9,10 +9,11 @@ import { cn } from "@workspace/utils";
 import HeroImage from "@/components/hero-image";
 import GestLoginButton from "./gest-login-button";
 import { useSearchParams, useRouter } from "next/navigation";
-import { useState } from "react";
+import { useState, useTransition } from "react";
 import { authClient } from "@/lib/better-auth/auth-client";
 import { Loader2, AlertCircle, Info } from "lucide-react";
 import Link from "next/link";
+import { toast } from "sonner";
 
 export function LoginForm({
   className,
@@ -22,18 +23,16 @@ export function LoginForm({
   const searchParams = useSearchParams();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [isPending, startTransition] = useTransition();
 
-  const invitationId = searchParams.get("invitation");
-  const isInvitation = !!invitationId;
+  const invitationId = searchParams.get("invitationId");
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
-    setLoading(true);
 
-    try {
+    startTransition(async () => {
       // ログイン
       const result = await authClient.signIn.email({
         email,
@@ -42,63 +41,38 @@ export function LoginForm({
 
       if (result.error) {
         setError(result.error.message || "ログインに失敗しました");
-        setLoading(false);
         return;
       }
 
       // 招待がある場合は受け入れる
       if (invitationId) {
-        try {
-          const acceptResponse = await fetch("/api/auth/accept-invitation", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ invitationId }),
+        const { data: acceptResult, error: acceptError } =
+          await authClient.organization.acceptInvitation({
+            invitationId,
           });
 
-          const acceptResult = await acceptResponse.json();
-
-          if (acceptResult.success) {
-            router.push(`/organization/${acceptResult.organizationId}`);
-          } else {
-            router.push("/properties/unconfirmed");
-          }
-        } catch (error) {
-          console.error("Failed to accept invitation:", error);
-          router.push("/properties/unconfirmed");
+        if (acceptError) {
+          console.error(acceptError);
+          toast.error(acceptError.message || "招待の受け入れに失敗しました");
+          return;
         }
-      } else {
-        router.push("/dashboard");
+
+        if (acceptResult) {
+          toast.success("組織への参加が完了しました！");
+          const redirectPath = `/properties/unconfirmed`;
+          router.push(redirectPath);
+          return;
+        }
       }
-    } catch (error) {
-      setError(
-        error instanceof Error
-          ? error.message
-          : "ログイン中にエラーが発生しました"
-      );
-      setLoading(false);
-    }
+
+      // 通常のログイン成功時
+      toast.success("ログインしました");
+      router.push("/properties/unconfirmed");
+    });
   };
 
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
-      {isInvitation && (
-        <Alert>
-          <Info className="h-4 w-4" />
-          <AlertDescription>
-            組織への招待を受けています。ログインして参加するか、
-            <Link
-              href={`/signup?invitation=${invitationId}`}
-              className="underline underline-offset-2 ml-1"
-            >
-              新規アカウントを作成
-            </Link>
-            してください。
-          </AlertDescription>
-        </Alert>
-      )}
-
       <Card className="overflow-hidden p-0">
         <CardContent className="grid p-0 md:grid-cols-2">
           <form onSubmit={handleSubmit} className="p-6 md:p-8">
@@ -126,7 +100,7 @@ export function LoginForm({
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
-                  disabled={loading}
+                  disabled={isPending}
                 />
               </div>
               <div className="grid gap-3">
@@ -145,14 +119,14 @@ export function LoginForm({
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
-                  disabled={loading}
+                  disabled={isPending}
                 />
               </div>
 
-              <Button type="submit" className="w-full" disabled={loading}>
-                {loading ? (
+              <Button type="submit" className="w-full" disabled={isPending}>
+                {isPending ? (
                   <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    <Loader2 className="animate-spin h-4 w-4" />
                     ログイン中...
                   </>
                 ) : (
@@ -160,7 +134,7 @@ export function LoginForm({
                 )}
               </Button>
 
-              <div className="relative">
+              {/* <div className="relative">
                 <div className="absolute inset-0 flex items-center">
                   <span className="w-full border-t" />
                 </div>
@@ -171,8 +145,8 @@ export function LoginForm({
                 </div>
               </div>
 
-              <GestLoginButton />
-              <div className="after:border-border relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t">
+              <GestLoginButton /> */}
+              {/* <div className="after:border-border relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t">
                 <span className="bg-card text-muted-foreground relative z-10 px-2">
                   または以下でログイン
                 </span>
@@ -218,7 +192,7 @@ export function LoginForm({
                 >
                   新規登録
                 </Link>
-              </div>
+              </div> */}
             </div>
           </form>
           <div className="bg-muted relative hidden md:flex items-center justify-center">

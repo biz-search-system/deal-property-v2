@@ -22,22 +22,17 @@ export default async function SignupPage({ searchParams }: SignupPageProps) {
   const session = await auth.api.getSession({
     headers: await headers(),
   });
-  if (session) {
-    await auth.api
-      .acceptInvitation({
-        body: {
-          invitationId: params.id,
-        },
-      })
-      .then((data) => {
-        if (data) {
-          redirect(`/properties/unconfirmed`);
-        }
-      })
-      .catch((error) => {
-        console.error(error);
-        redirect(`/not-found`);
-      });
+  if (session && params.id) {
+    const result = await auth.api.acceptInvitation({
+      body: {
+        invitationId: params.id,
+      },
+      headers: await headers(),
+    });
+
+    if (result) {
+      redirect(`/properties/unconfirmed`);
+    }
   }
 
   return (

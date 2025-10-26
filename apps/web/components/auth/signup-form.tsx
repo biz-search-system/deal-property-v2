@@ -74,6 +74,15 @@ export function SignupForm({
         });
 
       if (signupError) {
+        if (
+          signupError.code === "USERNAME_IS_ALREADY_TAKEN_PLEASE_TRY_ANOTHER"
+        ) {
+          toast.error(
+            "このメールアドレスはすでに使用されています.ログインして招待を受け入れてください."
+          );
+          router.push(`/login?invitationId=${invitationId}`);
+          return;
+        }
         toast.error(signupError.message || "登録に失敗しました");
         return;
       }
@@ -86,6 +95,7 @@ export function SignupForm({
           });
 
         if (acceptError) {
+          console.error(acceptError);
           toast.error(acceptError.message || "招待の受け入れに失敗しました");
           return;
         }
