@@ -5,21 +5,27 @@ import { UnconfirmedPropertiesTable } from "@/components/property/unconfirmed-pr
 export default async function UnconfirmedPropertiesPage() {
   // BC確定前の案件のみフィルター
   const allProperties = await getProperties();
+  // console.log(allProperties);
   const unconfirmedProperties = allProperties.filter(
     (p) => p.progressStatus === "bc_before_confirmed"
   );
 
-  // 集計計算
+  // 集計計算（利益はprofitフィールドから直接取得）
   const totals = {
-    profitEstimate: unconfirmedProperties.reduce(
-      (sum, p) => sum + (p.profit || 0),
-      0
-    ),
+    profitEstimate: unconfirmedProperties.reduce((sum, p) => {
+      return sum + (p.profit || 0);
+    }, 0),
     count: unconfirmedProperties.length,
   };
 
   const formatCurrency = (value: number) => {
-    return value ? `${(value / 10000).toFixed(0)}万` : "-";
+    if (!value) return "0円";
+    // 1万円未満の場合は円単位で表示
+    if (value < 10000) {
+      return `${value.toLocaleString()}円`;
+    }
+    // 1万円以上の場合は万円単位で表示
+    return `${(value / 10000).toFixed(0)}万`;
   };
 
   return (

@@ -45,11 +45,11 @@ export const properties = sqliteTable(
     propertyName: text("property_name").notNull(),
     roomNumber: text("room_number"),
     ownerName: text("owner_name").notNull(),
-    amountA: real("amount_a"),
-    amountExit: real("amount_exit"),
-    commission: real("commission"),
-    profit: real("profit"),
-    bcDeposit: real("bc_deposit"),
+    amountA: real("amount_a"), // A金額（入口金額）
+    amountExit: real("amount_exit"), // 出口金額
+    commission: real("commission"), // 仲介手数料等
+    profit: real("profit"), // 利益（出口金額 - A金額 + 仲手等）※アプリケーション側で自動計算
+    bcDeposit: real("bc_deposit"), // BC手付金額
     contractDateA: integer("contract_date_a", { mode: "timestamp_ms" }),
     contractDateBc: integer("contract_date_bc", { mode: "timestamp_ms" }),
     settlementDate: integer("settlement_date", { mode: "timestamp_ms" }),

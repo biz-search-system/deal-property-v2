@@ -28,6 +28,7 @@ export default function PropertyFormProvider({
   const form = useForm<PropertyCreate>({
     resolver: zodResolver(propertyCreateSchema),
     defaultValues: {
+      organizationId: defaultValues?.organizationId || "",
       propertyName: defaultValues?.propertyName || "",
       roomNumber: defaultValues?.roomNumber || "",
       ownerName: defaultValues?.ownerName || "",

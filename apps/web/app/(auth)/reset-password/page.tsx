@@ -1,7 +1,7 @@
 import { Metadata } from "next";
 import { AppConfig } from "@/app.config";
-import { verifySession } from "@/lib/data/sesstion";
 import ResetPasswordForm from "@/components/auth/reset-password-form";
+import { Suspense } from "react";
 
 export const metadata: Metadata = {
   title: "パスワード更新",
@@ -12,7 +12,9 @@ export default async function ResetPasswordPage() {
   return (
     <div className="bg-muted flex min-h-svh flex-col items-center justify-center p-6 md:p-10">
       <div className="w-full max-w-sm md:max-w-3xl">
-        <ResetPasswordForm />
+        <Suspense fallback={<div>Loading...</div>}>
+          <ResetPasswordForm />
+        </Suspense>
       </div>
     </div>
   );

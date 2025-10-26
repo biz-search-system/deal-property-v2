@@ -180,6 +180,9 @@ export const propertyCreateSchema = z.object({
   accountCompany: z.string().optional(),
   bankAccount: z.string().optional(),
 
+  // 組織ID（必須）
+  organizationId: z.string().min(1, "組織は必須です"),
+
   // 担当者（必須、最低1名）
   staffIds: z.array(z.string()).min(1, "担当者は最低1名選択してください"),
 });

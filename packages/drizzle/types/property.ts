@@ -1,5 +1,9 @@
 // ==================== Enum定義 ====================
 
+/** 管理組織タイプ */
+export const managementOrgType = ["management", "sales", "office"] as const;
+export type ManagementOrgType = (typeof managementOrgType)[number];
+
 /** 契約形態 */
 export const contractType = [
   "ab_bc",

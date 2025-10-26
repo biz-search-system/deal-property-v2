@@ -1,19 +1,49 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@workspace/ui/components/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@workspace/ui/components/tabs";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "@workspace/ui/components/card";
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "@workspace/ui/components/tabs";
 import PropertyFormProvider from "@/components/property/property-form-provider";
 import PropertyFormActions from "@/components/property/property-form-actions";
 import BasicInfoTab from "@/components/property/tabs/basic-info-tab";
 import ContractProgressTab from "@/components/property/tabs/contract-progress-tab";
 import DocumentProgressTab from "@/components/property/tabs/document-progress-tab";
 import SettlementProgressTab from "@/components/property/tabs/settlement-progress-tab";
-import { getOrganizationUsers } from "@/lib/data/property";
+import { getOrganizations, getSalesTeamMembers } from "@/lib/data/organization";
+import { auth } from "@/lib/better-auth/auth";
+import { headers } from "next/headers";
 
 export const metadata = {
   title: "案件登録",
 };
 
 export default async function PropertyNewPage() {
-  const availableStaff = await getOrganizationUsers();
+  // セッション取得
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  });
+
+  if (!session) {
+    throw new Error("Unauthorized");
+  }
+
+  // ユーザーが所属している組織一覧を取得
+  const organizations = await getOrganizations();
+
+  // デフォルトの組織（最初の組織）を選択
+  const defaultOrganization = organizations[0];
+
+  // デフォルト組織の営業チームメンバーを取得
+  const availableStaff = defaultOrganization
+    ? await getSalesTeamMembers(defaultOrganization.id)
+    : [];
 
   return (
     <div className="container mx-auto py-6 space-y-6">
@@ -36,7 +66,11 @@ export default async function PropertyNewPage() {
               </TabsList>
 
               <TabsContent value="basic" className="mt-6">
-                <BasicInfoTab availableStaff={availableStaff} />
+                <BasicInfoTab
+                  availableStaff={availableStaff}
+                  organizations={organizations}
+                  defaultOrganizationId={defaultOrganization?.id}
+                />
               </TabsContent>
 
               <TabsContent value="contract" className="mt-6">
