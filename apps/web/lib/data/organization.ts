@@ -94,3 +94,85 @@ export async function getOrganizationInvitations(organizationId: string) {
   });
   return result;
 }
+
+/**
+ * 現在のユーザーの組織における情報を取得（役割とチーム情報含む）
+ */
+export async function getCurrentUserOrganizationInfo(organizationId: string) {
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  });
+
+  if (!session) {
+    throw new Error("Unauthorized");
+  }
+
+  // 組織の詳細情報を取得
+  const fullOrg = await auth.api.getFullOrganization({
+    query: { organizationId },
+    headers: await headers(),
+  });
+
+  if (!fullOrg) {
+    throw new Error("Organization not found");
+  }
+
+  // 現在のユーザーのメンバー情報を探す
+  const currentUserMember = fullOrg.members.find(
+    (m) => m.userId === session.user.id
+  );
+
+  if (!currentUserMember) {
+    throw new Error("Not a member of this organization");
+  }
+
+  // 組織のチーム一覧を取得
+  const teamsResult = await auth.api.listOrganizationTeams({
+    query: { organizationId },
+    headers: await headers(),
+  });
+
+  const teams = teamsResult || [];
+
+  // 各チームに対してユーザーが所属しているか確認
+  const teamsWithMembership = await Promise.all(
+    teams.map(async (team) => {
+      let isMember = false;
+
+      // オーナーは全てのチームにアクセス可能とみなす
+      if (currentUserMember.role === "owner") {
+        isMember = true;
+      } else {
+        // チームメンバー一覧を取得してユーザーが含まれているか確認
+        try {
+          const teamMembers = await auth.api.listTeamMembers({
+            query: { teamId: team.id },
+            headers: await headers(),
+          });
+
+          isMember = teamMembers?.some(
+            (member: any) => member.userId === session.user.id
+          ) || false;
+        } catch (error) {
+          console.error(`Failed to get members for team ${team.id}:`, error);
+        }
+      }
+
+      return {
+        id: team.id,
+        name: team.name,
+        isMember,
+      };
+    })
+  );
+
+  return {
+    user: {
+      id: session.user.id,
+      name: session.user.name || null,
+      email: session.user.email,
+    },
+    role: currentUserMember.role,
+    teams: teamsWithMembership,
+  };
+}

@@ -19,11 +19,13 @@ import {
   SelectValue,
 } from "@workspace/ui/components/select";
 import { Alert, AlertDescription } from "@workspace/ui/components/alert";
-import { Mail, Loader2, AlertCircle, CheckCircle } from "lucide-react";
+import { Mail, Loader2, AlertCircle, Users } from "lucide-react";
 import { inviteMemberAction } from "@/lib/actions/organization";
+import { toast } from "sonner";
 import {
   useOrganizationMembers,
   useOrganizationInvitations,
+  useCurrentUserOrganizationInfo,
 } from "@/lib/swr/organization";
 
 interface InviteTabProps {
@@ -35,39 +37,47 @@ export function InviteTab({ organizationId }: InviteTabProps) {
   const [inviteRole, setInviteRole] = useState<"member" | "owner" | "admin">(
     "member"
   );
+  const [selectedTeamId, setSelectedTeamId] = useState<string>("");
   const [sendingInvite, setSendingInvite] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState<string | null>(null);
 
   const { mutate: mutatemembers } = useOrganizationMembers(organizationId);
   const { mutate: mutateInvitations } =
     useOrganizationInvitations(organizationId);
+  const { data: currentUserInfo, isLoading: loadingUserInfo } =
+    useCurrentUserOrganizationInfo(organizationId);
+
+  // 選択可能なチーム一覧を取得
+  const availableTeams = currentUserInfo?.teams?.filter(team =>
+    currentUserInfo.role === "owner" || team.isMember
+  ) || [];
 
   const handleInvite = async () => {
     if (!inviteEmail) return;
 
     setSendingInvite(true);
-    setError(null);
-    setSuccess(null);
 
     try {
-      const result = await inviteMemberAction({
+      const inviteData = {
         email: inviteEmail,
         role: inviteRole,
         organizationId,
-      });
+        ...(selectedTeamId ? { teamId: selectedTeamId } : {})
+      };
+
+      const result = await inviteMemberAction(inviteData);
 
       if (result.success) {
-        setSuccess("招待を送信しました");
+        toast.success("チームへの招待を送信しました");
         setInviteEmail("");
         setInviteRole("member");
+        setSelectedTeamId("");
         await Promise.all([mutatemembers(), mutateInvitations()]);
       } else {
-        setError(result.error || "招待の送信に失敗しました");
+        toast.error(result.error || "招待の送信に失敗しました");
       }
     } catch (err) {
       console.error("Failed to invite member:", err);
-      setError("招待の送信中にエラーが発生しました");
+      toast.error("招待の送信中にエラーが発生しました");
     } finally {
       setSendingInvite(false);
     }
@@ -75,20 +85,6 @@ export function InviteTab({ organizationId }: InviteTabProps) {
 
   return (
     <>
-      {error && (
-        <Alert variant="destructive" className="mb-4">
-          <AlertCircle className="h-4 w-4" />
-          <AlertDescription>{error}</AlertDescription>
-        </Alert>
-      )}
-
-      {success && (
-        <Alert className="mb-4">
-          <CheckCircle className="h-4 w-4" />
-          <AlertDescription>{success}</AlertDescription>
-        </Alert>
-      )}
-
       <Card>
         <CardHeader>
           <CardTitle>メンバーを招待</CardTitle>
@@ -103,33 +99,86 @@ export function InviteTab({ organizationId }: InviteTabProps) {
               placeholder="user@example.com"
               value={inviteEmail}
               onChange={(e) => setInviteEmail(e.target.value)}
-              disabled={sendingInvite}
+              disabled={sendingInvite || loadingUserInfo}
               autoComplete="off"
             />
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="role">役割</Label>
-            <Select
-              value={inviteRole}
-              onValueChange={(value) =>
-                setInviteRole(value as "member" | "owner" | "admin")
-              }
-              disabled={sendingInvite}
-            >
-              <SelectTrigger id="role">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="member">メンバー</SelectItem>
-                <SelectItem value="admin">管理者</SelectItem>
-              </SelectContent>
-            </Select>
+          <div className={availableTeams.length > 0 ? "grid grid-cols-2 gap-4" : "space-y-2"}>
+            <div className="space-y-2">
+              <Label htmlFor="role">役割</Label>
+              <Select
+                value={inviteRole}
+                onValueChange={(value) =>
+                  setInviteRole(value as "member" | "owner" | "admin")
+                }
+                disabled={sendingInvite || loadingUserInfo}
+              >
+                <SelectTrigger id="role">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="member">メンバー</SelectItem>
+                  <SelectItem value="admin">管理者</SelectItem>
+                  {currentUserInfo?.role === "owner" && (
+                    <SelectItem value="owner">オーナー</SelectItem>
+                  )}
+                </SelectContent>
+              </Select>
+            </div>
+
+            {/* チーム選択セクション */}
+            {availableTeams.length > 0 && (
+              <div className="space-y-2">
+                <Label htmlFor="team">チーム</Label>
+                <Select
+                  value={selectedTeamId}
+                  onValueChange={setSelectedTeamId}
+                  disabled={sendingInvite || loadingUserInfo}
+                >
+                  <SelectTrigger id="team">
+                    <SelectValue placeholder="チームを選択してください" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {availableTeams.map((team) => (
+                      <SelectItem key={team.id} value={team.id}>
+                        <div className="flex items-center gap-2">
+                          <Users className="h-4 w-4" />
+                          <span>{team.name}</span>
+                          {currentUserInfo?.role === "admin" && team.isMember && (
+                            <span className="text-xs text-muted-foreground">
+                              （所属チーム）
+                            </span>
+                          )}
+                        </div>
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
           </div>
+
+          {availableTeams.length === 0 && !loadingUserInfo && (
+            <Alert>
+              <AlertCircle className="h-4 w-4" />
+              <AlertDescription>
+                {currentUserInfo?.role === "admin"
+                  ? "所属しているチームがありません。チームに参加してから招待してください。"
+                  : "組織にチームが作成されていません。先にチームを作成してください。"}
+              </AlertDescription>
+            </Alert>
+          )}
+
+          {currentUserInfo?.role === "admin" && availableTeams.length > 0 && (
+            <p className="text-xs text-muted-foreground">
+              管理者は所属しているチームにのみメンバーを招待できます
+            </p>
+          )}
 
           <Button
             onClick={handleInvite}
-            disabled={!inviteEmail || sendingInvite}
+            disabled={!inviteEmail || sendingInvite || loadingUserInfo || (availableTeams.length > 0 && !selectedTeamId)}
             className="w-full"
           >
             {sendingInvite ? (

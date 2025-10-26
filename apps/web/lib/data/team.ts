@@ -114,3 +114,19 @@ export async function getOrganizationTeamsWithMemberCount(
 
   return teamsWithCount;
 }
+
+/**
+ * チーム名を取得
+ * @param teamId - チームID
+ * @returns - チーム名
+ */
+export async function getTeamName(teamId: string) {
+  const team = await db.query.teams.findFirst({
+    where: eq(teams.id, teamId),
+  });
+  if (!team) {
+    throw new Error("Team not found");
+  }
+
+  return team.name;
+}

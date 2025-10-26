@@ -24,6 +24,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { authClient } from "@/lib/better-auth/auth-client";
 import { Signup } from "@/lib/types/auth";
 import { signupSchema } from "@/lib/zod/schemas/auth";
+import PasswordForm from "./password-form";
 // import { signupSchema } from "@workspace/drizzle/zod/auth";
 // import { Signup } from "@workspace/drizzle/types/auth";
 
@@ -91,7 +92,7 @@ export function SignupForm({
 
         if (acceptResult) {
           toast.success("アカウントの登録が完了しました！");
-          const redirectPath = `/organization/${acceptResult.invitation.organizationId}`;
+          const redirectPath = `/properties/unconfirmed`;
           router.push(redirectPath);
         }
       }
@@ -182,7 +183,7 @@ export function SignupForm({
                   )}
                 />
 
-                <FormField
+                {/* <FormField
                   control={form.control}
                   name="password"
                   render={({ field }) => (
@@ -199,6 +200,13 @@ export function SignupForm({
                       <FormMessage />
                     </FormItem>
                   )}
+                /> */}
+                <PasswordForm
+                  form={form}
+                  name="password"
+                  mode="signup"
+                  autoComplete="new-password"
+                  placeholder="8文字以上の英数字で入力してください"
                 />
 
                 <Button type="submit" className="w-full" disabled={isPending}>

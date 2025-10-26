@@ -6,6 +6,7 @@ import { anonymous, organization, username } from "better-auth/plugins";
 import { getBaseURL, customNanoid } from "@workspace/utils";
 import { resend } from "@workspace/email/resend";
 import InvitationEmail from "@workspace/email/templates/invitation";
+import { getTeamName } from "../data/team";
 
 export const auth = betterAuth({
   baseURL: getBaseURL(),
@@ -37,7 +38,8 @@ export const auth = betterAuth({
         const inviteLink = `${getBaseURL()}/signup?id=${invitationId}&email=${encodeURIComponent(
           data.email
         )}&org=${encodeURIComponent(data.organization.name)}`;
-
+        const teamId = data.invitation?.teamId;
+        const teamName = teamId ? await getTeamName(teamId) : null;
         await resend.emails.send({
           from: "noreply@biz-search.tech",
           to: data.email,
@@ -48,6 +50,7 @@ export const auth = betterAuth({
             inviterEmail,
             inviteLink,
             recipientEmail: data.email,
+            teamName: teamName,
           }),
         });
       },

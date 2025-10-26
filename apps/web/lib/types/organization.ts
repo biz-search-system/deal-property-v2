@@ -3,6 +3,7 @@ import {
   getOrganizationInvitations,
   getOrganizationMembers,
   getOrganizationsWithUserRole,
+  getCurrentUserOrganizationInfo,
 } from "@/lib/data/organization";
 
 export type OrganizationWithUserRole = Awaited<
@@ -40,5 +41,14 @@ export interface OrganizationInvitationsResponse {
 export interface OrganizationsWithUserRoleResponse {
   organizations?: OrganizationWithUserRole[];
   activeOrgId?: string | null;
+  error?: string;
+}
+
+export type CurrentUserOrganizationInfo = Awaited<
+  ReturnType<typeof getCurrentUserOrganizationInfo>
+>;
+
+export interface CurrentUserOrganizationInfoResponse {
+  data?: CurrentUserOrganizationInfo;
   error?: string;
 }

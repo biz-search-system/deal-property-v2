@@ -19,6 +19,7 @@ interface InvitationEmailProps {
   inviterEmail?: string;
   inviteLink?: string;
   recipientEmail?: string;
+  teamName: string | null;
 }
 
 export const InvitationEmail = ({
@@ -27,8 +28,11 @@ export const InvitationEmail = ({
   inviterEmail = "inviter@example.com",
   inviteLink = "https://example.com/invite/abc123",
   recipientEmail = "{{ .Email }}",
+  teamName = "サンプルチーム",
 }: InvitationEmailProps) => {
-  const previewText = `${organizationName}への招待`;
+  const previewText = teamName
+    ? `${organizationName}の${teamName}チームへの招待`
+    : `${organizationName}への招待`;
 
   return (
     <Html lang="ja">
@@ -60,7 +64,14 @@ export const InvitationEmail = ({
                 {inviterName} ({inviterEmail})
               </Link>
               さんから、<strong>{organizationName}</strong>
-              の組織メンバーとして招待されました。
+              {teamName ? (
+                <>
+                  の<strong>{teamName}</strong>チーム
+                </>
+              ) : (
+                "の組織"
+              )}
+              メンバーとして招待されました。
             </Text>
             <Text className="text-[14px] text-black leading-[24px]">
               下記のボタンをクリックして、招待を受け入れてください。
@@ -92,6 +103,7 @@ InvitationEmail.PreviewProps = {
   inviterEmail: "yamada@example.com",
   inviteLink: "https://example.com/invite/abc123",
   recipientEmail: "user@example.com",
+  teamName: "営業部",
 } as InvitationEmailProps;
 
 export default InvitationEmail;
