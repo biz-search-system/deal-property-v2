@@ -38,14 +38,25 @@ export async function createProperty(data: PropertyCreate) {
 
   // トランザクションで案件と関連データを作成
   const result = await db.transaction(async (tx) => {
+    // 利益を自動計算（出口金額 - A金額 + 仲手等）
+    let profit: number | undefined = undefined;
+    if (validatedData.amountExit !== undefined && validatedData.amountA !== undefined) {
+      profit = validatedData.amountExit - validatedData.amountA;
+      if (validatedData.commission !== undefined) {
+        profit += validatedData.commission;
+      }
+    }
+
     // 1. 案件本体を作成
     const propertyData: InsertProperty = {
+      organizationId: validatedData.organizationId,
       propertyName: validatedData.propertyName,
       roomNumber: validatedData.roomNumber || undefined,
       ownerName: validatedData.ownerName,
       amountA: validatedData.amountA || undefined,
       amountExit: validatedData.amountExit || undefined,
       commission: validatedData.commission || undefined,
+      profit: profit || undefined,
       bcDeposit: validatedData.bcDeposit || undefined,
       contractDateA: validatedData.contractDateA
         ? new Date(validatedData.contractDateA)
@@ -131,16 +142,27 @@ export async function updateProperty(data: PropertyUpdate) {
 
   // トランザクションで案件と関連データを更新
   const result = await db.transaction(async (tx) => {
+    // 利益を自動計算（出口金額 - A金額 + 仲手等）
+    let profit: number | undefined = undefined;
+    if (validatedData.amountExit !== undefined && validatedData.amountA !== undefined) {
+      profit = validatedData.amountExit - validatedData.amountA;
+      if (validatedData.commission !== undefined) {
+        profit += validatedData.commission;
+      }
+    }
+
     // 1. 案件本体を更新
     const [property] = await tx
       .update(properties)
       .set({
+        organizationId: validatedData.organizationId,
         propertyName: validatedData.propertyName,
         roomNumber: validatedData.roomNumber || undefined,
         ownerName: validatedData.ownerName,
         amountA: validatedData.amountA || undefined,
         amountExit: validatedData.amountExit || undefined,
         commission: validatedData.commission || undefined,
+        profit: profit || undefined,
         bcDeposit: validatedData.bcDeposit || undefined,
         contractDateA: validatedData.contractDateA
           ? new Date(validatedData.contractDateA)

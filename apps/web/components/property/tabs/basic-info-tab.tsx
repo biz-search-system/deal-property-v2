@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import {
   FormField,
   FormItem,
@@ -22,18 +23,174 @@ import {
   companyB,
   brokerCompany,
 } from "@workspace/drizzle/types/property";
-import { Checkbox } from "@workspace/ui/components/checkbox";
+import { Button } from "@workspace/ui/components/button";
+import {
+  DropdownMenu,
+  DropdownMenuCheckboxItem,
+  DropdownMenuContent,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@workspace/ui/components/dropdown-menu";
+import { ChevronDown } from "lucide-react";
 
 interface BasicInfoTabProps {
-  availableStaff: { id: string; name: string | null }[];
+  availableStaff: { id: string; name: string; email: string; role: string }[];
+  organizations?: Array<{
+    id: string;
+    name: string;
+    slug: string;
+    createdAt: Date;
+    logo?: string | null;
+    metadata?: any;
+  }>;
+  defaultOrganizationId?: string;
 }
 
-export default function BasicInfoTab({ availableStaff }: BasicInfoTabProps) {
+export default function BasicInfoTab({
+  availableStaff: initialStaff,
+  organizations = [],
+  defaultOrganizationId,
+}: BasicInfoTabProps) {
   const { control, watch, setValue } = usePropertyForm();
   const selectedStaffIds = watch("staffIds") || [];
+  const [availableStaff, setAvailableStaff] = useState(initialStaff);
+  const [selectedOrganizationId, setSelectedOrganizationId] = useState(
+    defaultOrganizationId || ""
+  );
+
+  // 組織IDをフォームに設定
+  useEffect(() => {
+    if (defaultOrganizationId) {
+      setValue("organizationId", defaultOrganizationId);
+    }
+  }, [defaultOrganizationId, setValue]);
+
+  // 組織変更時の処理
+  const handleOrganizationChange = async (organizationId: string) => {
+    setSelectedOrganizationId(organizationId);
+    setValue("organizationId", organizationId);
+
+    // 営業チームメンバーを再取得
+    try {
+      const response = await fetch(`/api/organization/${organizationId}/sales-team`);
+      if (response.ok) {
+        const data = await response.json();
+        setAvailableStaff(data.members || []);
+        // 選択済みスタッフをクリア
+        setValue("staffIds", []);
+      }
+    } catch (error) {
+      console.error("Failed to fetch sales team members:", error);
+    }
+  };
+
+  // スタッフの選択/解除を処理
+  const handleStaffToggle = (staffId: string, checked: boolean) => {
+    if (checked) {
+      setValue("staffIds", [...selectedStaffIds, staffId]);
+    } else {
+      setValue("staffIds", selectedStaffIds.filter(id => id !== staffId));
+    }
+  };
 
   return (
     <div className="space-y-6">
+      {/* 組織情報 */}
+      {organizations.length > 0 && (
+        <div className="space-y-4">
+          <h3 className="text-lg font-semibold">組織情報</h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {/* 管理組織 */}
+            <FormField
+              control={control}
+              name="organizationId"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>管理組織</FormLabel>
+                  <Select
+                    onValueChange={handleOrganizationChange}
+                    defaultValue={field.value || selectedOrganizationId}
+                  >
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="組織を選択" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {organizations.map((org) => (
+                        <SelectItem key={org.id} value={org.id}>
+                          {org.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            {/* 担当営業 */}
+            <FormField
+              control={control}
+              name="staffIds"
+              render={() => (
+                <FormItem>
+                  <FormLabel>担当営業</FormLabel>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="outline" className="w-full justify-between">
+                        {selectedStaffIds.length > 0
+                          ? `${selectedStaffIds.length}名選択中`
+                          : "選択"}
+                        <ChevronDown className="ml-2 h-4 w-4" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent className="w-72">
+                      <DropdownMenuLabel>営業チームメンバー</DropdownMenuLabel>
+                      <DropdownMenuSeparator />
+                      {availableStaff.length > 0 ? (
+                        availableStaff.map((staff) => (
+                          <DropdownMenuCheckboxItem
+                            key={staff.id}
+                            checked={selectedStaffIds.includes(staff.id)}
+                            onCheckedChange={(checked) =>
+                              handleStaffToggle(staff.id, checked)
+                            }
+                          >
+                            <div className="flex flex-col">
+                              <span>{staff.name || "名前なし"}</span>
+                              {staff.email && (
+                                <span className="text-xs text-muted-foreground">
+                                  {staff.email}
+                                </span>
+                              )}
+                            </div>
+                          </DropdownMenuCheckboxItem>
+                        ))
+                      ) : (
+                        <div className="px-2 py-1.5 text-sm text-muted-foreground">
+                          営業チームのメンバーがいません
+                        </div>
+                      )}
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                  {selectedStaffIds.length > 0 && (
+                    <div className="mt-2 text-sm text-muted-foreground">
+                      {availableStaff
+                        .filter(staff => selectedStaffIds.includes(staff.id))
+                        .map(staff => staff.name || "名前なし")
+                        .join(", ")}
+                    </div>
+                  )}
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+        </div>
+      )}
+
       {/* 物件情報 */}
       <div className="space-y-4">
         <h3 className="text-lg font-semibold">物件情報</h3>
@@ -361,45 +518,6 @@ export default function BasicInfoTab({ availableStaff }: BasicInfoTabProps) {
         </div>
       </div>
 
-      {/* 担当者 */}
-      <div className="space-y-4">
-        <h3 className="text-lg font-semibold">担当者</h3>
-        <FormField
-          control={control}
-          name="staffIds"
-          render={() => (
-            <FormItem>
-              <div className="space-y-2">
-                {availableStaff.map((staff) => (
-                  <div key={staff.id} className="flex items-center space-x-2">
-                    <Checkbox
-                      id={`staff-${staff.id}`}
-                      checked={selectedStaffIds.includes(staff.id)}
-                      onCheckedChange={(checked) => {
-                        if (checked) {
-                          setValue("staffIds", [...selectedStaffIds, staff.id]);
-                        } else {
-                          setValue(
-                            "staffIds",
-                            selectedStaffIds.filter((id) => id !== staff.id)
-                          );
-                        }
-                      }}
-                    />
-                    <label
-                      htmlFor={`staff-${staff.id}`}
-                      className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                    >
-                      {staff.name || "名前なし"}
-                    </label>
-                  </div>
-                ))}
-              </div>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-      </div>
 
       {/* 備考 */}
       <div className="space-y-4">

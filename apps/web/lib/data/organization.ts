@@ -96,6 +96,84 @@ export async function getOrganizationInvitations(organizationId: string) {
 }
 
 /**
+ * 組織の営業チームメンバーを取得
+ */
+export async function getSalesTeamMembers(organizationId: string) {
+  // 組織の完全な情報を取得（メンバー含む）
+  const fullOrg = await auth.api.getFullOrganization({
+    query: { organizationId },
+    headers: await headers(),
+  });
+
+  if (!fullOrg || !fullOrg.members) {
+    return [];
+  }
+
+  // チーム一覧を取得
+  const teamsResult = await auth.api.listOrganizationTeams({
+    query: { organizationId },
+    headers: await headers(),
+  });
+
+  const teams = teamsResult || [];
+
+  // 営業チームを探す
+  const salesTeam = teams.find(
+    (team) => team.name === "営業" || team.name === "営業チーム"
+  );
+
+  if (!salesTeam) {
+    // 営業チームがない場合は組織の全メンバーを返す
+    return fullOrg.members.map((member) => ({
+      id: member.userId,
+      name: member.user?.name || "名前なし",
+      email: member.user?.email || "",
+      role: member.role || "member",
+    }));
+  }
+
+  // 営業チームのメンバー一覧を取得
+  try {
+    const teamMembers = await auth.api.listTeamMembers({
+      query: { teamId: salesTeam.id },
+      headers: await headers(),
+    });
+
+    if (!teamMembers || teamMembers.length === 0) {
+      // チームメンバーがいない場合は組織の全メンバーを返す
+      return fullOrg.members.map((member) => ({
+        id: member.userId,
+        name: member.user?.name || "名前なし",
+        email: member.user?.email || "",
+        role: member.role || "member",
+      }));
+    }
+
+    // チームメンバーのIDリストを作成
+    const teamMemberIds = new Set(teamMembers.map((tm: any) => tm.userId));
+
+    // fullOrgのメンバー情報から営業チームメンバーの詳細を取得
+    return fullOrg.members
+      .filter((member) => teamMemberIds.has(member.userId))
+      .map((member) => ({
+        id: member.userId,
+        name: member.user?.name || "名前なし",
+        email: member.user?.email || "",
+        role: member.role || "member",
+      }));
+  } catch (error) {
+    console.error(`Failed to get sales team members:`, error);
+    // エラーの場合は組織の全メンバーを返す
+    return fullOrg.members.map((member) => ({
+      id: member.userId,
+      name: member.user?.name || "名前なし",
+      email: member.user?.email || "",
+      role: member.role || "member",
+    }));
+  }
+}
+
+/**
  * 現在のユーザーの組織における情報を取得（役割とチーム情報含む）
  */
 export async function getCurrentUserOrganizationInfo(organizationId: string) {

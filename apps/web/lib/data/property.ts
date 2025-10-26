@@ -42,17 +42,3 @@ export async function getPropertyById(id: string) {
   });
 }
 
-/**
- * 組織内の全ユーザーを取得（担当者選択用）
- */
-export async function getOrganizationUsers() {
-  // TODO: 組織機能実装時に組織でフィルタリング
-  return db.query.users.findMany({
-    columns: {
-      id: true,
-      name: true,
-      email: true,
-    },
-    orderBy: (u, { asc }) => [asc(u.name)],
-  });
-}
