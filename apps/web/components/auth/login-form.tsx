@@ -9,7 +9,7 @@ import { cn } from "@workspace/utils";
 import HeroImage from "@/components/hero-image";
 import GestLoginButton from "./gest-login-button";
 import { useSearchParams, useRouter } from "next/navigation";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { authClient } from "@/lib/better-auth/auth-client";
 import { Loader2, AlertCircle, Info } from "lucide-react";
 import Link from "next/link";
@@ -26,53 +26,7 @@ export function LoginForm({
   const [error, setError] = useState<string | null>(null);
 
   const invitationId = searchParams.get("invitation");
-  const errorFromUrl = searchParams.get("error");
   const isInvitation = !!invitationId;
-
-  // URLのエラーメッセージを処理
-  useEffect(() => {
-    if (errorFromUrl) {
-      switch (errorFromUrl) {
-        case "invalid_invitation":
-          setError("招待が無効です");
-          break;
-        case "invitation_already_accepted":
-          setError("この招待は既に受け入れられています");
-          break;
-        case "invitation_expired":
-          setError("招待の有効期限が切れています");
-          break;
-        default:
-          setError("エラーが発生しました");
-      }
-    }
-  }, [errorFromUrl]);
-
-  // クッキーから保留中の招待を確認
-  useEffect(() => {
-    const checkPendingInvitation = async () => {
-      const cookies = document.cookie.split(";");
-      const pendingInvitation = cookies.find((cookie) =>
-        cookie.trim().startsWith("pending_invitation=")
-      );
-
-      if (pendingInvitation && !invitationId) {
-        try {
-          const invitationData = JSON.parse(
-            decodeURIComponent(pendingInvitation?.split("=")[1] || "")
-          );
-          // メールアドレスを自動セット
-          if (invitationData.email) {
-            setEmail(invitationData.email);
-          }
-        } catch (e) {
-          console.error("Failed to parse pending invitation:", e);
-        }
-      }
-    };
-
-    checkPendingInvitation();
-  }, [invitationId]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -115,39 +69,6 @@ export function LoginForm({
           router.push("/properties/unconfirmed");
         }
       } else {
-        // 保留中の招待を確認
-        const cookies = document.cookie.split(";");
-        const pendingInvitationCookie = cookies.find((cookie) =>
-          cookie.trim().startsWith("pending_invitation=")
-        );
-
-        if (pendingInvitationCookie) {
-          try {
-            const invitationData = JSON.parse(
-              decodeURIComponent(pendingInvitationCookie?.split("=")[1] || "")
-            );
-
-            const acceptResponse = await fetch("/api/auth/accept-invitation", {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify({ invitationId: invitationData.id }),
-            });
-
-            const acceptResult = await acceptResponse.json();
-
-            if (acceptResult.success) {
-              // クッキーを削除
-              document.cookie = "pending_invitation=; path=/; max-age=0";
-              router.push(`/organization/${acceptResult.organizationId}`);
-              return;
-            }
-          } catch (error) {
-            console.error("Failed to process pending invitation:", error);
-          }
-        }
-
         router.push("/dashboard");
       }
     } catch (error) {

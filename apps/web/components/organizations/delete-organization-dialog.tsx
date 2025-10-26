@@ -13,6 +13,7 @@ import {
 } from "@workspace/ui/components/alert-dialog";
 import { toast } from "sonner";
 import { deleteOrganizationAction } from "@/lib/actions/organization";
+import { useOrganizationsWithUserRole } from "@/lib/swr/organization";
 
 interface DeleteOrganizationDialogProps {
   open: boolean;
@@ -28,6 +29,7 @@ export function DeleteOrganizationDialog({
   onClose,
 }: DeleteOrganizationDialogProps) {
   const [isDeleting, setIsDeleting] = useState(false);
+  const { mutate } = useOrganizationsWithUserRole();
 
   const handleDelete = async () => {
     if (!organizationId) return;
@@ -37,6 +39,7 @@ export function DeleteOrganizationDialog({
       const result = await deleteOrganizationAction(organizationId);
       if (result.success) {
         toast.success(`${organizationName || "組織"}を削除しました`);
+        mutate();
         onClose();
       } else {
         toast.error(result.error || "組織の削除に失敗しました");
