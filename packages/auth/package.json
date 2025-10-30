@@ -4,19 +4,28 @@
   "type": "module",
   "private": true,
   "scripts": {
-    "generate": "pnpx @better-auth/cli generate --output ../db/schemas/auth.ts --yes"
+    "generate": "pnpx @better-auth/cli generate --output ../db/schemas/auth.ts --yes",
+    "lint": "eslint src/",
+    "check-types": "tsc --noEmit"
   },
   "exports": {
-    ".": "./index.ts",
-    "./client": "./client.ts",
-    "./handler": "./handler.ts"
+    ".": {
+      "types": "./src/index.ts",
+      "default": "./src/index.ts"
+    }
   },
   "dependencies": {
-    "@workspace/db": "workspace:*",
+    "@workspace/drizzle": "workspace:*",
+    "@workspace/email": "workspace:*",
+    "@workspace/ui": "workspace:*",
+    "@workspace/utils": "workspace:*",
     "better-auth": "^1.3.28",
+    "drizzle-orm": "^0.44.7",
     "nanoid": "^5.1.6"
   },
   "devDependencies": {
-    "@workspace/typescript-config": "workspace:*"
+    "@workspace/eslint-config": "workspace:^",
+    "@workspace/typescript-config": "workspace:*",
+    "typescript": "^5.9.3"
   }
 }
