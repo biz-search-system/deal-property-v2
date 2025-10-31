@@ -12,7 +12,7 @@
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
     "check-types": "turbo check-types",
     "check-build": "turbo check-types build",
-    "generate-auth-schema": "turbo run generate-auth-schema --filter=web",
+    "generate-auth-schema": "turbo run generate-auth-schema --filter=@workspace/auth",
     "gm": "turbo run gm --filter=@workspace/drizzle",
     "migrate": "turbo run migrate --filter=@workspace/drizzle"
   },

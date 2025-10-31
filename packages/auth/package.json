@@ -4,7 +4,8 @@
   "type": "module",
   "private": true,
   "scripts": {
-    "generate": "pnpx @better-auth/cli generate --output ../db/schemas/auth.ts --yes",
+    "generate-sample": "pnpx @better-auth/cli generate --output ../db/schemas/auth.ts --yes",
+    "generate-auth-schema": "pnpx @better-auth/cli@latest generate --config ./src/auth.ts --output ../drizzle/schemas/auth.ts --yes",
     "lint": "eslint src/",
     "check-types": "tsc --noEmit"
   },
