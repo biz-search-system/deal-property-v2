@@ -1,6 +1,6 @@
 "use server";
 
-import { auth } from "@/lib/better-auth/auth";
+import { auth } from "@workspace/auth";
 import { verifySession } from "@/lib/data/sesstion";
 import { headers } from "next/headers";
 import { revalidatePath } from "next/cache";

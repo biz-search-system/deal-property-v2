@@ -38,6 +38,9 @@ importers:
       '@vercel/edge-config':
         specifier: ^1.4.2
         version: 1.4.3(next@15.5.6(react-dom@19.2.0(react@19.2.0))(react@19.2.0))
+      '@workspace/auth':
+        specifier: workspace:*
+        version: link:../../packages/auth
       '@workspace/drizzle':
         specifier: workspace:*
         version: link:../../packages/drizzle

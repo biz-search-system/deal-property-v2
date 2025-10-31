@@ -1,4 +1,4 @@
-import { auth } from "@/lib/better-auth/auth";
+import { auth } from "@workspace/auth";
 import { getOrganizationsWithUserRole } from "@/lib/data/organization";
 import { OrganizationsWithUserRoleResponse } from "@/lib/types/organization";
 import { headers } from "next/headers";

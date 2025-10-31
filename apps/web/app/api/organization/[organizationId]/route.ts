@@ -1,4 +1,4 @@
-import { auth } from "@/lib/better-auth/auth";
+import { auth } from "@workspace/auth";
 import { headers } from "next/headers";
 import { NextResponse } from "next/server";
 import type { OrganizationNameResponse } from "@/lib/types/organization";

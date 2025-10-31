@@ -1,6 +1,6 @@
 import { MonthlyPropertiesClient } from "./monthly-properties-client";
 import { getMonthlyProperties } from "@/lib/data/property";
-import { auth } from "@/lib/better-auth/auth";
+import { auth } from "@workspace/auth";
 import { headers } from "next/headers";
 import type { Metadata } from "next";
 
@@ -34,10 +34,11 @@ export default async function MonthlyPropertiesPage({
   );
 
   // データを変換（クライアント側で使いやすい形式に）
-  const transformedProperties = monthlyProperties.map(property => ({
+  const transformedProperties = monthlyProperties.map((property) => ({
     ...property,
     // 担当者名を配列形式に変換
-    assignee: property.staff?.map((s: any) => s.user?.name || "").filter(Boolean) || [],
+    assignee:
+      property.staff?.map((s: any) => s.user?.name || "").filter(Boolean) || [],
     // 組織名
     organizationName: property.organization?.name || "",
   }));

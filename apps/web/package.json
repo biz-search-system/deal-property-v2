@@ -22,6 +22,7 @@
     "@workspace/email": "workspace:*",
     "@workspace/ui": "workspace:*",
     "@workspace/utils": "workspace:*",
+    "@workspace/auth": "workspace:*",
     "better-auth": "^1.3.28",
     "chrono-node": "^2.9.0",
     "date-fns": "^4.1.0",

@@ -15,7 +15,7 @@ import {
   type PropertyUpdate,
 } from "@workspace/drizzle/zod/index";
 import type { InsertProperty } from "@workspace/drizzle/types/property";
-import { auth } from "@/lib/better-auth/auth";
+import { auth } from "@workspace/auth";
 import { headers } from "next/headers";
 import { revalidatePath } from "next/cache";
 import { eq } from "drizzle-orm";
@@ -40,7 +40,10 @@ export async function createProperty(data: PropertyCreate) {
   const result = await db.transaction(async (tx) => {
     // 利益を自動計算（出口金額 - A金額 + 仲手等）
     let profit: number | undefined = undefined;
-    if (validatedData.amountExit !== undefined && validatedData.amountA !== undefined) {
+    if (
+      validatedData.amountExit !== undefined &&
+      validatedData.amountA !== undefined
+    ) {
       profit = validatedData.amountExit - validatedData.amountA;
       if (validatedData.commission !== undefined) {
         profit += validatedData.commission;
@@ -67,17 +70,30 @@ export async function createProperty(data: PropertyCreate) {
       settlementDate: validatedData.settlementDate
         ? new Date(validatedData.settlementDate)
         : undefined,
-      contractType: (validatedData.contractType as InsertProperty["contractType"]) || undefined,
-      companyB: (validatedData.companyB as InsertProperty["companyB"]) || undefined,
-      brokerCompany: (validatedData.brokerCompany as InsertProperty["brokerCompany"]) || undefined,
+      contractType:
+        (validatedData.contractType as InsertProperty["contractType"]) ||
+        undefined,
+      companyB:
+        (validatedData.companyB as InsertProperty["companyB"]) || undefined,
+      brokerCompany:
+        (validatedData.brokerCompany as InsertProperty["brokerCompany"]) ||
+        undefined,
       buyerCompany: validatedData.buyerCompany || undefined,
       mortgageBank: validatedData.mortgageBank || undefined,
       listType: validatedData.listType || undefined,
       notes: validatedData.notes || undefined,
-      progressStatus: (validatedData.progressStatus as InsertProperty["progressStatus"]) || "bc_before_confirmed",
-      documentStatus: (validatedData.documentStatus as InsertProperty["documentStatus"]) || "waiting_request",
-      accountCompany: (validatedData.accountCompany as InsertProperty["accountCompany"]) || undefined,
-      bankAccount: (validatedData.bankAccount as InsertProperty["bankAccount"]) || undefined,
+      progressStatus:
+        (validatedData.progressStatus as InsertProperty["progressStatus"]) ||
+        "bc_before_confirmed",
+      documentStatus:
+        (validatedData.documentStatus as InsertProperty["documentStatus"]) ||
+        "waiting_request",
+      accountCompany:
+        (validatedData.accountCompany as InsertProperty["accountCompany"]) ||
+        undefined,
+      bankAccount:
+        (validatedData.bankAccount as InsertProperty["bankAccount"]) ||
+        undefined,
       createdBy: session.user.id,
       updatedBy: session.user.id,
     };
@@ -144,7 +160,10 @@ export async function updateProperty(data: PropertyUpdate) {
   const result = await db.transaction(async (tx) => {
     // 利益を自動計算（出口金額 - A金額 + 仲手等）
     let profit: number | undefined = undefined;
-    if (validatedData.amountExit !== undefined && validatedData.amountA !== undefined) {
+    if (
+      validatedData.amountExit !== undefined &&
+      validatedData.amountA !== undefined
+    ) {
       profit = validatedData.amountExit - validatedData.amountA;
       if (validatedData.commission !== undefined) {
         profit += validatedData.commission;
@@ -173,17 +192,30 @@ export async function updateProperty(data: PropertyUpdate) {
         settlementDate: validatedData.settlementDate
           ? new Date(validatedData.settlementDate)
           : undefined,
-        contractType: (validatedData.contractType as InsertProperty["contractType"]) || undefined,
-        companyB: (validatedData.companyB as InsertProperty["companyB"]) || undefined,
-        brokerCompany: (validatedData.brokerCompany as InsertProperty["brokerCompany"]) || undefined,
+        contractType:
+          (validatedData.contractType as InsertProperty["contractType"]) ||
+          undefined,
+        companyB:
+          (validatedData.companyB as InsertProperty["companyB"]) || undefined,
+        brokerCompany:
+          (validatedData.brokerCompany as InsertProperty["brokerCompany"]) ||
+          undefined,
         buyerCompany: validatedData.buyerCompany || undefined,
         mortgageBank: validatedData.mortgageBank || undefined,
         listType: validatedData.listType || undefined,
         notes: validatedData.notes || undefined,
-        progressStatus: (validatedData.progressStatus as InsertProperty["progressStatus"]) || undefined,
-        documentStatus: (validatedData.documentStatus as InsertProperty["documentStatus"]) || undefined,
-        accountCompany: (validatedData.accountCompany as InsertProperty["accountCompany"]) || undefined,
-        bankAccount: (validatedData.bankAccount as InsertProperty["bankAccount"]) || undefined,
+        progressStatus:
+          (validatedData.progressStatus as InsertProperty["progressStatus"]) ||
+          undefined,
+        documentStatus:
+          (validatedData.documentStatus as InsertProperty["documentStatus"]) ||
+          undefined,
+        accountCompany:
+          (validatedData.accountCompany as InsertProperty["accountCompany"]) ||
+          undefined,
+        bankAccount:
+          (validatedData.bankAccount as InsertProperty["bankAccount"]) ||
+          undefined,
         updatedBy: session.user.id,
       })
       .where(eq(properties.id, validatedData.id))

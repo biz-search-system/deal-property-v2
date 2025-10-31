@@ -28,7 +28,7 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@workspace/ui/components/sidebar";
-import { authClient } from "@/lib/better-auth/auth-client";
+import { authClient } from "@workspace/auth";
 import { getAvatarUrl } from "@/lib/avatar";
 import { useSession } from "@/lib/swr/session";
 import { Loader2 } from "lucide-react";

@@ -2,7 +2,7 @@
 
 import React from "react";
 import { Button } from "@workspace/ui/components/button";
-import { authClient } from "@/lib/better-auth/auth-client";
+import { authClient } from "@workspace/auth";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 
