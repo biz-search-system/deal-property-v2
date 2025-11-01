@@ -23,8 +23,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { loginSchema } from "@/lib/zod/schemas/auth";
 import type { Login } from "@/lib/types/auth";
 import { loginAction } from "@/lib/actions/auth";
-import { authClient } from "@workspace/auth";
-// import { authClient } from "@/lib/better-auth/auth-client";
+import { authClient } from "@workspace/auth/client";
 
 export function LoginForm({
   className,

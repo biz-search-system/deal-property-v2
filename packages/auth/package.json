@@ -11,8 +11,12 @@
   },
   "exports": {
     ".": {
-      "types": "./src/index.ts",
-      "default": "./src/index.ts"
+      "types": "./src/auth.ts",
+      "default": "./src/auth.ts"
+    },
+    "./client": {
+      "types": "./src/auth-client.ts",
+      "default": "./src/auth-client.ts"
     }
   },
   "dependencies": {
