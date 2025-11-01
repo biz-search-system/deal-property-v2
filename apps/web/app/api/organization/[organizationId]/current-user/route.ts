@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { auth } from "@/lib/better-auth/auth";
+import { auth } from "@workspace/auth";
 import { headers } from "next/headers";
 import { getCurrentUserOrganizationInfo } from "@/lib/data/organization";
 import { CurrentUserOrganizationInfoResponse } from "@/lib/types/organization";
@@ -27,16 +27,10 @@ export async function GET(
 
     if (error instanceof Error) {
       if (error.message === "Not a member of this organization") {
-        return NextResponse.json(
-          { error: error.message },
-          { status: 403 }
-        );
+        return NextResponse.json({ error: error.message }, { status: 403 });
       }
       if (error.message === "Organization not found") {
-        return NextResponse.json(
-          { error: error.message },
-          { status: 404 }
-        );
+        return NextResponse.json({ error: error.message }, { status: 404 });
       }
     }
 

@@ -10,7 +10,7 @@ import { InvitationsTab } from "./components/invitations-tab";
 import { InviteTab } from "./components/invite-tab";
 import { TeamsTab } from "./components/teams-tab";
 import { getFullOrganization } from "@/lib/data/organization";
-import { auth } from "@/lib/better-auth/auth";
+import { auth } from "@workspace/auth";
 import { headers } from "next/headers";
 
 export const metadata = {

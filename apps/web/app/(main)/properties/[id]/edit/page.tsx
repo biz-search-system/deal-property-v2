@@ -19,11 +19,13 @@ import DocumentProgressTab from "@/components/property/tabs/document-progress-ta
 import SettlementProgressTab from "@/components/property/tabs/settlement-progress-tab";
 import { getPropertyById } from "@/lib/data/property";
 import { getOrganizations, getSalesTeamMembers } from "@/lib/data/organization";
-import { auth } from "@/lib/better-auth/auth";
+import { auth } from "@workspace/auth";
 import { headers } from "next/headers";
 import type { Metadata } from "next";
 
-export async function generateMetadata({ params }: PageProps<"/properties/[id]/edit">): Promise<Metadata> {
+export async function generateMetadata({
+  params,
+}: PageProps<"/properties/[id]/edit">): Promise<Metadata> {
   const { id } = await params;
   const property = await getPropertyById(id);
 
@@ -38,7 +40,9 @@ export async function generateMetadata({ params }: PageProps<"/properties/[id]/e
   };
 }
 
-export default async function PropertyEditPage({ params }: PageProps<"/properties/[id]/edit">) {
+export default async function PropertyEditPage({
+  params,
+}: PageProps<"/properties/[id]/edit">) {
   const { id } = await params;
 
   // セッション取得

@@ -1,5 +1,5 @@
 import { SignupForm } from "@/components/auth/signup-form";
-import { auth } from "@/lib/better-auth/auth";
+import { auth } from "@workspace/auth";
 import { Metadata } from "next";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";

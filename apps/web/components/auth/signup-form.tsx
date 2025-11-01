@@ -21,7 +21,7 @@ import { toast } from "sonner";
 import Link from "next/link";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { authClient } from "@/lib/better-auth/auth-client";
+import { authClient } from "@workspace/auth/client";
 import { Signup } from "@/lib/types/auth";
 import { signupSchema } from "@/lib/zod/schemas/auth";
 import PasswordForm from "./password-form";

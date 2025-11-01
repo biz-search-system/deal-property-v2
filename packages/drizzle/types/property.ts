@@ -4,20 +4,6 @@
 export const managementOrgType = ["management", "sales", "office"] as const;
 export type ManagementOrgType = (typeof managementOrgType)[number];
 
-/** 契約形態 */
-export const contractType = [
-  "ab_bc",
-  "ac",
-  "iyaku",
-  "shirahaku",
-  "mitei",
-  "jisha",
-  "bengoshi",
-  "kaichu",
-  "iyaku_yotei",
-] as const;
-export type ContractType = (typeof contractType)[number];
-
 /** B会社 */
 export const companyB = [
   "ms",
@@ -41,18 +27,6 @@ export const brokerCompany = [
   "ms",
 ] as const;
 export type BrokerCompany = (typeof brokerCompany)[number];
-
-/** 進捗ステータス */
-export const progressStatus = [
-  "bc_before_confirmed",
-  "waiting_contract_cb",
-  "waiting_bc_contract",
-  "waiting_settlement_date",
-  "waiting_settlement_cb",
-  "waiting_settlement",
-  "settlement_completed",
-] as const;
-export type ProgressStatus = (typeof progressStatus)[number];
 
 /** 書類ステータス */
 export const documentStatus = [

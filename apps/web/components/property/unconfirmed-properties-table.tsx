@@ -34,36 +34,21 @@ import {
   updatePropertyNotes,
 } from "@/lib/actions/property";
 import { toast } from "sonner";
-
-// 進捗ステータスの表示名マッピング
-const PROGRESS_STATUS_LABELS: Record<string, string> = {
-  bc_before_confirmed: "BC確定前",
-  waiting_contract_cb: "契約CB待ち",
-  waiting_bc_contract: "BC契約待ち",
-  waiting_settlement_date: "決済日待ち",
-  waiting_settlement_cb: "精算CB待ち",
-  waiting_settlement: "決済待ち",
-  settlement_completed: "決済完了",
-};
+import { cn } from "@workspace/ui/lib/utils";
+import {
+  PROGRESS_STATUS_LABELS,
+  PROGRESS_STATUS_STYLES,
+  CONTRACT_TYPE_LABELS,
+  CONTRACT_TYPE_COLORS,
+  ContractType,
+} from "@workspace/drizzle/constants";
+import ContractTypeBadge from "./contract-type-badge";
 
 // 書類ステータスの表示名マッピング
 const DOCUMENT_STATUS_LABELS: Record<string, string> = {
   waiting_request: "営業依頼待ち",
   in_progress: "書類取得中",
   completed: "全書類取得完了",
-};
-
-// 契約形態の表示名マッピング
-const CONTRACT_TYPE_LABELS: Record<string, string> = {
-  ab_bc: "AB・BC",
-  ac: "AC",
-  iyaku: "違約",
-  shirahaku: "白紙",
-  mitei: "未定",
-  jisha: "自社仕入れ",
-  bengoshi: "弁護士",
-  kaichu: "買仲",
-  iyaku_yotei: "違約予定",
 };
 
 // B会社の表示名マッピング
@@ -188,9 +173,7 @@ export function UnconfirmedPropertiesTable({
             <TableHead className="text-[10px] p-1 sticky left-0 bg-background z-20 min-w-[50px]">
               管理組織
             </TableHead>
-            <TableHead className="text-[10px] p-1 min-w-[45px]">
-              担当
-            </TableHead>
+            <TableHead className="text-[10px] p-1 min-w-[45px]">担当</TableHead>
             <TableHead className="text-[10px] p-1 min-w-[65px]">
               物件名
             </TableHead>
@@ -208,15 +191,9 @@ export function UnconfirmedPropertiesTable({
             <TableHead className="text-[10px] p-1 min-w-[45px]">
               B会社
             </TableHead>
-            <TableHead className="text-[10px] p-1 min-w-[50px]">
-              仲介
-            </TableHead>
-            <TableHead className="text-[10px] p-1 min-w-[50px]">
-              進捗
-            </TableHead>
-            <TableHead className="text-[10px] p-1 min-w-[50px]">
-              書類
-            </TableHead>
+            <TableHead className="text-[10px] p-1 min-w-[50px]">仲介</TableHead>
+            <TableHead className="text-[10px] p-1 min-w-[50px]">進捗</TableHead>
+            <TableHead className="text-[10px] p-1 min-w-[50px]">書類</TableHead>
             <TableHead className="text-[10px] p-1 w-[120px]">備考</TableHead>
             <TableHead className="text-[10px] p-1 sticky right-0 bg-background z-20 min-w-[35px]">
               操作
@@ -285,14 +262,29 @@ export function UnconfirmedPropertiesTable({
 
               {/* 契約形態 */}
               <TableCell className="text-[10px] p-1">
-                <Badge variant="outline" className="text-[9px] px-1 py-0">
+                <ContractTypeBadge
+                  contractType={property.contractType as ContractType}
+                />
+                {/* <Badge
+                  variant="outline"
+                  className={cn(
+                    "text-[9px] px-1 py-0",
+                    property.contractType
+                      ? CONTRACT_TYPE_COLORS[property.contractType]
+                      : "border-blue-400 text-blue-700 dark:text-blue-300"
+                  )}
+                  // className={cn(
+                  //   "text-[9px] px-1 py-0",
+                  //   "border-blue-400 text-blue-700 dark:text-blue-300"
+                  // )}
+                >
                   {property.contractType
                     ? truncateText(
                         CONTRACT_TYPE_LABELS[property.contractType] ||
                           property.contractType
                       )
                     : "-"}
-                </Badge>
+                </Badge> */}
               </TableCell>
 
               {/* B会社 */}
@@ -300,8 +292,7 @@ export function UnconfirmedPropertiesTable({
                 <Badge variant="outline" className="text-[9px] px-1 py-0">
                   {property.companyB
                     ? truncateText(
-                        COMPANY_B_LABELS[property.companyB] ||
-                          property.companyB
+                        COMPANY_B_LABELS[property.companyB] || property.companyB
                       )
                     : "-"}
                 </Badge>
@@ -347,8 +338,14 @@ export function UnconfirmedPropertiesTable({
                   </Select>
                 ) : (
                   <Badge
-                    variant="outline"
-                    className="text-[9px] cursor-pointer px-1 py-0"
+                    variant={
+                      PROGRESS_STATUS_STYLES[property.progressStatus]
+                        ?.variant || "outline"
+                    }
+                    className={cn(
+                      "text-[9px] cursor-pointer px-1 py-0",
+                      PROGRESS_STATUS_STYLES[property.progressStatus]?.className
+                    )}
                     onClick={() =>
                       setEditingProgressStatus({
                         id: property.id,

@@ -18,11 +18,7 @@ import {
 } from "@workspace/ui/components/select";
 import { Textarea } from "@workspace/ui/components/textarea";
 import { usePropertyForm } from "../property-form-provider";
-import {
-  contractType,
-  companyB,
-  brokerCompany,
-} from "@workspace/drizzle/types/property";
+import { companyB, brokerCompany } from "@workspace/drizzle/types/property";
 import { Button } from "@workspace/ui/components/button";
 import {
   DropdownMenu,
@@ -33,6 +29,7 @@ import {
   DropdownMenuTrigger,
 } from "@workspace/ui/components/dropdown-menu";
 import { ChevronDown } from "lucide-react";
+import { contractType } from "@workspace/drizzle/constants";
 
 interface BasicInfoTabProps {
   availableStaff: { id: string; name: string; email: string; role: string }[];
@@ -73,7 +70,9 @@ export default function BasicInfoTab({
 
     // 営業チームメンバーを再取得
     try {
-      const response = await fetch(`/api/organization/${organizationId}/sales-team`);
+      const response = await fetch(
+        `/api/organization/${organizationId}/sales-team`
+      );
       if (response.ok) {
         const data = await response.json();
         setAvailableStaff(data.members || []);
@@ -90,7 +89,10 @@ export default function BasicInfoTab({
     if (checked) {
       setValue("staffIds", [...selectedStaffIds, staffId]);
     } else {
-      setValue("staffIds", selectedStaffIds.filter(id => id !== staffId));
+      setValue(
+        "staffIds",
+        selectedStaffIds.filter((id) => id !== staffId)
+      );
     }
   };
 
@@ -139,7 +141,10 @@ export default function BasicInfoTab({
                   <FormLabel>担当営業</FormLabel>
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                      <Button variant="outline" className="w-full justify-between">
+                      <Button
+                        variant="outline"
+                        className="w-full justify-between"
+                      >
                         {selectedStaffIds.length > 0
                           ? `${selectedStaffIds.length}名選択中`
                           : "選択"}
@@ -178,8 +183,8 @@ export default function BasicInfoTab({
                   {selectedStaffIds.length > 0 && (
                     <div className="mt-2 text-sm text-muted-foreground">
                       {availableStaff
-                        .filter(staff => selectedStaffIds.includes(staff.id))
-                        .map(staff => staff.name || "名前なし")
+                        .filter((staff) => selectedStaffIds.includes(staff.id))
+                        .map((staff) => staff.name || "名前なし")
                         .join(", ")}
                     </div>
                   )}
@@ -517,7 +522,6 @@ export default function BasicInfoTab({
           />
         </div>
       </div>
-
 
       {/* 備考 */}
       <div className="space-y-4">

@@ -1,6 +1,6 @@
 import "server-only";
 
-import { auth } from "@/lib/better-auth/auth";
+import { auth } from "@workspace/auth";
 import { headers } from "next/headers";
 
 export async function getOrganizations() {

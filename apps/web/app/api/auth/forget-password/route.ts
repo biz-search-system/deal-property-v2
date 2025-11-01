@@ -1,4 +1,4 @@
-import { auth } from "@/lib/better-auth/auth";
+import { auth } from "@workspace/auth";
 import { getBaseURL } from "@workspace/utils";
 import { headers } from "next/headers";
 import { NextResponse, type NextRequest } from "next/server";

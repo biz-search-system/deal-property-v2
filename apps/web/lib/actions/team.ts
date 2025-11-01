@@ -1,6 +1,6 @@
 "use server";
 
-import { auth } from "@/lib/better-auth/auth";
+import { auth } from "@workspace/auth";
 import { headers } from "next/headers";
 import { revalidatePath } from "next/cache";
 import { db } from "@workspace/drizzle/db";
@@ -10,13 +10,13 @@ import {
   createTeamSchema,
   updateTeamSchema,
   addTeamMemberSchema,
-  removeTeamMemberSchema
+  removeTeamMemberSchema,
 } from "@/lib/zod/schemas/team";
 import type {
   CreateTeamInput,
   UpdateTeamInput,
   AddTeamMemberInput,
-  RemoveTeamMemberInput
+  RemoveTeamMemberInput,
 } from "@/lib/types/team";
 
 /**
@@ -54,7 +54,10 @@ export async function createTeamAction(data: CreateTeamInput) {
   }
 
   // 権限確認（adminまたはownerのみ）
-  if (currentUserMember.role !== "admin" && currentUserMember.role !== "owner") {
+  if (
+    currentUserMember.role !== "admin" &&
+    currentUserMember.role !== "owner"
+  ) {
     throw new Error("チーム作成権限がありません");
   }
 
@@ -121,7 +124,10 @@ export async function updateTeamAction(data: UpdateTeamInput) {
   }
 
   // 権限確認（adminまたはownerのみ）
-  if (currentUserMember.role !== "admin" && currentUserMember.role !== "owner") {
+  if (
+    currentUserMember.role !== "admin" &&
+    currentUserMember.role !== "owner"
+  ) {
     throw new Error("チーム編集権限がありません");
   }
 
@@ -187,7 +193,10 @@ export async function deleteTeamAction(teamId: string) {
   }
 
   // 権限確認（adminまたはownerのみ）
-  if (currentUserMember.role !== "admin" && currentUserMember.role !== "owner") {
+  if (
+    currentUserMember.role !== "admin" &&
+    currentUserMember.role !== "owner"
+  ) {
     throw new Error("チーム削除権限がありません");
   }
 
@@ -254,7 +263,10 @@ export async function addTeamMemberAction(data: AddTeamMemberInput) {
   }
 
   // 権限確認（adminまたはownerのみ）
-  if (currentUserMember.role !== "admin" && currentUserMember.role !== "owner") {
+  if (
+    currentUserMember.role !== "admin" &&
+    currentUserMember.role !== "owner"
+  ) {
     throw new Error("メンバー追加権限がありません");
   }
 
@@ -330,7 +342,10 @@ export async function removeTeamMemberAction(data: RemoveTeamMemberInput) {
   }
 
   // 権限確認（adminまたはownerのみ）
-  if (currentUserMember.role !== "admin" && currentUserMember.role !== "owner") {
+  if (
+    currentUserMember.role !== "admin" &&
+    currentUserMember.role !== "owner"
+  ) {
     throw new Error("メンバー削除権限がありません");
   }
 
