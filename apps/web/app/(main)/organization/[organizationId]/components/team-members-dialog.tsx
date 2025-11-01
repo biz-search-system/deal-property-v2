@@ -19,11 +19,18 @@ import {
 import { Label } from "@workspace/ui/components/label";
 import { useTeamMembers } from "@/lib/swr/team";
 import { useOrganizationMembers } from "@/lib/swr/organization";
-import { addTeamMemberAction, removeTeamMemberAction } from "@/lib/actions/team";
+import {
+  addTeamMemberAction,
+  removeTeamMemberAction,
+} from "@/lib/actions/team";
 import { toast } from "sonner";
 import { Loader2, UserX, UserPlus } from "lucide-react";
 import { Skeleton } from "@workspace/ui/components/skeleton";
-import { Avatar, AvatarFallback, AvatarImage } from "@workspace/ui/components/avatar";
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+} from "@workspace/ui/components/avatar";
 import { getAvatarUrl } from "@/lib/avatar";
 
 interface TeamMembersDialogProps {
@@ -41,14 +48,22 @@ export function TeamMembersDialog({
   organizationId,
   onUpdate,
 }: TeamMembersDialogProps) {
-  const { members: teamMembers, isLoading: teamLoading, mutate: mutateTeam } = useTeamMembers(teamId);
-  const { data: orgMembers, isLoading: orgLoading } = useOrganizationMembers(organizationId);
+  const {
+    members: teamMembers,
+    isLoading: teamLoading,
+    mutate: mutateTeam,
+  } = useTeamMembers(teamId);
+  const { data: orgMembers, isLoading: orgLoading } =
+    useOrganizationMembers(organizationId);
   const [selectedUserId, setSelectedUserId] = useState<string>("");
   const [isPending, startTransition] = useTransition();
 
   // チームに所属していない組織メンバーを取得
   const availableMembers = orgMembers?.members.filter(
-    (orgMember) => !teamMembers?.some((teamMember) => teamMember.userId === orgMember.user.id)
+    (orgMember) =>
+      !teamMembers?.some(
+        (teamMember) => teamMember.userId === orgMember.user.id
+      )
   );
 
   const handleAddMember = () => {
@@ -66,7 +81,10 @@ export function TeamMembersDialog({
         mutateTeam();
         onUpdate();
       } catch (error) {
-        const message = error instanceof Error ? error.message : "メンバーの追加に失敗しました";
+        const message =
+          error instanceof Error
+            ? error.message
+            : "メンバーの追加に失敗しました";
         toast.error(message);
       }
     });
@@ -84,7 +102,10 @@ export function TeamMembersDialog({
         mutateTeam();
         onUpdate();
       } catch (error) {
-        const message = error instanceof Error ? error.message : "メンバーの削除に失敗しました";
+        const message =
+          error instanceof Error
+            ? error.message
+            : "メンバーの削除に失敗しました";
         toast.error(message);
       }
     });
@@ -111,18 +132,22 @@ export function TeamMembersDialog({
                 disabled={isPending || orgLoading || !availableMembers?.length}
               >
                 <SelectTrigger className="flex-1">
-                  <SelectValue placeholder={
-                    orgLoading ? "読み込み中..." :
-                    !availableMembers?.length ? "追加可能なメンバーがいません" :
-                    "メンバーを選択"
-                  } />
+                  <SelectValue
+                    placeholder={
+                      orgLoading
+                        ? "読み込み中..."
+                        : !availableMembers?.length
+                          ? "追加可能なメンバーがいません"
+                          : "メンバーを選択"
+                    }
+                  />
                 </SelectTrigger>
                 <SelectContent>
                   {availableMembers?.map((member) => {
                     const avatarData = getAvatarUrl({
                       username: member.user.name,
                       email: member.user.email,
-                      avatarUrl: member.user.image
+                      avatarUrl: member.user.image,
                     });
                     return (
                       <SelectItem key={member.user.id} value={member.user.id}>
@@ -162,7 +187,10 @@ export function TeamMembersDialog({
               {teamLoading ? (
                 <div className="p-4 space-y-2">
                   {[...Array(3)].map((_, i) => (
-                    <div key={i} className="flex items-center justify-between py-2">
+                    <div
+                      key={i}
+                      className="flex items-center justify-between py-2"
+                    >
                       <div className="flex items-center gap-2">
                         <Skeleton className="h-8 w-8 rounded-full" />
                         <Skeleton className="h-4 w-32" />
@@ -176,66 +204,44 @@ export function TeamMembersDialog({
                 </div>
               ) : (
                 <div className="divide-y">
-                  {teamMembers.map((member: any) => {
-                    // Better Auth APIからのレスポンスにユーザー情報が含まれているか確認
-                    const user = member.user || member.userId ?
-                      orgMembers?.members.find(m => m.user.id === (member.userId || member.user?.id))?.user
-                      : null;
-
-                    if (!user) {
-                      // ユーザー情報が見つからない場合（組織から削除された等）
-                      return (
-                        <div key={member.id} className="flex items-center justify-between p-3 hover:bg-muted/50 opacity-50">
-                          <div className="flex items-center gap-3">
-                            <Avatar className="h-8 w-8">
-                              <AvatarFallback>?</AvatarFallback>
-                            </Avatar>
-                            <div>
-                              <p className="text-sm font-medium">不明なユーザー</p>
-                              <p className="text-xs text-muted-foreground">ID: {member.userId || member.user?.id || "Unknown"}</p>
-                            </div>
-                          </div>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => handleRemoveMember(member.userId || member.user?.id, null)}
-                            disabled={isPending}
-                          >
-                            <UserX className="h-4 w-4" />
-                            <span className="sr-only">削除</span>
-                          </Button>
-                        </div>
-                      );
-                    }
+                  {teamMembers.map((member) => {
+                    const user = orgMembers?.members.find(
+                      (m) => m.user.id === member.userId
+                    )?.user;
 
                     const avatarData = getAvatarUrl({
-                      username: user.name,
-                      email: user.email,
-                      avatarUrl: user.image
+                      username: user?.name,
+                      email: user?.email,
                     });
 
                     return (
-                      <div key={member.id} className="flex items-center justify-between p-3 hover:bg-muted/50">
+                      <div
+                        key={member.id}
+                        className="flex items-center justify-between p-3 hover:bg-muted/50"
+                      >
                         <div className="flex items-center gap-3">
                           <Avatar className="h-8 w-8">
                             <AvatarImage src={avatarData.url} />
-                            <AvatarFallback>
-                              {avatarData.text}
-                            </AvatarFallback>
+                            <AvatarFallback>{avatarData.text}</AvatarFallback>
                           </Avatar>
                           <div>
                             <p className="text-sm font-medium">
-                              {user.name || "名前未設定"}
+                              {user?.name || "名前未設定"}
                             </p>
                             <p className="text-xs text-muted-foreground">
-                              {user.email}
+                              {user?.email || "メールアドレス未設定"}
                             </p>
                           </div>
                         </div>
                         <Button
                           variant="ghost"
                           size="sm"
-                          onClick={() => handleRemoveMember(member.userId || member.user?.id, user.name || null)}
+                          onClick={() =>
+                            handleRemoveMember(
+                              member.userId,
+                              user?.name || null
+                            )
+                          }
                           disabled={isPending}
                         >
                           <UserX className="h-4 w-4" />

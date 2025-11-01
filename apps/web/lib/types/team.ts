@@ -1,10 +1,13 @@
-import { getOrganizationTeamsWithMemberCount, getTeamMembers } from "@/lib/data/team";
+import {
+  getOrganizationTeamsWithMemberCount,
+  getTeamMembers,
+} from "@/lib/data/team";
 import { z } from "zod";
 import {
   createTeamSchema,
   updateTeamSchema,
   addTeamMemberSchema,
-  removeTeamMemberSchema
+  removeTeamMemberSchema,
 } from "@/lib/zod/schemas/team";
 
 // Drizzle schema から生成される型
@@ -35,8 +38,9 @@ export type OrganizationTeamsResponse = {
   error?: string;
 };
 
+export type Member = Awaited<ReturnType<typeof getTeamMembers>>[number];
 export type TeamMembersResponse = {
-  members?: Awaited<ReturnType<typeof getTeamMembers>>;
+  members?: Member[];
   error?: string;
 };
 
