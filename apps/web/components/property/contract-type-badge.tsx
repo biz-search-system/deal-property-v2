@@ -17,6 +17,7 @@ export default function ContractTypeBadge({
   };
 
   // const getContractTypeColor = (type: ContractType) => {
+  //   // return CONTRACT_TYPE_COLORS[type];
   //   switch (type) {
   //     case "ab_bc":
   //       return "border-blue-400 bg-blue-50 text-blue-700 dark:bg-blue-950 dark:text-blue-300";
@@ -24,7 +25,7 @@ export default function ContractTypeBadge({
   //       return "border-green-400 bg-green-50 text-green-700 dark:bg-green-950 dark:text-green-300";
   //     case "iyaku":
   //       return "border-red-400 bg-red-50 text-red-700 dark:bg-red-950 dark:text-red-300";
-  //     case "shirahaku":
+  //     case "hakushi":
   //       return "border-gray-400 bg-gray-50 text-gray-700 dark:bg-gray-950 dark:text-gray-300";
   //     case "mitei":
   //       return "border-slate-400 bg-slate-50 text-slate-700 dark:bg-slate-950 dark:text-slate-300";

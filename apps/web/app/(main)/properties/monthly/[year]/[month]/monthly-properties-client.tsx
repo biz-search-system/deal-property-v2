@@ -64,9 +64,8 @@ export function MonthlyPropertiesClient({
     id: string;
     value: string;
   } | null>(null);
-  const [selectedProperty, setSelectedProperty] = useState<PropertyWithRelations | null>(
-    null
-  );
+  const [selectedProperty, setSelectedProperty] =
+    useState<PropertyWithRelations | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
 
   // 選択月の日付
@@ -107,9 +106,9 @@ export function MonthlyPropertiesClient({
     filteredProperties.forEach((p) => {
       // DateをISO文字列に変換、nullの場合は空文字列
       const dateKey = p.settlementDate
-        ? (p.settlementDate instanceof Date
+        ? p.settlementDate instanceof Date
           ? p.settlementDate.toISOString()
-          : new Date(p.settlementDate).toISOString())
+          : new Date(p.settlementDate).toISOString()
         : "";
 
       if (!grouped[dateKey]) {
@@ -143,18 +142,23 @@ export function MonthlyPropertiesClient({
 
   const formatDate = (dateString: string | Date | null): string => {
     if (!dateString) return "-";
-    const date: Date = typeof dateString === "string" ? new Date(dateString) : dateString;
+    const date: Date =
+      typeof dateString === "string" ? new Date(dateString) : dateString;
     return `${date.getMonth() + 1}/${date.getDate()}`;
   };
 
   const formatDateWithDay = (dateString: string | Date | null): string => {
     if (!dateString) return "-";
-    const date: Date = typeof dateString === "string" ? new Date(dateString) : dateString;
+    const date: Date =
+      typeof dateString === "string" ? new Date(dateString) : dateString;
     const days = ["日", "月", "火", "水", "木", "金", "土"];
     return `${date.getMonth() + 1}/${date.getDate()}(${days[date.getDay()]})`;
   };
 
-  const truncateText = (text: string | null | undefined, maxLength: number = 5) => {
+  const truncateText = (
+    text: string | null | undefined,
+    maxLength: number = 5
+  ) => {
     if (!text) return "-";
     return text.length > maxLength ? text.substring(0, maxLength) : text;
   };
@@ -201,7 +205,7 @@ export function MonthlyPropertiesClient({
       ab_bc: "AB・BC",
       ac: "AC",
       iyaku: "違約",
-      shirahaku: "白紙",
+      hakushi: "白紙",
       mitei: "未定",
       jisha: "自社仕入れ",
       bengoshi: "弁護士",
@@ -274,7 +278,11 @@ export function MonthlyPropertiesClient({
   };
 
   // テーブルコンポーネント
-  const PropertiesTable = ({ properties }: { properties: PropertyWithRelations[] }) => (
+  const PropertiesTable = ({
+    properties,
+  }: {
+    properties: PropertyWithRelations[];
+  }) => (
     <div className="overflow-auto max-h-[calc(100vh-500px)]">
       <Table className="text-[10px]">
         <TableHeader className="sticky top-0 bg-background z-10">
@@ -323,7 +331,9 @@ export function MonthlyPropertiesClient({
             <TableRow key={property.id} className="hover:bg-muted/50">
               <TableCell className="text-[10px] p-1 sticky left-0 bg-background">
                 <Badge variant="outline" className="text-[9px] px-1 py-0">
-                  {property.organization?.name || property.organizationId?.slice(0, 3) || "レイジット"}
+                  {property.organization?.name ||
+                    property.organizationId?.slice(0, 3) ||
+                    "レイジット"}
                 </Badge>
               </TableCell>
               <TableCell className="text-[10px] p-1 sticky left-[50px] bg-background">
@@ -402,17 +412,22 @@ export function MonthlyPropertiesClient({
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      {["contract_cb_waiting", "bc_contract_waiting", "settlement_date_waiting",
-                        "settlement_cb_waiting", "settlement_waiting", "settlement_completed"]
-                        .map((status) => (
-                          <SelectItem
-                            key={status}
-                            value={status}
-                            className="text-[10px]"
-                          >
-                            {getProgressStatusLabel(status)}
-                          </SelectItem>
-                        ))}
+                      {[
+                        "contract_cb_waiting",
+                        "bc_contract_waiting",
+                        "settlement_date_waiting",
+                        "settlement_cb_waiting",
+                        "settlement_waiting",
+                        "settlement_completed",
+                      ].map((status) => (
+                        <SelectItem
+                          key={status}
+                          value={status}
+                          className="text-[10px]"
+                        >
+                          {getProgressStatusLabel(status)}
+                        </SelectItem>
+                      ))}
                     </SelectContent>
                   </Select>
                 ) : (
@@ -426,7 +441,10 @@ export function MonthlyPropertiesClient({
                       })
                     }
                   >
-                    {truncateText(getProgressStatusLabel(property.progressStatus), 6)}
+                    {truncateText(
+                      getProgressStatusLabel(property.progressStatus),
+                      6
+                    )}
                   </Badge>
                 )}
               </TableCell>
@@ -446,15 +464,17 @@ export function MonthlyPropertiesClient({
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      {["waiting_request", "in_progress", "all_completed"].map((status) => (
-                        <SelectItem
-                          key={status}
-                          value={status}
-                          className="text-[10px]"
-                        >
-                          {getDocumentStatusLabel(status)}
-                        </SelectItem>
-                      ))}
+                      {["waiting_request", "in_progress", "all_completed"].map(
+                        (status) => (
+                          <SelectItem
+                            key={status}
+                            value={status}
+                            className="text-[10px]"
+                          >
+                            {getDocumentStatusLabel(status)}
+                          </SelectItem>
+                        )
+                      )}
                     </SelectContent>
                   </Select>
                 ) : (
@@ -468,7 +488,10 @@ export function MonthlyPropertiesClient({
                       })
                     }
                   >
-                    {truncateText(getDocumentStatusLabel(property.documentStatus), 6)}
+                    {truncateText(
+                      getDocumentStatusLabel(property.documentStatus),
+                      6
+                    )}
                   </Badge>
                 )}
               </TableCell>
@@ -492,7 +515,10 @@ export function MonthlyPropertiesClient({
                   <div
                     className="cursor-pointer hover:bg-muted px-1 rounded text-[10px] truncate break-all max-w-[120px]"
                     onClick={() =>
-                      setEditingMemo({ id: property.id, value: property.notes || "" })
+                      setEditingMemo({
+                        id: property.id,
+                        value: property.notes || "",
+                      })
                     }
                     title={property.notes || ""}
                   >
