@@ -4,38 +4,6 @@
 export const managementOrgType = ["management", "sales", "office"] as const;
 export type ManagementOrgType = (typeof managementOrgType)[number];
 
-/** B会社 */
-export const companyB = [
-  "ms",
-  "life",
-  "legit",
-  "esc",
-  "trader",
-  "shine",
-  "second",
-] as const;
-export type CompanyB = (typeof companyB)[number];
-
-/** 仲介会社 */
-export const brokerCompany = [
-  "legit",
-  "tousei",
-  "esc",
-  "shine",
-  "nbf",
-  "rd",
-  "ms",
-] as const;
-export type BrokerCompany = (typeof brokerCompany)[number];
-
-/** 書類ステータス */
-export const documentStatus = [
-  "waiting_request",
-  "in_progress",
-  "completed",
-] as const;
-export type DocumentStatus = (typeof documentStatus)[number];
-
 /** 使用口座会社 */
 export const accountCompany = ["legit", "life", "ms"] as const;
 export type AccountCompany = (typeof accountCompany)[number];

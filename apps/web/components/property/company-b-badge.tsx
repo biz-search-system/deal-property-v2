@@ -1,28 +1,26 @@
 import {
-  CONTRACT_TYPE_COLORS,
-  CONTRACT_TYPE_LABELS,
-  ContractType,
+  COMPANY_B_COLORS,
+  COMPANY_B_LABELS,
+  CompanyB,
 } from "@workspace/drizzle/constants";
 import { Badge } from "@workspace/ui/components/badge";
 import { cn } from "@workspace/utils";
 import { truncateText } from "@/lib/property";
 
-export default function ContractTypeBadge({
-  contractType,
+export default function CompanyBBadge({
+  companyB,
 }: {
-  contractType: ContractType | null;
+  companyB: CompanyB | null;
 }) {
   return (
     <Badge
       variant="outline"
       className={cn(
         "text-[9px] px-1 py-0",
-        contractType && CONTRACT_TYPE_COLORS[contractType]
+        companyB && COMPANY_B_COLORS[companyB]
       )}
     >
-      {truncateText(
-        (contractType && CONTRACT_TYPE_LABELS[contractType]) || null
-      )}
+      {truncateText((companyB && COMPANY_B_LABELS[companyB]) || null)}
     </Badge>
   );
 }

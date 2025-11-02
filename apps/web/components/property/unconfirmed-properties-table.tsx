@@ -34,45 +34,15 @@ import {
   updatePropertyNotes,
 } from "@/lib/actions/property";
 import { toast } from "sonner";
-import { cn } from "@workspace/ui/lib/utils";
 import {
   PROGRESS_STATUS_LABELS,
-  PROGRESS_STATUS_STYLES,
-  CONTRACT_TYPE_LABELS,
-  CONTRACT_TYPE_COLORS,
-  ContractType,
+  DOCUMENT_STATUS_LABELS,
 } from "@workspace/drizzle/constants";
 import ContractTypeBadge from "./contract-type-badge";
-
-// 書類ステータスの表示名マッピング
-const DOCUMENT_STATUS_LABELS: Record<string, string> = {
-  waiting_request: "営業依頼待ち",
-  in_progress: "書類取得中",
-  completed: "全書類取得完了",
-};
-
-// B会社の表示名マッピング
-const COMPANY_B_LABELS: Record<string, string> = {
-  ms: "エムズ",
-  life: "ライフ",
-  legit: "レイジット",
-  esc: "エスク",
-  trader: "取引業者",
-  shine: "シャイン",
-  second: "セカンド",
-};
-
-// 仲介会社の表示名マッピング
-const BROKER_COMPANY_LABELS: Record<string, string> = {
-  legit: "レイジット",
-  tousei: "TOUSEI",
-  esc: "エスク",
-  shine: "シャイン",
-  nbf: "NBF",
-  rd: "RD",
-  ms: "エムズ",
-};
-
+import CompanyBBadge from "./company-b-badge";
+import BrokerCompanyBadge from "./broker-company-badge";
+import ProgressStatusBadge from "./progress-status-badge";
+import DocumentStatusBadge from "./document-status-badge";
 interface UnconfirmedPropertiesTableProps {
   properties: PropertyWithRelations[];
 }
@@ -104,16 +74,6 @@ export function UnconfirmedPropertiesTable({
     return `${(value / 10000).toFixed(0)}万`;
   };
 
-  const truncateText = (text: string | null, maxLength: number = 5) => {
-    if (!text) return "-";
-    return text.length > maxLength ? text.substring(0, maxLength) : text;
-  };
-
-  const getDocumentStatusColor = (status: string) => {
-    if (status === "completed") return "default";
-    if (status === "in_progress") return "secondary";
-    return "outline";
-  };
 
   const handleNotesSave = async (propertyId: string) => {
     if (!editingNotes) return;
@@ -262,52 +222,17 @@ export function UnconfirmedPropertiesTable({
 
               {/* 契約形態 */}
               <TableCell className="text-[10px] p-1">
-                <ContractTypeBadge
-                  contractType={property.contractType as ContractType}
-                />
-                {/* <Badge
-                  variant="outline"
-                  className={cn(
-                    "text-[9px] px-1 py-0",
-                    property.contractType
-                      ? CONTRACT_TYPE_COLORS[property.contractType]
-                      : "border-blue-400 text-blue-700 dark:text-blue-300"
-                  )}
-                  // className={cn(
-                  //   "text-[9px] px-1 py-0",
-                  //   "border-blue-400 text-blue-700 dark:text-blue-300"
-                  // )}
-                >
-                  {property.contractType
-                    ? truncateText(
-                        CONTRACT_TYPE_LABELS[property.contractType] ||
-                          property.contractType
-                      )
-                    : "-"}
-                </Badge> */}
+                <ContractTypeBadge contractType={property.contractType} />
               </TableCell>
 
               {/* B会社 */}
               <TableCell className="text-[10px] p-1">
-                <Badge variant="outline" className="text-[9px] px-1 py-0">
-                  {property.companyB
-                    ? truncateText(
-                        COMPANY_B_LABELS[property.companyB] || property.companyB
-                      )
-                    : "-"}
-                </Badge>
+                <CompanyBBadge companyB={property.companyB} />
               </TableCell>
 
               {/* 仲介 */}
               <TableCell className="text-[10px] p-1">
-                <Badge variant="outline" className="text-[9px] px-1 py-0">
-                  {property.brokerCompany
-                    ? truncateText(
-                        BROKER_COMPANY_LABELS[property.brokerCompany] ||
-                          property.brokerCompany
-                      )
-                    : "-"}
-                </Badge>
+                <BrokerCompanyBadge brokerCompany={property.brokerCompany} />
               </TableCell>
 
               {/* 進捗（インライン編集） */}
@@ -337,28 +262,15 @@ export function UnconfirmedPropertiesTable({
                     </SelectContent>
                   </Select>
                 ) : (
-                  <Badge
-                    variant={
-                      PROGRESS_STATUS_STYLES[property.progressStatus]
-                        ?.variant || "outline"
-                    }
-                    className={cn(
-                      "text-[9px] cursor-pointer px-1 py-0",
-                      PROGRESS_STATUS_STYLES[property.progressStatus]?.className
-                    )}
+                  <ProgressStatusBadge
+                    progressStatus={property.progressStatus}
                     onClick={() =>
                       setEditingProgressStatus({
                         id: property.id,
                         value: property.progressStatus,
                       })
                     }
-                  >
-                    {truncateText(
-                      PROGRESS_STATUS_LABELS[property.progressStatus] ||
-                        property.progressStatus,
-                      6
-                    )}
-                  </Badge>
+                  />
                 )}
               </TableCell>
 
@@ -389,19 +301,15 @@ export function UnconfirmedPropertiesTable({
                     </SelectContent>
                   </Select>
                 ) : (
-                  <Badge
-                    variant={getDocumentStatusColor(property.documentStatus)}
-                    className="text-[9px] cursor-pointer px-1 py-0"
+                  <DocumentStatusBadge
+                    documentStatus={property.documentStatus}
                     onClick={() =>
                       setEditingDocumentStatus({
                         id: property.id,
                         value: property.documentStatus,
                       })
                     }
-                  >
-                    {DOCUMENT_STATUS_LABELS[property.documentStatus] ||
-                      property.documentStatus}
-                  </Badge>
+                  />
                 )}
               </TableCell>
 
