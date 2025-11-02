@@ -74,7 +74,6 @@ export function UnconfirmedPropertiesTable({
     return `${(value / 10000).toFixed(0)}万`;
   };
 
-
   const handleNotesSave = async (propertyId: string) => {
     if (!editingNotes) return;
 
@@ -163,6 +162,13 @@ export function UnconfirmedPropertiesTable({
         <TableBody>
           {properties.map((property) => (
             <TableRow key={property.id} className="hover:bg-muted/50">
+              {/* 管理組織 */}
+              <TableCell className="text-[10px] p-1">
+                <Badge variant="outline" className="text-[9px] px-1 py-0">
+                  {property.organization?.name || "-"}
+                </Badge>
+              </TableCell>
+
               {/* 担当 */}
               <TableCell className="text-[10px] p-1 sticky left-0 bg-background">
                 <div className="flex gap-1 flex-wrap">
@@ -177,14 +183,6 @@ export function UnconfirmedPropertiesTable({
                   ))}
                 </div>
               </TableCell>
-
-              {/* 管理組織 */}
-              <TableCell className="text-[10px] p-1">
-                <Badge variant="outline" className="text-[9px] px-1 py-0">
-                  {property.organization?.name || "-"}
-                </Badge>
-              </TableCell>
-
               {/* 物件名 */}
               <TableCell className="text-[10px] p-1">
                 {property.propertyName}
