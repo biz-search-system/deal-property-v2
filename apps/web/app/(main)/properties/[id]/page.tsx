@@ -3,7 +3,12 @@ import Link from "next/link";
 import { Button } from "@workspace/ui/components/button";
 import { Badge } from "@workspace/ui/components/badge";
 import { Separator } from "@workspace/ui/components/separator";
-import { Card, CardContent, CardHeader, CardTitle } from "@workspace/ui/components/card";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "@workspace/ui/components/card";
 import {
   ArrowLeft,
   Building2,
@@ -20,7 +25,9 @@ import { format } from "date-fns";
 import { ja } from "date-fns/locale";
 import type { Metadata } from "next";
 
-export async function generateMetadata({ params }: PageProps<"/properties/[id]">): Promise<Metadata> {
+export async function generateMetadata({
+  params,
+}: PageProps<"/properties/[id]">): Promise<Metadata> {
   const { id } = await params;
   const property = await getPropertyById(id);
 
@@ -35,7 +42,9 @@ export async function generateMetadata({ params }: PageProps<"/properties/[id]">
   };
 }
 
-export default async function PropertyDetailPage({ params }: PageProps<"/properties/[id]">) {
+export default async function PropertyDetailPage({
+  params,
+}: PageProps<"/properties/[id]">) {
   const { id } = await params;
   const property = await getPropertyById(id);
 
@@ -69,7 +78,10 @@ export default async function PropertyDetailPage({ params }: PageProps<"/propert
   };
 
   // 利益計算
-  const profit = (property.amountExit || 0) - (property.amountA || 0) + (property.commission || 0);
+  const profit =
+    (property.amountExit || 0) -
+    (property.amountA || 0) +
+    (property.commission || 0);
 
   // ステータスのラベル取得
   const getProgressStatusLabel = (status: string | null) => {
@@ -99,7 +111,7 @@ export default async function PropertyDetailPage({ params }: PageProps<"/propert
       ab_bc: "AB・BC",
       ac: "AC",
       iyaku: "違約",
-      shirahaku: "白紙",
+      hakushi: "白紙",
       mitei: "未定",
       jisha: "自社仕入れ",
       bengoshi: "弁護士",
@@ -160,12 +172,7 @@ export default async function PropertyDetailPage({ params }: PageProps<"/propert
       <div className="border-b">
         <div className="container max-w-7xl mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
-            <Button
-              variant="ghost"
-              size="sm"
-              asChild
-              className="gap-2"
-            >
+            <Button variant="ghost" size="sm" asChild className="gap-2">
               <Link href="/properties/unconfirmed">
                 <ArrowLeft className="h-4 w-4" />
                 一覧に戻る
@@ -187,7 +194,12 @@ export default async function PropertyDetailPage({ params }: PageProps<"/propert
         <div className="mb-8">
           <h1 className="text-3xl font-semibold mb-2">
             {property.propertyName}
-            {property.roomNumber && <span className="text-muted-foreground"> - {property.roomNumber}</span>}
+            {property.roomNumber && (
+              <span className="text-muted-foreground">
+                {" "}
+                - {property.roomNumber}
+              </span>
+            )}
           </h1>
           <div className="flex items-center gap-4 flex-wrap">
             <div className="flex items-center gap-2">
@@ -201,8 +213,12 @@ export default async function PropertyDetailPage({ params }: PageProps<"/propert
                 ))}
               </div>
             </div>
-            <Badge variant="outline">{getProgressStatusLabel(property.progressStatus)}</Badge>
-            <Badge variant="outline">{getDocumentStatusLabel(property.documentStatus)}</Badge>
+            <Badge variant="outline">
+              {getProgressStatusLabel(property.progressStatus)}
+            </Badge>
+            <Badge variant="outline">
+              {getDocumentStatusLabel(property.documentStatus)}
+            </Badge>
           </div>
         </div>
 
@@ -238,23 +254,39 @@ export default async function PropertyDetailPage({ params }: PageProps<"/propert
               <CardContent className="space-y-4">
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <div className="text-sm text-muted-foreground mb-1">A金額</div>
-                    <div className="text-2xl font-semibold">{formatCurrency(property.amountA)}</div>
+                    <div className="text-sm text-muted-foreground mb-1">
+                      A金額
+                    </div>
+                    <div className="text-2xl font-semibold">
+                      {formatCurrency(property.amountA)}
+                    </div>
                   </div>
                   <div>
-                    <div className="text-sm text-muted-foreground mb-1">出口金額</div>
-                    <div className="text-2xl font-semibold">{formatCurrency(property.amountExit)}</div>
+                    <div className="text-sm text-muted-foreground mb-1">
+                      出口金額
+                    </div>
+                    <div className="text-2xl font-semibold">
+                      {formatCurrency(property.amountExit)}
+                    </div>
                   </div>
                 </div>
                 <Separator />
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <div className="text-sm text-muted-foreground mb-1">仲介手数料等</div>
-                    <div className="text-lg font-medium">{formatCurrency(property.commission)}</div>
+                    <div className="text-sm text-muted-foreground mb-1">
+                      仲介手数料等
+                    </div>
+                    <div className="text-lg font-medium">
+                      {formatCurrency(property.commission)}
+                    </div>
                   </div>
                   <div>
-                    <div className="text-sm text-muted-foreground mb-1">BC手付</div>
-                    <div className="text-lg font-medium">{formatCurrency(property.bcDeposit)}</div>
+                    <div className="text-sm text-muted-foreground mb-1">
+                      BC手付
+                    </div>
+                    <div className="text-lg font-medium">
+                      {formatCurrency(property.bcDeposit)}
+                    </div>
                   </div>
                 </div>
               </CardContent>
@@ -270,18 +302,30 @@ export default async function PropertyDetailPage({ params }: PageProps<"/propert
               </CardHeader>
               <CardContent className="space-y-4">
                 <div>
-                  <div className="text-sm text-muted-foreground mb-1">A契約日（AB契約日）</div>
-                  <div className="text-lg font-medium">{formatDate(property.contractDateA)}</div>
+                  <div className="text-sm text-muted-foreground mb-1">
+                    A契約日（AB契約日）
+                  </div>
+                  <div className="text-lg font-medium">
+                    {formatDate(property.contractDateA)}
+                  </div>
                 </div>
                 <Separator />
                 <div>
-                  <div className="text-sm text-muted-foreground mb-1">BC契約日</div>
-                  <div className="text-lg font-medium">{formatDate(property.contractDateBc)}</div>
+                  <div className="text-sm text-muted-foreground mb-1">
+                    BC契約日
+                  </div>
+                  <div className="text-lg font-medium">
+                    {formatDate(property.contractDateBc)}
+                  </div>
                 </div>
                 <Separator />
                 <div>
-                  <div className="text-sm text-muted-foreground mb-1">決済予定日</div>
-                  <div className="text-lg font-medium">{formatDate(property.settlementDate)}</div>
+                  <div className="text-sm text-muted-foreground mb-1">
+                    決済予定日
+                  </div>
+                  <div className="text-lg font-medium">
+                    {formatDate(property.settlementDate)}
+                  </div>
                 </div>
               </CardContent>
             </Card>
@@ -371,8 +415,12 @@ export default async function PropertyDetailPage({ params }: PageProps<"/propert
                 </CardHeader>
                 <CardContent>
                   <div>
-                    <div className="text-sm text-muted-foreground mb-1">書類ステータス</div>
-                    <Badge variant="outline">{getDocumentStatusLabel(property.documentProgress.status)}</Badge>
+                    <div className="text-sm text-muted-foreground mb-1">
+                      書類ステータス
+                    </div>
+                    <Badge variant="outline">
+                      {getDocumentStatusLabel(property.documentProgress.status)}
+                    </Badge>
                   </div>
                 </CardContent>
               </Card>
@@ -391,7 +439,9 @@ export default async function PropertyDetailPage({ params }: PageProps<"/propert
               </CardHeader>
               <CardContent className="space-y-3">
                 <div>
-                  <div className="text-xs text-muted-foreground mb-1">オーナー名</div>
+                  <div className="text-xs text-muted-foreground mb-1">
+                    オーナー名
+                  </div>
                   <div className="font-medium">{property.ownerName}</div>
                 </div>
               </CardContent>
@@ -404,28 +454,48 @@ export default async function PropertyDetailPage({ params }: PageProps<"/propert
               </CardHeader>
               <CardContent className="space-y-3">
                 <div>
-                  <div className="text-xs text-muted-foreground mb-1">契約形態</div>
-                  <div className="font-medium">{getContractTypeLabel(property.contractType)}</div>
+                  <div className="text-xs text-muted-foreground mb-1">
+                    契約形態
+                  </div>
+                  <div className="font-medium">
+                    {getContractTypeLabel(property.contractType)}
+                  </div>
                 </div>
                 <Separator />
                 <div>
-                  <div className="text-xs text-muted-foreground mb-1">買取業者</div>
-                  <div className="font-medium">{property.buyerCompany || "-"}</div>
+                  <div className="text-xs text-muted-foreground mb-1">
+                    買取業者
+                  </div>
+                  <div className="font-medium">
+                    {property.buyerCompany || "-"}
+                  </div>
                 </div>
                 <Separator />
                 <div>
-                  <div className="text-xs text-muted-foreground mb-1">B会社</div>
-                  <div className="font-medium">{getCompanyBLabel(property.companyB)}</div>
+                  <div className="text-xs text-muted-foreground mb-1">
+                    B会社
+                  </div>
+                  <div className="font-medium">
+                    {getCompanyBLabel(property.companyB)}
+                  </div>
                 </div>
                 <Separator />
                 <div>
-                  <div className="text-xs text-muted-foreground mb-1">仲介会社</div>
-                  <div className="font-medium">{getBrokerCompanyLabel(property.brokerCompany)}</div>
+                  <div className="text-xs text-muted-foreground mb-1">
+                    仲介会社
+                  </div>
+                  <div className="font-medium">
+                    {getBrokerCompanyLabel(property.brokerCompany)}
+                  </div>
                 </div>
                 <Separator />
                 <div>
-                  <div className="text-xs text-muted-foreground mb-1">抵当銀行</div>
-                  <div className="font-medium">{property.mortgageBank || "-"}</div>
+                  <div className="text-xs text-muted-foreground mb-1">
+                    抵当銀行
+                  </div>
+                  <div className="font-medium">
+                    {property.mortgageBank || "-"}
+                  </div>
                 </div>
               </CardContent>
             </Card>
@@ -437,13 +507,21 @@ export default async function PropertyDetailPage({ params }: PageProps<"/propert
               </CardHeader>
               <CardContent className="space-y-3">
                 <div>
-                  <div className="text-xs text-muted-foreground mb-1">使用口座会社</div>
-                  <div className="font-medium">{getAccountCompanyLabel(property.accountCompany)}</div>
+                  <div className="text-xs text-muted-foreground mb-1">
+                    使用口座会社
+                  </div>
+                  <div className="font-medium">
+                    {getAccountCompanyLabel(property.accountCompany)}
+                  </div>
                 </div>
                 <Separator />
                 <div>
-                  <div className="text-xs text-muted-foreground mb-1">使用銀行口座</div>
-                  <div className="font-medium">{getBankAccountLabel(property.bankAccount)}</div>
+                  <div className="text-xs text-muted-foreground mb-1">
+                    使用銀行口座
+                  </div>
+                  <div className="font-medium">
+                    {getBankAccountLabel(property.bankAccount)}
+                  </div>
                 </div>
               </CardContent>
             </Card>
@@ -455,27 +533,41 @@ export default async function PropertyDetailPage({ params }: PageProps<"/propert
               </CardHeader>
               <CardContent className="space-y-3">
                 <div>
-                  <div className="text-xs text-muted-foreground mb-1">名簿種別</div>
+                  <div className="text-xs text-muted-foreground mb-1">
+                    名簿種別
+                  </div>
                   <div className="font-medium">{property.listType || "-"}</div>
                 </div>
                 {property.notes && (
                   <>
                     <Separator />
                     <div>
-                      <div className="text-xs text-muted-foreground mb-1">備考</div>
-                      <div className="text-sm whitespace-pre-wrap">{property.notes}</div>
+                      <div className="text-xs text-muted-foreground mb-1">
+                        備考
+                      </div>
+                      <div className="text-sm whitespace-pre-wrap">
+                        {property.notes}
+                      </div>
                     </div>
                   </>
                 )}
                 <Separator />
                 <div>
-                  <div className="text-xs text-muted-foreground mb-1">作成日時</div>
-                  <div className="text-sm">{formatDateTime(property.createdAt)}</div>
+                  <div className="text-xs text-muted-foreground mb-1">
+                    作成日時
+                  </div>
+                  <div className="text-sm">
+                    {formatDateTime(property.createdAt)}
+                  </div>
                 </div>
                 <Separator />
                 <div>
-                  <div className="text-xs text-muted-foreground mb-1">更新日時</div>
-                  <div className="text-sm">{formatDateTime(property.updatedAt)}</div>
+                  <div className="text-xs text-muted-foreground mb-1">
+                    更新日時
+                  </div>
+                  <div className="text-sm">
+                    {formatDateTime(property.updatedAt)}
+                  </div>
                 </div>
               </CardContent>
             </Card>

@@ -23,40 +23,20 @@ export const PROGRESS_STATUS_LABELS: Record<ProgressStatus, string> = {
   settlement_completed: "決済完了",
 } as const;
 
-/** 進捗ステータスのバッジスタイルマッピング */
-export const PROGRESS_STATUS_STYLES: Record<
-  ProgressStatus,
-  {
-    variant: "default" | "secondary" | "outline" | "destructive";
-    className: string;
-  }
-> = {
-  bc_before_confirmed: {
-    variant: "outline",
-    className: "border-gray-400 text-gray-700 dark:border-gray-600 dark:text-gray-300",
-  },
-  waiting_contract_cb: {
-    variant: "outline",
-    className: "border-yellow-500 text-yellow-700 dark:border-yellow-400 dark:text-yellow-300",
-  },
-  waiting_bc_contract: {
-    variant: "outline",
-    className: "border-orange-500 text-orange-700 dark:border-orange-400 dark:text-orange-300",
-  },
-  waiting_settlement_date: {
-    variant: "outline",
-    className: "border-blue-500 text-blue-700 dark:border-blue-400 dark:text-blue-300",
-  },
-  waiting_settlement_cb: {
-    variant: "outline",
-    className: "border-purple-500 text-purple-700 dark:border-purple-400 dark:text-purple-300",
-  },
-  waiting_settlement: {
-    variant: "outline",
-    className: "border-indigo-500 text-indigo-700 dark:border-indigo-400 dark:text-indigo-300",
-  },
-  settlement_completed: {
-    variant: "outline",
-    className: "border-green-500 text-green-700 dark:border-green-400 dark:text-green-300",
-  },
-} as const;
+/** 進捗ステータスのカラーマッピング */
+export const PROGRESS_STATUS_COLORS: Record<ProgressStatus, string> = {
+  bc_before_confirmed:
+    "border-slate-400 bg-slate-50 text-slate-700 dark:bg-slate-950 dark:text-slate-300", // BC確定前（初期段階・未開始）
+  waiting_contract_cb:
+    "border-amber-400 bg-amber-50 text-amber-700 dark:bg-amber-950 dark:text-amber-300", // 契約CB待ち（準備段階）
+  waiting_bc_contract:
+    "border-yellow-400 bg-yellow-50 text-yellow-700 dark:bg-yellow-950 dark:text-yellow-300", // BC契約待ち（契約進行中）
+  waiting_settlement_date:
+    "border-sky-400 bg-sky-50 text-sky-700 dark:bg-sky-950 dark:text-sky-300", // 決済日待ち（中間段階）
+  waiting_settlement_cb:
+    "border-blue-400 bg-blue-50 text-blue-700 dark:bg-blue-950 dark:text-blue-300", // 精算CB待ち（精算段階）
+  waiting_settlement:
+    "border-indigo-400 bg-indigo-50 text-indigo-700 dark:bg-indigo-950 dark:text-indigo-300", // 決済待ち（最終確認段階）
+  settlement_completed:
+    "border-emerald-400 bg-emerald-50 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300", // 決済完了（完了・成功）
+};

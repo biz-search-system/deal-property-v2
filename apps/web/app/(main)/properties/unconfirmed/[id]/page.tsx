@@ -104,7 +104,7 @@ export default async function PropertyDetailPage({
       ab_bc: "AB・BC",
       ac: "AC",
       iyaku: "違約",
-      shirahaku: "白紙",
+      hakushi: "白紙",
       mitei: "未定",
       jisha: "自社仕入れ",
       bengoshi: "弁護士",
@@ -327,21 +327,42 @@ export default async function PropertyDetailPage({
                   <div className="p-4 space-y-3">
                     <ProgressItem
                       label="契約書 保存完了"
-                      checked={property.contractProgress?.abContractSaved || false}
-                      date={property.contractProgress?.abContractSavedAt ?
-                        formatDateTime(property.contractProgress.abContractSavedAt) : null}
+                      checked={
+                        property.contractProgress?.abContractSaved || false
+                      }
+                      date={
+                        property.contractProgress?.abContractSavedAt
+                          ? formatDateTime(
+                              property.contractProgress.abContractSavedAt
+                            )
+                          : null
+                      }
                     />
                     <ProgressItem
                       label="委任状関係 保存完了"
-                      checked={property.contractProgress?.abAuthorizationSaved || false}
-                      date={property.contractProgress?.abAuthorizationSavedAt ?
-                        formatDateTime(property.contractProgress.abAuthorizationSavedAt) : null}
+                      checked={
+                        property.contractProgress?.abAuthorizationSaved || false
+                      }
+                      date={
+                        property.contractProgress?.abAuthorizationSavedAt
+                          ? formatDateTime(
+                              property.contractProgress.abAuthorizationSavedAt
+                            )
+                          : null
+                      }
                     />
                     <ProgressItem
                       label="売主身分証 保存完了"
-                      checked={property.contractProgress?.abSellerIdSaved || false}
-                      date={property.contractProgress?.abSellerIdSavedAt ?
-                        formatDateTime(property.contractProgress.abSellerIdSavedAt) : null}
+                      checked={
+                        property.contractProgress?.abSellerIdSaved || false
+                      }
+                      date={
+                        property.contractProgress?.abSellerIdSavedAt
+                          ? formatDateTime(
+                              property.contractProgress.abSellerIdSavedAt
+                            )
+                          : null
+                      }
                     />
                   </div>
                 </div>
@@ -353,39 +374,81 @@ export default async function PropertyDetailPage({
                   <div className="p-4 space-y-3">
                     <ProgressItem
                       label="BC売契作成"
-                      checked={property.contractProgress?.bcContractCreated || false}
-                      date={property.contractProgress?.bcContractCreatedAt ?
-                        formatDateTime(property.contractProgress.bcContractCreatedAt) : null}
+                      checked={
+                        property.contractProgress?.bcContractCreated || false
+                      }
+                      date={
+                        property.contractProgress?.bcContractCreatedAt
+                          ? formatDateTime(
+                              property.contractProgress.bcContractCreatedAt
+                            )
+                          : null
+                      }
                     />
                     <ProgressItem
                       label="重説作成"
-                      checked={property.contractProgress?.bcDescriptionCreated || false}
-                      date={property.contractProgress?.bcDescriptionCreatedAt ?
-                        formatDateTime(property.contractProgress.bcDescriptionCreatedAt) : null}
+                      checked={
+                        property.contractProgress?.bcDescriptionCreated || false
+                      }
+                      date={
+                        property.contractProgress?.bcDescriptionCreatedAt
+                          ? formatDateTime(
+                              property.contractProgress.bcDescriptionCreatedAt
+                            )
+                          : null
+                      }
                     />
                     <ProgressItem
                       label="BC売契送付"
-                      checked={property.contractProgress?.bcContractSent || false}
-                      date={property.contractProgress?.bcContractSentAt ?
-                        formatDateTime(property.contractProgress.bcContractSentAt) : null}
+                      checked={
+                        property.contractProgress?.bcContractSent || false
+                      }
+                      date={
+                        property.contractProgress?.bcContractSentAt
+                          ? formatDateTime(
+                              property.contractProgress.bcContractSentAt
+                            )
+                          : null
+                      }
                     />
                     <ProgressItem
                       label="重説送付"
-                      checked={property.contractProgress?.bcDescriptionSent || false}
-                      date={property.contractProgress?.bcDescriptionSentAt ?
-                        formatDateTime(property.contractProgress.bcDescriptionSentAt) : null}
+                      checked={
+                        property.contractProgress?.bcDescriptionSent || false
+                      }
+                      date={
+                        property.contractProgress?.bcDescriptionSentAt
+                          ? formatDateTime(
+                              property.contractProgress.bcDescriptionSentAt
+                            )
+                          : null
+                      }
                     />
                     <ProgressItem
                       label="BC売契CB完了"
-                      checked={property.contractProgress?.bcContractCbDone || false}
-                      date={property.contractProgress?.bcContractCbDoneAt ?
-                        formatDateTime(property.contractProgress.bcContractCbDoneAt) : null}
+                      checked={
+                        property.contractProgress?.bcContractCbDone || false
+                      }
+                      date={
+                        property.contractProgress?.bcContractCbDoneAt
+                          ? formatDateTime(
+                              property.contractProgress.bcContractCbDoneAt
+                            )
+                          : null
+                      }
                     />
                     <ProgressItem
                       label="重説CB完了"
-                      checked={property.contractProgress?.bcDescriptionCbDone || false}
-                      date={property.contractProgress?.bcDescriptionCbDoneAt ?
-                        formatDateTime(property.contractProgress.bcDescriptionCbDoneAt) : null}
+                      checked={
+                        property.contractProgress?.bcDescriptionCbDone || false
+                      }
+                      date={
+                        property.contractProgress?.bcDescriptionCbDoneAt
+                          ? formatDateTime(
+                              property.contractProgress.bcDescriptionCbDoneAt
+                            )
+                          : null
+                      }
                     />
                   </div>
                 </div>
@@ -482,7 +545,9 @@ export default async function PropertyDetailPage({
                     <div className="text-xs text-muted-foreground mb-1">
                       名簿種別
                     </div>
-                    <div className="font-medium">{property.listType || "-"}</div>
+                    <div className="font-medium">
+                      {property.listType || "-"}
+                    </div>
                   </div>
                   {property.notes && (
                     <>

@@ -4,7 +4,7 @@ import { db } from "@workspace/drizzle/db";
 import { properties } from "@workspace/drizzle/schemas/property";
 import { and, eq, gte, lte, not, isNull } from "drizzle-orm";
 import { ProgressStatus } from "@workspace/drizzle/constants";
-import type { DocumentStatus } from "@workspace/drizzle/types/property";
+import { DocumentStatus } from "@workspace/drizzle/constants";
 
 /**
  * 全案件を取得

@@ -9,11 +9,14 @@ import {
 } from "drizzle-orm/sqlite-core";
 import { timestamps, id } from "../util";
 import { users, organizations } from "./auth";
-import { progressStatus, contractType } from "../constants";
 import {
+  progressStatus,
+  contractType,
   companyB,
   brokerCompany,
   documentStatus,
+} from "../constants";
+import {
   accountCompany,
   bankAccount,
   bcSettlementStatus,

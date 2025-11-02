@@ -18,7 +18,6 @@ import {
 } from "@workspace/ui/components/select";
 import { Textarea } from "@workspace/ui/components/textarea";
 import { usePropertyForm } from "../property-form-provider";
-import { companyB, brokerCompany } from "@workspace/drizzle/types/property";
 import { Button } from "@workspace/ui/components/button";
 import {
   DropdownMenu,
@@ -29,7 +28,14 @@ import {
   DropdownMenuTrigger,
 } from "@workspace/ui/components/dropdown-menu";
 import { ChevronDown } from "lucide-react";
-import { contractType } from "@workspace/drizzle/constants";
+import {
+  contractType,
+  CONTRACT_TYPE_LABELS,
+  companyB,
+  COMPANY_B_LABELS,
+  brokerCompany,
+  BROKER_COMPANY_LABELS,
+} from "@workspace/drizzle/constants";
 
 interface BasicInfoTabProps {
   availableStaff: { id: string; name: string; email: string; role: string }[];
@@ -395,7 +401,7 @@ export default function BasicInfoTab({
                   <SelectContent>
                     {contractType.map((type) => (
                       <SelectItem key={type} value={type}>
-                        {type}
+                        {CONTRACT_TYPE_LABELS[type]}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -423,7 +429,7 @@ export default function BasicInfoTab({
                   <SelectContent>
                     {companyB.map((company) => (
                       <SelectItem key={company} value={company}>
-                        {company}
+                        {COMPANY_B_LABELS[company]}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -451,7 +457,7 @@ export default function BasicInfoTab({
                   <SelectContent>
                     {brokerCompany.map((company) => (
                       <SelectItem key={company} value={company}>
-                        {company}
+                        {BROKER_COMPANY_LABELS[company]}
                       </SelectItem>
                     ))}
                   </SelectContent>

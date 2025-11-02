@@ -15,7 +15,7 @@ import {
   SelectValue,
 } from "@workspace/ui/components/select";
 import { usePropertyForm } from "../property-form-provider";
-import { documentStatus } from "@workspace/drizzle/types/property";
+import { documentStatus } from "@workspace/drizzle/constants";
 
 export default function DocumentProgressTab() {
   const { control } = usePropertyForm();
