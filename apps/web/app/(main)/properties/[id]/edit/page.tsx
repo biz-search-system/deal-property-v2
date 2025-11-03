@@ -19,8 +19,6 @@ import DocumentProgressTab from "@/components/property/tabs/document-progress-ta
 import SettlementProgressTab from "@/components/property/tabs/settlement-progress-tab";
 import { getPropertyById } from "@/lib/data/property";
 import { getOrganizations, getSalesTeamMembers } from "@/lib/data/organization";
-import { auth } from "@workspace/auth";
-import { headers } from "next/headers";
 import type { Metadata } from "next";
 import { verifySession } from "@/lib/data/sesstion";
 

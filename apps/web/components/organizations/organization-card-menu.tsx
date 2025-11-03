@@ -49,7 +49,7 @@ export function OrganizationCardMenu({
       if (result.success) {
         toast.success(`${organizationName}をアクティブに設定しました`);
       }
-    } catch (err) {
+    } catch {
       toast.error("組織をアクティブに設定できませんでした");
     }
   };

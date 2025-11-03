@@ -19,8 +19,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@workspace/ui/components/card";
-import { Alert, AlertDescription } from "@workspace/ui/components/alert";
-import { Loader2, Building2, AlertCircle } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import Link from "next/link";
 

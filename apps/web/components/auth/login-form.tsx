@@ -58,7 +58,7 @@ export function LoginForm({
 
       // 招待がある場合は受け入れる
       if (invitationId) {
-        const { data: acceptResult, error: acceptError } =
+        const { error: acceptError } =
           await authClient.organization.acceptInvitation({
             invitationId,
           });

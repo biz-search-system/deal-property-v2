@@ -114,19 +114,22 @@ export function PropertyDetailModal({
   // モーダルが開いたとき、またはpropertyが変わったときにデフォルト値を更新
   useEffect(() => {
     if (property && open) {
-      setAAmount(property.amountA || 0);
-      setExitAmount(property.amountExit || 0);
-      setCommission(property.commission || 0);
-      const staffNames = property.staff?.map(s => s.user?.name).filter((name): name is string => !!name) || [];
-      setAssignees(staffNames);
+      // 非同期で状態を更新
+      Promise.resolve().then(() => {
+        setAAmount(property.amountA || 0);
+        setExitAmount(property.amountExit || 0);
+        setCommission(property.commission || 0);
+        const staffNames = property.staff?.map(s => s.user?.name).filter((name): name is string => !!name) || [];
+        setAssignees(staffNames);
 
-      if (property.settlementDate) {
-        const date = new Date(property.settlementDate);
-        const dateStr = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
-        setSettlementDate(dateStr);
-      } else {
-        setSettlementDate(null);
-      }
+        if (property.settlementDate) {
+          const date = new Date(property.settlementDate);
+          const dateStr = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+          setSettlementDate(dateStr);
+        } else {
+          setSettlementDate(null);
+        }
+      });
 
       if (property.contractDateA) {
         const date = new Date(property.contractDateA);

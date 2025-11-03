@@ -1,11 +1,8 @@
 import { verifySession } from "@/lib/data/sesstion";
 import { VerifiedSessionResponse } from "@/lib/types/user";
-import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 
-export async function GET(
-  _req: NextRequest
-): Promise<NextResponse<VerifiedSessionResponse>> {
+export async function GET(): Promise<NextResponse<VerifiedSessionResponse>> {
   // セッション確認
   const data = await verifySession();
 

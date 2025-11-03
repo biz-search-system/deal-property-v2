@@ -2,12 +2,9 @@ import { auth } from "@workspace/auth";
 import { getOrganizationsWithUserRole } from "@/lib/data/organization";
 import { OrganizationsWithUserRoleResponse } from "@/lib/types/organization";
 import { headers } from "next/headers";
-import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 
-export async function GET(
-  _req: NextRequest
-): Promise<NextResponse<OrganizationsWithUserRoleResponse>> {
+export async function GET(): Promise<NextResponse<OrganizationsWithUserRoleResponse>> {
   // セッション確認
   const session = await auth.api.getSession({
     headers: await headers(),
