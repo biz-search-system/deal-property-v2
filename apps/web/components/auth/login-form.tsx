@@ -1,8 +1,14 @@
 "use client";
 
+import HeroImage from "@/components/hero-image";
+import { loginAction } from "@/lib/actions/auth";
+import { refreshAuthenticatedData } from "@/lib/swr/mutate";
+import type { Login } from "@/lib/types/auth";
+import { loginSchema } from "@/lib/zod/schemas/auth";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { authClient } from "@workspace/auth/client";
 import { Button } from "@workspace/ui/components/button";
 import { Card, CardContent } from "@workspace/ui/components/card";
-import { Input } from "@workspace/ui/components/input";
 import {
   Form,
   FormControl,
@@ -11,19 +17,14 @@ import {
   FormLabel,
   FormMessage,
 } from "@workspace/ui/components/form";
+import { Input } from "@workspace/ui/components/input";
 import { cn } from "@workspace/utils";
-import HeroImage from "@/components/hero-image";
-import PasswordForm from "./password-form";
-import { useSearchParams, useRouter } from "next/navigation";
-import { useTransition } from "react";
 import { Loader2 } from "lucide-react";
-import { toast } from "sonner";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useTransition } from "react";
 import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { loginSchema } from "@/lib/zod/schemas/auth";
-import type { Login } from "@/lib/types/auth";
-import { loginAction } from "@/lib/actions/auth";
-import { authClient } from "@workspace/auth/client";
+import { toast } from "sonner";
+import PasswordForm from "./password-form";
 
 export function LoginForm({
   className,
@@ -52,6 +53,8 @@ export function LoginForm({
         toast.error(result.error);
         return;
       }
+      // 認証関連データを一括更新
+      await refreshAuthenticatedData();
 
       // 招待がある場合は受け入れる
       if (invitationId) {
