@@ -1,10 +1,13 @@
 import {
+  getOrganizations,
   getActiveOrganization,
   getOrganizationInvitations,
   getOrganizationMembers,
   getOrganizationsWithUserRole,
   getCurrentUserOrganizationInfo,
 } from "@/lib/data/organization";
+
+export type Organization = Awaited<ReturnType<typeof getOrganizations>>[number];
 
 export type OrganizationWithUserRole = Awaited<
   ReturnType<typeof getOrganizationsWithUserRole>
@@ -56,8 +59,18 @@ export interface CurrentUserOrganizationInfoSuccessResponse {
 }
 
 // Union型で定義
-export type OrganizationNameResponse = OrganizationNameSuccessResponse | ErrorResponse;
-export type OrganizationMembersResponse = OrganizationMembersSuccessResponse | ErrorResponse;
-export type OrganizationInvitationsResponse = OrganizationInvitationsSuccessResponse | ErrorResponse;
-export type OrganizationsWithUserRoleResponse = OrganizationsWithUserRoleSuccessResponse | ErrorResponse;
-export type CurrentUserOrganizationInfoResponse = CurrentUserOrganizationInfoSuccessResponse | ErrorResponse;
+export type OrganizationNameResponse =
+  | OrganizationNameSuccessResponse
+  | ErrorResponse;
+export type OrganizationMembersResponse =
+  | OrganizationMembersSuccessResponse
+  | ErrorResponse;
+export type OrganizationInvitationsResponse =
+  | OrganizationInvitationsSuccessResponse
+  | ErrorResponse;
+export type OrganizationsWithUserRoleResponse =
+  | OrganizationsWithUserRoleSuccessResponse
+  | ErrorResponse;
+export type CurrentUserOrganizationInfoResponse =
+  | CurrentUserOrganizationInfoSuccessResponse
+  | ErrorResponse;

@@ -58,8 +58,8 @@ export default function PropertyFormProvider({
       mortgageBank: defaultValues?.mortgageBank || "",
       listType: defaultValues?.listType || "",
       notes: defaultValues?.notes || "",
-      progressStatus: defaultValues?.progressStatus || "bc_before_confirmed",
-      documentStatus: defaultValues?.documentStatus || "waiting_request",
+      progressStatus: defaultValues?.progressStatus || "bc_before_confirmed", // DBデフォルト値
+      documentStatus: defaultValues?.documentStatus || "waiting_request", // DBデフォルト値
       accountCompany: defaultValues?.accountCompany || "",
       bankAccount: defaultValues?.bankAccount || "",
       staffIds: defaultValues?.staffIds || [],
@@ -83,7 +83,9 @@ export default function PropertyFormProvider({
       }
     } catch (error) {
       toast.error(
-        mode === "create" ? "案件の作成に失敗しました" : "案件の更新に失敗しました"
+        mode === "create"
+          ? "案件の作成に失敗しました"
+          : "案件の更新に失敗しました"
       );
       console.error(error);
     }

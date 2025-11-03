@@ -37,12 +37,14 @@ import { toast } from "sonner";
 import {
   PROGRESS_STATUS_LABELS,
   DOCUMENT_STATUS_LABELS,
+  OrganizationNameType,
 } from "@workspace/drizzle/constants";
 import ContractTypeBadge from "./badge/contract-type-badge";
 import CompanyBBadge from "./badge/company-b-badge";
 import BrokerCompanyBadge from "./badge/broker-company-badge";
-import ProgressStatusBadge from "./progress-status-badge";
+import ProgressStatusBadge from "./badge/progress-status-badge";
 import DocumentStatusBadge from "./badge/document-status-badge";
+import OrganizationBadge from "./badge/organization-badge";
 interface UnconfirmedPropertiesTableProps {
   properties: PropertyWithRelations[];
 }
@@ -164,9 +166,12 @@ export function UnconfirmedPropertiesTable({
             <TableRow key={property.id} className="hover:bg-muted/50">
               {/* 管理組織 */}
               <TableCell className="text-[10px] p-1">
-                <Badge variant="outline" className="text-[9px] px-1 py-0">
+                {/* <Badge variant="outline" className="text-[9px] px-1 py-0">
                   {property.organization?.name || "-"}
-                </Badge>
+                </Badge> */}
+                <OrganizationBadge
+                  organization={property.organization.name as OrganizationNameType}
+                />
               </TableCell>
 
               {/* 担当 */}
