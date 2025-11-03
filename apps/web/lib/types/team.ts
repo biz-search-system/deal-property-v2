@@ -33,16 +33,28 @@ export type TeamMember = {
 };
 
 // API レスポンス型
-export type OrganizationTeamsResponse = {
-  teams?: Awaited<ReturnType<typeof getOrganizationTeamsWithMemberCount>>;
-  error?: string;
-};
-
+export type OrganizationTeams = Awaited<ReturnType<typeof getOrganizationTeamsWithMemberCount>>;
 export type Member = Awaited<ReturnType<typeof getTeamMembers>>[number];
-export type TeamMembersResponse = {
-  members?: Member[];
-  error?: string;
-};
+
+// エラーレスポンス（共通）
+export interface ErrorResponse {
+  error: {
+    message: string;
+  };
+}
+
+// 成功レスポンス
+export interface OrganizationTeamsSuccessResponse {
+  teams: OrganizationTeams;
+}
+
+export interface TeamMembersSuccessResponse {
+  members: Member[];
+}
+
+// Union型で定義
+export type OrganizationTeamsResponse = OrganizationTeamsSuccessResponse | ErrorResponse;
+export type TeamMembersResponse = TeamMembersSuccessResponse | ErrorResponse;
 
 // UIで使用する拡張型
 export type TeamWithMemberCount = Team & {

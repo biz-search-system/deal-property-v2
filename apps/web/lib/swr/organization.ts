@@ -1,35 +1,37 @@
 import useSWR from "swr";
-import { fetcher } from "./fetcher";
+import { fetcher } from "@workspace/utils";
 import type {
-  OrganizationInvitationsResponse,
-  OrganizationMembersResponse,
-  OrganizationNameResponse,
-  OrganizationsWithUserRoleResponse,
-  CurrentUserOrganizationInfoResponse,
+  OrganizationInvitationsSuccessResponse,
+  OrganizationMembersSuccessResponse,
+  OrganizationNameSuccessResponse,
+  OrganizationsWithUserRoleSuccessResponse,
+  CurrentUserOrganizationInfoSuccessResponse,
 } from "@/lib/types/organization";
 
 export const useOrganizationName = (organizationId: string | null) => {
-  const { data, error, isLoading } = useSWR<OrganizationNameResponse>(
+  // Route ハンドラーの成功レスポンス型と一致
+  const { data, error, isLoading } = useSWR<OrganizationNameSuccessResponse>(
     organizationId ? `/api/organization/${organizationId}` : null,
     fetcher
   );
 
   return {
-    organization: data,
+    name: data?.name,
     isLoading,
     error,
   };
 };
 
 export const useOrganizationMembers = (organizationId: string | null) => {
+  // Route ハンドラーの成功レスポンス型と一致
   const { data, error, isLoading, mutate } =
-    useSWR<OrganizationMembersResponse>(
+    useSWR<OrganizationMembersSuccessResponse>(
       organizationId ? `/api/organization/${organizationId}/members` : null,
       fetcher
     );
 
   return {
-    data: data?.organizationMembers,
+    members: data?.organizationMembers,
     isLoading,
     error,
     mutate,
@@ -37,14 +39,15 @@ export const useOrganizationMembers = (organizationId: string | null) => {
 };
 
 export const useOrganizationInvitations = (organizationId: string | null) => {
+  // Route ハンドラーの成功レスポンス型と一致
   const { data, error, isLoading, mutate } =
-    useSWR<OrganizationInvitationsResponse>(
+    useSWR<OrganizationInvitationsSuccessResponse>(
       organizationId ? `/api/organization/${organizationId}/invitations` : null,
       fetcher
     );
 
   return {
-    data: data?.organizationInvitations,
+    invitations: data?.organizationInvitations,
     isLoading,
     error,
     mutate,
@@ -52,8 +55,9 @@ export const useOrganizationInvitations = (organizationId: string | null) => {
 };
 
 export const useOrganizationsWithUserRole = () => {
+  // Route ハンドラーの成功レスポンス型と一致
   const { data, error, isLoading, mutate } =
-    useSWR<OrganizationsWithUserRoleResponse>("/api/organization", fetcher);
+    useSWR<OrganizationsWithUserRoleSuccessResponse>("/api/organization", fetcher);
 
   return {
     organizations: data?.organizations,
@@ -65,16 +69,17 @@ export const useOrganizationsWithUserRole = () => {
 };
 
 export const useCurrentUserOrganizationInfo = (organizationId: string | null) => {
+  // Route ハンドラーの成功レスポンス型と一致
   const { data, error, isLoading, mutate } =
-    useSWR<CurrentUserOrganizationInfoResponse>(
+    useSWR<CurrentUserOrganizationInfoSuccessResponse>(
       organizationId ? `/api/organization/${organizationId}/current-user` : null,
       fetcher
     );
 
   return {
-    data: data?.data,
+    info: data?.data,
     isLoading,
-    error: error || data?.error,
+    error,
     mutate,
   };
 };

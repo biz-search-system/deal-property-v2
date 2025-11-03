@@ -15,7 +15,10 @@ export async function GET(
   });
 
   if (!session) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    return NextResponse.json(
+      { error: { message: "Unauthorized" } },
+      { status: 401 }
+    );
   }
 
   try {
@@ -27,7 +30,7 @@ export async function GET(
 
     if (!organization) {
       return NextResponse.json(
-        { error: "Organization not found" },
+        { error: { message: "Organization not found" } },
         { status: 404 }
       );
     }
@@ -38,7 +41,10 @@ export async function GET(
     );
 
     if (!isMember) {
-      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+      return NextResponse.json(
+        { error: { message: "Forbidden" } },
+        { status: 403 }
+      );
     }
 
     return NextResponse.json({
@@ -47,7 +53,7 @@ export async function GET(
   } catch (error) {
     console.error("Failed to fetch organization:", error);
     return NextResponse.json(
-      { error: "Internal server error" },
+      { error: { message: "Internal server error" } },
       { status: 500 }
     );
   }

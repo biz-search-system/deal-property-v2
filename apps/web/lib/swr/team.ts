@@ -1,20 +1,25 @@
 import useSWR from "swr";
-import { OrganizationTeamsResponse, TeamMembersResponse } from "@/lib/types/team";
-import { fetcher } from "./fetcher";
+import {
+  OrganizationTeamsSuccessResponse,
+  TeamMembersSuccessResponse,
+} from "@/lib/types/team";
+import { fetcher } from "@workspace/utils";
 
 /**
  * 組織のチーム一覧を取得するフック
  */
 export const useOrganizationTeams = (organizationId: string | null) => {
-  const { data, error, isLoading, mutate } = useSWR<OrganizationTeamsResponse>(
-    organizationId ? `/api/organization/${organizationId}/teams` : null,
-    fetcher
-  );
+  // Route ハンドラーの成功レスポンス型と一致
+  const { data, error, isLoading, mutate } =
+    useSWR<OrganizationTeamsSuccessResponse>(
+      organizationId ? `/api/organization/${organizationId}/teams` : null,
+      fetcher
+    );
 
   return {
     teams: data?.teams,
     isLoading,
-    error: error || data?.error,
+    error,
     mutate,
   };
 };
@@ -23,7 +28,8 @@ export const useOrganizationTeams = (organizationId: string | null) => {
  * チームメンバー一覧を取得するフック
  */
 export const useTeamMembers = (teamId: string | null) => {
-  const { data, error, isLoading, mutate } = useSWR<TeamMembersResponse>(
+  // Route ハンドラーの成功レスポンス型と一致
+  const { data, error, isLoading, mutate } = useSWR<TeamMembersSuccessResponse>(
     teamId ? `/api/team/${teamId}/members` : null,
     fetcher
   );
@@ -31,7 +37,7 @@ export const useTeamMembers = (teamId: string | null) => {
   return {
     members: data?.members,
     isLoading,
-    error: error || data?.error,
+    error,
     mutate,
   };
 };

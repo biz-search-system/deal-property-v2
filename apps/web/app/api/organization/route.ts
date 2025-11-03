@@ -14,7 +14,10 @@ export async function GET(
   });
 
   if (!session) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    return NextResponse.json(
+      { error: { message: "Unauthorized" } },
+      { status: 401 }
+    );
   }
 
   try {
@@ -32,7 +35,7 @@ export async function GET(
   } catch (error) {
     console.error("Failed to get organizations:", error);
     return NextResponse.json(
-      { error: "Failed to get organizations" },
+      { error: { message: "Failed to get organizations" } },
       { status: 500 }
     );
   }

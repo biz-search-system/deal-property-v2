@@ -1,9 +1,10 @@
 import useSWR from "swr";
-import { fetcher } from "./fetcher";
-import type { VerifiedSessionResponse } from "@/lib/types/user";
+import { fetcher } from "@workspace/utils";
+import type { VerifiedSessionSuccessResponse } from "@/lib/types/user";
 
 export const useSession = () => {
-  const { data, error, isLoading, mutate } = useSWR<VerifiedSessionResponse>(
+  // Route ハンドラーの成功レスポンス型と一致
+  const { data, error, isLoading, mutate } = useSWR<VerifiedSessionSuccessResponse>(
     "/api/session",
     fetcher
   );
