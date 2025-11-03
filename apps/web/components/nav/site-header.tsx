@@ -48,7 +48,7 @@ export function SiteHeader() {
   const organizationId: string | null = organizationIdFromPath || null;
 
   // 組織情報を取得
-  const { organization } = useOrganizationName(organizationId);
+  const { organizationName } = useOrganizationName(organizationId);
 
   // 年の選択肢を生成（現在年の前後2年）
   const currentYear = new Date().getFullYear();
@@ -103,7 +103,7 @@ export function SiteHeader() {
           // 組織IDの場合
           else if (paths[index - 1] === "organization" && path !== "new") {
             isOrganizationId = true;
-            label = organization?.name || path;
+            label = organizationName || path;
           }
           // IDっぽい場合（その他の数字）
           else if (/^\d+$/.test(path)) {

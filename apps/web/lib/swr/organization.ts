@@ -13,18 +13,19 @@ export const useOrganizationName = (
   swrOptions?: SWRConfiguration
 ) => {
   // Route ハンドラーの成功レスポンス型と一致
-  const { data, error, isLoading, isValidating } = useSWR<OrganizationNameSuccessResponse>(
-    organizationId ? `/api/organization/${organizationId}` : null,
-    fetcher,
-    {
-      dedupingInterval: 60000,      // 60秒間キャッシュ
-      revalidateOnFocus: false,     // フォーカス時の再検証無効
-      ...swrOptions,
-    }
-  );
+  const { data, error, isLoading, isValidating } =
+    useSWR<OrganizationNameSuccessResponse>(
+      organizationId ? `/api/organization/${organizationId}` : null,
+      fetcher,
+      {
+        dedupingInterval: 60000, // 60秒間キャッシュ
+        revalidateOnFocus: false, // フォーカス時の再検証無効
+        ...swrOptions,
+      }
+    );
 
   return {
-    name: data?.name,
+    organizationName: data?.name,
     isLoading,
     isValidating,
     error,
@@ -41,15 +42,15 @@ export const useOrganizationMembers = (
       organizationId ? `/api/organization/${organizationId}/members` : null,
       fetcher,
       {
-        dedupingInterval: 60000,      // 60秒間キャッシュ
-        revalidateOnFocus: false,     // フォーカス時の再検証無効
-        keepPreviousData: true,       // ページ遷移時のUX改善
+        dedupingInterval: 60000, // 60秒間キャッシュ
+        revalidateOnFocus: false, // フォーカス時の再検証無効
+        keepPreviousData: true, // ページ遷移時のUX改善
         ...swrOptions,
       }
     );
 
   return {
-    members: data?.organizationMembers,
+    organizationMembers: data?.organizationMembers,
     isLoading,
     isValidating,
     error,
@@ -67,8 +68,8 @@ export const useOrganizationInvitations = (
       organizationId ? `/api/organization/${organizationId}/invitations` : null,
       fetcher,
       {
-        dedupingInterval: 60000,      // 60秒間キャッシュ
-        revalidateOnFocus: false,     // フォーカス時の再検証無効
+        dedupingInterval: 60000, // 60秒間キャッシュ
+        revalidateOnFocus: false, // フォーカス時の再検証無効
         ...swrOptions,
       }
     );
@@ -82,17 +83,15 @@ export const useOrganizationInvitations = (
   };
 };
 
-export const useOrganizationsWithUserRole = (
-  swrOptions?: SWRConfiguration
-) => {
+export const useOrganizationsWithUserRole = (swrOptions?: SWRConfiguration) => {
   // Route ハンドラーの成功レスポンス型と一致
   const { data, error, isLoading, isValidating, mutate } =
     useSWR<OrganizationsWithUserRoleSuccessResponse>(
       "/api/organization",
       fetcher,
       {
-        dedupingInterval: 60000,      // 60秒間キャッシュ
-        revalidateOnFocus: false,     // フォーカス時の再検証無効
+        dedupingInterval: 60000, // 60秒間キャッシュ
+        revalidateOnFocus: false, // フォーカス時の再検証無効
         ...swrOptions,
       }
     );
@@ -114,17 +113,19 @@ export const useCurrentUserOrganizationInfo = (
   // Route ハンドラーの成功レスポンス型と一致
   const { data, error, isLoading, isValidating, mutate } =
     useSWR<CurrentUserOrganizationInfoSuccessResponse>(
-      organizationId ? `/api/organization/${organizationId}/current-user` : null,
+      organizationId
+        ? `/api/organization/${organizationId}/current-user`
+        : null,
       fetcher,
       {
-        dedupingInterval: 60000,      // 60秒間キャッシュ
-        revalidateOnFocus: false,     // フォーカス時の再検証無効
+        dedupingInterval: 60000, // 60秒間キャッシュ
+        revalidateOnFocus: false, // フォーカス時の再検証無効
         ...swrOptions,
       }
     );
 
   return {
-    info: data?.data,
+    currentUserInfo: data?.data,
     isLoading,
     isValidating,
     error,
