@@ -5,20 +5,6 @@ import {
   DOCUMENT_STATUS_LABELS,
   documentStatus,
 } from "@workspace/drizzle/constants";
-import {
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@workspace/ui/components/form";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@workspace/ui/components/select";
 import BadgeSelectForm from "../form/badge-select-form";
 import { usePropertyForm } from "../property-form-provider";
 
