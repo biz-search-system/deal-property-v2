@@ -15,10 +15,10 @@ import {
   companyB,
   brokerCompany,
   documentStatus,
-} from "../constants";
-import {
   accountCompany,
   bankAccount,
+} from "../constants";
+import {
   bcSettlementStatus,
   abSettlementStatus,
   identityVerification,

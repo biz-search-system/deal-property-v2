@@ -1,27 +1,19 @@
 "use client";
 
-import {
-  FormField,
-  FormItem,
-  FormLabel,
-  FormControl,
-  FormMessage,
-} from "@workspace/ui/components/form";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@workspace/ui/components/select";
 import { usePropertyForm } from "../property-form-provider";
+
 import {
+  ACCOUNT_COMPANY_COLORS,
+  ACCOUNT_COMPANY_LABELS,
   accountCompany,
+  BANK_ACCOUNT_COLORS,
+  BANK_ACCOUNT_LABELS,
   bankAccount,
-} from "@workspace/drizzle/types/property";
+} from "@workspace/drizzle/constants";
+import BadgeSelectForm from "../form/badge-select-form";
 
 export default function SettlementProgressTab() {
-  const { control } = usePropertyForm();
+  const form = usePropertyForm();
 
   return (
     <div className="space-y-6">
@@ -30,60 +22,27 @@ export default function SettlementProgressTab() {
         <h3 className="text-lg font-semibold">口座情報</h3>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <FormField
-            control={control}
+          <BadgeSelectForm
+            form={form}
             name="accountCompany"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>使用口座会社</FormLabel>
-                <Select
-                  onValueChange={field.onChange}
-                  defaultValue={field.value}
-                >
-                  <FormControl>
-                    <SelectTrigger>
-                      <SelectValue placeholder="使用口座会社を選択" />
-                    </SelectTrigger>
-                  </FormControl>
-                  <SelectContent>
-                    {accountCompany.map((company) => (
-                      <SelectItem key={company} value={company}>
-                        {company}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                <FormMessage />
-              </FormItem>
-            )}
+            label="使用口座会社"
+            placeholder="使用口座会社を選択"
+            options={accountCompany.map((type) => ({
+              value: type,
+              label: ACCOUNT_COMPANY_LABELS[type],
+              color: ACCOUNT_COMPANY_COLORS[type],
+            }))}
           />
-
-          <FormField
-            control={control}
+          <BadgeSelectForm
+            form={form}
             name="bankAccount"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>使用銀行口座</FormLabel>
-                <Select
-                  onValueChange={field.onChange}
-                  defaultValue={field.value}
-                >
-                  <FormControl>
-                    <SelectTrigger>
-                      <SelectValue placeholder="使用銀行口座を選択" />
-                    </SelectTrigger>
-                  </FormControl>
-                  <SelectContent>
-                    {bankAccount.map((account) => (
-                      <SelectItem key={account} value={account}>
-                        {account}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                <FormMessage />
-              </FormItem>
-            )}
+            label="使用銀行口座"
+            placeholder="使用銀行口座を選択"
+            options={bankAccount.map((type) => ({
+              value: type,
+              label: BANK_ACCOUNT_LABELS[type],
+              color: BANK_ACCOUNT_COLORS[type],
+            }))}
           />
         </div>
       </div>
