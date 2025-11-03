@@ -26,6 +26,7 @@ import {
 } from "@workspace/ui/components/dropdown-menu";
 import { MoreVertical, Eye, Edit } from "lucide-react";
 import type { PropertyWithRelations } from "@/lib/types/property";
+import { useRouter } from "next/navigation";
 
 interface PropertiesTableProps {
   properties: PropertyWithRelations[];
@@ -33,8 +34,12 @@ interface PropertiesTableProps {
   editingBusinessStatus: { id: string; value: string } | null;
   editingDocumentStatus: { id: string; value: string } | null;
   setEditingMemo: (value: { id: string; value: string } | null) => void;
-  setEditingBusinessStatus: (value: { id: string; value: string } | null) => void;
-  setEditingDocumentStatus: (value: { id: string; value: string } | null) => void;
+  setEditingBusinessStatus: (
+    value: { id: string; value: string } | null
+  ) => void;
+  setEditingDocumentStatus: (
+    value: { id: string; value: string } | null
+  ) => void;
   handleMemoSave: (propertyId: string) => void;
   handleBusinessStatusSave: (propertyId: string) => void;
   handleDocumentStatusSave: (propertyId: string) => void;
@@ -44,12 +49,16 @@ interface PropertiesTableProps {
   truncateText: (text: string | null | undefined, maxLength?: number) => string;
   getProgressStatusLabel: (status: string) => string;
   getDocumentStatusLabel: (status: string) => string;
-  getProgressStatusColor: (status: string) => "default" | "secondary" | "outline";
-  getDocumentStatusColor: (status: string) => "default" | "secondary" | "outline";
+  getProgressStatusColor: (
+    status: string
+  ) => "default" | "secondary" | "outline";
+  getDocumentStatusColor: (
+    status: string
+  ) => "default" | "secondary" | "outline";
   getContractTypeLabel: (type: string | null) => string;
   getCompanyBLabel: (company: string | null) => string;
   getBrokerCompanyLabel: (company: string | null) => string;
-  router: any;
+
   year: string;
   month: string;
 }
@@ -76,10 +85,10 @@ export function PropertiesTable({
   getContractTypeLabel,
   getCompanyBLabel,
   getBrokerCompanyLabel,
-  router,
   year,
   month,
 }: PropertiesTableProps) {
+  const router = useRouter();
   return (
     <div className="overflow-auto max-h-[calc(100vh-500px)]">
       <Table className="text-[10px]">

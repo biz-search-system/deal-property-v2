@@ -150,7 +150,7 @@ export async function getSalesTeamMembers(organizationId: string) {
     }
 
     // チームメンバーのIDリストを作成
-    const teamMemberIds = new Set(teamMembers.map((tm: any) => tm.userId));
+    const teamMemberIds = new Set(teamMembers.map((tm) => tm.userId));
 
     // fullOrgのメンバー情報から営業チームメンバーの詳細を取得
     return fullOrg.members
@@ -230,7 +230,7 @@ export async function getCurrentUserOrganizationInfo(organizationId: string) {
 
           isMember =
             teamMembers?.some(
-              (member: any) => member.userId === session.user.id
+              (member) => member.userId === session.user.id
             ) || false;
         } catch (error) {
           console.error(`Failed to get members for team ${team.id}:`, error);

@@ -1,9 +1,15 @@
 "use client";
 
-import { useState, useMemo } from "react";
-import { useRouter } from "next/navigation";
+import { PropertyDetailModal } from "@/components/property/property-detail-modal";
+import type { PropertyWithRelations } from "@/lib/types/property";
 import { Card, CardContent } from "@workspace/ui/components/card";
-import { Badge } from "@workspace/ui/components/badge";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@workspace/ui/components/select";
 import {
   Table,
   TableBody,
@@ -13,20 +19,12 @@ import {
   TableRow,
 } from "@workspace/ui/components/table";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@workspace/ui/components/select";
-import {
   Tabs,
   TabsContent,
   TabsList,
   TabsTrigger,
 } from "@workspace/ui/components/tabs";
-import { PropertyDetailModal } from "@/components/property/property-detail-modal";
-import type { PropertyWithRelations } from "@/lib/types/property";
+import { useMemo, useState } from "react";
 import { PropertiesTable } from "./properties-table";
 
 interface MonthlyPropertiesClientProps {
@@ -40,7 +38,6 @@ export function MonthlyPropertiesClient({
   month,
   properties,
 }: MonthlyPropertiesClientProps) {
-  const router = useRouter();
   const [selectedAccount, setSelectedAccount] =
     useState<string>("サンプル企業C");
   const [editingMemo, setEditingMemo] = useState<{
@@ -427,7 +424,6 @@ export function MonthlyPropertiesClient({
                   getContractTypeLabel={getContractTypeLabel}
                   getCompanyBLabel={getCompanyBLabel}
                   getBrokerCompanyLabel={getBrokerCompanyLabel}
-                  router={router}
                   year={year}
                   month={month}
                 />
@@ -501,7 +497,6 @@ export function MonthlyPropertiesClient({
                   getContractTypeLabel={getContractTypeLabel}
                   getCompanyBLabel={getCompanyBLabel}
                   getBrokerCompanyLabel={getBrokerCompanyLabel}
-                  router={router}
                   year={year}
                   month={month}
                 />

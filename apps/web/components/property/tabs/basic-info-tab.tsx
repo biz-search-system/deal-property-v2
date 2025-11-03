@@ -45,7 +45,7 @@ interface BasicInfoTabProps {
     slug: string;
     createdAt: Date;
     logo?: string | null;
-    metadata?: any;
+    metadata?: Record<string, unknown>;
   }>;
 }
 

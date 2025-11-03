@@ -15,8 +15,8 @@ import {
 } from "@workspace/ui/components/tabs";
 import { Badge } from "@workspace/ui/components/badge";
 import { Button } from "@workspace/ui/components/button";
-import { Checkbox } from "@workspace/ui/components/checkbox";
 import { Label } from "@workspace/ui/components/label";
+import { CheckItemRow } from "./check-item-row";
 import { Input } from "@workspace/ui/components/input";
 import { Textarea } from "@workspace/ui/components/textarea";
 import {
@@ -33,7 +33,7 @@ import {
   DropdownMenuTrigger,
 } from "@workspace/ui/components/dropdown-menu";
 import { Separator } from "@workspace/ui/components/separator";
-import { CheckCircle2, X, Circle, ChevronDown } from "lucide-react";
+import { ChevronDown } from "lucide-react";
 import {
   ASSIGNEES,
   CONTRACT_TYPES,
@@ -52,12 +52,6 @@ interface PropertyDetailModalProps {
 }
 
 type DocumentStatus = "空欄" | "依頼" | "取得完了" | "書類なし";
-
-interface CheckItemWithInfo {
-  checked: boolean;
-  date?: string;
-  user?: string;
-}
 
 export function PropertyDetailModal({
   open,
@@ -129,39 +123,16 @@ export function PropertyDetailModal({
         } else {
           setSettlementDate(null);
         }
-      });
+        if (property.contractDateA) {
+          const date = new Date(property.contractDateA);
+          const dateStr = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+          setAContractDate(dateStr);
+        } else {
+          setAContractDate("");
+        }
 
-      if (property.contractDateA) {
-        const date = new Date(property.contractDateA);
-        const dateStr = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
-        setAContractDate(dateStr);
-      } else {
-        setAContractDate("");
-      }
-
-      setSelectedAccountCompany(property.accountCompany || "");
-      setSelectedBankAccount(property.bankAccount || "");
-      // デモ用にいくつかチェック済みにする
-      setContractChecks({
-        contractSaved: true,
-        powerOfAttorneySaved: true,
-        sellerIdSaved: false,
-        bcContractCreated: true,
-        importantMattersCreated: true,
-        bcContractSent: false,
-        importantMattersSent: false,
-        bcContractCBCompleted: false,
-        importantMattersCBCompleted: false,
-      });
-      setSettlementChecks({
-        loanCalculationSaved: false,
-        lawyerRequested: false,
-        documentsShared: false,
-        documentsNoIssues: false,
-        mortgageDocumentsNoIssues: false,
-        mortgageLoanCalculationSaved: false,
-        sellerPaymentCompleted: false,
-        transactionLedgerRecorded: false,
+        setSelectedAccountCompany(property.accountCompany || "");
+        setSelectedBankAccount(property.bankAccount || "");
       });
     }
   }, [property, open]);
@@ -187,65 +158,6 @@ export function PropertyDetailModal({
     // 1万円以上の場合は万円単位で表示
     return `${(value / 10000).toFixed(0)}万`;
   };
-
-  const DocumentStatusBadge = ({ status }: { status: DocumentStatus }) => {
-    switch (status) {
-      case "取得完了":
-        return (
-          <Badge variant="default" className="text-xs gap-1">
-            <CheckCircle2 className="w-3 h-3" />
-            取得完了
-          </Badge>
-        );
-      case "書類なし":
-        return (
-          <Badge variant="outline" className="text-xs gap-1">
-            <X className="w-3 h-3" />
-            書類なし
-          </Badge>
-        );
-      case "依頼":
-        return (
-          <Badge variant="secondary" className="text-xs gap-1">
-            <Circle className="w-3 h-3" />
-            依頼中
-          </Badge>
-        );
-      default:
-        return (
-          <Badge variant="outline" className="text-xs text-muted-foreground">
-            空欄
-          </Badge>
-        );
-    }
-  };
-
-  const CheckItemRow = ({
-    label,
-    checked,
-    date,
-    user,
-    onChange,
-  }: {
-    label: string;
-    checked: boolean;
-    date?: string;
-    user?: string;
-    onChange?: (checked: boolean) => void;
-  }) => (
-    <div className="flex items-center justify-between py-2">
-      <div className="flex items-center gap-2">
-        <Checkbox checked={checked} onCheckedChange={onChange} />
-        <Label className="cursor-pointer">{label}</Label>
-      </div>
-      {checked && (date || user) && (
-        <div className="text-xs text-muted-foreground">
-          {date && <span>{date}</span>}
-          {user && <span className="ml-2">{user}</span>}
-        </div>
-      )}
-    </div>
-  );
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
