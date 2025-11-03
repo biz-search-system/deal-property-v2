@@ -65,7 +65,15 @@ export function NavMain({
                             isActive={isActivePath(subItem.url)}
                           >
                             <Link href={subItem.url}>
-                              <span>{subItem.title}</span>
+                              <span
+                              // className={
+                              //   isActivePath(subItem.url)
+                              //     ? "text-sidebar-primary"
+                              //     : ""
+                              // }
+                              >
+                                {subItem.title}
+                              </span>
                             </Link>
                           </SidebarMenuSubButton>
                         </SidebarMenuSubItem>

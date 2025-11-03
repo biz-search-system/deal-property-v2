@@ -4,20 +4,6 @@
 export const managementOrgType = ["management", "sales", "office"] as const;
 export type ManagementOrgType = (typeof managementOrgType)[number];
 
-/** 使用口座会社 */
-export const accountCompany = ["legit", "life", "ms"] as const;
-export type AccountCompany = (typeof accountCompany)[number];
-
-/** 使用銀行口座 */
-export const bankAccount = [
-  "gmo_main",
-  "gmo_sub",
-  "rakuten",
-  "gmo",
-  "mizuho",
-] as const;
-export type BankAccount = (typeof bankAccount)[number];
-
 /** BC精算書ステータス */
 export const bcSettlementStatus = [
   "not_created",
