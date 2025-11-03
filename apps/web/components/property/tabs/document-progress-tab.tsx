@@ -1,10 +1,15 @@
 "use client";
 
 import {
+  DOCUMENT_STATUS_COLORS,
+  DOCUMENT_STATUS_LABELS,
+  documentStatus,
+} from "@workspace/drizzle/constants";
+import {
+  FormControl,
   FormField,
   FormItem,
   FormLabel,
-  FormControl,
   FormMessage,
 } from "@workspace/ui/components/form";
 import {
@@ -14,41 +19,26 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@workspace/ui/components/select";
+import BadgeSelectForm from "../form/badge-select-form";
 import { usePropertyForm } from "../property-form-provider";
-import { documentStatus } from "@workspace/drizzle/constants";
 
 export default function DocumentProgressTab() {
-  const { control } = usePropertyForm();
+  const form = usePropertyForm();
 
   return (
     <div className="space-y-6">
       {/* 書類ステータス */}
       <div className="space-y-4">
         <h3 className="text-lg font-semibold">書類ステータス</h3>
-
-        <FormField
-          control={control}
+        <BadgeSelectForm
+          form={form}
           name="documentStatus"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>書類ステータス</FormLabel>
-              <Select onValueChange={field.onChange} defaultValue={field.value}>
-                <FormControl>
-                  <SelectTrigger>
-                    <SelectValue placeholder="書類ステータスを選択" />
-                  </SelectTrigger>
-                </FormControl>
-                <SelectContent>
-                  {documentStatus.map((status) => (
-                    <SelectItem key={status} value={status}>
-                      {status}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              <FormMessage />
-            </FormItem>
-          )}
+          label="書類ステータス"
+          options={documentStatus.map((type) => ({
+            value: type,
+            label: DOCUMENT_STATUS_LABELS[type],
+            color: DOCUMENT_STATUS_COLORS[type],
+          }))}
         />
       </div>
 

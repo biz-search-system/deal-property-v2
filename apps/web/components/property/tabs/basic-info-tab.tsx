@@ -9,13 +9,6 @@ import {
   FormMessage,
 } from "@workspace/ui/components/form";
 import { Input } from "@workspace/ui/components/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@workspace/ui/components/select";
 import { Textarea } from "@workspace/ui/components/textarea";
 import { usePropertyForm } from "../property-form-provider";
 import { Button } from "@workspace/ui/components/button";
@@ -31,22 +24,17 @@ import { ChevronDown } from "lucide-react";
 import CompanyBSelectForm from "../form/company-b-select-form";
 import BrokerCompanySelectForm from "../form/broker-company-select-form";
 import BadgeSelectForm from "../form/badge-select-form";
+import OrganizationSelectForm from "../form/organization-select-form";
 import {
   CONTRACT_TYPE_COLORS,
   CONTRACT_TYPE_LABELS,
   contractType,
 } from "@workspace/drizzle/constants";
+import { Organization } from "@/lib/types/organization";
 
 interface BasicInfoTabProps {
   availableStaff: { id: string; name: string; email: string; role: string }[];
-  organizations?: Array<{
-    id: string;
-    name: string;
-    slug: string;
-    createdAt: Date;
-    logo?: string | null;
-    metadata?: Record<string, unknown>;
-  }>;
+  organizations?: Organization[];
 }
 
 export default function BasicInfoTab({
@@ -98,32 +86,11 @@ export default function BasicInfoTab({
           <h3 className="text-lg font-semibold">組織情報</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {/* 管理組織 */}
-            <FormField
-              control={control}
+            <OrganizationSelectForm
+              form={form}
               name="organizationId"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>管理組織</FormLabel>
-                  <Select
-                    onValueChange={handleOrganizationChange}
-                    value={field.value}
-                  >
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="組織を選択" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {organizations.map((org) => (
-                        <SelectItem key={org.id} value={org.id}>
-                          {org.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
+              organizations={organizations}
+              onValueChange={handleOrganizationChange}
             />
 
             {/* 担当営業 */}
