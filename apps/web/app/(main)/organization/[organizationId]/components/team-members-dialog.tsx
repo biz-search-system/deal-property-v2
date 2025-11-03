@@ -53,13 +53,13 @@ export function TeamMembersDialog({
     isLoading: teamLoading,
     mutate: mutateTeam,
   } = useTeamMembers(teamId);
-  const { data: orgMembers, isLoading: orgLoading } =
+  const { organizationMembers, isLoading: orgLoading } =
     useOrganizationMembers(organizationId);
   const [selectedUserId, setSelectedUserId] = useState<string>("");
   const [isPending, startTransition] = useTransition();
 
   // チームに所属していない組織メンバーを取得
-  const availableMembers = orgMembers?.members.filter(
+  const availableMembers = organizationMembers?.members.filter(
     (orgMember) =>
       !teamMembers?.some(
         (teamMember) => teamMember.userId === orgMember.user.id
@@ -205,7 +205,7 @@ export function TeamMembersDialog({
               ) : (
                 <div className="divide-y">
                   {teamMembers.map((member) => {
-                    const user = orgMembers?.members.find(
+                    const user = organizationMembers?.members.find(
                       (m) => m.user.id === member.userId
                     )?.user;
 

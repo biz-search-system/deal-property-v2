@@ -47,7 +47,7 @@ interface MembersTabProps {
 }
 
 export function MembersTab({ organizationId }: MembersTabProps) {
-  const { data, isLoading, error, mutate } =
+  const { organizationMembers, isLoading, error, mutate } =
     useOrganizationMembers(organizationId);
 
   const [deleteMemberId, setDeleteMemberId] = useState<string | null>(null);
@@ -58,7 +58,9 @@ export function MembersTab({ organizationId }: MembersTabProps) {
     if (!deleteMemberId) return;
 
     try {
-      const member = data?.members.find((m) => m.id === deleteMemberId);
+      const member = organizationMembers?.members.find(
+        (m) => m.id === deleteMemberId
+      );
       if (!member) return;
 
       const result = await removeMemberAction(
@@ -157,7 +159,7 @@ export function MembersTab({ organizationId }: MembersTabProps) {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {data?.members.map((member) => (
+              {organizationMembers?.members.map((member) => (
                 <TableRow key={member.id}>
                   <TableCell className="font-medium">
                     {member.user.name}

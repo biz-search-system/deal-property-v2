@@ -38,7 +38,7 @@ export default async function MonthlyPropertiesPage({
     ...property,
     // 担当者名を配列形式に変換
     assignee:
-      property.staff?.map((s: any) => s.user?.name || "").filter(Boolean) || [],
+      property.staff?.map((s) => s.user?.name || "").filter(Boolean) || [],
     // 組織名
     organizationName: property.organization?.name || "",
   }));

@@ -43,13 +43,14 @@ export function InviteTab({ organizationId }: InviteTabProps) {
   const { mutate: mutatemembers } = useOrganizationMembers(organizationId);
   const { mutate: mutateInvitations } =
     useOrganizationInvitations(organizationId);
-  const { data: currentUserInfo, isLoading: loadingUserInfo } =
+  const { currentUserInfo, isLoading: loadingUserInfo } =
     useCurrentUserOrganizationInfo(organizationId);
 
   // 選択可能なチーム一覧を取得
-  const availableTeams = currentUserInfo?.teams?.filter(team =>
-    currentUserInfo.role === "owner" || team.isMember
-  ) || [];
+  const availableTeams =
+    currentUserInfo?.teams?.filter(
+      (team) => currentUserInfo.role === "owner" || team.isMember
+    ) || [];
 
   const handleInvite = async () => {
     if (!inviteEmail) return;
@@ -61,7 +62,7 @@ export function InviteTab({ organizationId }: InviteTabProps) {
         email: inviteEmail,
         role: inviteRole,
         organizationId,
-        ...(selectedTeamId ? { teamId: selectedTeamId } : {})
+        ...(selectedTeamId ? { teamId: selectedTeamId } : {}),
       };
 
       const result = await inviteMemberAction(inviteData);
@@ -104,7 +105,11 @@ export function InviteTab({ organizationId }: InviteTabProps) {
             />
           </div>
 
-          <div className={availableTeams.length > 0 ? "grid grid-cols-2 gap-4" : "space-y-2"}>
+          <div
+            className={
+              availableTeams.length > 0 ? "grid grid-cols-2 gap-4" : "space-y-2"
+            }
+          >
             <div className="space-y-2">
               <Label htmlFor="role">役割</Label>
               <Select
@@ -145,11 +150,12 @@ export function InviteTab({ organizationId }: InviteTabProps) {
                         <div className="flex items-center gap-2">
                           <Users className="h-4 w-4" />
                           <span>{team.name}</span>
-                          {currentUserInfo?.role === "admin" && team.isMember && (
-                            <span className="text-xs text-muted-foreground">
-                              （所属チーム）
-                            </span>
-                          )}
+                          {currentUserInfo?.role === "admin" &&
+                            team.isMember && (
+                              <span className="text-xs text-muted-foreground">
+                                （所属チーム）
+                              </span>
+                            )}
                         </div>
                       </SelectItem>
                     ))}
@@ -178,7 +184,12 @@ export function InviteTab({ organizationId }: InviteTabProps) {
 
           <Button
             onClick={handleInvite}
-            disabled={!inviteEmail || sendingInvite || loadingUserInfo || (availableTeams.length > 0 && !selectedTeamId)}
+            disabled={
+              !inviteEmail ||
+              sendingInvite ||
+              loadingUserInfo ||
+              (availableTeams.length > 0 && !selectedTeamId)
+            }
             className="w-full"
           >
             {sendingInvite ? (

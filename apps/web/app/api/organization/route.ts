@@ -2,19 +2,19 @@ import { auth } from "@workspace/auth";
 import { getOrganizationsWithUserRole } from "@/lib/data/organization";
 import { OrganizationsWithUserRoleResponse } from "@/lib/types/organization";
 import { headers } from "next/headers";
-import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 
-export async function GET(
-  _req: NextRequest
-): Promise<NextResponse<OrganizationsWithUserRoleResponse>> {
+export async function GET(): Promise<NextResponse<OrganizationsWithUserRoleResponse>> {
   // セッション確認
   const session = await auth.api.getSession({
     headers: await headers(),
   });
 
   if (!session) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    return NextResponse.json(
+      { error: { message: "Unauthorized" } },
+      { status: 401 }
+    );
   }
 
   try {
@@ -32,7 +32,7 @@ export async function GET(
   } catch (error) {
     console.error("Failed to get organizations:", error);
     return NextResponse.json(
-      { error: "Failed to get organizations" },
+      { error: { message: "Failed to get organizations" } },
       { status: 500 }
     );
   }

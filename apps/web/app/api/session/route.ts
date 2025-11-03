@@ -1,16 +1,16 @@
 import { verifySession } from "@/lib/data/sesstion";
 import { VerifiedSessionResponse } from "@/lib/types/user";
-import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 
-export async function GET(
-  _req: NextRequest
-): Promise<NextResponse<VerifiedSessionResponse>> {
+export async function GET(): Promise<NextResponse<VerifiedSessionResponse>> {
   // セッション確認
   const data = await verifySession();
 
   if (!data) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    return NextResponse.json(
+      { error: { message: "Unauthorized" } },
+      { status: 401 }
+    );
   }
 
   try {
@@ -18,7 +18,7 @@ export async function GET(
   } catch (error) {
     console.error("Failed to get session:", error);
     return NextResponse.json(
-      { error: "Failed to get session" },
+      { error: { message: "Failed to get session" } },
       { status: 500 }
     );
   }

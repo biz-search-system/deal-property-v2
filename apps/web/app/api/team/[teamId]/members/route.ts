@@ -19,7 +19,10 @@ export async function GET(
   });
 
   if (!session) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    return NextResponse.json(
+      { error: { message: "Unauthorized" } },
+      { status: 401 }
+    );
   }
 
   try {
@@ -29,7 +32,10 @@ export async function GET(
     });
 
     if (!team) {
-      return NextResponse.json({ error: "Team not found" }, { status: 404 });
+      return NextResponse.json(
+        { error: { message: "Team not found" } },
+        { status: 404 }
+      );
     }
 
     // 組織の詳細情報を取得してメンバーか確認
@@ -40,7 +46,7 @@ export async function GET(
 
     if (!fullOrg) {
       return NextResponse.json(
-        { error: "Organization not found" },
+        { error: { message: "Organization not found" } },
         { status: 404 }
       );
     }
@@ -52,7 +58,7 @@ export async function GET(
 
     if (!currentUserMember) {
       return NextResponse.json(
-        { error: "Not a member of this organization" },
+        { error: { message: "Not a member of this organization" } },
         { status: 403 }
       );
     }
@@ -64,7 +70,7 @@ export async function GET(
   } catch (error) {
     console.error("Failed to get team members:", error);
     return NextResponse.json(
-      { error: "Failed to get team members" },
+      { error: { message: "Failed to get team members" } },
       { status: 500 }
     );
   }

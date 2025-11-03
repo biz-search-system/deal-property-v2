@@ -28,7 +28,7 @@ interface InvitationsTabProps {
 }
 
 export function InvitationsTab({ organizationId }: InvitationsTabProps) {
-  const { data, isLoading, error, mutate } =
+  const { invitations, isLoading, error, mutate } =
     useOrganizationInvitations(organizationId);
   const [actionError, setActionError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
@@ -126,7 +126,7 @@ export function InvitationsTab({ organizationId }: InvitationsTabProps) {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {data?.map((invitation) => (
+              {invitations?.map((invitation) => (
                 <TableRow key={invitation.id}>
                   <TableCell>{invitation.email}</TableCell>
                   <TableCell>{getRoleBadge(invitation.role)}</TableCell>

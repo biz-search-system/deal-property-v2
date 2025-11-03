@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import { Badge } from "@workspace/ui/components/badge";
 import {
   Table,
@@ -26,117 +25,87 @@ import {
   DropdownMenuTrigger,
 } from "@workspace/ui/components/dropdown-menu";
 import { MoreVertical, Eye, Edit } from "lucide-react";
-import { useRouter } from "next/navigation";
 import type { PropertyWithRelations } from "@/lib/types/property";
-import {
-  updatePropertyProgressStatus,
-  updatePropertyDocumentStatus,
-  updatePropertyNotes,
-} from "@/lib/actions/property";
-import { toast } from "sonner";
-import {
-  PROGRESS_STATUS_LABELS,
-  DOCUMENT_STATUS_LABELS,
-} from "@workspace/drizzle/constants";
-import ContractTypeBadge from "./badge/contract-type-badge";
-import CompanyBBadge from "./badge/company-b-badge";
-import BrokerCompanyBadge from "./badge/broker-company-badge";
-import ProgressStatusBadge from "./progress-status-badge";
-import DocumentStatusBadge from "./badge/document-status-badge";
-interface UnconfirmedPropertiesTableProps {
+import { useRouter } from "next/navigation";
+
+interface PropertiesTableProps {
   properties: PropertyWithRelations[];
+  editingMemo: { id: string; value: string } | null;
+  editingBusinessStatus: { id: string; value: string } | null;
+  editingDocumentStatus: { id: string; value: string } | null;
+  setEditingMemo: (value: { id: string; value: string } | null) => void;
+  setEditingBusinessStatus: (
+    value: { id: string; value: string } | null
+  ) => void;
+  setEditingDocumentStatus: (
+    value: { id: string; value: string } | null
+  ) => void;
+  handleMemoSave: (propertyId: string) => void;
+  handleBusinessStatusSave: (propertyId: string) => void;
+  handleDocumentStatusSave: (propertyId: string) => void;
+  handlePropertyClick: (property: PropertyWithRelations) => void;
+  formatCurrency: (value: number | null | undefined) => string;
+  formatDateWithDay: (dateString: string | Date | null) => string;
+  truncateText: (text: string | null | undefined, maxLength?: number) => string;
+  getProgressStatusLabel: (status: string) => string;
+  getDocumentStatusLabel: (status: string) => string;
+  getProgressStatusColor: (
+    status: string
+  ) => "default" | "secondary" | "outline";
+  getDocumentStatusColor: (
+    status: string
+  ) => "default" | "secondary" | "outline";
+  getContractTypeLabel: (type: string | null) => string;
+  getCompanyBLabel: (company: string | null) => string;
+  getBrokerCompanyLabel: (company: string | null) => string;
+
+  year: string;
+  month: string;
 }
 
-export function UnconfirmedPropertiesTable({
+export function PropertiesTable({
   properties,
-}: UnconfirmedPropertiesTableProps) {
+  editingMemo,
+  editingBusinessStatus,
+  editingDocumentStatus,
+  setEditingMemo,
+  setEditingBusinessStatus,
+  setEditingDocumentStatus,
+  handleMemoSave,
+  handleBusinessStatusSave,
+  handleDocumentStatusSave,
+  handlePropertyClick,
+  formatCurrency,
+  formatDateWithDay,
+  truncateText,
+  getProgressStatusLabel,
+  getDocumentStatusLabel,
+  getProgressStatusColor,
+  getDocumentStatusColor,
+  getContractTypeLabel,
+  getCompanyBLabel,
+  getBrokerCompanyLabel,
+  year,
+  month,
+}: PropertiesTableProps) {
   const router = useRouter();
-  const [editingNotes, setEditingNotes] = useState<{
-    id: string;
-    value: string;
-  } | null>(null);
-  const [editingProgressStatus, setEditingProgressStatus] = useState<{
-    id: string;
-    value: string;
-  } | null>(null);
-  const [editingDocumentStatus, setEditingDocumentStatus] = useState<{
-    id: string;
-    value: string;
-  } | null>(null);
-
-  const formatCurrency = (value: number | null) => {
-    if (value === null || value === undefined) return "-";
-    // 1万円未満の場合は円単位で表示
-    if (value < 10000) {
-      return `${value.toLocaleString()}円`;
-    }
-    // 1万円以上の場合は万円単位で表示
-    return `${(value / 10000).toFixed(0)}万`;
-  };
-
-  const handleNotesSave = async (propertyId: string) => {
-    if (!editingNotes) return;
-
-    try {
-      await updatePropertyNotes({
-        id: propertyId,
-        notes: editingNotes.value,
-      });
-      toast.success("備考を更新しました");
-      setEditingNotes(null);
-    } catch (error) {
-      toast.error("備考の更新に失敗しました");
-      console.error(error);
-    }
-  };
-
-  const handleProgressStatusSave = async (
-    propertyId: string,
-    newStatus: string
-  ) => {
-    try {
-      await updatePropertyProgressStatus({
-        id: propertyId,
-        progressStatus: newStatus,
-      });
-      toast.success("進捗ステータスを更新しました");
-      setEditingProgressStatus(null);
-    } catch (error) {
-      toast.error("進捗ステータスの更新に失敗しました");
-      console.error(error);
-    }
-  };
-
-  const handleDocumentStatusSave = async (
-    propertyId: string,
-    newStatus: string
-  ) => {
-    try {
-      await updatePropertyDocumentStatus({
-        id: propertyId,
-        documentStatus: newStatus,
-      });
-      toast.success("書類ステータスを更新しました");
-      setEditingDocumentStatus(null);
-    } catch (error) {
-      toast.error("書類ステータスの更新に失敗しました");
-      console.error(error);
-    }
-  };
-
   return (
-    <div className="overflow-auto max-h-[calc(100vh-400px)]">
+    <div className="overflow-auto max-h-[calc(100vh-500px)]">
       <Table className="text-[10px]">
         <TableHeader className="sticky top-0 bg-background z-10">
           <TableRow>
             <TableHead className="text-[10px] p-1 sticky left-0 bg-background z-20 min-w-[50px]">
               管理組織
             </TableHead>
-            <TableHead className="text-[10px] p-1 min-w-[45px]">担当</TableHead>
-            <TableHead className="text-[10px] p-1 min-w-[65px]">
+            <TableHead className="text-[10px] p-1 sticky left-[50px] bg-background z-20 min-w-[45px]">
+              担当
+            </TableHead>
+            <TableHead className="text-[10px] p-1 sticky left-[95px] bg-background z-20 min-w-[65px]">
               物件名
             </TableHead>
-            <TableHead className="text-[10px] p-1 w-[40px]">号室</TableHead>
+            <TableHead className="text-[10px] p-1 sticky left-[160px] bg-background z-20 w-[40px]">
+              号室
+            </TableHead>
             <TableHead className="text-[10px] p-1 min-w-[55px]">
               オーナー
             </TableHead>
@@ -144,13 +113,18 @@ export function UnconfirmedPropertiesTable({
             <TableHead className="text-[10px] p-1 w-[50px]">出口</TableHead>
             <TableHead className="text-[10px] p-1 w-[50px]">仲手等</TableHead>
             <TableHead className="text-[10px] p-1 w-[50px]">利益</TableHead>
+            <TableHead className="text-[10px] p-1 w-[50px]">BC手付</TableHead>
+            <TableHead className="text-[10px] p-1 min-w-[50px]">
+              決済日
+            </TableHead>
+            <TableHead className="text-[10px] p-1 min-w-[50px]">買取</TableHead>
             <TableHead className="text-[10px] p-1 min-w-[45px]">
               契約形態
             </TableHead>
             <TableHead className="text-[10px] p-1 min-w-[45px]">
               B会社
             </TableHead>
-            <TableHead className="text-[10px] p-1 min-w-[50px]">仲介</TableHead>
+            <TableHead className="text-[10px] p-1 min-w-[45px]">仲介</TableHead>
             <TableHead className="text-[10px] p-1 min-w-[50px]">進捗</TableHead>
             <TableHead className="text-[10px] p-1 min-w-[50px]">書類</TableHead>
             <TableHead className="text-[10px] p-1 w-[120px]">備考</TableHead>
@@ -162,173 +136,184 @@ export function UnconfirmedPropertiesTable({
         <TableBody>
           {properties.map((property) => (
             <TableRow key={property.id} className="hover:bg-muted/50">
-              {/* 管理組織 */}
-              <TableCell className="text-[10px] p-1">
+              <TableCell className="text-[10px] p-1 sticky left-0 bg-background">
                 <Badge variant="outline" className="text-[9px] px-1 py-0">
-                  {property.organization?.name || "-"}
+                  {property.organization.name ||
+                    property.organizationId?.slice(0, 3) ||
+                    "レイジット"}
                 </Badge>
               </TableCell>
-
-              {/* 担当 */}
-              <TableCell className="text-[10px] p-1 sticky left-0 bg-background">
+              <TableCell className="text-[10px] p-1 sticky left-[50px] bg-background">
                 <div className="flex gap-1 flex-wrap">
-                  {property.staff.map((staff) => (
+                  {property.staff.map((staffMember, index) => (
                     <Badge
-                      key={staff.user.id}
-                      variant="outline"
+                      key={index}
+                      variant="secondary"
                       className="text-[9px] px-1 py-0"
                     >
-                      {staff.user.name}
+                      {staffMember.user?.name || "担当者"}
                     </Badge>
                   ))}
                 </div>
               </TableCell>
-              {/* 物件名 */}
-              <TableCell className="text-[10px] p-1">
+              <TableCell className="text-[10px] p-1 sticky left-[95px] bg-background">
                 {property.propertyName}
               </TableCell>
-
-              {/* 号室 */}
-              <TableCell className="text-[10px] p-1">
-                {property.roomNumber || "-"}
+              <TableCell className="text-[10px] p-1 sticky left-[160px] bg-background">
+                {property.roomNumber}
               </TableCell>
-
-              {/* オーナー */}
               <TableCell className="text-[10px] p-1">
                 {property.ownerName}
               </TableCell>
-
-              {/* A金額 */}
               <TableCell className="text-[10px] p-1 text-right">
                 {formatCurrency(property.amountA)}
               </TableCell>
-
-              {/* 出口 */}
               <TableCell className="text-[10px] p-1 text-right">
                 {formatCurrency(property.amountExit)}
               </TableCell>
-
-              {/* 仲手等 */}
               <TableCell className="text-[10px] p-1 text-right">
                 {formatCurrency(property.commission)}
               </TableCell>
-
-              {/* 利益 */}
               <TableCell className="text-[10px] p-1 text-right font-semibold">
                 {formatCurrency(property.profit)}
               </TableCell>
-
-              {/* 契約形態 */}
-              <TableCell className="text-[10px] p-1">
-                <ContractTypeBadge contractType={property.contractType} />
+              <TableCell className="text-[10px] p-1 text-right">
+                {formatCurrency(property.bcDeposit)}
               </TableCell>
-
-              {/* B会社 */}
               <TableCell className="text-[10px] p-1">
-                <CompanyBBadge companyB={property.companyB} />
+                {formatDateWithDay(property.settlementDate || "")}
               </TableCell>
-
-              {/* 仲介 */}
               <TableCell className="text-[10px] p-1">
-                <BrokerCompanyBadge brokerCompany={property.brokerCompany} />
+                <Badge variant="outline" className="text-[9px] px-1 py-0">
+                  {truncateText(property.buyerCompany)}
+                </Badge>
               </TableCell>
-
-              {/* 進捗（インライン編集） */}
               <TableCell className="text-[10px] p-1">
-                {editingProgressStatus?.id === property.id ? (
+                <Badge variant="outline" className="text-[9px] px-1 py-0">
+                  {truncateText(getContractTypeLabel(property.contractType))}
+                </Badge>
+              </TableCell>
+              <TableCell className="text-[10px] p-1">
+                <Badge variant="outline" className="text-[9px] px-1 py-0">
+                  {truncateText(getCompanyBLabel(property.companyB))}
+                </Badge>
+              </TableCell>
+              <TableCell className="text-[10px] p-1">
+                <Badge variant="outline" className="text-[9px] px-1 py-0">
+                  {truncateText(getBrokerCompanyLabel(property.brokerCompany))}
+                </Badge>
+              </TableCell>
+              <TableCell className="text-[10px] p-1">
+                {editingBusinessStatus?.id === property.id ? (
                   <Select
-                    value={editingProgressStatus.value}
+                    value={editingBusinessStatus.value}
                     onValueChange={(value) => {
-                      handleProgressStatusSave(property.id, value);
+                      setEditingBusinessStatus({
+                        ...editingBusinessStatus,
+                        value,
+                      });
+                      handleBusinessStatusSave(property.id);
                     }}
                   >
                     <SelectTrigger className="h-5 text-[10px] p-1">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      {Object.entries(PROGRESS_STATUS_LABELS)
-                        .filter(([key]) => key !== "bc_before_confirmed")
-                        .map(([key, label]) => (
-                          <SelectItem
-                            key={key}
-                            value={key}
-                            className="text-[10px]"
-                          >
-                            {label}
-                          </SelectItem>
-                        ))}
+                      {[
+                        "contract_cb_waiting",
+                        "bc_contract_waiting",
+                        "settlement_date_waiting",
+                        "settlement_cb_waiting",
+                        "settlement_waiting",
+                        "settlement_completed",
+                      ].map((status) => (
+                        <SelectItem
+                          key={status}
+                          value={status}
+                          className="text-[10px]"
+                        >
+                          {getProgressStatusLabel(status)}
+                        </SelectItem>
+                      ))}
                     </SelectContent>
                   </Select>
                 ) : (
-                  <ProgressStatusBadge
-                    progressStatus={property.progressStatus}
+                  <Badge
+                    variant={getProgressStatusColor(property.progressStatus)}
+                    className="text-[9px] cursor-pointer px-1 py-0"
                     onClick={() =>
-                      setEditingProgressStatus({
+                      setEditingBusinessStatus({
                         id: property.id,
                         value: property.progressStatus,
                       })
                     }
-                  />
+                  >
+                    {truncateText(
+                      getProgressStatusLabel(property.progressStatus),
+                      6
+                    )}
+                  </Badge>
                 )}
               </TableCell>
-
-              {/* 書類（インライン編集） */}
               <TableCell className="text-[10px] p-1">
                 {editingDocumentStatus?.id === property.id ? (
                   <Select
                     value={editingDocumentStatus.value}
                     onValueChange={(value) => {
-                      handleDocumentStatusSave(property.id, value);
+                      setEditingDocumentStatus({
+                        ...editingDocumentStatus,
+                        value,
+                      });
+                      handleDocumentStatusSave(property.id);
                     }}
                   >
                     <SelectTrigger className="h-5 text-[10px] p-1">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      {Object.entries(DOCUMENT_STATUS_LABELS).map(
-                        ([key, label]) => (
+                      {["waiting_request", "in_progress", "all_completed"].map(
+                        (status) => (
                           <SelectItem
-                            key={key}
-                            value={key}
+                            key={status}
+                            value={status}
                             className="text-[10px]"
                           >
-                            {label}
+                            {getDocumentStatusLabel(status)}
                           </SelectItem>
                         )
                       )}
                     </SelectContent>
                   </Select>
                 ) : (
-                  <DocumentStatusBadge
-                    documentStatus={property.documentStatus}
+                  <Badge
+                    variant={getDocumentStatusColor(property.documentStatus)}
+                    className="text-[9px] cursor-pointer px-1 py-0"
                     onClick={() =>
                       setEditingDocumentStatus({
                         id: property.id,
                         value: property.documentStatus,
                       })
                     }
-                  />
+                  >
+                    {truncateText(
+                      getDocumentStatusLabel(property.documentStatus),
+                      6
+                    )}
+                  </Badge>
                 )}
               </TableCell>
-
-              {/* 備考（インライン編集） */}
               <TableCell className="text-[10px] p-1">
-                {editingNotes?.id === property.id ? (
+                {editingMemo?.id === property.id ? (
                   <Input
-                    value={editingNotes.value}
+                    value={editingMemo.value}
                     onChange={(e) =>
-                      setEditingNotes({
-                        ...editingNotes,
-                        value: e.target.value,
-                      })
+                      setEditingMemo({ ...editingMemo, value: e.target.value })
                     }
                     className="h-5 text-[10px] p-1"
-                    onBlur={() => handleNotesSave(property.id)}
+                    onBlur={() => handleMemoSave(property.id)}
                     onKeyDown={(e) => {
                       if (e.key === "Enter") {
-                        handleNotesSave(property.id);
-                      } else if (e.key === "Escape") {
-                        setEditingNotes(null);
+                        handleMemoSave(property.id);
                       }
                     }}
                     autoFocus
@@ -337,7 +322,7 @@ export function UnconfirmedPropertiesTable({
                   <div
                     className="cursor-pointer hover:bg-muted px-1 rounded text-[10px] truncate break-all max-w-[120px]"
                     onClick={() =>
-                      setEditingNotes({
+                      setEditingMemo({
                         id: property.id,
                         value: property.notes || "",
                       })
@@ -350,8 +335,6 @@ export function UnconfirmedPropertiesTable({
                   </div>
                 )}
               </TableCell>
-
-              {/* 操作 */}
               <TableCell className="text-[10px] p-1 sticky right-0 bg-background">
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
@@ -363,16 +346,16 @@ export function UnconfirmedPropertiesTable({
                   <DropdownMenuContent align="end">
                     <DropdownMenuItem
                       onClick={() => {
-                        router.push(`/properties/unconfirmed/${property.id}`);
+                        router.push(
+                          `/properties/monthly/${year}/${month}/${property.id}`
+                        );
                       }}
                     >
                       <Eye className="h-3 w-3" />
                       詳細
                     </DropdownMenuItem>
                     <DropdownMenuItem
-                      onClick={() => {
-                        router.push(`/properties/${property.id}/edit`);
-                      }}
+                      onClick={() => handlePropertyClick(property)}
                     >
                       <Edit className="h-3 w-3" />
                       編集

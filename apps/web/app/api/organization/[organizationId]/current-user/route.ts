@@ -16,7 +16,10 @@ export async function GET(
   });
 
   if (!session) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    return NextResponse.json(
+      { error: { message: "Unauthorized" } },
+      { status: 401 }
+    );
   }
 
   try {
@@ -27,15 +30,21 @@ export async function GET(
 
     if (error instanceof Error) {
       if (error.message === "Not a member of this organization") {
-        return NextResponse.json({ error: error.message }, { status: 403 });
+        return NextResponse.json(
+          { error: { message: error.message } },
+          { status: 403 }
+        );
       }
       if (error.message === "Organization not found") {
-        return NextResponse.json({ error: error.message }, { status: 404 });
+        return NextResponse.json(
+          { error: { message: error.message } },
+          { status: 404 }
+        );
       }
     }
 
     return NextResponse.json(
-      { error: "Failed to get user information" },
+      { error: { message: "Failed to get user information" } },
       { status: 500 }
     );
   }

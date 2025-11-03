@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import {
   FormField,
   FormItem,
@@ -28,13 +28,13 @@ import {
   DropdownMenuTrigger,
 } from "@workspace/ui/components/dropdown-menu";
 import { ChevronDown } from "lucide-react";
+import CompanyBSelectForm from "../form/company-b-select-form";
+import BrokerCompanySelectForm from "../form/broker-company-select-form";
+import BadgeSelectForm from "../form/badge-select-form";
 import {
-  contractType,
+  CONTRACT_TYPE_COLORS,
   CONTRACT_TYPE_LABELS,
-  companyB,
-  COMPANY_B_LABELS,
-  brokerCompany,
-  BROKER_COMPANY_LABELS,
+  contractType,
 } from "@workspace/drizzle/constants";
 
 interface BasicInfoTabProps {
@@ -45,33 +45,21 @@ interface BasicInfoTabProps {
     slug: string;
     createdAt: Date;
     logo?: string | null;
-    metadata?: any;
+    metadata?: Record<string, unknown>;
   }>;
-  defaultOrganizationId?: string;
 }
 
 export default function BasicInfoTab({
   availableStaff: initialStaff,
   organizations = [],
-  defaultOrganizationId,
 }: BasicInfoTabProps) {
-  const { control, watch, setValue } = usePropertyForm();
+  const form = usePropertyForm();
+  const { control, watch, setValue } = form;
   const selectedStaffIds = watch("staffIds") || [];
   const [availableStaff, setAvailableStaff] = useState(initialStaff);
-  const [selectedOrganizationId, setSelectedOrganizationId] = useState(
-    defaultOrganizationId || ""
-  );
-
-  // 組織IDをフォームに設定
-  useEffect(() => {
-    if (defaultOrganizationId) {
-      setValue("organizationId", defaultOrganizationId);
-    }
-  }, [defaultOrganizationId, setValue]);
 
   // 組織変更時の処理
   const handleOrganizationChange = async (organizationId: string) => {
-    setSelectedOrganizationId(organizationId);
     setValue("organizationId", organizationId);
 
     // 営業チームメンバーを再取得
@@ -118,7 +106,7 @@ export default function BasicInfoTab({
                   <FormLabel>管理組織</FormLabel>
                   <Select
                     onValueChange={handleOrganizationChange}
-                    defaultValue={field.value || selectedOrganizationId}
+                    value={field.value}
                   >
                     <FormControl>
                       <SelectTrigger>
@@ -383,88 +371,23 @@ export default function BasicInfoTab({
         <h3 className="text-lg font-semibold">契約情報</h3>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <FormField
-            control={control}
+          <BadgeSelectForm
+            form={form}
             name="contractType"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>契約形態</FormLabel>
-                <Select
-                  onValueChange={field.onChange}
-                  defaultValue={field.value}
-                >
-                  <FormControl>
-                    <SelectTrigger>
-                      <SelectValue placeholder="契約形態を選択" />
-                    </SelectTrigger>
-                  </FormControl>
-                  <SelectContent>
-                    {contractType.map((type) => (
-                      <SelectItem key={type} value={type}>
-                        {CONTRACT_TYPE_LABELS[type]}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                <FormMessage />
-              </FormItem>
-            )}
+            label="契約形態"
+            options={contractType.map((type) => ({
+              value: type,
+              label: CONTRACT_TYPE_LABELS[type],
+              color: CONTRACT_TYPE_COLORS[type],
+            }))}
           />
 
-          <FormField
-            control={control}
-            name="companyB"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>B会社</FormLabel>
-                <Select
-                  onValueChange={field.onChange}
-                  defaultValue={field.value}
-                >
-                  <FormControl>
-                    <SelectTrigger>
-                      <SelectValue placeholder="B会社を選択" />
-                    </SelectTrigger>
-                  </FormControl>
-                  <SelectContent>
-                    {companyB.map((company) => (
-                      <SelectItem key={company} value={company}>
-                        {COMPANY_B_LABELS[company]}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+          <CompanyBSelectForm form={form} name="companyB" label="B会社" />
 
-          <FormField
-            control={control}
+          <BrokerCompanySelectForm
+            form={form}
             name="brokerCompany"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>仲介会社</FormLabel>
-                <Select
-                  onValueChange={field.onChange}
-                  defaultValue={field.value}
-                >
-                  <FormControl>
-                    <SelectTrigger>
-                      <SelectValue placeholder="仲介会社を選択" />
-                    </SelectTrigger>
-                  </FormControl>
-                  <SelectContent>
-                    {brokerCompany.map((company) => (
-                      <SelectItem key={company} value={company}>
-                        {BROKER_COMPANY_LABELS[company]}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                <FormMessage />
-              </FormItem>
-            )}
+            label="仲介会社"
           />
 
           <FormField

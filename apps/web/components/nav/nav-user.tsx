@@ -8,6 +8,10 @@ import {
   IconUserCircle,
 } from "@tabler/icons-react";
 
+import { getAvatarUrl } from "@/lib/avatar";
+import { clearAllCache } from "@/lib/swr/mutate";
+import { useSession } from "@/lib/swr/session";
+import { authClient } from "@workspace/auth/client";
 import {
   Avatar,
   AvatarFallback,
@@ -28,9 +32,6 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@workspace/ui/components/sidebar";
-import { authClient } from "@workspace/auth/client";
-import { getAvatarUrl } from "@/lib/avatar";
-import { useSession } from "@/lib/swr/session";
 import { Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useTransition } from "react";
@@ -50,7 +51,9 @@ export function NavUser() {
     startTransition(async () => {
       await authClient.signOut({
         fetchOptions: {
-          onSuccess: () => {
+          onSuccess: async () => {
+            // 認証関連データを一括クリア
+            await clearAllCache();
             router.push("/login"); // redirect to login page
           },
         },

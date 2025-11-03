@@ -19,9 +19,8 @@ import DocumentProgressTab from "@/components/property/tabs/document-progress-ta
 import SettlementProgressTab from "@/components/property/tabs/settlement-progress-tab";
 import { getPropertyById } from "@/lib/data/property";
 import { getOrganizations, getSalesTeamMembers } from "@/lib/data/organization";
-import { auth } from "@workspace/auth";
-import { headers } from "next/headers";
 import type { Metadata } from "next";
+import { verifySession } from "@/lib/data/sesstion";
 
 export async function generateMetadata({
   params,
@@ -46,13 +45,7 @@ export default async function PropertyEditPage({
   const { id } = await params;
 
   // セッション取得
-  const session = await auth.api.getSession({
-    headers: await headers(),
-  });
-
-  if (!session) {
-    throw new Error("Unauthorized");
-  }
+  await verifySession();
 
   // プロパティを取得
   const property = await getPropertyById(id);
@@ -100,7 +93,6 @@ export default async function PropertyEditPage({
                 <BasicInfoTab
                   availableStaff={availableStaff}
                   organizations={organizations}
-                  defaultOrganizationId={property.organizationId}
                 />
               </TabsContent>
 

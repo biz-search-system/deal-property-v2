@@ -1,21 +1,20 @@
 import { db } from "@workspace/drizzle/db";
+import { teams } from "@workspace/drizzle/schemas/auth";
+import { resend } from "@workspace/email/resend";
+import InvitationEmail from "@workspace/email/templates/invitation";
+import PasswordResetEmail from "@workspace/email/templates/password-reset";
+import { customNanoid, getBaseURL } from "@workspace/utils";
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { nextCookies } from "better-auth/next-js";
 import {
+  admin,
   anonymous,
+  emailOTP,
   organization,
   username,
-  emailOTP,
-  admin,
-  magicLink,
 } from "better-auth/plugins";
-import { getBaseURL, customNanoid } from "@workspace/utils";
-import { resend } from "@workspace/email/resend";
-import InvitationEmail from "@workspace/email/templates/invitation";
-import PasswordResetEmail from "@workspace/email/templates/password-reset";
 import { eq } from "drizzle-orm";
-import { teams } from "@workspace/drizzle/schemas/auth";
 
 /**
  * チーム名を取得
@@ -115,11 +114,11 @@ export const auth = betterAuth({
         }
       },
     }),
-    magicLink({
-      sendMagicLink: async ({ email, token, url }, request) => {
-        // send email to user
-      },
-    }),
+    // magicLink({
+    //   sendMagicLink: async ({ email, token, url }, request) => {
+    //     // send email to user
+    //   },
+    // }),
     admin(),
   ],
 });
