@@ -38,11 +38,11 @@ import {
   PROGRESS_STATUS_LABELS,
   DOCUMENT_STATUS_LABELS,
 } from "@workspace/drizzle/constants";
-import ContractTypeBadge from "./contract-type-badge";
-import CompanyBBadge from "./company-b-badge";
-import BrokerCompanyBadge from "./broker-company-badge";
+import ContractTypeBadge from "./badge/contract-type-badge";
+import CompanyBBadge from "./badge/company-b-badge";
+import BrokerCompanyBadge from "./badge/broker-company-badge";
 import ProgressStatusBadge from "./progress-status-badge";
-import DocumentStatusBadge from "./document-status-badge";
+import DocumentStatusBadge from "./badge/document-status-badge";
 interface UnconfirmedPropertiesTableProps {
   properties: PropertyWithRelations[];
 }

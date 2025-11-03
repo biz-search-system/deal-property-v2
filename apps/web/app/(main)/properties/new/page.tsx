@@ -19,6 +19,7 @@ import SettlementProgressTab from "@/components/property/tabs/settlement-progres
 import { getOrganizations, getSalesTeamMembers } from "@/lib/data/organization";
 import { auth } from "@workspace/auth";
 import { headers } from "next/headers";
+import { verifySession } from "@/lib/data/sesstion";
 
 export const metadata = {
   title: "案件登録",
@@ -26,23 +27,14 @@ export const metadata = {
 
 export default async function PropertyNewPage() {
   // セッション取得
-  const session = await auth.api.getSession({
-    headers: await headers(),
-  });
-
-  if (!session) {
-    throw new Error("Unauthorized");
-  }
-
+  const session = await verifySession();
   // ユーザーが所属している組織一覧を取得
   const organizations = await getOrganizations();
-
-  // デフォルトの組織（最初の組織）を選択
-  const defaultOrganization = organizations[0];
-
+  // デフォルト組織IDを取得
+  const activeOrganizationId = session.session.activeOrganizationId;
   // デフォルト組織の営業チームメンバーを取得
-  const availableStaff = defaultOrganization
-    ? await getSalesTeamMembers(defaultOrganization.id)
+  const availableStaff = activeOrganizationId
+    ? await getSalesTeamMembers(activeOrganizationId)
     : [];
 
   return (
@@ -51,7 +43,12 @@ export default async function PropertyNewPage() {
         <h1 className="text-3xl font-bold">案件登録</h1>
       </div>
 
-      <PropertyFormProvider mode="create">
+      <PropertyFormProvider
+        mode="create"
+        defaultValues={{
+          organizationId: activeOrganizationId || "",
+        }}
+      >
         <Card>
           <CardHeader>
             <CardTitle>案件情報</CardTitle>
@@ -69,7 +66,6 @@ export default async function PropertyNewPage() {
                 <BasicInfoTab
                   availableStaff={availableStaff}
                   organizations={organizations}
-                  defaultOrganizationId={defaultOrganization?.id}
                 />
               </TabsContent>
 
