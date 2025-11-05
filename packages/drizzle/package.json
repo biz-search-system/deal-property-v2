@@ -13,7 +13,7 @@
       "types": "./zod/index.ts",
       "default": "./zod/index.ts"
     },
-    "./types/*": "./types/*.ts",
+    "./types": "./types/index.ts",
     "./schemas/*": "./schemas/*.ts",
     "./constants": "./constants/index.ts"
   },

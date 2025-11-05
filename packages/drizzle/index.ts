@@ -15,3 +15,4 @@ export const db = drizzle({
 });
 
 export * from "./types/property";
+export * from "./schemas/property";

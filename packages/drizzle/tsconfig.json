@@ -19,7 +19,8 @@
     "next.config.ts",
     "**/*.ts",
     "**/*.tsx",
-    ".next/types/**/*.ts"
+    ".next/types/**/*.ts",
+    "../utils/src/constants/progress-status.ts"
   ],
   "exclude": ["node_modules"]
 }

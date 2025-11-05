@@ -3,7 +3,7 @@ import "server-only";
 import { db } from "@workspace/drizzle/db";
 import { properties } from "@workspace/drizzle/schemas/property";
 import { and, eq, gte, lte, not, isNull } from "drizzle-orm";
-import { ProgressStatus } from "@workspace/drizzle/constants";
+import type { ProgressStatus } from "@workspace/drizzle/types";
 import { DocumentStatus } from "@workspace/drizzle/constants";
 
 /**

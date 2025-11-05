@@ -10,7 +10,6 @@ import {
 import { timestamps, id } from "../util";
 import { users, organizations } from "./auth";
 import {
-  progressStatus,
   contractType,
   companyB,
   brokerCompany,
@@ -28,6 +27,19 @@ import {
   keyStatus,
   accountTransfer,
 } from "../types/property";
+
+// ==================== Enum定義 ====================
+
+/** 進捗ステータスの配列 */
+export const progressStatus = [
+  "bc_before_confirmed",
+  "waiting_contract_cb",
+  "waiting_bc_contract",
+  "waiting_settlement_date",
+  "waiting_settlement_cb",
+  "waiting_settlement",
+  "settlement_completed",
+] as const;
 
 // ==================== テーブル定義 ====================
 

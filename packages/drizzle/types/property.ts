@@ -1,3 +1,18 @@
+import type {
+  properties,
+  propertyStaff,
+  contractProgress,
+  documentProgress,
+  settlementProgress,
+  propertyProgressHistory,
+  progressStatus,
+} from "../schemas/property";
+
+// ==================== Enum型定義 ====================
+
+/** 進捗ステータスの型 */
+export type ProgressStatus = (typeof progressStatus)[number];
+
 // ==================== Enum定義 ====================
 
 /** 管理組織タイプ */
@@ -52,15 +67,6 @@ export const accountTransfer = ["none", "received", "sent"] as const;
 export type AccountTransfer = (typeof accountTransfer)[number];
 
 // ==================== テーブル型定義 ====================
-
-import type {
-  properties,
-  propertyStaff,
-  contractProgress,
-  documentProgress,
-  settlementProgress,
-  propertyProgressHistory,
-} from "../schemas/property";
 
 export type Property = typeof properties.$inferSelect;
 export type InsertProperty = typeof properties.$inferInsert;

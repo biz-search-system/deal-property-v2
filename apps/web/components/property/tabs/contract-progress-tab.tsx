@@ -3,8 +3,8 @@
 import {
   PROGRESS_STATUS_COLORS,
   PROGRESS_STATUS_LABELS,
-  progressStatus,
-} from "@workspace/drizzle/constants";
+} from "@workspace/utils";
+import { progressStatus } from "@workspace/drizzle/schemas/property";
 import {
   FormControl,
   FormField,

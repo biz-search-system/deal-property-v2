@@ -1,16 +1,4 @@
-/** 進捗ステータスの配列 */
-export const progressStatus = [
-  "bc_before_confirmed",
-  "waiting_contract_cb",
-  "waiting_bc_contract",
-  "waiting_settlement_date",
-  "waiting_settlement_cb",
-  "waiting_settlement",
-  "settlement_completed",
-] as const;
-
-/** 進捗ステータスの型 */
-export type ProgressStatus = (typeof progressStatus)[number];
+import { ProgressStatus } from "../../../drizzle/types/property";
 
 /** 進捗ステータスの表示名マッピング */
 export const PROGRESS_STATUS_LABELS: Record<ProgressStatus, string> = {
