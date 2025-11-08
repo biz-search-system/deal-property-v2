@@ -16,6 +16,11 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@workspace/ui/components/dropdown-menu";
+import {
+  HoverCard,
+  HoverCardContent,
+  HoverCardTrigger,
+} from "@workspace/ui/components/hover-card";
 import { MoreVertical, Eye, Edit } from "lucide-react";
 import { useRouter } from "next/navigation";
 import type { PropertyWithRelations } from "@/lib/types/property";
@@ -111,8 +116,25 @@ export function UnconfirmedPropertiesTable({
                 </div>
               </TableCell>
               {/* 物件名 */}
-              <TableCell className="text-[10px] p-1">
-                {property.propertyName}
+              <TableCell className="text-[10px] p-1 max-w-[150px]">
+                <HoverCard>
+                  <HoverCardTrigger asChild>
+                    <div className="overflow-hidden text-ellipsis whitespace-nowrap cursor-default">
+                      {property.propertyName}
+                    </div>
+                  </HoverCardTrigger>
+                  <HoverCardContent className="w-80">
+                    <div className="space-y-2">
+                      <h4 className="text-sm font-semibold">物件名</h4>
+                      <p className="text-sm wrap-break-word">{property.propertyName}</p>
+                      {property.roomNumber && (
+                        <div className="text-xs text-muted-foreground">
+                          号室: {property.roomNumber}
+                        </div>
+                      )}
+                    </div>
+                  </HoverCardContent>
+                </HoverCard>
               </TableCell>
 
               {/* 号室 */}
