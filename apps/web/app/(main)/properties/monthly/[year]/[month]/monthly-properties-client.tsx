@@ -24,6 +24,9 @@ import {
   TabsList,
   TabsTrigger,
 } from "@workspace/ui/components/tabs";
+import {
+  ACCOUNT_COMPANY_LABELS,
+} from "@workspace/utils";
 import { useMemo, useState } from "react";
 import { PropertiesTable } from "./properties-table";
 
@@ -39,19 +42,7 @@ export function MonthlyPropertiesClient({
   properties,
 }: MonthlyPropertiesClientProps) {
   const [selectedAccount, setSelectedAccount] =
-    useState<string>("サンプル企業C");
-  const [editingMemo, setEditingMemo] = useState<{
-    id: string;
-    value: string;
-  } | null>(null);
-  const [editingBusinessStatus, setEditingBusinessStatus] = useState<{
-    id: string;
-    value: string;
-  } | null>(null);
-  const [editingDocumentStatus, setEditingDocumentStatus] = useState<{
-    id: string;
-    value: string;
-  } | null>(null);
+    useState<string>("legit");
   const [selectedProperty, setSelectedProperty] =
     useState<PropertyWithRelations | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
@@ -139,112 +130,10 @@ export function MonthlyPropertiesClient({
     return text.length > maxLength ? text.substring(0, maxLength) : text;
   };
 
-  const getProgressStatusLabel = (status: string) => {
-    const labels: Record<string, string> = {
-      bc_before_confirmed: "BC確定前",
-      contract_cb_waiting: "契約CB待ち",
-      bc_contract_waiting: "BC契約待ち",
-      settlement_date_waiting: "決済日待ち",
-      settlement_cb_waiting: "精算CB待ち",
-      settlement_waiting: "決済待ち",
-      settlement_completed: "決済完了",
-    };
-    return labels[status] || status;
-  };
-
-  const getDocumentStatusLabel = (status: string) => {
-    const labels: Record<string, string> = {
-      waiting_request: "営業依頼待ち",
-      in_progress: "書類取得中",
-      all_completed: "全書類取得完了",
-      completed: "取得完了",
-    };
-    return labels[status] || status;
-  };
-
-  const getProgressStatusColor = (status: string) => {
-    if (status === "settlement_completed") return "default";
-    if (status === "settlement_waiting" || status === "settlement_cb_waiting")
-      return "secondary";
-    return "outline";
-  };
-
-  const getDocumentStatusColor = (status: string) => {
-    if (status === "all_completed" || status === "completed") return "default";
-    if (status === "in_progress") return "secondary";
-    return "outline";
-  };
-
-  const getContractTypeLabel = (type: string | null) => {
-    if (!type) return "-";
-    const labels: Record<string, string> = {
-      ab_bc: "AB・BC",
-      ac: "AC",
-      iyaku: "違約",
-      hakushi: "白紙",
-      mitei: "未定",
-      jisha: "自社仕入れ",
-      bengoshi: "弁護士",
-      kaichu: "買仲",
-      iyaku_yotei: "違約予定",
-    };
-    return labels[type] || type;
-  };
-
-  const getCompanyBLabel = (company: string | null) => {
-    if (!company) return "-";
-    const labels: Record<string, string> = {
-      ms: "エムズ",
-      life: "ライフ",
-      legit: "レイジット",
-      esc: "エスク",
-      trader: "取引業者",
-      shine: "シャイン",
-      second: "セカンド",
-    };
-    return labels[company] || company;
-  };
-
-  const getBrokerCompanyLabel = (company: string | null) => {
-    if (!company) return "-";
-    const labels: Record<string, string> = {
-      legit: "レイジット",
-      tousei: "TOUSEI",
-      esc: "エスク",
-      shine: "シャイン",
-      nbf: "NBF",
-      rd: "RD",
-      ms: "エムズ",
-    };
-    return labels[company] || company;
-  };
 
   const handlePropertyClick = (property: PropertyWithRelations) => {
     setSelectedProperty(property);
     setModalOpen(true);
-  };
-
-  const handleMemoSave = (propertyId: string) => {
-    console.log("Saving memo for property", propertyId, editingMemo?.value);
-    setEditingMemo(null);
-  };
-
-  const handleBusinessStatusSave = (propertyId: string) => {
-    console.log(
-      "Saving business status",
-      propertyId,
-      editingBusinessStatus?.value
-    );
-    setEditingBusinessStatus(null);
-  };
-
-  const handleDocumentStatusSave = (propertyId: string) => {
-    console.log(
-      "Saving document status",
-      propertyId,
-      editingDocumentStatus?.value
-    );
-    setEditingDocumentStatus(null);
   };
 
   return (
@@ -316,14 +205,14 @@ export function MonthlyPropertiesClient({
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="サンプル企業C">
-                          サンプル企業C
+                        <SelectItem value="legit">
+                          {ACCOUNT_COMPANY_LABELS.legit}
                         </SelectItem>
-                        <SelectItem value="サンプル企業B">
-                          サンプル企業B
+                        <SelectItem value="life">
+                          {ACCOUNT_COMPANY_LABELS.life}
                         </SelectItem>
-                        <SelectItem value="サンプル企業A">
-                          サンプル企業A
+                        <SelectItem value="ms">
+                          {ACCOUNT_COMPANY_LABELS.ms}
                         </SelectItem>
                       </SelectContent>
                     </Select>
@@ -404,26 +293,10 @@ export function MonthlyPropertiesClient({
                 {/* 案件一覧テーブル */}
                 <PropertiesTable
                   properties={categorizedProperties.confirmed}
-                  editingMemo={editingMemo}
-                  editingBusinessStatus={editingBusinessStatus}
-                  editingDocumentStatus={editingDocumentStatus}
-                  setEditingMemo={setEditingMemo}
-                  setEditingBusinessStatus={setEditingBusinessStatus}
-                  setEditingDocumentStatus={setEditingDocumentStatus}
-                  handleMemoSave={handleMemoSave}
-                  handleBusinessStatusSave={handleBusinessStatusSave}
-                  handleDocumentStatusSave={handleDocumentStatusSave}
                   handlePropertyClick={handlePropertyClick}
                   formatCurrency={formatCurrency}
                   formatDateWithDay={formatDateWithDay}
                   truncateText={truncateText}
-                  getProgressStatusLabel={getProgressStatusLabel}
-                  getDocumentStatusLabel={getDocumentStatusLabel}
-                  getProgressStatusColor={getProgressStatusColor}
-                  getDocumentStatusColor={getDocumentStatusColor}
-                  getContractTypeLabel={getContractTypeLabel}
-                  getCompanyBLabel={getCompanyBLabel}
-                  getBrokerCompanyLabel={getBrokerCompanyLabel}
                   year={year}
                   month={month}
                 />
@@ -477,26 +350,10 @@ export function MonthlyPropertiesClient({
                 {/* 案件一覧テーブル */}
                 <PropertiesTable
                   properties={categorizedProperties.completed}
-                  editingMemo={editingMemo}
-                  editingBusinessStatus={editingBusinessStatus}
-                  editingDocumentStatus={editingDocumentStatus}
-                  setEditingMemo={setEditingMemo}
-                  setEditingBusinessStatus={setEditingBusinessStatus}
-                  setEditingDocumentStatus={setEditingDocumentStatus}
-                  handleMemoSave={handleMemoSave}
-                  handleBusinessStatusSave={handleBusinessStatusSave}
-                  handleDocumentStatusSave={handleDocumentStatusSave}
                   handlePropertyClick={handlePropertyClick}
                   formatCurrency={formatCurrency}
                   formatDateWithDay={formatDateWithDay}
                   truncateText={truncateText}
-                  getProgressStatusLabel={getProgressStatusLabel}
-                  getDocumentStatusLabel={getDocumentStatusLabel}
-                  getProgressStatusColor={getProgressStatusColor}
-                  getDocumentStatusColor={getDocumentStatusColor}
-                  getContractTypeLabel={getContractTypeLabel}
-                  getCompanyBLabel={getCompanyBLabel}
-                  getBrokerCompanyLabel={getBrokerCompanyLabel}
                   year={year}
                   month={month}
                 />
