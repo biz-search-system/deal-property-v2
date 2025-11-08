@@ -4,7 +4,7 @@ import {
   PROGRESS_STATUS_COLORS,
   PROGRESS_STATUS_LABELS,
 } from "@workspace/utils";
-import { progressStatus } from "@workspace/drizzle/schemas/property";
+import { progressStatus } from "@workspace/drizzle/schemas";
 import {
   FormControl,
   FormField,

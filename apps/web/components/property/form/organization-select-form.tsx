@@ -5,7 +5,7 @@ import {
   ORGANIZATION_COLORS,
   ORGANIZATION_LABELS,
   OrganizationNameType,
-} from "@workspace/drizzle/constants";
+} from "@workspace/utils";
 import { Badge } from "@workspace/ui/components/badge";
 import {
   FormControl,

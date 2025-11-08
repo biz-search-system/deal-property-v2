@@ -1,11 +1,8 @@
-import {
-  BROKER_COMPANY_COLORS,
-  BROKER_COMPANY_LABELS,
-  BrokerCompany,
-} from "@workspace/drizzle/constants";
+import { BROKER_COMPANY_COLORS, BROKER_COMPANY_LABELS } from "@workspace/utils";
 import { Badge } from "@workspace/ui/components/badge";
 import { cn } from "@workspace/utils";
 import { truncateText } from "@/lib/property";
+import { BrokerCompany } from "@workspace/drizzle/types";
 
 export default function BrokerCompanyBadge({
   brokerCompany,

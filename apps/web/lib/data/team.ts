@@ -3,7 +3,7 @@ import "server-only";
 import { auth } from "@workspace/auth";
 import { headers } from "next/headers";
 import { db } from "@workspace/drizzle/db";
-import { teams, teamMembers } from "@workspace/drizzle/schemas/auth";
+import { teams, teamMembers } from "@workspace/drizzle/schemas";
 import { eq, count } from "drizzle-orm";
 
 /**

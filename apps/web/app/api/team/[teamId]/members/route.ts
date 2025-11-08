@@ -4,8 +4,8 @@ import { headers } from "next/headers";
 import { getTeamMembers } from "@/lib/data/team";
 import { TeamMembersResponse } from "@/lib/types/team";
 import { db } from "@workspace/drizzle/db";
-import { teams } from "@workspace/drizzle/schemas/auth";
 import { eq } from "drizzle-orm";
+import { teams } from "@workspace/drizzle/schemas";
 
 export async function GET(
   _req: NextRequest,

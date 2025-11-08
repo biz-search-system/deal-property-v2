@@ -1,7 +1,7 @@
 import "server-only";
 
 import { db } from "@workspace/drizzle/db";
-import { properties } from "@workspace/drizzle/schemas/property";
+import { properties } from "@workspace/drizzle/schemas";
 import { and, eq, gte, lte, not, isNull } from "drizzle-orm";
 import type { DocumentStatus, ProgressStatus } from "@workspace/drizzle/types";
 

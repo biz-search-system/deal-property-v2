@@ -1,18 +1,17 @@
 import { drizzle } from "drizzle-orm/libsql/web";
-// まだ存在しない場合コメントアウト
-import * as authSchema from "./schemas/auth";
-import * as propertySchema from "./schemas/property";
+import * as schemas from "./schemas/index";
+// import * as authSchema from "./schemas/auth";
+// import * as propertySchema from "./schemas/property";
 
+// Drizzle インスタンスの初期化
 export const db = drizzle({
   connection: {
     url: process.env.TURSO_DATABASE_URL!,
     authToken: process.env.TURSO_AUTH_TOKEN!,
   },
   schema: {
-    ...authSchema,
-    ...propertySchema,
+    // ...authSchema,
+    // ...propertySchema,
+    ...schemas,
   },
 });
-
-export * from "./types/property";
-export * from "./schemas/property";

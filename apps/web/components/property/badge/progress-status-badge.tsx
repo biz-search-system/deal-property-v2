@@ -5,7 +5,7 @@ import {
 import { Badge } from "@workspace/ui/components/badge";
 import { cn } from "@workspace/utils";
 import { truncateText } from "@/lib/property";
-import type { ProgressStatus } from "@workspace/drizzle/types";
+import { ProgressStatus } from "@workspace/drizzle/types";
 
 interface ProgressStatusBadgeProps {
   progressStatus: ProgressStatus;

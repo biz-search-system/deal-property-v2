@@ -1,13 +1,4 @@
-/** 使用銀行口座 */
-export const bankAccount = [
-  "gmo_main",
-  "gmo_sub",
-  "rakuten",
-  "gmo",
-  "mizuho",
-] as const;
-/** 使用銀行口座の型 */
-export type BankAccount = (typeof bankAccount)[number];
+import { BankAccount } from "../../../drizzle/types/property";
 
 /**
  * 使用銀行口座の表示名マッピング

@@ -25,12 +25,9 @@ import CompanyBSelectForm from "../form/company-b-select-form";
 import BrokerCompanySelectForm from "../form/broker-company-select-form";
 import BadgeSelectForm from "../form/badge-select-form";
 import OrganizationSelectForm from "../form/organization-select-form";
-import {
-  CONTRACT_TYPE_COLORS,
-  CONTRACT_TYPE_LABELS,
-  contractType,
-} from "@workspace/drizzle/constants";
 import { Organization } from "@/lib/types/organization";
+import { contractType } from "@workspace/drizzle/schemas";
+import { CONTRACT_TYPE_COLORS, CONTRACT_TYPE_LABELS } from "@workspace/utils";
 
 interface BasicInfoTabProps {
   availableStaff: { id: string; name: string; email: string; role: string }[];

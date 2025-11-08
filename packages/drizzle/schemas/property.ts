@@ -10,13 +10,6 @@ import {
 import { timestamps, id } from "../util";
 import { users, organizations } from "./auth";
 import {
-  contractType,
-  companyB,
-  brokerCompany,
-  accountCompany,
-  bankAccount,
-} from "../constants";
-import {
   bcSettlementStatus,
   abSettlementStatus,
   identityVerification,
@@ -44,6 +37,48 @@ export const documentStatus = [
   "waiting_request",
   "in_progress",
   "completed",
+] as const;
+/** 使用口座会社 */
+export const accountCompany = ["legit", "life", "ms"] as const;
+/** 使用銀行口座 */
+export const bankAccount = [
+  "gmo_main",
+  "gmo_sub",
+  "rakuten",
+  "gmo",
+  "mizuho",
+] as const;
+/** 仲介会社の値 */
+export const brokerCompany = [
+  "legit",
+  "tousei",
+  "ms",
+  "rd",
+  "nbf",
+  "shine",
+  "esc",
+] as const;
+/** B会社 */
+export const companyB = [
+  "legit",
+  "life",
+  "ms",
+  "second",
+  // "shine",
+  "trader",
+  "esc",
+] as const;
+/** 契約形態 */
+export const contractType = [
+  "ab_bc",
+  "ac",
+  "iyaku",
+  "hakushi",
+  "mitei",
+  "jisha",
+  "bengoshi",
+  "kaichu",
+  "iyaku_yotei",
 ] as const;
 
 // ==================== テーブル定義 ====================

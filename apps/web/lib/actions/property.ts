@@ -7,7 +7,7 @@ import {
   contractProgress,
   documentProgress,
   settlementProgress,
-} from "@workspace/drizzle/schemas/property";
+} from "@workspace/drizzle/schemas";
 import {
   propertyCreateSchema,
   propertyUpdateSchema,

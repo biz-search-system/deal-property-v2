@@ -5,12 +5,11 @@ import { usePropertyForm } from "../property-form-provider";
 import {
   ACCOUNT_COMPANY_COLORS,
   ACCOUNT_COMPANY_LABELS,
-  accountCompany,
   BANK_ACCOUNT_COLORS,
   BANK_ACCOUNT_LABELS,
-  bankAccount,
-} from "@workspace/drizzle/constants";
+} from "@workspace/utils";
 import BadgeSelectForm from "../form/badge-select-form";
+import { accountCompany, bankAccount } from "@workspace/drizzle/schemas";
 
 export default function SettlementProgressTab() {
   const form = usePropertyForm();

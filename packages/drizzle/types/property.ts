@@ -7,6 +7,11 @@ import type {
   propertyProgressHistory,
   progressStatus,
   documentStatus,
+  accountCompany,
+  bankAccount,
+  brokerCompany,
+  companyB,
+  contractType,
 } from "../schemas/property";
 
 // ==================== Enum型定義 ====================
@@ -15,6 +20,16 @@ import type {
 export type ProgressStatus = (typeof progressStatus)[number];
 /** 書類ステータスの型 */
 export type DocumentStatus = (typeof documentStatus)[number];
+/** 使用口座会社の型 */
+export type AccountCompany = (typeof accountCompany)[number];
+/** 使用銀行口座の型 */
+export type BankAccount = (typeof bankAccount)[number];
+/** 仲介会社の型 */
+export type BrokerCompany = (typeof brokerCompany)[number];
+/** B会社の型 */
+export type CompanyB = (typeof companyB)[number];
+/** 契約形態の型 */
+export type ContractType = (typeof contractType)[number];
 
 // ==================== Enum定義 ====================
 

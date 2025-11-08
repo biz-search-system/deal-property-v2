@@ -14,8 +14,7 @@
       "default": "./zod/index.ts"
     },
     "./types": "./types/index.ts",
-    "./schemas/*": "./schemas/*.ts",
-    "./constants": "./constants/index.ts"
+    "./schemas": "./schemas/index.ts"
   },
   "devDependencies": {
     "@workspace/utils": "workspace:*",

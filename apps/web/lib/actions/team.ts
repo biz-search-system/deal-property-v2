@@ -4,7 +4,7 @@ import { auth } from "@workspace/auth";
 import { headers } from "next/headers";
 import { revalidatePath } from "next/cache";
 import { db } from "@workspace/drizzle/db";
-import { teams } from "@workspace/drizzle/schemas/auth";
+import { teams } from "@workspace/drizzle/schemas";
 import { eq } from "drizzle-orm";
 import {
   createTeamSchema,

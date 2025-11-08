@@ -1,11 +1,8 @@
 "use client";
 
-import {
-  BROKER_COMPANY_COLORS,
-  BROKER_COMPANY_LABELS,
-  BrokerCompany,
-  brokerCompany,
-} from "@workspace/drizzle/constants";
+import { BROKER_COMPANY_COLORS, BROKER_COMPANY_LABELS } from "@workspace/utils";
+import { brokerCompany } from "@workspace/drizzle/schemas";
+import { BrokerCompany } from "@workspace/drizzle/types";
 import { FieldPath, FieldValues, UseFormReturn } from "react-hook-form";
 import BadgeSelectForm, { BadgeSelectOption } from "./badge-select-form";
 

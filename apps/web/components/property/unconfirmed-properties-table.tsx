@@ -34,10 +34,7 @@ import {
   updatePropertyNotes,
 } from "@/lib/actions/property";
 import { toast } from "sonner";
-import {
-  DOCUMENT_STATUS_LABELS,
-  OrganizationNameType,
-} from "@workspace/drizzle/constants";
+import { DOCUMENT_STATUS_LABELS, OrganizationNameType } from "@workspace/utils";
 import { PROGRESS_STATUS_LABELS } from "@workspace/utils";
 import ContractTypeBadge from "./badge/contract-type-badge";
 import CompanyBBadge from "./badge/company-b-badge";

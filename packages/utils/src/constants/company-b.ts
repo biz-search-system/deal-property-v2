@@ -1,15 +1,5 @@
-/** B会社 */
-export const companyB = [
-  "legit",
-  "life",
-  "ms",
-  "second",
-  // "shine",
-  "trader",
-  "esc",
-] as const;
-/** B会社の型 */
-export type CompanyB = (typeof companyB)[number];
+import { CompanyB } from "../../../drizzle/types/property";
+
 /**
  * B会社の表示名マッピング
  */

@@ -1,7 +1,5 @@
-/** 使用口座会社 */
-export const accountCompany = ["legit", "life", "ms"] as const;
-/** 使用口座会社の型 */
-export type AccountCompany = (typeof accountCompany)[number];
+import { AccountCompany } from "../../../drizzle/types/property";
+
 /**
  * 使用口座会社の表示名マッピング
  */
