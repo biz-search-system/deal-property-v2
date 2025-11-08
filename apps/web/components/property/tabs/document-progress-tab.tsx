@@ -3,8 +3,8 @@
 import {
   DOCUMENT_STATUS_COLORS,
   DOCUMENT_STATUS_LABELS,
-  documentStatus,
 } from "@workspace/drizzle/constants";
+import { documentStatus } from "@workspace/drizzle/schemas/property";
 import BadgeSelectForm from "../form/badge-select-form";
 import { usePropertyForm } from "../property-form-provider";
 

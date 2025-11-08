@@ -1,13 +1,5 @@
-/** 書類ステータス */
-export const documentStatus = [
-  "waiting_request",
-  "in_progress",
-  "completed",
-] as const;
-/**
- * 書類ステータスの型
- */
-export type DocumentStatus = (typeof documentStatus)[number];
+import { DocumentStatus } from "../../../drizzle/types/property";
+
 /**
  * 書類ステータスの表示名マッピング
  */

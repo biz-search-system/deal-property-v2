@@ -20,7 +20,8 @@
     "**/*.ts",
     "**/*.tsx",
     ".next/types/**/*.ts",
-    "../utils/src/constants/progress-status.ts"
+    "../utils/src/constants/progress-status.ts",
+    "../utils/src/constants/document-status.ts"
   ],
   "exclude": ["node_modules"]
 }

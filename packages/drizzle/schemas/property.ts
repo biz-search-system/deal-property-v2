@@ -13,7 +13,6 @@ import {
   contractType,
   companyB,
   brokerCompany,
-  documentStatus,
   accountCompany,
   bankAccount,
 } from "../constants";
@@ -39,6 +38,12 @@ export const progressStatus = [
   "waiting_settlement_cb",
   "waiting_settlement",
   "settlement_completed",
+] as const;
+/** 書類ステータス */
+export const documentStatus = [
+  "waiting_request",
+  "in_progress",
+  "completed",
 ] as const;
 
 // ==================== テーブル定義 ====================

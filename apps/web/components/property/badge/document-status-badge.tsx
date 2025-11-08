@@ -1,11 +1,12 @@
 import {
   DOCUMENT_STATUS_COLORS,
   DOCUMENT_STATUS_LABELS,
-  DocumentStatus,
 } from "@workspace/drizzle/constants";
+
 import { Badge } from "@workspace/ui/components/badge";
 import { cn } from "@workspace/utils";
 import { truncateText } from "@/lib/property";
+import { DocumentStatus } from "@workspace/drizzle/db";
 
 interface DocumentStatusBadgeProps {
   documentStatus: DocumentStatus;

@@ -6,12 +6,15 @@ import type {
   settlementProgress,
   propertyProgressHistory,
   progressStatus,
+  documentStatus,
 } from "../schemas/property";
 
 // ==================== Enum型定義 ====================
 
 /** 進捗ステータスの型 */
 export type ProgressStatus = (typeof progressStatus)[number];
+/** 書類ステータスの型 */
+export type DocumentStatus = (typeof documentStatus)[number];
 
 // ==================== Enum定義 ====================
 
