@@ -7,14 +7,14 @@ import {
   contractProgress,
   documentProgress,
   settlementProgress,
-} from "@workspace/drizzle/schemas/property";
+} from "@workspace/drizzle/schemas";
 import {
   propertyCreateSchema,
   propertyUpdateSchema,
   type PropertyCreate,
   type PropertyUpdate,
 } from "@workspace/drizzle/zod/index";
-import type { InsertProperty } from "@workspace/drizzle/types/property";
+import type { InsertProperty } from "@workspace/drizzle/types";
 import { auth } from "@workspace/auth";
 import { headers } from "next/headers";
 import { revalidatePath } from "next/cache";

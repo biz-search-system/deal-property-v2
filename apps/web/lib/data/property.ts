@@ -1,10 +1,9 @@
 import "server-only";
 
 import { db } from "@workspace/drizzle/db";
-import { properties } from "@workspace/drizzle/schemas/property";
+import { properties } from "@workspace/drizzle/schemas";
 import { and, eq, gte, lte, not, isNull } from "drizzle-orm";
-import { ProgressStatus } from "@workspace/drizzle/constants";
-import { DocumentStatus } from "@workspace/drizzle/constants";
+import type { DocumentStatus, ProgressStatus } from "@workspace/drizzle/types";
 
 /**
  * 全案件を取得

@@ -1,11 +1,11 @@
 import {
   PROGRESS_STATUS_COLORS,
   PROGRESS_STATUS_LABELS,
-  ProgressStatus,
-} from "@workspace/drizzle/constants";
+} from "@workspace/utils";
 import { Badge } from "@workspace/ui/components/badge";
 import { cn } from "@workspace/utils";
 import { truncateText } from "@/lib/property";
+import { ProgressStatus } from "@workspace/drizzle/types";
 
 interface ProgressStatusBadgeProps {
   progressStatus: ProgressStatus;

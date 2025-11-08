@@ -1,18 +1,6 @@
-/** 仲介会社の値 */
-export const brokerCompany = [
-  "legit",
-  "tousei",
-  "ms",
-  "rd",
-  "nbf",
-  "shine",
-  "esc",
-] as const;
-/**
- * 仲介会社の型
- */
-export type BrokerCompany = (typeof brokerCompany)[number];
-/**
+import { BrokerCompany } from "../../../drizzle/types/property";
+
+/*
  * 仲介会社の表示名マッピング
  */
 export const BROKER_COMPANY_LABELS: Record<BrokerCompany, string> = {

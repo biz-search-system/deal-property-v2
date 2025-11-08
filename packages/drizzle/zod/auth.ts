@@ -1,4 +1,4 @@
-import { users } from "@/schemas/auth";
+import { users } from "../schemas/auth";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod/v4";
 

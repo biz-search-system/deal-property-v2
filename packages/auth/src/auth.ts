@@ -15,7 +15,7 @@ import { resend } from "@workspace/email/resend";
 import InvitationEmail from "@workspace/email/templates/invitation";
 import PasswordResetEmail from "@workspace/email/templates/password-reset";
 import { eq } from "drizzle-orm";
-import { teams } from "@workspace/drizzle/schemas/auth";
+import { teams } from "@workspace/drizzle/schemas";
 
 /**
  * チーム名を取得

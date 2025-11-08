@@ -51,6 +51,7 @@ interface PropertyDetailModalProps {
   property?: PropertyWithRelations | null;
 }
 
+/** 書類ステータスの型 後ほど修正」*/
 type DocumentStatus = "空欄" | "依頼" | "取得完了" | "書類なし";
 
 export function PropertyDetailModal({
@@ -59,7 +60,10 @@ export function PropertyDetailModal({
   property,
 }: PropertyDetailModalProps) {
   // 担当者の初期値を設定（staffリレーションから取得）
-  const initialAssignees = property?.staff?.map(s => s.user?.name).filter((name): name is string => !!name) || [];
+  const initialAssignees =
+    property?.staff
+      ?.map((s) => s.user?.name)
+      .filter((name): name is string => !!name) || [];
 
   const [aAmount, setAAmount] = useState(property?.amountA || 0);
   const [exitAmount, setExitAmount] = useState(property?.amountExit || 0);
@@ -113,19 +117,22 @@ export function PropertyDetailModal({
         setAAmount(property.amountA || 0);
         setExitAmount(property.amountExit || 0);
         setCommission(property.commission || 0);
-        const staffNames = property.staff?.map(s => s.user?.name).filter((name): name is string => !!name) || [];
+        const staffNames =
+          property.staff
+            ?.map((s) => s.user?.name)
+            .filter((name): name is string => !!name) || [];
         setAssignees(staffNames);
 
         if (property.settlementDate) {
           const date = new Date(property.settlementDate);
-          const dateStr = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+          const dateStr = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
           setSettlementDate(dateStr);
         } else {
           setSettlementDate(null);
         }
         if (property.contractDateA) {
           const date = new Date(property.contractDateA);
-          const dateStr = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+          const dateStr = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
           setAContractDate(dateStr);
         } else {
           setAContractDate("");

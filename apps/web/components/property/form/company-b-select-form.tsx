@@ -1,10 +1,7 @@
 "use client";
 
-import {
-  COMPANY_B_COLORS,
-  COMPANY_B_LABELS,
-  companyB,
-} from "@workspace/drizzle/constants";
+import { COMPANY_B_COLORS, COMPANY_B_LABELS } from "@workspace/utils";
+import { companyB } from "@workspace/drizzle/schemas";
 import { Badge } from "@workspace/ui/components/badge";
 import {
   FormControl,

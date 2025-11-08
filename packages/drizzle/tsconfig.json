@@ -19,7 +19,15 @@
     "next.config.ts",
     "**/*.ts",
     "**/*.tsx",
-    ".next/types/**/*.ts"
+    ".next/types/**/*.ts",
+    "../utils/src/constants/progress-status.ts",
+    "../utils/src/constants/document-status.ts",
+    "../utils/src/constants/account-company.ts",
+    "../utils/src/constants/bank-account.ts",
+    "../utils/src/constants/broker-company.ts",
+    "../utils/src/constants/company-b.ts",
+    "../utils/src/constants/contract-type.ts",
+    "../utils/src/constants/organization.ts"
   ],
   "exclude": ["node_modules"]
 }

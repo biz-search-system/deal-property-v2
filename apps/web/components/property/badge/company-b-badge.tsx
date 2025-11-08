@@ -1,11 +1,8 @@
-import {
-  COMPANY_B_COLORS,
-  COMPANY_B_LABELS,
-  CompanyB,
-} from "@workspace/drizzle/constants";
+import { COMPANY_B_COLORS, COMPANY_B_LABELS } from "@workspace/utils";
 import { Badge } from "@workspace/ui/components/badge";
 import { cn } from "@workspace/utils";
 import { truncateText } from "@/lib/property";
+import { CompanyB } from "@workspace/drizzle/types";
 
 export default function CompanyBBadge({
   companyB,

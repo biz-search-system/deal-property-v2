@@ -1,19 +1,33 @@
 "use client";
 
 import { usePropertyForm } from "../property-form-provider";
+import { useEffect } from "react";
 
 import {
   ACCOUNT_COMPANY_COLORS,
   ACCOUNT_COMPANY_LABELS,
-  accountCompany,
   BANK_ACCOUNT_COLORS,
   BANK_ACCOUNT_LABELS,
-  bankAccount,
-} from "@workspace/drizzle/constants";
+  getBankAccountsByCompany,
+} from "@workspace/utils";
 import BadgeSelectForm from "../form/badge-select-form";
+import { accountCompany } from "@workspace/drizzle/schemas";
+import type { AccountCompany } from "@workspace/drizzle/types";
 
 export default function SettlementProgressTab() {
   const form = usePropertyForm();
+  const selectedCompany = form.watch("accountCompany");
+
+  // 口座会社が変更されたら、銀行口座を必ずリセット
+  useEffect(() => {
+    // 銀行口座を無条件でリセット（口座会社が変更された場合）
+    form.setValue("bankAccount", undefined);
+  }, [selectedCompany, form]);
+
+  // 選択された口座会社に基づいて銀行口座の選択肢を取得
+  const availableBankAccounts = getBankAccountsByCompany(
+    selectedCompany as AccountCompany
+  );
 
   return (
     <div className="space-y-6">
@@ -37,8 +51,13 @@ export default function SettlementProgressTab() {
             form={form}
             name="bankAccount"
             label="使用銀行口座"
-            placeholder="使用銀行口座を選択"
-            options={bankAccount.map((type) => ({
+            placeholder={
+              selectedCompany
+                ? "使用銀行口座を選択"
+                : "先に使用口座会社を選択してください"
+            }
+            disabled={!selectedCompany}
+            options={availableBankAccounts.map((type) => ({
               value: type,
               label: BANK_ACCOUNT_LABELS[type],
               color: BANK_ACCOUNT_COLORS[type],

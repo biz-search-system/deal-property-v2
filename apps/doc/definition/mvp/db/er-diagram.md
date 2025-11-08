@@ -169,21 +169,27 @@ profit = amount_exit - amount_a + commission
 
 口座会社により選択肢が変わります。
 
-**エムズ (ms)**:
+**レイジット (legit)**:
 
 - gmo_main: GMOメイン
 - gmo_sub: GMOサブ
-- rakuten: 楽天
+- kinsan: 近産
 
 **ライフ (life)**:
 
-- gmo: GMO
+- main_1727088: メイン1727088
+- sub_1728218: サブ1728218
+- new_main_2309414: 新メイン2309414
+
+**エムズ (ms)**:
+
+- sumi_shin: 住信
+- gmo_main: GMOメイン
+- gmo_sub: GMOサブ
 - rakuten: 楽天
-
-**レイジット (legit)**:
-
-- gmo: GMO
-- mizuho: みずほ
+- paypay_1: PayPay①
+- paypay_2: PayPay②
+- paypay_3: PayPay③
 
 #### インデックス
 

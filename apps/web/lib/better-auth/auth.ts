@@ -1,5 +1,5 @@
 import { db } from "@workspace/drizzle/db";
-import { teams } from "@workspace/drizzle/schemas/auth";
+import { teams } from "@workspace/drizzle/schemas";
 import { resend } from "@workspace/email/resend";
 import InvitationEmail from "@workspace/email/templates/invitation";
 import PasswordResetEmail from "@workspace/email/templates/password-reset";

@@ -10,15 +10,6 @@ import {
 import { timestamps, id } from "../util";
 import { users, organizations } from "./auth";
 import {
-  progressStatus,
-  contractType,
-  companyB,
-  brokerCompany,
-  documentStatus,
-  accountCompany,
-  bankAccount,
-} from "../constants";
-import {
   bcSettlementStatus,
   abSettlementStatus,
   identityVerification,
@@ -28,6 +19,78 @@ import {
   keyStatus,
   accountTransfer,
 } from "../types/property";
+
+// ==================== Enum定義 ====================
+
+/** 進捗ステータスの配列 */
+export const progressStatus = [
+  "bc_before_confirmed",
+  "waiting_contract_cb",
+  "waiting_bc_contract",
+  "waiting_settlement_date",
+  "waiting_settlement_cb",
+  "waiting_settlement",
+  "settlement_completed",
+] as const;
+/** 書類ステータス */
+export const documentStatus = [
+  "waiting_request",
+  "in_progress",
+  "completed",
+] as const;
+/** 使用口座会社 */
+export const accountCompany = ["legit", "life", "ms"] as const;
+/** 使用銀行口座 */
+export const bankAccount = [
+  // レイジット (legit)
+  "gmo_main",
+  "gmo_sub",
+  "kinsan",
+  // ライフ (life)
+  "main_1727088",
+  "sub_1728218",
+  "new_main_2309414",
+  // エムズ (ms)
+  "sumi_shin",
+  // "gmo_main", // レイジットと重複するためコメントアウト
+  // "gmo_sub",  // レイジットと重複するためコメントアウト
+  "rakuten",
+  "paypay_1",
+  "paypay_2",
+  "paypay_3",
+] as const;
+/** 仲介会社の値 */
+export const brokerCompany = [
+  "legit",
+  "tousei",
+  "ms",
+  "rd",
+  "nbf",
+  "shine",
+  "esc",
+] as const;
+/** B会社 */
+export const companyB = [
+  "legit",
+  "life",
+  "ms",
+  "second",
+  // "shine",
+  "trader",
+  "esc",
+] as const;
+/** 契約形態 */
+export const contractType = [
+  "ab_bc",
+  "ac",
+  "iyaku",
+  "hakushi",
+  "mitei",
+  "jisha",
+  "bengoshi",
+  "kaichu",
+  "iyaku_yotei",
+] as const;
 
 // ==================== テーブル定義 ====================
 

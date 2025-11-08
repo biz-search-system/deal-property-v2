@@ -2,7 +2,7 @@ import {
   ORGANIZATION_COLORS,
   ORGANIZATION_LABELS,
   OrganizationNameType,
-} from "@workspace/drizzle/constants";
+} from "@workspace/utils";
 import { Badge } from "@workspace/ui/components/badge";
 import { cn } from "@workspace/utils";
 import { truncateText } from "@/lib/property";

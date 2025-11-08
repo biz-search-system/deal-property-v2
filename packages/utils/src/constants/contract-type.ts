@@ -1,18 +1,4 @@
-/** 契約形態 */
-export const contractType = [
-  "ab_bc",
-  "ac",
-  "iyaku",
-  "hakushi",
-  "mitei",
-  "jisha",
-  "bengoshi",
-  "kaichu",
-  "iyaku_yotei",
-] as const;
-
-/** 契約形態の型 */
-export type ContractType = (typeof contractType)[number];
+import { ContractType } from "../../../drizzle/types/property";
 
 // 契約形態の表示名マッピング
 export const CONTRACT_TYPE_LABELS: Record<ContractType, string> = {

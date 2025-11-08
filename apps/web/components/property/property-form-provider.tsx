@@ -10,7 +10,7 @@ import { Form } from "@workspace/ui/components/form";
 import { createProperty, updateProperty } from "@/lib/actions/property";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
-import type { Property } from "@workspace/drizzle/types/property";
+import type { Property } from "@workspace/drizzle/types";
 
 interface PropertyFormProviderProps {
   children: React.ReactNode;

@@ -34,11 +34,8 @@ import {
   updatePropertyNotes,
 } from "@/lib/actions/property";
 import { toast } from "sonner";
-import {
-  PROGRESS_STATUS_LABELS,
-  DOCUMENT_STATUS_LABELS,
-  OrganizationNameType,
-} from "@workspace/drizzle/constants";
+import { DOCUMENT_STATUS_LABELS, OrganizationNameType } from "@workspace/utils";
+import { PROGRESS_STATUS_LABELS } from "@workspace/utils";
 import ContractTypeBadge from "./badge/contract-type-badge";
 import CompanyBBadge from "./badge/company-b-badge";
 import BrokerCompanyBadge from "./badge/broker-company-badge";
@@ -170,7 +167,9 @@ export function UnconfirmedPropertiesTable({
                   {property.organization?.name || "-"}
                 </Badge> */}
                 <OrganizationBadge
-                  organization={property.organization.name as OrganizationNameType}
+                  organization={
+                    property.organization.name as OrganizationNameType
+                  }
                 />
               </TableCell>
 
