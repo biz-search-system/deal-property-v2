@@ -8,7 +8,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@workspace/ui/components/select";
-import { DOCUMENT_STATUS_LABELS } from "@workspace/utils";
+import { documentStatus } from "@workspace/drizzle/schemas";
 import DocumentStatusBadge from "../badge/document-status-badge";
 import { updatePropertyDocumentStatus } from "@/lib/actions/property";
 import { toast } from "sonner";
@@ -76,10 +76,10 @@ export function DocumentStatusInlineEdit({
         </SelectValue>
       </SelectTrigger>
       <SelectContent>
-        {Object.entries(DOCUMENT_STATUS_LABELS).map(([key]) => (
-          <SelectItem key={key} value={key}>
+        {documentStatus.map((status) => (
+          <SelectItem key={status} value={status}>
             <DocumentStatusBadge
-              documentStatus={key as DocumentStatus}
+              documentStatus={status}
               className="text-[9px]"
             />
           </SelectItem>

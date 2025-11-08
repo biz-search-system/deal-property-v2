@@ -8,7 +8,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@workspace/ui/components/select";
-import { PROGRESS_STATUS_LABELS } from "@workspace/utils";
+import { progressStatus } from "@workspace/drizzle/schemas";
 import ProgressStatusBadge from "../badge/progress-status-badge";
 import { updatePropertyProgressStatus } from "@/lib/actions/property";
 import { toast } from "sonner";
@@ -17,8 +17,6 @@ import type { ProgressStatus } from "@workspace/drizzle/types";
 interface ProgressStatusInlineEditProps {
   propertyId: string;
   currentStatus: ProgressStatus;
-  // 表示するステータスのフィルター（指定しない場合はbc_before_confirmed以外を表示）
-  statusFilter?: string[];
   // カスタムの保存処理（指定しない場合はデフォルトのサーバーアクションを使用）
   onSave?: (propertyId: string, newStatus: string) => void | Promise<void>;
   // 編集可能かどうか
@@ -28,25 +26,11 @@ interface ProgressStatusInlineEditProps {
 export function ProgressStatusInlineEdit({
   propertyId,
   currentStatus,
-  statusFilter,
   onSave,
   editable = true,
 }: ProgressStatusInlineEditProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [value, setValue] = useState(currentStatus);
-
-  // 進捗ステータスの選択肢を決定
-  const getStatusOptions = () => {
-    if (statusFilter) {
-      return Object.entries(PROGRESS_STATUS_LABELS).filter(([key]) =>
-        statusFilter.includes(key)
-      );
-    }
-    // デフォルトは「BC確定前」以外を表示
-    return Object.entries(PROGRESS_STATUS_LABELS).filter(
-      ([key]) => key !== "bc_before_confirmed"
-    );
-  };
 
   const handleSave = async (newStatus: string) => {
     try {
@@ -92,10 +76,10 @@ export function ProgressStatusInlineEdit({
         </SelectValue>
       </SelectTrigger>
       <SelectContent>
-        {getStatusOptions().map(([key]) => (
-          <SelectItem key={key} value={key}>
+        {progressStatus.map((status) => (
+          <SelectItem key={status} value={status}>
             <ProgressStatusBadge
-              progressStatus={key as ProgressStatus}
+              progressStatus={status}
               className="text-[9px]"
             />
           </SelectItem>
