@@ -10,14 +10,6 @@ import {
   TableRow,
 } from "@workspace/ui/components/table";
 import { Button } from "@workspace/ui/components/button";
-import { Input } from "@workspace/ui/components/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@workspace/ui/components/select";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -27,64 +19,31 @@ import {
 import { MoreVertical, Eye, Edit } from "lucide-react";
 import type { PropertyWithRelations } from "@/lib/types/property";
 import { useRouter } from "next/navigation";
+import { OrganizationNameType } from "@workspace/utils";
+import ContractTypeBadge from "@/components/property/badge/contract-type-badge";
+import CompanyBBadge from "@/components/property/badge/company-b-badge";
+import BrokerCompanyBadge from "@/components/property/badge/broker-company-badge";
+import OrganizationBadge from "@/components/property/badge/organization-badge";
+import { ProgressStatusInlineEdit } from "@/components/property/inline-edit/progress-status-inline-edit";
+import { DocumentStatusInlineEdit } from "@/components/property/inline-edit/document-status-inline-edit";
+import { NotesInlineEdit } from "@/components/property/inline-edit/notes-inline-edit";
 
 interface PropertiesTableProps {
   properties: PropertyWithRelations[];
-  editingMemo: { id: string; value: string } | null;
-  editingBusinessStatus: { id: string; value: string } | null;
-  editingDocumentStatus: { id: string; value: string } | null;
-  setEditingMemo: (value: { id: string; value: string } | null) => void;
-  setEditingBusinessStatus: (
-    value: { id: string; value: string } | null
-  ) => void;
-  setEditingDocumentStatus: (
-    value: { id: string; value: string } | null
-  ) => void;
-  handleMemoSave: (propertyId: string) => void;
-  handleBusinessStatusSave: (propertyId: string) => void;
-  handleDocumentStatusSave: (propertyId: string) => void;
   handlePropertyClick: (property: PropertyWithRelations) => void;
   formatCurrency: (value: number | null | undefined) => string;
   formatDateWithDay: (dateString: string | Date | null) => string;
   truncateText: (text: string | null | undefined, maxLength?: number) => string;
-  getProgressStatusLabel: (status: string) => string;
-  getDocumentStatusLabel: (status: string) => string;
-  getProgressStatusColor: (
-    status: string
-  ) => "default" | "secondary" | "outline";
-  getDocumentStatusColor: (
-    status: string
-  ) => "default" | "secondary" | "outline";
-  getContractTypeLabel: (type: string | null) => string;
-  getCompanyBLabel: (company: string | null) => string;
-  getBrokerCompanyLabel: (company: string | null) => string;
-
   year: string;
   month: string;
 }
 
 export function PropertiesTable({
   properties,
-  editingMemo,
-  editingBusinessStatus,
-  editingDocumentStatus,
-  setEditingMemo,
-  setEditingBusinessStatus,
-  setEditingDocumentStatus,
-  handleMemoSave,
-  handleBusinessStatusSave,
-  handleDocumentStatusSave,
   handlePropertyClick,
   formatCurrency,
   formatDateWithDay,
   truncateText,
-  getProgressStatusLabel,
-  getDocumentStatusLabel,
-  getProgressStatusColor,
-  getDocumentStatusColor,
-  getContractTypeLabel,
-  getCompanyBLabel,
-  getBrokerCompanyLabel,
   year,
   month,
 }: PropertiesTableProps) {
@@ -137,11 +96,11 @@ export function PropertiesTable({
           {properties.map((property) => (
             <TableRow key={property.id} className="hover:bg-muted/50">
               <TableCell className="text-[10px] p-1 sticky left-0 bg-background">
-                <Badge variant="outline" className="text-[9px] px-1 py-0">
-                  {property.organization.name ||
-                    property.organizationId?.slice(0, 3) ||
-                    "レイジット"}
-                </Badge>
+                <OrganizationBadge
+                  organization={
+                    property.organization.name as OrganizationNameType
+                  }
+                />
               </TableCell>
               <TableCell className="text-[10px] p-1 sticky left-[50px] bg-background">
                 <div className="flex gap-1 flex-wrap">
@@ -189,151 +148,31 @@ export function PropertiesTable({
                 </Badge>
               </TableCell>
               <TableCell className="text-[10px] p-1">
-                <Badge variant="outline" className="text-[9px] px-1 py-0">
-                  {truncateText(getContractTypeLabel(property.contractType))}
-                </Badge>
+                <ContractTypeBadge contractType={property.contractType} />
               </TableCell>
               <TableCell className="text-[10px] p-1">
-                <Badge variant="outline" className="text-[9px] px-1 py-0">
-                  {truncateText(getCompanyBLabel(property.companyB))}
-                </Badge>
+                <CompanyBBadge companyB={property.companyB} />
               </TableCell>
               <TableCell className="text-[10px] p-1">
-                <Badge variant="outline" className="text-[9px] px-1 py-0">
-                  {truncateText(getBrokerCompanyLabel(property.brokerCompany))}
-                </Badge>
+                <BrokerCompanyBadge brokerCompany={property.brokerCompany} />
               </TableCell>
               <TableCell className="text-[10px] p-1">
-                {editingBusinessStatus?.id === property.id ? (
-                  <Select
-                    value={editingBusinessStatus.value}
-                    onValueChange={(value) => {
-                      setEditingBusinessStatus({
-                        ...editingBusinessStatus,
-                        value,
-                      });
-                      handleBusinessStatusSave(property.id);
-                    }}
-                  >
-                    <SelectTrigger className="h-5 text-[10px] p-1">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {[
-                        "contract_cb_waiting",
-                        "bc_contract_waiting",
-                        "settlement_date_waiting",
-                        "settlement_cb_waiting",
-                        "settlement_waiting",
-                        "settlement_completed",
-                      ].map((status) => (
-                        <SelectItem
-                          key={status}
-                          value={status}
-                          className="text-[10px]"
-                        >
-                          {getProgressStatusLabel(status)}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                ) : (
-                  <Badge
-                    variant={getProgressStatusColor(property.progressStatus)}
-                    className="text-[9px] cursor-pointer px-1 py-0"
-                    onClick={() =>
-                      setEditingBusinessStatus({
-                        id: property.id,
-                        value: property.progressStatus,
-                      })
-                    }
-                  >
-                    {truncateText(
-                      getProgressStatusLabel(property.progressStatus),
-                      6
-                    )}
-                  </Badge>
-                )}
+                <ProgressStatusInlineEdit
+                  propertyId={property.id}
+                  currentStatus={property.progressStatus}
+                />
               </TableCell>
               <TableCell className="text-[10px] p-1">
-                {editingDocumentStatus?.id === property.id ? (
-                  <Select
-                    value={editingDocumentStatus.value}
-                    onValueChange={(value) => {
-                      setEditingDocumentStatus({
-                        ...editingDocumentStatus,
-                        value,
-                      });
-                      handleDocumentStatusSave(property.id);
-                    }}
-                  >
-                    <SelectTrigger className="h-5 text-[10px] p-1">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {["waiting_request", "in_progress", "all_completed"].map(
-                        (status) => (
-                          <SelectItem
-                            key={status}
-                            value={status}
-                            className="text-[10px]"
-                          >
-                            {getDocumentStatusLabel(status)}
-                          </SelectItem>
-                        )
-                      )}
-                    </SelectContent>
-                  </Select>
-                ) : (
-                  <Badge
-                    variant={getDocumentStatusColor(property.documentStatus)}
-                    className="text-[9px] cursor-pointer px-1 py-0"
-                    onClick={() =>
-                      setEditingDocumentStatus({
-                        id: property.id,
-                        value: property.documentStatus,
-                      })
-                    }
-                  >
-                    {truncateText(
-                      getDocumentStatusLabel(property.documentStatus),
-                      6
-                    )}
-                  </Badge>
-                )}
+                <DocumentStatusInlineEdit
+                  propertyId={property.id}
+                  currentStatus={property.documentStatus}
+                />
               </TableCell>
               <TableCell className="text-[10px] p-1">
-                {editingMemo?.id === property.id ? (
-                  <Input
-                    value={editingMemo.value}
-                    onChange={(e) =>
-                      setEditingMemo({ ...editingMemo, value: e.target.value })
-                    }
-                    className="h-5 text-[10px] p-1"
-                    onBlur={() => handleMemoSave(property.id)}
-                    onKeyDown={(e) => {
-                      if (e.key === "Enter") {
-                        handleMemoSave(property.id);
-                      }
-                    }}
-                    autoFocus
-                  />
-                ) : (
-                  <div
-                    className="cursor-pointer hover:bg-muted px-1 rounded text-[10px] truncate break-all max-w-[120px]"
-                    onClick={() =>
-                      setEditingMemo({
-                        id: property.id,
-                        value: property.notes || "",
-                      })
-                    }
-                    title={property.notes || ""}
-                  >
-                    {property.notes || (
-                      <span className="text-muted-foreground">入力</span>
-                    )}
-                  </div>
-                )}
+                <NotesInlineEdit
+                  propertyId={property.id}
+                  currentNotes={property.notes}
+                />
               </TableCell>
               <TableCell className="text-[10px] p-1 sticky right-0 bg-background">
                 <DropdownMenu>
