@@ -42,11 +42,22 @@ export const documentStatus = [
 export const accountCompany = ["legit", "life", "ms"] as const;
 /** 使用銀行口座 */
 export const bankAccount = [
+  // レイジット (legit)
   "gmo_main",
   "gmo_sub",
+  "kinsan",
+  // ライフ (life)
+  "main_1727088",
+  "sub_1728218",
+  "new_main_2309414",
+  // エムズ (ms)
+  "sumi_shin",
+  // "gmo_main", // レイジットと重複するためコメントアウト
+  // "gmo_sub",  // レイジットと重複するためコメントアウト
   "rakuten",
-  "gmo",
-  "mizuho",
+  "paypay_1",
+  "paypay_2",
+  "paypay_3",
 ] as const;
 /** 仲介会社の値 */
 export const brokerCompany = [
