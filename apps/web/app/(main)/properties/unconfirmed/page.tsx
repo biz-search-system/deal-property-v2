@@ -30,7 +30,7 @@ export default async function UnconfirmedPropertiesPage() {
 
   return (
     <div className="flex flex-1 flex-col overflow-hidden">
-      <div className="flex flex-col gap-4 p-4 lg:p-6">
+      <div className="flex flex-col gap-3 p-4 lg:p-3">
         {/* 集計表示（2カラム） */}
         <div className="grid grid-cols-2 gap-4">
           <div className="rounded-lg bg-muted/50 p-3 border">
@@ -52,8 +52,8 @@ export default async function UnconfirmedPropertiesPage() {
         </div>
 
         {/* 案件一覧テーブル */}
-        <Card>
-          <CardContent className="pt-6">
+        <Card className="p-3 py-2">
+          <CardContent className="p-0">
             <UnconfirmedPropertiesTable properties={unconfirmedProperties} />
           </CardContent>
         </Card>

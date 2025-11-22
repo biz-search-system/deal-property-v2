@@ -15,6 +15,8 @@ export default async function Layout({
       style={
         {
           // "--sidebar-width": "calc(var(--spacing) * 72)", // 18rem = 288px
+          // "--sidebar-width": "calc(var(--spacing) * 60)", // 15rem = 240px
+          // "--sidebar-width": "calc(var(--spacing) * 60)", // 12.5rem = 200px
           "--header-height": "calc(var(--spacing) * 12)", // 3rem = 48px
         } as React.CSSProperties
       }

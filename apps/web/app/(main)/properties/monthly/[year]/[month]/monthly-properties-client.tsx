@@ -1,32 +1,15 @@
 "use client";
 
 import { PropertyDetailModal } from "@/components/property/property-detail-modal";
+import { AccountSettlementSummary } from "@/components/property/account-settlement-summary";
 import type { PropertyWithRelations } from "@/lib/types/property";
 import { Card, CardContent } from "@workspace/ui/components/card";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@workspace/ui/components/select";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@workspace/ui/components/table";
 import {
   Tabs,
   TabsContent,
   TabsList,
   TabsTrigger,
 } from "@workspace/ui/components/tabs";
-import {
-  ACCOUNT_COMPANY_LABELS,
-} from "@workspace/utils";
 import { useMemo, useState } from "react";
 import { PropertiesTable } from "./properties-table";
 
@@ -41,8 +24,7 @@ export function MonthlyPropertiesClient({
   month,
   properties,
 }: MonthlyPropertiesClientProps) {
-  const [selectedAccount, setSelectedAccount] =
-    useState<string>("legit");
+  const [selectedAccount, setSelectedAccount] = useState<string>("legit");
   const [selectedProperty, setSelectedProperty] =
     useState<PropertyWithRelations | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
@@ -130,7 +112,6 @@ export function MonthlyPropertiesClient({
     return text.length > maxLength ? text.substring(0, maxLength) : text;
   };
 
-
   const handlePropertyClick = (property: PropertyWithRelations) => {
     setSelectedProperty(property);
     setModalOpen(true);
@@ -138,7 +119,7 @@ export function MonthlyPropertiesClient({
 
   return (
     <div className="flex flex-1 flex-col overflow-hidden">
-      <div className="flex flex-col gap-4 p-4 lg:p-6">
+      <div className="flex flex-col gap-3 p-4 lg:p-3">
         {/* タブ */}
         <Tabs defaultValue="confirmed" className="flex-1">
           <TabsList className="grid w-full grid-cols-2">
@@ -151,145 +132,48 @@ export function MonthlyPropertiesClient({
           </TabsList>
 
           <TabsContent value="confirmed">
+            {/* 集計表示 */}
+            <div className="grid grid-cols-3 gap-4 mb-4">
+              <div className="rounded-lg bg-muted/50 p-3 border">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs text-muted-foreground">
+                    利益合計
+                  </span>
+                  <p className="text-sm font-bold">
+                    {formatCurrency(
+                      calculateTotals(categorizedProperties.confirmed).profit
+                    )}
+                  </p>
+                </div>
+              </div>
+              <div className="rounded-lg bg-muted/50 p-3 border">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs text-muted-foreground">
+                    BC手付合計
+                  </span>
+                  <p className="text-sm font-bold">
+                    {formatCurrency(
+                      calculateTotals(categorizedProperties.confirmed).bcDeposit
+                    )}
+                  </p>
+                </div>
+              </div>
+              <div className="rounded-lg bg-muted/50 p-3 border">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs text-muted-foreground">件数</span>
+                  <p className="text-sm font-bold">
+                    {categorizedProperties.confirmed.length}件
+                  </p>
+                </div>
+              </div>
+            </div>
+            <AccountSettlementSummary
+              selectedAccount={selectedAccount}
+              setSelectedAccount={setSelectedAccount}
+              accountSettlementSummary={accountSettlementSummary}
+            />
             <Card>
               <CardContent className="">
-                {/* 集計表示 */}
-                <div className="grid grid-cols-3 gap-4 mb-4">
-                  <div className="rounded-lg bg-muted/50 p-3 border">
-                    <div className="flex items-center justify-between">
-                      <span className="text-xs text-muted-foreground">
-                        利益合計
-                      </span>
-                      <p className="text-sm font-bold">
-                        {formatCurrency(
-                          calculateTotals(categorizedProperties.confirmed)
-                            .profit
-                        )}
-                      </p>
-                    </div>
-                  </div>
-                  <div className="rounded-lg bg-muted/50 p-3 border">
-                    <div className="flex items-center justify-between">
-                      <span className="text-xs text-muted-foreground">
-                        BC手付合計
-                      </span>
-                      <p className="text-sm font-bold">
-                        {formatCurrency(
-                          calculateTotals(categorizedProperties.confirmed)
-                            .bcDeposit
-                        )}
-                      </p>
-                    </div>
-                  </div>
-                  <div className="rounded-lg bg-muted/50 p-3 border">
-                    <div className="flex items-center justify-between">
-                      <span className="text-xs text-muted-foreground">
-                        件数
-                      </span>
-                      <p className="text-sm font-bold">
-                        {categorizedProperties.confirmed.length}件
-                      </p>
-                    </div>
-                  </div>
-                </div>
-
-                {/* 口座別決済日集計 */}
-                <div className="mb-4">
-                  <div className="flex items-center gap-2 mb-2">
-                    <span className="text-sm font-semibold">口座別集計</span>
-                    <Select
-                      value={selectedAccount}
-                      onValueChange={setSelectedAccount}
-                    >
-                      <SelectTrigger className="w-[150px]">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="legit">
-                          {ACCOUNT_COMPANY_LABELS.legit}
-                        </SelectItem>
-                        <SelectItem value="life">
-                          {ACCOUNT_COMPANY_LABELS.life}
-                        </SelectItem>
-                        <SelectItem value="ms">
-                          {ACCOUNT_COMPANY_LABELS.ms}
-                        </SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <div className="rounded-lg border p-4 bg-muted/30">
-                    <Table className="text-xs">
-                      <TableHeader>
-                        <TableRow>
-                          <TableHead className="text-xs">決済日</TableHead>
-                          <TableHead className="text-xs text-right">
-                            出口金額合計
-                          </TableHead>
-                          <TableHead className="text-xs text-right">
-                            件数
-                          </TableHead>
-                          <TableHead className="text-xs text-right">
-                            上限比率
-                          </TableHead>
-                        </TableRow>
-                      </TableHeader>
-                      <TableBody>
-                        {accountSettlementSummary.length === 0 ? (
-                          <TableRow>
-                            <TableCell colSpan={4} className="text-center">
-                              該当する案件がありません
-                            </TableCell>
-                          </TableRow>
-                        ) : (
-                          accountSettlementSummary.map((item) => (
-                            <TableRow key={item.date}>
-                              <TableCell className="font-medium">
-                                {formatDateWithDay(item.date)}
-                              </TableCell>
-                              <TableCell className="text-right">
-                                {formatCurrency(item.total)}
-                              </TableCell>
-                              <TableCell className="text-right">
-                                {item.count}件
-                              </TableCell>
-                              <TableCell className="text-right">
-                                <div className="flex items-center justify-end gap-2">
-                                  <div className="w-20 h-4 bg-muted rounded-full overflow-hidden">
-                                    <div
-                                      className={`h-full ${
-                                        item.percentage >= 80
-                                          ? "bg-destructive"
-                                          : item.percentage >= 50
-                                            ? "bg-yellow-500"
-                                            : "bg-primary"
-                                      }`}
-                                      style={{
-                                        width: `${Math.min(item.percentage, 100)}%`,
-                                      }}
-                                    />
-                                  </div>
-                                  <span
-                                    className={`font-semibold ${
-                                      item.percentage >= 80
-                                        ? "text-destructive"
-                                        : ""
-                                    }`}
-                                  >
-                                    {item.percentage.toFixed(0)}%
-                                  </span>
-                                  {item.percentage >= 80 && (
-                                    <span className="text-destructive">⚠️</span>
-                                  )}
-                                </div>
-                              </TableCell>
-                            </TableRow>
-                          ))
-                        )}
-                      </TableBody>
-                    </Table>
-                  </div>
-                </div>
-
                 {/* 案件一覧テーブル */}
                 <PropertiesTable
                   properties={categorizedProperties.confirmed}

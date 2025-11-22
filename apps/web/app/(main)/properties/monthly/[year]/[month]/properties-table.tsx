@@ -26,7 +26,7 @@ import BrokerCompanyBadge from "@/components/property/badge/broker-company-badge
 import OrganizationBadge from "@/components/property/badge/organization-badge";
 import { ProgressStatusInlineEdit } from "@/components/property/inline-edit/progress-status-inline-edit";
 import { DocumentStatusInlineEdit } from "@/components/property/inline-edit/document-status-inline-edit";
-import { NotesInlineEdit } from "@/components/property/inline-edit/notes-inline-edit";
+import { NotesPopoverEdit } from "@/components/property/inline-edit/notes-popover-edit";
 
 interface PropertiesTableProps {
   properties: PropertyWithRelations[];
@@ -169,7 +169,7 @@ export function PropertiesTable({
                 />
               </TableCell>
               <TableCell className="text-[10px] p-1">
-                <NotesInlineEdit
+                <NotesPopoverEdit
                   propertyId={property.id}
                   currentNotes={property.notes}
                 />
