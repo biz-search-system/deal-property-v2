@@ -53,16 +53,16 @@ export function PropertiesTable({
       <Table className="text-[10px]">
         <TableHeader className="sticky top-0 bg-background z-10">
           <TableRow>
-            <TableHead className="text-[10px] p-1 sticky left-0 bg-background z-20 min-w-[50px]">
+            <TableHead className="text-[10px] p-1 sticky left-0 bg-background z-20 w-[70px]">
               管理組織
             </TableHead>
-            <TableHead className="text-[10px] p-1 sticky left-[50px] bg-background z-20 min-w-[45px]">
+            <TableHead className="text-[10px] p-1 sticky left-[70px] bg-background z-20 min-w-[45px] w-[70px]">
               担当
             </TableHead>
-            <TableHead className="text-[10px] p-1 sticky left-[95px] bg-background z-20 min-w-[65px]">
+            <TableHead className="text-[10px] p-1 sticky left-[140px] bg-background z-20 min-w-[65px]">
               物件名
             </TableHead>
-            <TableHead className="text-[10px] p-1 sticky left-[160px] bg-background z-20 w-[40px]">
+            <TableHead className="text-[10px] p-1 sticky left-[205px] bg-background z-20 w-[40px]">
               号室
             </TableHead>
             <TableHead className="text-[10px] p-1 min-w-[55px]">
@@ -73,21 +73,21 @@ export function PropertiesTable({
             <TableHead className="text-[10px] p-1 w-[50px]">仲手等</TableHead>
             <TableHead className="text-[10px] p-1 w-[50px]">利益</TableHead>
             <TableHead className="text-[10px] p-1 w-[50px]">BC手付</TableHead>
-            <TableHead className="text-[10px] p-1 min-w-[50px]">
+            <TableHead className="text-[10px] p-1 w-[60px]">
               決済日
             </TableHead>
             <TableHead className="text-[10px] p-1 min-w-[50px]">買取</TableHead>
-            <TableHead className="text-[10px] p-1 min-w-[45px]">
+            <TableHead className="text-[10px] p-1 w-[70px]">
               契約形態
             </TableHead>
-            <TableHead className="text-[10px] p-1 min-w-[45px]">
+            <TableHead className="text-[10px] p-1 w-[70px]">
               B会社
             </TableHead>
-            <TableHead className="text-[10px] p-1 min-w-[45px]">仲介</TableHead>
-            <TableHead className="text-[10px] p-1 min-w-[50px]">進捗</TableHead>
-            <TableHead className="text-[10px] p-1 min-w-[50px]">書類</TableHead>
-            <TableHead className="text-[10px] p-1 w-[120px]">備考</TableHead>
-            <TableHead className="text-[10px] p-1 sticky right-0 bg-background z-20 min-w-[35px]">
+            <TableHead className="text-[10px] p-1 w-[70px]">仲介</TableHead>
+            <TableHead className="text-[10px] p-1 w-[70px]">進捗</TableHead>
+            <TableHead className="text-[10px] p-1 w-[70px]">書類</TableHead>
+            <TableHead className="text-[10px] p-1 min-w-[65px] w-[120px]">備考</TableHead>
+            <TableHead className="text-[10px] p-1 sticky right-0 bg-background z-20 w-[50px]">
               操作
             </TableHead>
           </TableRow>
@@ -102,7 +102,7 @@ export function PropertiesTable({
                   }
                 />
               </TableCell>
-              <TableCell className="text-[10px] p-1 sticky left-[50px] bg-background">
+              <TableCell className="text-[10px] p-1 sticky left-[70px] bg-background">
                 <div className="flex gap-1 flex-wrap">
                   {property.staff.map((staffMember, index) => (
                     <Badge
@@ -115,10 +115,10 @@ export function PropertiesTable({
                   ))}
                 </div>
               </TableCell>
-              <TableCell className="text-[10px] p-1 sticky left-[95px] bg-background">
+              <TableCell className="text-[10px] p-1 sticky left-[140px] bg-background">
                 {property.propertyName}
               </TableCell>
-              <TableCell className="text-[10px] p-1 sticky left-[160px] bg-background">
+              <TableCell className="text-[10px] p-1 sticky left-[205px] bg-background">
                 {property.roomNumber}
               </TableCell>
               <TableCell className="text-[10px] p-1">

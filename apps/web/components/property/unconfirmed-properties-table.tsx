@@ -1,6 +1,8 @@
 "use client";
 
 import type { PropertyWithRelations } from "@/lib/types/property";
+import { format } from "date-fns";
+import { ja } from "date-fns/locale";
 import { Badge } from "@workspace/ui/components/badge";
 import { Button } from "@workspace/ui/components/button";
 import {
@@ -27,6 +29,7 @@ import OrganizationBadge from "./badge/organization-badge";
 import { DocumentStatusInlineEdit } from "./inline-edit/document-status-inline-edit";
 import { NotesPopoverEdit } from "./inline-edit/notes-popover-edit";
 import { ProgressStatusInlineEdit } from "./inline-edit/progress-status-inline-edit";
+import { SettlementDatePopoverEdit } from "./inline-edit/settlement-date-popover-edit";
 import { PopoverProvider, PropertyNameCell } from "./property-name-cell";
 interface UnconfirmedPropertiesTableProps {
   properties: PropertyWithRelations[];
@@ -45,6 +48,16 @@ export function UnconfirmedPropertiesTable({
     }
     // 1万円以上の場合は万円単位で表示
     return `${(value / 10000).toFixed(0)}万`;
+  };
+  const formatDateWithDay = (dateValue: Date | string | null): string => {
+    if (!dateValue) return "-";
+    const date = typeof dateValue === "string" ? new Date(dateValue) : dateValue;
+
+    // 無効な日付チェック
+    if (isNaN(date.getTime())) return "-";
+
+    // date-fnsを使用してフォーマット（M/d(E) 形式）
+    return format(date, "M/d(E)", { locale: ja });
   };
 
   return (
@@ -70,6 +83,7 @@ export function UnconfirmedPropertiesTable({
               <TableHead className="text-[10px] p-1 w-[50px]">出口</TableHead>
               <TableHead className="text-[10px] p-1 w-[50px]">仲手等</TableHead>
               <TableHead className="text-[10px] p-1 w-[50px]">利益</TableHead>
+              <TableHead className="text-[10px] p-1 w-[60px]">決済日</TableHead>
               <TableHead className="text-[10px] p-1 w-[70px]">
                 契約形態
               </TableHead>
@@ -143,6 +157,14 @@ export function UnconfirmedPropertiesTable({
                 {/* 利益 */}
                 <TableCell className="text-[10px] p-1 text-right font-semibold">
                   {formatCurrency(property.profit)}
+                </TableCell>
+                {/* 決済日 */}
+                <TableCell className="text-[10px] p-1">
+                  <SettlementDatePopoverEdit
+                    propertyId={property.id}
+                    currentDate={property.settlementDate}
+                    formatDisplay={formatDateWithDay}
+                  />
                 </TableCell>
 
                 {/* 契約形態 */}

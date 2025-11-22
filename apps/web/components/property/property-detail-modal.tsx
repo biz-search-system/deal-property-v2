@@ -39,10 +39,9 @@ import {
   CONTRACT_TYPES,
   B_COMPANIES,
   BROKER_COMPANIES,
-  ACCOUNT_COMPANIES,
-  BANK_ACCOUNTS,
 } from "@/app/(main)/properties/data/property";
 import { SettlementDatePicker } from "./settlement-date-picker";
+import { BankAccountCard } from "./bank-account-card";
 import type { PropertyWithRelations } from "@/lib/types/property";
 
 interface PropertyDetailModalProps {
@@ -71,12 +70,6 @@ export function PropertyDetailModal({
   const [assignees, setAssignees] = useState<string[]>(initialAssignees);
   const [settlementDate, setSettlementDate] = useState<string | null>(null);
   const [aContractDate, setAContractDate] = useState<string>("");
-  const [selectedAccountCompany, setSelectedAccountCompany] = useState<string>(
-    property?.accountCompany || ""
-  );
-  const [selectedBankAccount, setSelectedBankAccount] = useState<string>(
-    property?.bankAccount || ""
-  );
 
   // 契約進捗のチェック状態
   const [contractChecks, setContractChecks] = useState({
@@ -138,8 +131,6 @@ export function PropertyDetailModal({
           setAContractDate("");
         }
 
-        setSelectedAccountCompany(property.accountCompany || "");
-        setSelectedBankAccount(property.bankAccount || "");
       });
     }
   }, [property, open]);
@@ -797,88 +788,13 @@ export function PropertyDetailModal({
 
               {/* 右側: 口座関係 */}
               <div className="space-y-6">
-                <div className="rounded-lg border bg-card">
-                  <div className="p-4 border-b bg-muted/30">
-                    <h3 className="font-semibold">口座情報</h3>
-                  </div>
-                  <div className="p-4 space-y-4">
-                    <div className="space-y-2">
-                      <Label>使用口座会社</Label>
-                      <Select
-                        value={selectedAccountCompany}
-                        onValueChange={(value) => {
-                          setSelectedAccountCompany(value);
-                          setSelectedBankAccount(""); // 口座会社変更時に銀行口座をリセット
-                        }}
-                      >
-                        <SelectTrigger>
-                          <SelectValue placeholder="選択してください" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {Object.values(ACCOUNT_COMPANIES).map((company) => (
-                            <SelectItem key={company} value={company}>
-                              {company}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label>使用銀行口座</Label>
-                      <Select
-                        value={selectedBankAccount}
-                        onValueChange={setSelectedBankAccount}
-                        disabled={!selectedAccountCompany}
-                      >
-                        <SelectTrigger>
-                          <SelectValue
-                            placeholder={
-                              selectedAccountCompany
-                                ? "銀行口座を選択してください"
-                                : "先に口座会社を選択してください"
-                            }
-                          />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {selectedAccountCompany ===
-                            ACCOUNT_COMPANIES.REIJIT &&
-                            Object.values(BANK_ACCOUNTS.REIJIT).map(
-                              (account) => (
-                                <SelectItem key={account} value={account}>
-                                  {account}
-                                </SelectItem>
-                              )
-                            )}
-                          {selectedAccountCompany === ACCOUNT_COMPANIES.MS &&
-                            Object.values(BANK_ACCOUNTS.MS).map((account) => (
-                              <SelectItem key={account} value={account}>
-                                {account}
-                              </SelectItem>
-                            ))}
-                          {selectedAccountCompany === ACCOUNT_COMPANIES.LIFE &&
-                            Object.values(BANK_ACCOUNTS.LIFE).map((account) => (
-                              <SelectItem key={account} value={account}>
-                                {account}
-                              </SelectItem>
-                            ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
-
-                    <Separator />
-
-                    <div className="p-4 bg-muted rounded-lg space-y-2">
-                      <p className="text-sm text-muted-foreground">
-                        同日同口座の出口金額合計
-                      </p>
-                      <p className="text-2xl font-semibold">¥1,200万</p>
-                      <p className="text-xs text-muted-foreground">
-                        ※ 1億円を超える場合は警告が表示されます
-                      </p>
-                    </div>
-                  </div>
-                </div>
+                <BankAccountCard
+                  propertyId={property.id}
+                  settlementDate={property.settlementDate}
+                  amountExit={property.amountExit}
+                  initialAccountCompany={property.accountCompany}
+                  initialBankAccount={property.bankAccount}
+                />
               </div>
             </div>
           </TabsContent>

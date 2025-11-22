@@ -157,3 +157,23 @@ export async function getFilteredProperties(options?: {
     orderBy: (props, { desc }) => [desc(props.createdAt)],
   });
 }
+
+/**
+ * 全案件を更新順で取得（検索画面用）
+ */
+export async function getAllPropertiesByUpdated() {
+  return db.query.properties.findMany({
+    with: {
+      organization: true,
+      staff: {
+        with: {
+          user: true,
+        },
+      },
+      contractProgress: true,
+      documentProgress: true,
+      settlementProgress: true,
+    },
+    orderBy: (props, { desc }) => [desc(props.updatedAt)],
+  });
+}
