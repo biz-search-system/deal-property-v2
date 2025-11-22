@@ -19,19 +19,14 @@ import { auth } from "@workspace/auth";
 import { headers } from "next/headers";
 import { revalidatePath } from "next/cache";
 import { eq } from "drizzle-orm";
+import { verifySession } from "../data/sesstion";
 
 /**
  * 案件を新規作成する
  */
 export async function createProperty(data: PropertyCreate) {
-  // セッション確認
-  const session = await auth.api.getSession({
-    headers: await headers(),
-  });
-
-  if (!session) {
-    throw new Error("認証が必要です");
-  }
+  // セッション認証
+  const session = await verifySession();
 
   // バリデーション
   const validatedData = propertyCreateSchema.parse(data);
@@ -363,4 +358,33 @@ export async function updatePropertyNotes(data: { id: string; notes: string }) {
 
   revalidatePath("/properties");
   revalidatePath("/properties/unconfirmed");
+}
+
+/**
+ * 案件の決済日を更新（インライン編集用）
+ */
+export async function updatePropertySettlementDate(data: {
+  id: string;
+  settlementDate: Date | null;
+}) {
+  // セッション認証
+  const session = await verifySession();
+
+  await db
+    .update(properties)
+    .set({
+      settlementDate: data.settlementDate,
+      updatedBy: session.user.id,
+      updatedAt: new Date(),
+    })
+    .where(eq(properties.id, data.id));
+
+  revalidatePath("/properties");
+  revalidatePath("/properties/unconfirmed");
+  // 月次ビューも更新
+  if (data.settlementDate) {
+    const year = data.settlementDate.getFullYear();
+    const month = data.settlementDate.getMonth() + 1;
+    revalidatePath(`/properties/monthly/${year}/${month}`);
+  }
 }

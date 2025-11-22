@@ -25,6 +25,10 @@ export const navItems = () => {
             title: "月別管理",
             url: `/properties/monthly/${currentYear}/${currentMonth}`,
           },
+          {
+            title: "案件検索",
+            url: `/properties/search`,
+          },
         ],
       },
       {

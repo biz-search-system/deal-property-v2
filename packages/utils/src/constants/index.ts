@@ -6,5 +6,6 @@ export * from "./broker-company";
 export * from "./account-company";
 export * from "./bank-account";
 export * from "./bank-account-mapping";
+export * from "./bank-account-limits";
 export * from "./document-status";
 export * from "./organization";

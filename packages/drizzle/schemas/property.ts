@@ -117,7 +117,7 @@ export const properties = sqliteTable(
     bcDeposit: real("bc_deposit"), // BC手付金額
     contractDateA: integer("contract_date_a", { mode: "timestamp_ms" }),
     contractDateBc: integer("contract_date_bc", { mode: "timestamp_ms" }),
-    settlementDate: integer("settlement_date", { mode: "timestamp_ms" }),
+    settlementDate: integer("settlement_date", { mode: "timestamp_ms" }), // 決済日
     contractType: text("contract_type", { enum: contractType }),
     companyB: text("company_b", { enum: companyB }),
     brokerCompany: text("broker_company", { enum: brokerCompany }),
