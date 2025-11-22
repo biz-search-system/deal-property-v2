@@ -1,14 +1,12 @@
 "use client";
 
-import { SearchPropertiesTable } from "@/components/property/search/search-properties-table";
+import { DataTable } from "@/components/property/search/data-table";
+import { columns } from "@/components/property/search/columns";
 import type { PropertyWithRelations } from "@/lib/types/property";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@workspace/ui/components/card";
-import { useMemo } from "react";
+import { Card, CardContent } from "@workspace/ui/components/card";
+import { useState } from "react";
+import { PropertyDetailModal } from "@/components/property/property-detail-modal";
+import { useRouter } from "next/navigation";
 
 interface SearchPropertiesClientProps {
   properties: PropertyWithRelations[];
@@ -17,42 +15,27 @@ interface SearchPropertiesClientProps {
 export function SearchPropertiesClient({
   properties,
 }: SearchPropertiesClientProps) {
-  // 集計計算
-  const totals = useMemo(() => {
-    return {
-      profit: properties.reduce((sum, p) => sum + (p.profit || 0), 0),
-      amountA: properties.reduce((sum, p) => sum + (p.amountA || 0), 0),
-      amountExit: properties.reduce((sum, p) => sum + (p.amountExit || 0), 0),
-      commission: properties.reduce((sum, p) => sum + (p.commission || 0), 0),
-      bcDeposit: properties.reduce((sum, p) => sum + (p.bcDeposit || 0), 0),
-      count: properties.length,
-    };
-  }, [properties]);
+  const router = useRouter();
+  const [selectedProperty, setSelectedProperty] =
+    useState<PropertyWithRelations | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const formatCurrency = (value: number | null | undefined) => {
-    if (value === null || value === undefined) return "-";
-    // 1万円未満の場合は円単位で表示
-    if (value < 10000) {
-      return `${value.toLocaleString()}円`;
+  const handlePropertyClick = (property: PropertyWithRelations) => {
+    setSelectedProperty(property);
+    setIsModalOpen(true);
+  };
+
+  const handleViewDetails = (property: PropertyWithRelations) => {
+    // 詳細画面へ遷移（決済日が必要なため、決済日がある場合のみ遷移可能）
+    if (property.settlementDate) {
+      const date = new Date(property.settlementDate);
+      const year = date.getFullYear();
+      const month = date.getMonth() + 1;
+      router.push(`/properties/monthly/${year}/${month}/${property.id}`);
+    } else {
+      // 決済日がない場合は編集モーダルを開く
+      handlePropertyClick(property);
     }
-    // 1万円以上の場合は万円単位で表示
-    return `${(value / 10000).toFixed(0)}万`;
-  };
-
-  const formatDateWithDay = (dateString: string | Date | null): string => {
-    if (!dateString) return "-";
-    const date: Date =
-      typeof dateString === "string" ? new Date(dateString) : dateString;
-    const days = ["日", "月", "火", "水", "木", "金", "土"];
-    return `${date.getMonth() + 1}/${date.getDate()}(${days[date.getDay()]})`;
-  };
-
-  const truncateText = (
-    text: string | null | undefined,
-    maxLength: number = 5
-  ) => {
-    if (!text) return "-";
-    return text.length > maxLength ? text.substring(0, maxLength) : text;
   };
 
   return (
@@ -60,16 +43,23 @@ export function SearchPropertiesClient({
       <div className="flex flex-col gap-3 p-4 lg:p-3">
         {/* テーブル */}
         <Card className="flex-1">
-          <CardContent className="p-0">
-            <SearchPropertiesTable
-              properties={properties}
-              formatCurrency={formatCurrency}
-              formatDateWithDay={formatDateWithDay}
-              truncateText={truncateText}
+          <CardContent className="p-4">
+            <DataTable
+              columns={columns}
+              data={properties}
+              onView={handleViewDetails}
+              onEdit={handlePropertyClick}
             />
           </CardContent>
         </Card>
       </div>
+
+      {/* 編集モーダル */}
+      <PropertyDetailModal
+        property={selectedProperty}
+        open={isModalOpen}
+        onOpenChange={setIsModalOpen}
+      />
     </div>
   );
 }
