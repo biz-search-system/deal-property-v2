@@ -159,7 +159,8 @@ export async function getFilteredProperties(options?: {
 }
 
 /**
- * 全案件を更新順で取得（検索画面用）
+ * 全案件を組織ごとに更新順で取得（検索画面用）
+ * 組織名でグループ化し、各組織内で更新日時の降順でソート
  */
 export async function getAllPropertiesByUpdated() {
   return db.query.properties.findMany({
@@ -174,6 +175,9 @@ export async function getAllPropertiesByUpdated() {
       documentProgress: true,
       settlementProgress: true,
     },
-    orderBy: (props, { desc }) => [desc(props.updatedAt)],
+    orderBy: (props, { asc, desc }) => [
+      asc(props.organizationId), // まず組織IDでソート
+      desc(props.updatedAt), // 次に更新日時でソート
+    ],
   });
 }
