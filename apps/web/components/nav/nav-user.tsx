@@ -110,14 +110,14 @@ export function NavUser() {
                 <IconUserCircle />
                 アカウント設定
               </DropdownMenuItem>
-              <DropdownMenuItem>
+              {/* <DropdownMenuItem>
                 <IconCreditCard />
                 請求
               </DropdownMenuItem>
               <DropdownMenuItem>
                 <IconNotification />
                 通知
-              </DropdownMenuItem>
+              </DropdownMenuItem> */}
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
             <DropdownMenuItem onClick={handleSignOut}>
