@@ -83,7 +83,7 @@ export async function getTeamWithMemberCount(teamId: string) {
  * 組織のチーム一覧をメンバー数付きで取得
  */
 export async function getOrganizationTeamsWithMemberCount(
-  organizationId: string
+  organizationId: string,
 ) {
   const session = await auth.api.getSession({
     headers: await headers(),
@@ -109,7 +109,7 @@ export async function getOrganizationTeamsWithMemberCount(
         ...team,
         memberCount: memberCountResult[0]?.value || 0,
       };
-    })
+    }),
   );
 
   return teamsWithCount;

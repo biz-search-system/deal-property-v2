@@ -51,7 +51,7 @@ export default function UnconfirmedPropertiesPage() {
     value: string;
   } | null>(null);
   const [selectedProperty, setSelectedProperty] = useState<Property | null>(
-    null
+    null,
   );
   const [modalOpen, setModalOpen] = useState(false);
 
@@ -62,7 +62,7 @@ export default function UnconfirmedPropertiesPage() {
       .sort(
         (a, b) =>
           new Date(b.aContractDate).getTime() -
-          new Date(a.aContractDate).getTime()
+          new Date(a.aContractDate).getTime(),
       );
   }, []);
 
@@ -71,7 +71,7 @@ export default function UnconfirmedPropertiesPage() {
     return {
       profitEstimate: unconfirmedProperties.reduce(
         (sum, p) => sum + p.profit,
-        0
+        0,
       ),
       aAmount: unconfirmedProperties.reduce((sum, p) => sum + p.aAmount, 0),
       count: unconfirmedProperties.length,
@@ -102,7 +102,7 @@ export default function UnconfirmedPropertiesPage() {
     console.log(
       "Saving business status",
       propertyId,
-      editingBusinessStatus?.value
+      editingBusinessStatus?.value,
     );
     setEditingBusinessStatus(null);
   };
@@ -111,7 +111,7 @@ export default function UnconfirmedPropertiesPage() {
     console.log(
       "Saving document status",
       propertyId,
-      editingDocumentStatus?.value
+      editingDocumentStatus?.value,
     );
     setEditingDocumentStatus(null);
   };
@@ -133,9 +133,7 @@ export default function UnconfirmedPropertiesPage() {
           </div>
           <div className="rounded-lg bg-muted/50 p-3 border">
             <div className="flex items-center justify-between">
-              <span className="text-xs text-muted-foreground">
-                A金額合計
-              </span>
+              <span className="text-xs text-muted-foreground">A金額合計</span>
               <p className="text-sm font-bold">
                 {formatCurrency(totals.aAmount)}
               </p>
@@ -241,17 +239,26 @@ export default function UnconfirmedPropertiesPage() {
                         {formatCurrency(property.profit)}
                       </TableCell>
                       <TableCell className="text-[10px] p-1">
-                        <Badge variant="outline" className="text-[9px] px-1 py-0">
+                        <Badge
+                          variant="outline"
+                          className="text-[9px] px-1 py-0"
+                        >
                           {truncateText(property.contractType)}
                         </Badge>
                       </TableCell>
                       <TableCell className="text-[10px] p-1">
-                        <Badge variant="outline" className="text-[9px] px-1 py-0">
+                        <Badge
+                          variant="outline"
+                          className="text-[9px] px-1 py-0"
+                        >
                           {truncateText(property.bCompany)}
                         </Badge>
                       </TableCell>
                       <TableCell className="text-[10px] p-1">
-                        <Badge variant="outline" className="text-[9px] px-1 py-0">
+                        <Badge
+                          variant="outline"
+                          className="text-[9px] px-1 py-0"
+                        >
                           {truncateText(property.brokerCompany)}
                         </Badge>
                       </TableCell>
@@ -272,7 +279,9 @@ export default function UnconfirmedPropertiesPage() {
                             </SelectTrigger>
                             <SelectContent>
                               {Object.values(BUSINESS_STATUS)
-                                .filter((s) => s !== BUSINESS_STATUS.BC_UNCONFIRMED)
+                                .filter(
+                                  (s) => s !== BUSINESS_STATUS.BC_UNCONFIRMED,
+                                )
                                 .map((status) => (
                                   <SelectItem
                                     key={status}
@@ -329,7 +338,7 @@ export default function UnconfirmedPropertiesPage() {
                         ) : (
                           <Badge
                             variant={getDocumentStatusColor(
-                              property.documentStatus
+                              property.documentStatus,
                             )}
                             className="text-[9px] cursor-pointer px-1 py-0"
                             onClick={() =>
@@ -396,7 +405,9 @@ export default function UnconfirmedPropertiesPage() {
                           <DropdownMenuContent align="end">
                             <DropdownMenuItem
                               onClick={() => {
-                                router.push(`/properties/unconfirmed/${property.id}`);
+                                router.push(
+                                  `/properties/unconfirmed/${property.id}`,
+                                );
                               }}
                             >
                               <Eye className="h-3 w-3" />

@@ -46,7 +46,7 @@ export async function createTeamAction(data: CreateTeamInput) {
 
   // 現在のユーザーのメンバー情報を探す
   const currentUserMember = fullOrg.members.find(
-    (m) => m.userId === session.user.id
+    (m) => m.userId === session.user.id,
   );
 
   if (!currentUserMember) {
@@ -116,7 +116,7 @@ export async function updateTeamAction(data: UpdateTeamInput) {
 
   // 現在のユーザーのメンバー情報を探す
   const currentUserMember = fullOrg.members.find(
-    (m) => m.userId === session.user.id
+    (m) => m.userId === session.user.id,
   );
 
   if (!currentUserMember) {
@@ -185,7 +185,7 @@ export async function deleteTeamAction(teamId: string) {
 
   // 現在のユーザーのメンバー情報を探す
   const currentUserMember = fullOrg.members.find(
-    (m) => m.userId === session.user.id
+    (m) => m.userId === session.user.id,
   );
 
   if (!currentUserMember) {
@@ -255,7 +255,7 @@ export async function addTeamMemberAction(data: AddTeamMemberInput) {
 
   // 現在のユーザーのメンバー情報を探す
   const currentUserMember = fullOrg.members.find(
-    (m) => m.userId === session.user.id
+    (m) => m.userId === session.user.id,
   );
 
   if (!currentUserMember) {
@@ -272,7 +272,7 @@ export async function addTeamMemberAction(data: AddTeamMemberInput) {
 
   // 追加するユーザーが組織のメンバーか確認
   const targetUserMember = fullOrg.members.find(
-    (m) => m.userId === validatedData.userId
+    (m) => m.userId === validatedData.userId,
   );
 
   if (!targetUserMember) {
@@ -334,7 +334,7 @@ export async function removeTeamMemberAction(data: RemoveTeamMemberInput) {
 
   // 現在のユーザーのメンバー情報を探す
   const currentUserMember = fullOrg.members.find(
-    (m) => m.userId === session.user.id
+    (m) => m.userId === session.user.id,
   );
 
   if (!currentUserMember) {

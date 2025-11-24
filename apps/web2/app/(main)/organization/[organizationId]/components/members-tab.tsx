@@ -62,7 +62,7 @@ export function MembersTab({ organizationId }: MembersTabProps) {
 
       const result = await removeMemberAction(
         member.user.email,
-        organizationId
+        organizationId,
       );
 
       if (result.success) {
@@ -81,13 +81,13 @@ export function MembersTab({ organizationId }: MembersTabProps) {
 
   const handleRoleChange = async (
     memberId: string,
-    newRole: "member" | "owner" | "admin"
+    newRole: "member" | "owner" | "admin",
   ) => {
     try {
       const result = await updateMemberRoleAction(
         memberId,
         newRole,
-        organizationId
+        organizationId,
       );
 
       if (result.success) {
@@ -168,7 +168,7 @@ export function MembersTab({ organizationId }: MembersTabProps) {
                       onValueChange={(value) =>
                         handleRoleChange(
                           member.id,
-                          value as "member" | "owner" | "admin"
+                          value as "member" | "owner" | "admin",
                         )
                       }
                       disabled={member.role === "owner"}
@@ -189,7 +189,7 @@ export function MembersTab({ organizationId }: MembersTabProps) {
                     {new Date(
                       typeof member.createdAt === "string"
                         ? member.createdAt
-                        : member.createdAt
+                        : member.createdAt,
                     ).toLocaleDateString("ja-JP")}
                   </TableCell>
                   <TableCell>

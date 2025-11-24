@@ -10,7 +10,7 @@ import { fetcher } from "@workspace/utils";
  */
 export const useOrganizationTeams = (
   organizationId: string | null,
-  swrOptions?: SWRConfiguration
+  swrOptions?: SWRConfiguration,
 ) => {
   // Route ハンドラーの成功レスポンス型と一致
   const { data, error, isLoading, isValidating, mutate } =
@@ -18,10 +18,10 @@ export const useOrganizationTeams = (
       organizationId ? `/api/organization/${organizationId}/teams` : null,
       fetcher,
       {
-        dedupingInterval: 60000,      // 60秒間キャッシュ
-        revalidateOnFocus: false,     // フォーカス時の再検証無効
+        dedupingInterval: 60000, // 60秒間キャッシュ
+        revalidateOnFocus: false, // フォーカス時の再検証無効
         ...swrOptions,
-      }
+      },
     );
 
   return {
@@ -38,19 +38,20 @@ export const useOrganizationTeams = (
  */
 export const useTeamMembers = (
   teamId: string | null,
-  swrOptions?: SWRConfiguration
+  swrOptions?: SWRConfiguration,
 ) => {
   // Route ハンドラーの成功レスポンス型と一致
-  const { data, error, isLoading, isValidating, mutate } = useSWR<TeamMembersSuccessResponse>(
-    teamId ? `/api/team/${teamId}/members` : null,
-    fetcher,
-    {
-      dedupingInterval: 60000,      // 60秒間キャッシュ
-      revalidateOnFocus: false,     // フォーカス時の再検証無効
-      keepPreviousData: true,       // ページ遷移時のUX改善
-      ...swrOptions,
-    }
-  );
+  const { data, error, isLoading, isValidating, mutate } =
+    useSWR<TeamMembersSuccessResponse>(
+      teamId ? `/api/team/${teamId}/members` : null,
+      fetcher,
+      {
+        dedupingInterval: 60000, // 60秒間キャッシュ
+        revalidateOnFocus: false, // フォーカス時の再検証無効
+        keepPreviousData: true, // ページ遷移時のUX改善
+        ...swrOptions,
+      },
+    );
 
   return {
     members: data?.members,

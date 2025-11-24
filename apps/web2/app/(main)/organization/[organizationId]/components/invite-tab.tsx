@@ -33,7 +33,7 @@ interface InviteTabProps {
 export function InviteTab({ organizationId }: InviteTabProps) {
   const [inviteEmail, setInviteEmail] = useState("");
   const [inviteRole, setInviteRole] = useState<"member" | "owner" | "admin">(
-    "member"
+    "member",
   );
   const [sendingInvite, setSendingInvite] = useState(false);
   const [error, setError] = useState<string | null>(null);

@@ -10,7 +10,7 @@ import type {
 
 export const useOrganizationName = (
   organizationId: string | null,
-  swrOptions?: SWRConfiguration
+  swrOptions?: SWRConfiguration,
 ) => {
   // Route ハンドラーの成功レスポンス型と一致
   const { data, error, isLoading, isValidating } =
@@ -21,7 +21,7 @@ export const useOrganizationName = (
         dedupingInterval: 60000, // 60秒間キャッシュ
         revalidateOnFocus: false, // フォーカス時の再検証無効
         ...swrOptions,
-      }
+      },
     );
 
   return {
@@ -34,7 +34,7 @@ export const useOrganizationName = (
 
 export const useOrganizationMembers = (
   organizationId: string | null,
-  swrOptions?: SWRConfiguration
+  swrOptions?: SWRConfiguration,
 ) => {
   // Route ハンドラーの成功レスポンス型と一致
   const { data, error, isLoading, isValidating, mutate } =
@@ -46,7 +46,7 @@ export const useOrganizationMembers = (
         revalidateOnFocus: false, // フォーカス時の再検証無効
         keepPreviousData: true, // ページ遷移時のUX改善
         ...swrOptions,
-      }
+      },
     );
 
   return {
@@ -60,7 +60,7 @@ export const useOrganizationMembers = (
 
 export const useOrganizationInvitations = (
   organizationId: string | null,
-  swrOptions?: SWRConfiguration
+  swrOptions?: SWRConfiguration,
 ) => {
   // Route ハンドラーの成功レスポンス型と一致
   const { data, error, isLoading, isValidating, mutate } =
@@ -71,7 +71,7 @@ export const useOrganizationInvitations = (
         dedupingInterval: 60000, // 60秒間キャッシュ
         revalidateOnFocus: false, // フォーカス時の再検証無効
         ...swrOptions,
-      }
+      },
     );
 
   return {
@@ -93,7 +93,7 @@ export const useOrganizationsWithUserRole = (swrOptions?: SWRConfiguration) => {
         dedupingInterval: 60000, // 60秒間キャッシュ
         revalidateOnFocus: false, // フォーカス時の再検証無効
         ...swrOptions,
-      }
+      },
     );
 
   return {
@@ -108,7 +108,7 @@ export const useOrganizationsWithUserRole = (swrOptions?: SWRConfiguration) => {
 
 export const useCurrentUserOrganizationInfo = (
   organizationId: string | null,
-  swrOptions?: SWRConfiguration
+  swrOptions?: SWRConfiguration,
 ) => {
   // Route ハンドラーの成功レスポンス型と一致
   const { data, error, isLoading, isValidating, mutate } =
@@ -121,7 +121,7 @@ export const useCurrentUserOrganizationInfo = (
         dedupingInterval: 60000, // 60秒間キャッシュ
         revalidateOnFocus: false, // フォーカス時の再検証無効
         ...swrOptions,
-      }
+      },
     );
 
   return {

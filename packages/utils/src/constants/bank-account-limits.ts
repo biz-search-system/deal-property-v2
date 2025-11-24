@@ -47,7 +47,7 @@ export const WARNING_THRESHOLD_PERCENTAGE = 80; // 80%
  */
 export function getBankAccountLimit(
   company: AccountCompany | null | undefined,
-  account: BankAccount | null | undefined
+  account: BankAccount | null | undefined,
 ): number {
   if (!company || !account) return DEFAULT_BANK_ACCOUNT_LIMIT;
   return BANK_ACCOUNT_LIMITS[company]?.[account] || DEFAULT_BANK_ACCOUNT_LIMIT;

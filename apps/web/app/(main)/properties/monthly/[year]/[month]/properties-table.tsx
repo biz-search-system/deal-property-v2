@@ -73,20 +73,16 @@ export function PropertiesTable({
             <TableHead className="text-[10px] p-1 w-[50px]">仲手等</TableHead>
             <TableHead className="text-[10px] p-1 w-[50px]">利益</TableHead>
             <TableHead className="text-[10px] p-1 w-[50px]">BC手付</TableHead>
-            <TableHead className="text-[10px] p-1 w-[60px]">
-              決済日
-            </TableHead>
+            <TableHead className="text-[10px] p-1 w-[60px]">決済日</TableHead>
             <TableHead className="text-[10px] p-1 min-w-[50px]">買取</TableHead>
-            <TableHead className="text-[10px] p-1 w-[70px]">
-              契約形態
-            </TableHead>
-            <TableHead className="text-[10px] p-1 w-[70px]">
-              B会社
-            </TableHead>
+            <TableHead className="text-[10px] p-1 w-[70px]">契約形態</TableHead>
+            <TableHead className="text-[10px] p-1 w-[70px]">B会社</TableHead>
             <TableHead className="text-[10px] p-1 w-[70px]">仲介</TableHead>
             <TableHead className="text-[10px] p-1 w-[70px]">進捗</TableHead>
             <TableHead className="text-[10px] p-1 w-[70px]">書類</TableHead>
-            <TableHead className="text-[10px] p-1 min-w-[65px] w-[120px]">備考</TableHead>
+            <TableHead className="text-[10px] p-1 min-w-[65px] w-[120px]">
+              備考
+            </TableHead>
             <TableHead className="text-[10px] p-1 sticky right-0 bg-background z-20 w-[50px]">
               操作
             </TableHead>
@@ -186,7 +182,7 @@ export function PropertiesTable({
                     <DropdownMenuItem
                       onClick={() => {
                         router.push(
-                          `/properties/monthly/${year}/${month}/${property.id}`
+                          `/properties/monthly/${year}/${month}/${property.id}`,
                         );
                       }}
                     >

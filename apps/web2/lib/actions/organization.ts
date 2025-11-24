@@ -124,7 +124,7 @@ export async function getOrganizationsAction() {
  */
 export async function getFullOrganizationAction(
   organizationId?: string,
-  membersLimit: number = 100
+  membersLimit: number = 100,
 ) {
   try {
     // セッション認証
@@ -239,7 +239,7 @@ export async function updateOrganizationAction(
     slug?: string;
     logo?: string;
     metadata?: Record<string, unknown>;
-  }
+  },
 ) {
   try {
     // セッション認証
@@ -277,7 +277,7 @@ export async function updateOrganizationAction(
 export async function getOrganizationMembersAction(
   organizationId?: string,
   limit: number = 100,
-  offset: number = 0
+  offset: number = 0,
 ) {
   try {
     // セッション認証
@@ -418,7 +418,7 @@ export async function getInvitationsAction(organizationId?: string) {
  */
 export async function removeMemberAction(
   memberIdOrEmail: string,
-  organizationId?: string
+  organizationId?: string,
 ) {
   try {
     // セッション認証
@@ -452,7 +452,7 @@ export async function removeMemberAction(
 export async function updateMemberRoleAction(
   memberId: string,
   role: "member" | "owner" | "admin" | ("member" | "owner" | "admin")[],
-  organizationId?: string
+  organizationId?: string,
 ) {
   try {
     // セッション認証

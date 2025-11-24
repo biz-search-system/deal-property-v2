@@ -5,7 +5,7 @@ import { getSalesTeamMembers } from "@/lib/data/organization";
 
 export async function GET(
   _req: NextRequest,
-  ctx: RouteContext<"/api/organization/[organizationId]/sales-team">
+  ctx: RouteContext<"/api/organization/[organizationId]/sales-team">,
 ): Promise<NextResponse> {
   const { organizationId } = await ctx.params;
 
@@ -27,7 +27,7 @@ export async function GET(
     console.error("Failed to get sales team members:", error);
     return NextResponse.json(
       { error: "Failed to get sales team members" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

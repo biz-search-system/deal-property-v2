@@ -78,7 +78,7 @@ export function SignupForm({
           signupError.code === "USERNAME_IS_ALREADY_TAKEN_PLEASE_TRY_ANOTHER"
         ) {
           toast.error(
-            "このメールアドレスはすでに使用されています.ログインして招待を受け入れてください."
+            "このメールアドレスはすでに使用されています.ログインして招待を受け入れてください.",
           );
           router.push(`/login?invitationId=${invitationId}`);
           return;

@@ -147,7 +147,7 @@ export const properties = sqliteTable(
     index("idx_properties_document_status").on(table.documentStatus),
     index("idx_properties_settlement_date").on(table.settlementDate),
     index("idx_properties_created_at").on(table.createdAt),
-  ]
+  ],
 );
 
 /**
@@ -172,9 +172,9 @@ export const propertyStaff = sqliteTable(
     index("idx_property_staff_user_id").on(table.userId),
     unique("uk_property_staff_property_user").on(
       table.propertyId,
-      table.userId
+      table.userId,
     ),
-  ]
+  ],
 );
 
 /**
@@ -201,7 +201,7 @@ export const contractProgress = sqliteTable("contract_progress", {
     mode: "timestamp_ms",
   }),
   abAuthorizationSavedBy: text("ab_authorization_saved_by").references(
-    () => users.id
+    () => users.id,
   ),
   abSellerIdSaved: integer("ab_seller_id_saved", { mode: "boolean" })
     .notNull()
@@ -215,7 +215,7 @@ export const contractProgress = sqliteTable("contract_progress", {
     mode: "timestamp_ms",
   }),
   bcContractCreatedBy: text("bc_contract_created_by").references(
-    () => users.id
+    () => users.id,
   ),
   bcDescriptionCreated: integer("bc_description_created", { mode: "boolean" })
     .notNull()
@@ -224,7 +224,7 @@ export const contractProgress = sqliteTable("contract_progress", {
     mode: "timestamp_ms",
   }),
   bcDescriptionCreatedBy: text("bc_description_created_by").references(
-    () => users.id
+    () => users.id,
   ),
   bcContractSent: integer("bc_contract_sent", { mode: "boolean" })
     .notNull()
@@ -238,7 +238,7 @@ export const contractProgress = sqliteTable("contract_progress", {
     mode: "timestamp_ms",
   }),
   bcDescriptionSentBy: text("bc_description_sent_by").references(
-    () => users.id
+    () => users.id,
   ),
   bcContractCbDone: integer("bc_contract_cb_done", { mode: "boolean" })
     .notNull()
@@ -254,7 +254,7 @@ export const contractProgress = sqliteTable("contract_progress", {
     mode: "timestamp_ms",
   }),
   bcDescriptionCbDoneBy: text("bc_description_cb_done_by").references(
-    () => users.id
+    () => users.id,
   ),
   ...timestamps,
 });
@@ -305,7 +305,7 @@ export const settlementProgress = sqliteTable("settlement_progress", {
     mode: "timestamp_ms",
   }),
   loanCalculationSavedBy: text("loan_calculation_saved_by").references(
-    () => users.id
+    () => users.id,
   ),
   lawyerRequested: integer("lawyer_requested", { mode: "boolean" })
     .notNull()
@@ -341,7 +341,7 @@ export const settlementProgress = sqliteTable("settlement_progress", {
     mode: "timestamp_ms",
   }),
   bankDocumentsCompleteBy: text("bank_documents_complete_by").references(
-    () => users.id
+    () => users.id,
   ),
   loanSaved: integer("loan_saved", { mode: "boolean" })
     .notNull()
@@ -355,7 +355,7 @@ export const settlementProgress = sqliteTable("settlement_progress", {
     mode: "timestamp_ms",
   }),
   sellerPaymentDoneBy: text("seller_payment_done_by").references(
-    () => users.id
+    () => users.id,
   ),
   managementCancel: text("management_cancel", { enum: managementCancel })
     .notNull()
@@ -400,7 +400,7 @@ export const propertyProgressHistory = sqliteTable(
   (table) => [
     index("idx_property_progress_history_property_id").on(table.propertyId),
     index("idx_property_progress_history_changed_at").on(table.changedAt),
-  ]
+  ],
 );
 
 // リレーション定義
@@ -454,7 +454,7 @@ export const contractProgressRelations = relations(
       fields: [contractProgress.propertyId],
       references: [properties.id],
     }),
-  })
+  }),
 );
 
 export const documentProgressRelations = relations(
@@ -468,7 +468,7 @@ export const documentProgressRelations = relations(
       fields: [documentProgress.updatedBy],
       references: [users.id],
     }),
-  })
+  }),
 );
 
 export const settlementProgressRelations = relations(
@@ -478,7 +478,7 @@ export const settlementProgressRelations = relations(
       fields: [settlementProgress.propertyId],
       references: [properties.id],
     }),
-  })
+  }),
 );
 
 export const propertyProgressHistoryRelations = relations(
@@ -492,5 +492,5 @@ export const propertyProgressHistoryRelations = relations(
       fields: [propertyProgressHistory.changedBy],
       references: [users.id],
     }),
-  })
+  }),
 );

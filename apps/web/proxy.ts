@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getSessionCookie } from "better-auth/cookies";
 import { get } from "@vercel/edge-config";
 import { Maintenance } from "@/lib/types/maintenance";
 import { handleMaintenanceMode } from "@/lib/maintenance";
+import { getSessionCookie } from "better-auth/cookies";
 
 const publicRoutes = [
   "/login",
@@ -14,7 +14,8 @@ const publicRoutes = [
   "/maintenance",
 ];
 
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
+  // Cookieから直接セッショントークンを取得
   const sessionCookie = getSessionCookie(request);
   const currentPath = request.nextUrl.pathname;
   const isPrivateRoute = !publicRoutes.includes(currentPath);

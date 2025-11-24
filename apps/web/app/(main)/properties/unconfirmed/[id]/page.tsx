@@ -333,7 +333,7 @@ export default async function PropertyDetailPage({
                       date={
                         property.contractProgress?.abContractSavedAt
                           ? formatDateTime(
-                              property.contractProgress.abContractSavedAt
+                              property.contractProgress.abContractSavedAt,
                             )
                           : null
                       }
@@ -346,7 +346,7 @@ export default async function PropertyDetailPage({
                       date={
                         property.contractProgress?.abAuthorizationSavedAt
                           ? formatDateTime(
-                              property.contractProgress.abAuthorizationSavedAt
+                              property.contractProgress.abAuthorizationSavedAt,
                             )
                           : null
                       }
@@ -359,7 +359,7 @@ export default async function PropertyDetailPage({
                       date={
                         property.contractProgress?.abSellerIdSavedAt
                           ? formatDateTime(
-                              property.contractProgress.abSellerIdSavedAt
+                              property.contractProgress.abSellerIdSavedAt,
                             )
                           : null
                       }
@@ -380,7 +380,7 @@ export default async function PropertyDetailPage({
                       date={
                         property.contractProgress?.bcContractCreatedAt
                           ? formatDateTime(
-                              property.contractProgress.bcContractCreatedAt
+                              property.contractProgress.bcContractCreatedAt,
                             )
                           : null
                       }
@@ -393,7 +393,7 @@ export default async function PropertyDetailPage({
                       date={
                         property.contractProgress?.bcDescriptionCreatedAt
                           ? formatDateTime(
-                              property.contractProgress.bcDescriptionCreatedAt
+                              property.contractProgress.bcDescriptionCreatedAt,
                             )
                           : null
                       }
@@ -406,7 +406,7 @@ export default async function PropertyDetailPage({
                       date={
                         property.contractProgress?.bcContractSentAt
                           ? formatDateTime(
-                              property.contractProgress.bcContractSentAt
+                              property.contractProgress.bcContractSentAt,
                             )
                           : null
                       }
@@ -419,7 +419,7 @@ export default async function PropertyDetailPage({
                       date={
                         property.contractProgress?.bcDescriptionSentAt
                           ? formatDateTime(
-                              property.contractProgress.bcDescriptionSentAt
+                              property.contractProgress.bcDescriptionSentAt,
                             )
                           : null
                       }
@@ -432,7 +432,7 @@ export default async function PropertyDetailPage({
                       date={
                         property.contractProgress?.bcContractCbDoneAt
                           ? formatDateTime(
-                              property.contractProgress.bcContractCbDoneAt
+                              property.contractProgress.bcContractCbDoneAt,
                             )
                           : null
                       }
@@ -445,7 +445,7 @@ export default async function PropertyDetailPage({
                       date={
                         property.contractProgress?.bcDescriptionCbDoneAt
                           ? formatDateTime(
-                              property.contractProgress.bcDescriptionCbDoneAt
+                              property.contractProgress.bcDescriptionCbDoneAt,
                             )
                           : null
                       }

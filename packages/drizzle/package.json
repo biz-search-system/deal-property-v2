@@ -9,12 +9,9 @@
   },
   "exports": {
     "./db": "./index.ts",
-    "./zod/*": {
-      "types": "./zod/index.ts",
-      "default": "./zod/index.ts"
-    },
     "./types": "./types/index.ts",
-    "./schemas": "./schemas/index.ts"
+    "./schemas": "./schemas/index.ts",
+    "./zod-schemas": "./zod-schemas/index.ts"
   },
   "devDependencies": {
     "@workspace/utils": "workspace:*",

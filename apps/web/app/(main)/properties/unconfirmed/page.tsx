@@ -7,7 +7,7 @@ export default async function UnconfirmedPropertiesPage() {
   const allProperties = await getProperties();
   // console.log(allProperties);
   const unconfirmedProperties = allProperties.filter(
-    (p) => p.progressStatus === "bc_before_confirmed"
+    (p) => p.progressStatus === "bc_before_confirmed",
   );
 
   // 集計計算（利益はprofitフィールドから直接取得）

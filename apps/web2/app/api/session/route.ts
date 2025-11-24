@@ -4,7 +4,7 @@ import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 
 export async function GET(
-  _req: NextRequest
+  _req: NextRequest,
 ): Promise<NextResponse<VerifiedSessionResponse>> {
   // セッション確認
   const data = await verifySession();
@@ -19,7 +19,7 @@ export async function GET(
     console.error("Failed to get session:", error);
     return NextResponse.json(
       { error: "Failed to get session" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

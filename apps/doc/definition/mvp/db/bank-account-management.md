@@ -35,10 +35,10 @@ bank_account     VARCHAR(50)  NULL  -- 使用銀行口座
 
 ### 2.2 データ型と制約
 
-| フィールド名     | データ型     | NULL許可 | 説明                                    |
-| --------------- | ------------ | -------- | --------------------------------------- |
-| account_company | VARCHAR(20)  | YES      | 使用口座会社（legit/life/ms）           |
-| bank_account    | VARCHAR(50)  | YES      | 使用銀行口座（会社により選択肢が変化）   |
+| フィールド名    | データ型    | NULL許可 | 説明                                   |
+| --------------- | ----------- | -------- | -------------------------------------- |
+| account_company | VARCHAR(20) | YES      | 使用口座会社（legit/life/ms）          |
+| bank_account    | VARCHAR(50) | YES      | 使用銀行口座（会社により選択肢が変化） |
 
 ---
 
@@ -46,41 +46,41 @@ bank_account     VARCHAR(50)  NULL  -- 使用銀行口座
 
 ### 3.1 account_company（使用口座会社）の値
 
-| DB値  | 表示名     | 説明                       |
-| ----- | ---------- | -------------------------- |
-| legit | レイジット | 株式会社レイジットの口座    |
-| life  | ライフ     | ライフインベストの口座      |
-| ms    | エムズ     | M'scompanyの口座           |
+| DB値  | 表示名     | 説明                     |
+| ----- | ---------- | ------------------------ |
+| legit | レイジット | 株式会社レイジットの口座 |
+| life  | ライフ     | ライフインベストの口座   |
+| ms    | エムズ     | M'scompanyの口座         |
 
 ### 3.2 bank_account（使用銀行口座）の値
 
 #### レイジット（legit）
 
-| DB値      | 表示名    | 銀行名              | 備考           |
-| --------- | --------- | ------------------- | -------------- |
-| gmo_main  | GMOメイン | GMOあおぞらネット銀行 | メイン口座     |
-| gmo_sub   | GMOサブ   | GMOあおぞらネット銀行 | サブ口座       |
-| kinsan    | 近産      | 近畿産業信用組合     | 追加口座       |
+| DB値     | 表示名    | 銀行名                | 備考       |
+| -------- | --------- | --------------------- | ---------- |
+| gmo_main | GMOメイン | GMOあおぞらネット銀行 | メイン口座 |
+| gmo_sub  | GMOサブ   | GMOあおぞらネット銀行 | サブ口座   |
+| kinsan   | 近産      | 近畿産業信用組合      | 追加口座   |
 
 #### ライフ（life）
 
-| DB値              | 表示名           | 口座番号  | 備考           |
-| ----------------- | ---------------- | --------- | -------------- |
-| main_1727088      | メイン1727088    | 1727088   | メイン口座     |
-| sub_1728218       | サブ1728218      | 1728218   | サブ口座       |
-| new_main_2309414  | 新メイン2309414  | 2309414   | 新規メイン口座 |
+| DB値             | 表示名          | 口座番号 | 備考           |
+| ---------------- | --------------- | -------- | -------------- |
+| main_1727088     | メイン1727088   | 1727088  | メイン口座     |
+| sub_1728218      | サブ1728218     | 1728218  | サブ口座       |
+| new_main_2309414 | 新メイン2309414 | 2309414  | 新規メイン口座 |
 
 #### エムズ（ms）
 
-| DB値      | 表示名   | 銀行名                | 備考         |
-| --------- | -------- | --------------------- | ------------ |
-| sumi_shin | 住信     | 住信SBIネット銀行      | メイン口座   |
-| gmo_main  | GMOメイン | GMOあおぞらネット銀行  | GMO口座1     |
-| gmo_sub   | GMOサブ  | GMOあおぞらネット銀行  | GMO口座2     |
-| rakuten   | 楽天     | 楽天銀行              | 楽天口座     |
-| paypay_1  | PayPay① | PayPay銀行            | PayPay口座1  |
-| paypay_2  | PayPay② | PayPay銀行            | PayPay口座2  |
-| paypay_3  | PayPay③ | PayPay銀行            | PayPay口座3  |
+| DB値      | 表示名    | 銀行名                | 備考        |
+| --------- | --------- | --------------------- | ----------- |
+| sumi_shin | 住信      | 住信SBIネット銀行     | メイン口座  |
+| gmo_main  | GMOメイン | GMOあおぞらネット銀行 | GMO口座1    |
+| gmo_sub   | GMOサブ   | GMOあおぞらネット銀行 | GMO口座2    |
+| rakuten   | 楽天      | 楽天銀行              | 楽天口座    |
+| paypay_1  | PayPay①   | PayPay銀行            | PayPay口座1 |
+| paypay_2  | PayPay②   | PayPay銀行            | PayPay口座2 |
+| paypay_3  | PayPay③   | PayPay銀行            | PayPay口座3 |
 
 ---
 
@@ -91,14 +91,21 @@ bank_account     VARCHAR(50)  NULL  -- 使用銀行口座
 ```typescript
 // 口座会社に応じた銀行口座の選択肢を返す
 function getBankAccountOptions(accountCompany: string) {
-  switch(accountCompany) {
-    case 'legit':
-      return ['gmo_main', 'gmo_sub', 'kinsan'];
-    case 'life':
-      return ['main_1727088', 'sub_1728218', 'new_main_2309414'];
-    case 'ms':
-      return ['sumi_shin', 'gmo_main', 'gmo_sub', 'rakuten',
-              'paypay_1', 'paypay_2', 'paypay_3'];
+  switch (accountCompany) {
+    case "legit":
+      return ["gmo_main", "gmo_sub", "kinsan"];
+    case "life":
+      return ["main_1727088", "sub_1728218", "new_main_2309414"];
+    case "ms":
+      return [
+        "sumi_shin",
+        "gmo_main",
+        "gmo_sub",
+        "rakuten",
+        "paypay_1",
+        "paypay_2",
+        "paypay_3",
+      ];
     default:
       return [];
   }
@@ -220,6 +227,7 @@ BC確定前案件一覧や月次案件一覧では口座情報を表示しませ
 ### 8.1 Phase 1での改善案
 
 1. **口座マスタテーブルの作成**
+
    ```sql
    CREATE TABLE account_companies (
      id VARCHAR(20) PRIMARY KEY,

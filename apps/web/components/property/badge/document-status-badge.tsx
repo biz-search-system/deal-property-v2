@@ -28,7 +28,7 @@ export default function DocumentStatusBadge({
         "text-[9px] px-1 py-0 border",
         onClick && "cursor-pointer",
         DOCUMENT_STATUS_COLORS[documentStatus],
-        className
+        className,
       )}
       onClick={onClick}
     >

@@ -55,7 +55,7 @@ export function MonthPicker({ value, onChange }: MonthPickerProps) {
           variant="outline"
           className={cn(
             "w-[240px] justify-start text-left font-normal",
-            !value && "text-muted-foreground"
+            !value && "text-muted-foreground",
           )}
         >
           <CalendarIcon className="mr-2 h-4 w-4" />
@@ -69,18 +69,10 @@ export function MonthPicker({ value, onChange }: MonthPickerProps) {
       <PopoverContent className="w-auto p-0" align="start">
         <div className="p-3 border-b space-y-2">
           <div className="grid grid-cols-2 gap-2">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={handlePreviousMonth}
-            >
+            <Button variant="outline" size="sm" onClick={handlePreviousMonth}>
               先月
             </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={handleNextMonth}
-            >
+            <Button variant="outline" size="sm" onClick={handleNextMonth}>
               来月
             </Button>
           </div>

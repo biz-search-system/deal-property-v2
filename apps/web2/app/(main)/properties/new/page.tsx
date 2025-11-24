@@ -264,7 +264,9 @@ export default function NewPropertyPage() {
 
               <div className="rounded-lg bg-muted/50 p-4">
                 <div className="flex items-center justify-between">
-                  <span className="text-sm font-medium">利益見込み（自動計算）</span>
+                  <span className="text-sm font-medium">
+                    利益見込み（自動計算）
+                  </span>
                   <span className="text-2xl font-bold text-green-600">
                     ¥{calculateProfit().toLocaleString()}万
                   </span>
@@ -344,7 +346,10 @@ export default function NewPropertyPage() {
 
                 <div className="space-y-2">
                   <Label htmlFor="brokerCompany">仲介会社</Label>
-                  <Select value={brokerCompany} onValueChange={setBrokerCompany}>
+                  <Select
+                    value={brokerCompany}
+                    onValueChange={setBrokerCompany}
+                  >
                     <SelectTrigger>
                       <SelectValue placeholder="選択してください" />
                     </SelectTrigger>

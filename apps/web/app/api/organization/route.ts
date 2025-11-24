@@ -4,7 +4,9 @@ import { OrganizationsWithUserRoleResponse } from "@/lib/types/organization";
 import { headers } from "next/headers";
 import { NextResponse } from "next/server";
 
-export async function GET(): Promise<NextResponse<OrganizationsWithUserRoleResponse>> {
+export async function GET(): Promise<
+  NextResponse<OrganizationsWithUserRoleResponse>
+> {
   // セッション確認
   const session = await auth.api.getSession({
     headers: await headers(),
@@ -13,7 +15,7 @@ export async function GET(): Promise<NextResponse<OrganizationsWithUserRoleRespo
   if (!session) {
     return NextResponse.json(
       { error: { message: "Unauthorized" } },
-      { status: 401 }
+      { status: 401 },
     );
   }
 
@@ -33,7 +35,7 @@ export async function GET(): Promise<NextResponse<OrganizationsWithUserRoleRespo
     console.error("Failed to get organizations:", error);
     return NextResponse.json(
       { error: { message: "Failed to get organizations" } },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

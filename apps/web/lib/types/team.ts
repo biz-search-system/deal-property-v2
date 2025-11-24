@@ -33,7 +33,9 @@ export type TeamMember = {
 };
 
 // API レスポンス型
-export type OrganizationTeams = Awaited<ReturnType<typeof getOrganizationTeamsWithMemberCount>>;
+export type OrganizationTeams = Awaited<
+  ReturnType<typeof getOrganizationTeamsWithMemberCount>
+>;
 export type Member = Awaited<ReturnType<typeof getTeamMembers>>[number];
 
 // エラーレスポンス（共通）
@@ -53,7 +55,9 @@ export interface TeamMembersSuccessResponse {
 }
 
 // Union型で定義
-export type OrganizationTeamsResponse = OrganizationTeamsSuccessResponse | ErrorResponse;
+export type OrganizationTeamsResponse =
+  | OrganizationTeamsSuccessResponse
+  | ErrorResponse;
 export type TeamMembersResponse = TeamMembersSuccessResponse | ErrorResponse;
 
 // UIで使用する拡張型

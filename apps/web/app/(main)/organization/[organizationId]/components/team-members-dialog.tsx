@@ -62,8 +62,8 @@ export function TeamMembersDialog({
   const availableMembers = organizationMembers?.members.filter(
     (orgMember) =>
       !teamMembers?.some(
-        (teamMember) => teamMember.userId === orgMember.user.id
-      )
+        (teamMember) => teamMember.userId === orgMember.user.id,
+      ),
   );
 
   const handleAddMember = () => {
@@ -206,7 +206,7 @@ export function TeamMembersDialog({
                 <div className="divide-y">
                   {teamMembers.map((member) => {
                     const user = organizationMembers?.members.find(
-                      (m) => m.user.id === member.userId
+                      (m) => m.user.id === member.userId,
                     )?.user;
 
                     const avatarData = getAvatarUrl({
@@ -239,7 +239,7 @@ export function TeamMembersDialog({
                           onClick={() =>
                             handleRemoveMember(
                               member.userId,
-                              user?.name || null
+                              user?.name || null,
                             )
                           }
                           disabled={isPending}

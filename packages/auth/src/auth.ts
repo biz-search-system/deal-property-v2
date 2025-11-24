@@ -65,7 +65,7 @@ export const auth = betterAuth({
         const inviterEmail = data.inviter.user.email;
         // サインアップページへの直接リンク（組織名を含む）
         const inviteLink = `${getBaseURL()}/signup?id=${invitationId}&email=${encodeURIComponent(
-          data.email
+          data.email,
         )}&org=${encodeURIComponent(data.organization.name)}`;
         const teamId = data.invitation?.teamId;
         const teamName = teamId ? await getTeamName(teamId) : null;

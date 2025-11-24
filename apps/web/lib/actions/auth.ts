@@ -59,7 +59,7 @@ export async function forgotPasswordAction(data: ForgotPassword) {
 export async function updatePasswordAction(
   data: ResetPassword,
   otp: string,
-  email: string
+  email: string,
 ) {
   const result = await auth.api.resetPasswordEmailOTP({
     body: {

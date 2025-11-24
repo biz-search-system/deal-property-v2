@@ -105,7 +105,7 @@ export function SettlementDatePicker({
       const lastDay = new Date(
         scheduledPattern.year,
         scheduledPattern.month,
-        0
+        0,
       );
       setDate(lastDay);
       setMonth(lastDay);

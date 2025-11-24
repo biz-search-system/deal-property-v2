@@ -20,11 +20,11 @@ export default function OrganizationBadge({
       className={cn(
         "text-[9px] px-1 py-0",
         organization && ORGANIZATION_COLORS[organization],
-        className
+        className,
       )}
     >
       {truncateText(
-        (organization && ORGANIZATION_LABELS[organization]) || null
+        (organization && ORGANIZATION_LABELS[organization]) || null,
       )}
     </Badge>
   );

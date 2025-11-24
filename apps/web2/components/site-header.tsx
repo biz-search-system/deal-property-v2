@@ -149,7 +149,7 @@ export function SiteHeader() {
 
                   // 年の判定（4桁の数字）
                   const isYear = /^\d{4}$/.test(
-                    breadcrumb.label.replace("年", "")
+                    breadcrumb.label.replace("年", ""),
                   );
                   // 月の判定（数字 + "月"）
                   const isMonth = /^\d{1,2}月$/.test(breadcrumb.label);
@@ -161,7 +161,7 @@ export function SiteHeader() {
                     (p, i) =>
                       /^\d{2}$/.test(p) &&
                       paths[i - 1] &&
-                      /^\d{4}$/.test(paths[i - 1])
+                      /^\d{4}$/.test(paths[i - 1]),
                   );
 
                   // 月別案件のベースパス
@@ -191,11 +191,11 @@ export function SiteHeader() {
                                   onValueChange={(value) => {
                                     if (isYear) {
                                       router.push(
-                                        `${monthlyBasePath}/${value}/${currentMonth || "01"}`
+                                        `${monthlyBasePath}/${value}/${currentMonth || "01"}`,
                                       );
                                     } else {
                                       router.push(
-                                        `${monthlyBasePath}/${currentYear}/${value}`
+                                        `${monthlyBasePath}/${currentYear}/${value}`,
                                       );
                                     }
                                   }}

@@ -24,7 +24,7 @@ export const BANK_ACCOUNT_BY_COMPANY: Record<AccountCompany, BankAccount[]> = {
  * @returns 銀行口座のリスト
  */
 export function getBankAccountsByCompany(
-  company: AccountCompany | null | undefined
+  company: AccountCompany | null | undefined,
 ): BankAccount[] {
   if (!company) return [];
   return BANK_ACCOUNT_BY_COMPANY[company] || [];

@@ -14,7 +14,7 @@ export default function CompanyBBadge({
       variant="outline"
       className={cn(
         "text-[9px] px-1 py-0",
-        companyB && COMPANY_B_COLORS[companyB]
+        companyB && COMPANY_B_COLORS[companyB],
       )}
     >
       {truncateText((companyB && COMPANY_B_LABELS[companyB]) || null)}

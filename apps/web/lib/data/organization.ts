@@ -2,13 +2,14 @@ import "server-only";
 
 import { auth } from "@workspace/auth";
 import { headers } from "next/headers";
+import { sortOrganizations } from "@workspace/utils";
 
 export async function getOrganizations() {
   const result = await auth.api.listOrganizations({
     headers: await headers(),
   });
 
-  return result || [];
+  return sortOrganizations(result) || [];
 }
 
 export async function getOrganizationsWithUserRole(userId: string) {
@@ -46,7 +47,7 @@ export async function getOrganizationsWithUserRole(userId: string) {
     })
   );
 
-  return orgsWithRole;
+  return sortOrganizations(orgsWithRole);
 }
 
 export async function getActiveOrganization(activeOrgId: string) {
@@ -229,9 +230,8 @@ export async function getCurrentUserOrganizationInfo(organizationId: string) {
           });
 
           isMember =
-            teamMembers?.some(
-              (member) => member.userId === session.user.id
-            ) || false;
+            teamMembers?.some((member) => member.userId === session.user.id) ||
+            false;
         } catch (error) {
           console.error(`Failed to get members for team ${team.id}:`, error);
         }

@@ -6,7 +6,7 @@ import { CurrentUserOrganizationInfoResponse } from "@/lib/types/organization";
 
 export async function GET(
   _req: NextRequest,
-  ctx: RouteContext<"/api/organization/[organizationId]/current-user">
+  ctx: RouteContext<"/api/organization/[organizationId]/current-user">,
 ): Promise<NextResponse<CurrentUserOrganizationInfoResponse>> {
   const { organizationId } = await ctx.params;
 
@@ -18,7 +18,7 @@ export async function GET(
   if (!session) {
     return NextResponse.json(
       { error: { message: "Unauthorized" } },
-      { status: 401 }
+      { status: 401 },
     );
   }
 
@@ -32,20 +32,20 @@ export async function GET(
       if (error.message === "Not a member of this organization") {
         return NextResponse.json(
           { error: { message: error.message } },
-          { status: 403 }
+          { status: 403 },
         );
       }
       if (error.message === "Organization not found") {
         return NextResponse.json(
           { error: { message: error.message } },
-          { status: 404 }
+          { status: 404 },
         );
       }
     }
 
     return NextResponse.json(
       { error: { message: "Failed to get user information" } },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

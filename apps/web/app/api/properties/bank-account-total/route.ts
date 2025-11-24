@@ -20,7 +20,7 @@ interface SuccessResponse {
 type BankAccountTotalResponse = SuccessResponse | ErrorResponse;
 
 export async function GET(
-  req: NextRequest
+  req: NextRequest,
 ): Promise<NextResponse<BankAccountTotalResponse>> {
   try {
     // セッション認証
@@ -39,7 +39,7 @@ export async function GET(
             message: "必須パラメータが不足しています",
           },
         },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -51,7 +51,7 @@ export async function GET(
             message: "無効な日付形式です",
           },
         },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -69,7 +69,7 @@ export async function GET(
             message: firstError?.message || "無効なパラメータです",
           },
         },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -92,7 +92,7 @@ export async function GET(
             message: "認証が必要です",
           },
         },
-        { status: 401 }
+        { status: 401 },
       );
     }
 
@@ -102,7 +102,7 @@ export async function GET(
           message: "口座合計金額の取得に失敗しました",
         },
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

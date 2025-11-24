@@ -61,7 +61,11 @@ export default function PropertyDetailPage({
             <Button
               variant="ghost"
               size="sm"
-              onClick={() => router.push(`/properties/monthly/${resolvedParams.year}/${resolvedParams.month}`)}
+              onClick={() =>
+                router.push(
+                  `/properties/monthly/${resolvedParams.year}/${resolvedParams.month}`,
+                )
+              }
               className="gap-2"
             >
               <ArrowLeft className="h-4 w-4" />
@@ -325,9 +329,7 @@ export default function PropertyDetailPage({
                     <div className="text-xs text-muted-foreground mb-1">
                       使用口座会社
                     </div>
-                    <div className="font-medium">
-                      {property.account || "-"}
-                    </div>
+                    <div className="font-medium">{property.account || "-"}</div>
                   </div>
                   <Separator />
                   <div>
@@ -375,13 +377,7 @@ export default function PropertyDetailPage({
   );
 }
 
-function ProgressItem({
-  label,
-  item,
-}: {
-  label: string;
-  item: CheckItem;
-}) {
+function ProgressItem({ label, item }: { label: string; item: CheckItem }) {
   return (
     <div className="flex items-start justify-between gap-4">
       <div className="flex items-center gap-2">
@@ -391,9 +387,7 @@ function ProgressItem({
           <X className="h-4 w-4 text-muted-foreground flex-shrink-0" />
         )}
         <span
-          className={
-            item.checked ? "text-foreground" : "text-muted-foreground"
-          }
+          className={item.checked ? "text-foreground" : "text-muted-foreground"}
         >
           {label}
         </span>

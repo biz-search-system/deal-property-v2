@@ -63,7 +63,7 @@ export function MonthlyPropertiesClient({
     value: string;
   } | null>(null);
   const [selectedProperty, setSelectedProperty] = useState<Property | null>(
-    null
+    null,
   );
   const [modalOpen, setModalOpen] = useState(false);
 
@@ -76,10 +76,10 @@ export function MonthlyPropertiesClient({
   const categorizedProperties = useMemo(() => {
     return {
       confirmed: properties.filter(
-        (p) => p.businessStatus !== BUSINESS_STATUS.SETTLEMENT_COMPLETED
+        (p) => p.businessStatus !== BUSINESS_STATUS.SETTLEMENT_COMPLETED,
       ),
       completed: properties.filter(
-        (p) => p.businessStatus === BUSINESS_STATUS.SETTLEMENT_COMPLETED
+        (p) => p.businessStatus === BUSINESS_STATUS.SETTLEMENT_COMPLETED,
       ),
     };
   }, [properties]);
@@ -96,7 +96,7 @@ export function MonthlyPropertiesClient({
   // 口座別決済日集計
   const accountSettlementSummary = useMemo(() => {
     const filteredProperties = categorizedProperties.confirmed.filter(
-      (p) => p.account === selectedAccount
+      (p) => p.account === selectedAccount,
     );
 
     // 決済日ごとにグループ化
@@ -180,7 +180,7 @@ export function MonthlyPropertiesClient({
     console.log(
       "Saving business status",
       propertyId,
-      editingBusinessStatus?.value
+      editingBusinessStatus?.value,
     );
     setEditingBusinessStatus(null);
   };
@@ -189,7 +189,7 @@ export function MonthlyPropertiesClient({
     console.log(
       "Saving document status",
       propertyId,
-      editingDocumentStatus?.value
+      editingDocumentStatus?.value,
     );
     setEditingDocumentStatus(null);
   };
@@ -416,11 +416,7 @@ export function MonthlyPropertiesClient({
               <TableCell className="text-[10px] p-1 sticky right-0 bg-background">
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="h-5 w-5 p-0"
-                    >
+                    <Button variant="ghost" size="sm" className="h-5 w-5 p-0">
                       <MoreVertical className="h-3 w-3" />
                       <span className="sr-only">操作メニュー</span>
                     </Button>
@@ -428,7 +424,9 @@ export function MonthlyPropertiesClient({
                   <DropdownMenuContent align="end">
                     <DropdownMenuItem
                       onClick={() => {
-                        router.push(`/properties/monthly/${year}/${month}/${property.id}`);
+                        router.push(
+                          `/properties/monthly/${year}/${month}/${property.id}`,
+                        );
                       }}
                     >
                       <Eye className="h-3 w-3" />
@@ -477,7 +475,7 @@ export function MonthlyPropertiesClient({
                       <p className="text-sm font-bold">
                         {formatCurrency(
                           calculateTotals(categorizedProperties.confirmed)
-                            .profit
+                            .profit,
                         )}
                       </p>
                     </div>
@@ -490,7 +488,7 @@ export function MonthlyPropertiesClient({
                       <p className="text-sm font-bold">
                         {formatCurrency(
                           calculateTotals(categorizedProperties.confirmed)
-                            .bcDeposit
+                            .bcDeposit,
                         )}
                       </p>
                     </div>
@@ -617,7 +615,7 @@ export function MonthlyPropertiesClient({
                       <p className="text-sm font-bold">
                         {formatCurrency(
                           calculateTotals(categorizedProperties.completed)
-                            .profit
+                            .profit,
                         )}
                       </p>
                     </div>
@@ -630,7 +628,7 @@ export function MonthlyPropertiesClient({
                       <p className="text-sm font-bold">
                         {formatCurrency(
                           calculateTotals(categorizedProperties.completed)
-                            .bcDeposit
+                            .bcDeposit,
                         )}
                       </p>
                     </div>

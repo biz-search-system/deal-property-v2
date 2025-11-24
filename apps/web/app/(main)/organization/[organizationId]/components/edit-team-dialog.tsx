@@ -75,7 +75,10 @@ export function EditTeamDialog({
         toast.success("チーム名を更新しました");
         onSuccess();
       } catch (error) {
-        const message = error instanceof Error ? error.message : "チーム名の更新に失敗しました";
+        const message =
+          error instanceof Error
+            ? error.message
+            : "チーム名の更新に失敗しました";
         setError(message);
         toast.error(message);
       }
@@ -91,7 +94,8 @@ export function EditTeamDialog({
         setShowDeleteAlert(false);
         onSuccess();
       } catch (error) {
-        const message = error instanceof Error ? error.message : "チームの削除に失敗しました";
+        const message =
+          error instanceof Error ? error.message : "チームの削除に失敗しました";
         toast.error(message);
       }
     });
@@ -119,9 +123,7 @@ export function EditTeamDialog({
                   disabled={isPending}
                   autoComplete="off"
                 />
-                {error && (
-                  <p className="text-sm text-destructive">{error}</p>
-                )}
+                {error && <p className="text-sm text-destructive">{error}</p>}
               </div>
 
               <div className="border-t pt-4">
@@ -154,7 +156,10 @@ export function EditTeamDialog({
               >
                 キャンセル
               </Button>
-              <Button type="submit" disabled={isPending || teamName === initialTeamName}>
+              <Button
+                type="submit"
+                disabled={isPending || teamName === initialTeamName}
+              >
                 {isPending && <Loader2 className="h-4 w-4 animate-spin" />}
                 更新
               </Button>
@@ -168,12 +173,15 @@ export function EditTeamDialog({
           <AlertDialogHeader>
             <AlertDialogTitle>本当に削除しますか？</AlertDialogTitle>
             <AlertDialogDescription>
-              チーム「{initialTeamName}」を削除すると、チームメンバーの関連付けも削除されます。
+              チーム「{initialTeamName}
+              」を削除すると、チームメンバーの関連付けも削除されます。
               この操作は取り消すことができません。
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel disabled={isPending}>キャンセル</AlertDialogCancel>
+            <AlertDialogCancel disabled={isPending}>
+              キャンセル
+            </AlertDialogCancel>
             <AlertDialogAction
               onClick={handleDelete}
               disabled={isPending}

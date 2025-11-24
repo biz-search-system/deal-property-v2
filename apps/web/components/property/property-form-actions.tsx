@@ -7,7 +7,9 @@ interface PropertyFormActionsProps {
   mode: "create" | "edit";
 }
 
-export default function PropertyFormActions({ mode }: PropertyFormActionsProps) {
+export default function PropertyFormActions({
+  mode,
+}: PropertyFormActionsProps) {
   const router = useRouter();
 
   const handleCancel = () => {

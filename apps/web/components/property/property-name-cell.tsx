@@ -23,10 +23,10 @@ const PopoverContext = createContext<ContextType | null>(null);
 export function PopoverProvider({ children }: { children: React.ReactNode }) {
   const [isOpen, setIsOpen] = useState(false);
   const [activeProperty, setActiveProperty] = useState<PropertyInfo | null>(
-    null
+    null,
   );
   const [anchorElement, setAnchorElement] = useState<HTMLDivElement | null>(
-    null
+    null,
   );
 
   const openPopover = (element: HTMLDivElement, property: PropertyInfo) => {

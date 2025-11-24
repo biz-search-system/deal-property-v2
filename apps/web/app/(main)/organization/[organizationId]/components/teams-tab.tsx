@@ -23,10 +23,16 @@ interface TeamsTabProps {
 }
 
 export function TeamsTab({ organizationId, userRole }: TeamsTabProps) {
-  const { teams, isLoading, error, mutate } = useOrganizationTeams(organizationId);
+  const { teams, isLoading, error, mutate } =
+    useOrganizationTeams(organizationId);
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
-  const [selectedTeamForMembers, setSelectedTeamForMembers] = useState<string | null>(null);
-  const [selectedTeamForEdit, setSelectedTeamForEdit] = useState<{ id: string; name: string } | null>(null);
+  const [selectedTeamForMembers, setSelectedTeamForMembers] = useState<
+    string | null
+  >(null);
+  const [selectedTeamForEdit, setSelectedTeamForEdit] = useState<{
+    id: string;
+    name: string;
+  } | null>(null);
 
   const isAdmin = userRole === "admin" || userRole === "owner";
 
@@ -92,7 +98,11 @@ export function TeamsTab({ organizationId, userRole }: TeamsTabProps) {
                   {isAdmin && (
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="h-8 w-8 p-0"
+                        >
                           <MoreHorizontal className="h-4 w-4" />
                           <span className="sr-only">メニュー</span>
                         </Button>
@@ -105,7 +115,12 @@ export function TeamsTab({ organizationId, userRole }: TeamsTabProps) {
                           メンバー管理
                         </DropdownMenuItem>
                         <DropdownMenuItem
-                          onClick={() => setSelectedTeamForEdit({ id: team.id, name: team.name })}
+                          onClick={() =>
+                            setSelectedTeamForEdit({
+                              id: team.id,
+                              name: team.name,
+                            })
+                          }
                         >
                           <Settings className="h-4 w-4" />
                           チーム設定
@@ -118,9 +133,7 @@ export function TeamsTab({ organizationId, userRole }: TeamsTabProps) {
               <CardContent>
                 <div className="flex items-center text-sm text-muted-foreground">
                   <Users className="h-4 w-4" />
-                  <span>
-                    {team.memberCount || 0} 名のメンバー
-                  </span>
+                  <span>{team.memberCount || 0} 名のメンバー</span>
                 </div>
               </CardContent>
             </Card>

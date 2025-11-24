@@ -51,7 +51,8 @@ export function UnconfirmedPropertiesTable({
   };
   const formatDateWithDay = (dateValue: Date | string | null): string => {
     if (!dateValue) return "-";
-    const date = typeof dateValue === "string" ? new Date(dateValue) : dateValue;
+    const date =
+      typeof dateValue === "string" ? new Date(dateValue) : dateValue;
 
     // 無効な日付チェック
     if (isNaN(date.getTime())) return "-";

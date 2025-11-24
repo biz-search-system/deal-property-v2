@@ -53,13 +53,13 @@ export function LoginForm({
     const checkPendingInvitation = async () => {
       const cookies = document.cookie.split(";");
       const pendingInvitation = cookies.find((cookie) =>
-        cookie.trim().startsWith("pending_invitation=")
+        cookie.trim().startsWith("pending_invitation="),
       );
 
       if (pendingInvitation && !invitationId) {
         try {
           const invitationData = JSON.parse(
-            decodeURIComponent(pendingInvitation.split("=")[1])
+            decodeURIComponent(pendingInvitation.split("=")[1]),
           );
           // メールアドレスを自動セット
           if (invitationData.email) {
@@ -118,13 +118,13 @@ export function LoginForm({
         // 保留中の招待を確認
         const cookies = document.cookie.split(";");
         const pendingInvitationCookie = cookies.find((cookie) =>
-          cookie.trim().startsWith("pending_invitation=")
+          cookie.trim().startsWith("pending_invitation="),
         );
 
         if (pendingInvitationCookie) {
           try {
             const invitationData = JSON.parse(
-              decodeURIComponent(pendingInvitationCookie.split("=")[1])
+              decodeURIComponent(pendingInvitationCookie.split("=")[1]),
             );
 
             const acceptResponse = await fetch("/api/auth/accept-invitation", {
@@ -154,7 +154,7 @@ export function LoginForm({
       setError(
         error instanceof Error
           ? error.message
-          : "ログイン中にエラーが発生しました"
+          : "ログイン中にエラーが発生しました",
       );
       setLoading(false);
     }

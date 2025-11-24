@@ -9,7 +9,7 @@ export async function GET(): Promise<NextResponse<VerifiedSessionResponse>> {
   if (!data) {
     return NextResponse.json(
       { error: { message: "Unauthorized" } },
-      { status: 401 }
+      { status: 401 },
     );
   }
 
@@ -19,7 +19,7 @@ export async function GET(): Promise<NextResponse<VerifiedSessionResponse>> {
     console.error("Failed to get session:", error);
     return NextResponse.json(
       { error: { message: "Failed to get session" } },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

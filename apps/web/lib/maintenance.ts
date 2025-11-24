@@ -5,7 +5,7 @@ const maintenanceAllowedRoutes = ["/maintenance", "/not-found", "/"];
 
 export async function handleMaintenanceMode(
   request: NextRequest,
-  maintenance: Maintenance | null
+  maintenance: Maintenance | null,
 ): Promise<NextResponse | null> {
   // console.log("maintenance", maintenance);
   if (!maintenance?.enabled) {
