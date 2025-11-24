@@ -38,13 +38,32 @@ const formatDateWithDay = (dateString: string | Date | null): string => {
   if (!dateString) return "-";
   const date: Date =
     typeof dateString === "string" ? new Date(dateString) : dateString;
+
+  // 無効な日付チェック
+  if (isNaN(date.getTime())) return "-";
+
+  // 月末判定（午前0時0分10秒かつ月末日の場合）
+  const lastDayOfMonth = new Date(date.getFullYear(), date.getMonth() + 1, 0);
+  const isMonthEnd =
+    date.getHours() === 0 &&
+    date.getMinutes() === 0 &&
+    date.getSeconds() === 10 &&
+    date.getMilliseconds() === 0 &&
+    date.getDate() === lastDayOfMonth.getDate();
+
+  if (isMonthEnd) {
+    // 月末表示（例: 11月末）
+    return `${date.getMonth() + 1}月末`;
+  }
+
+  // 通常の曜日付きフォーマット
   const days = ["日", "月", "火", "水", "木", "金", "土"];
   return `${date.getMonth() + 1}/${date.getDate()}(${days[date.getDay()]})`;
 };
 
 const truncateText = (
   text: string | null | undefined,
-  maxLength: number = 5,
+  maxLength: number = 5
 ) => {
   if (!text) return "-";
   return text.length > maxLength ? text.substring(0, maxLength) : text;

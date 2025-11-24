@@ -35,10 +35,10 @@ export function SettlementDatePopoverEdit({
   const [open, setOpen] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [selectedMonth, setSelectedMonth] = useState<Date>(
-    currentDate ? new Date(currentDate) : new Date(),
+    currentDate ? new Date(currentDate) : new Date()
   );
 
-  // デフォルトの日付フォーマット（曜日付き）
+  // デフォルトの日付フォーマット（月末判定付き）
   const defaultFormatDisplay = (dateValue: Date | string | null): string => {
     if (!dateValue) return "-";
     const date =
@@ -47,29 +47,76 @@ export function SettlementDatePopoverEdit({
     // 無効な日付チェック
     if (isNaN(date.getTime())) return "-";
 
-    // 曜日付きフォーマット（例: 2024/11/22(金)）
+    // 月末判定（午前0時0分10秒かつ月末日の場合）
+    const isMonthEnd =
+      date.getHours() === 0 &&
+      date.getMinutes() === 0 &&
+      date.getSeconds() === 10 &&
+      date.getMilliseconds() === 0 &&
+      date.getDate() === endOfMonth(date).getDate();
+
+    if (isMonthEnd) {
+      // 月末表示（例: 11月末）
+      return `${date.getMonth() + 1}月末`;
+    }
+
+    // 通常の曜日付きフォーマット（例: 2024/11/22(金)）
     return format(date, "yyyy/MM/dd(E)", { locale: ja });
   };
 
   // 表示用フォーマット関数の決定
   const displayFormatter = formatDisplay || defaultFormatDisplay;
 
-  // 日付を選択して即座に保存
+  // 日付を日本標準時の指定時刻に設定するヘルパー関数
+  const setJSTDateTime = (
+    date: Date,
+    hours: number,
+    minutes: number,
+    seconds: number,
+    milliseconds: number = 0
+  ): Date => {
+    const result = new Date(date);
+    result.setHours(hours, minutes, seconds, milliseconds);
+    return result;
+  };
+
+  // 日付を保存する内部処理
+  const saveDate = async (date: Date | null) => {
+    if (onSave) {
+      await onSave(propertyId, date);
+    } else {
+      // デフォルトのサーバーアクション
+      await updatePropertySettlementDate({
+        id: propertyId,
+        settlementDate: date,
+      });
+      toast.success("決済日を更新しました");
+    }
+  };
+
+  // 通常の日付を選択して保存（カレンダーから選択時）
   const handleDateSelect = async (date: Date | undefined) => {
     if (isSaving) return;
 
+    // 同じ日付を選択した場合でも、dateが渡されていれば処理を続行
+    // react-day-pickerは同じ日付を選択するとundefinedを返すことがあるが、
+    // その場合は現在選択されている日付を使用する
+    if (!date && currentDate) {
+      // 同じ日付が選択された場合、現在の日付を再設定
+      date = new Date(currentDate);
+    }
+
     setIsSaving(true);
     try {
-      if (onSave) {
-        await onSave(propertyId, date || null);
-      } else {
-        // デフォルトのサーバーアクション
-        await updatePropertySettlementDate({
-          id: propertyId,
-          settlementDate: date || null,
-        });
-        toast.success("決済日を更新しました");
+      let processedDate: Date | null = null;
+
+      if (date) {
+        // 通常の日付選択: 午前0時0分0秒
+        processedDate = setJSTDateTime(date, 0, 0, 0, 0);
       }
+      console.log(processedDate, "processedDate");
+
+      await saveDate(processedDate);
       setOpen(false);
     } catch (error) {
       toast.error("決済日の更新に失敗しました");
@@ -79,15 +126,40 @@ export function SettlementDatePopoverEdit({
     }
   };
 
-  // 月末日を設定
+  // 月末予定を設定（午前0時0分0秒で保存）
   const handleSetMonthEnd = async () => {
-    const monthEnd = endOfMonth(selectedMonth);
-    await handleDateSelect(monthEnd);
+    if (isSaving) return;
+
+    setIsSaving(true);
+    try {
+      const monthEnd = endOfMonth(selectedMonth);
+      // 月末予定: 午前0時0分0秒
+      const processedDate = setJSTDateTime(monthEnd, 0, 0, 10, 0);
+
+      await saveDate(processedDate);
+      setOpen(false);
+    } catch (error) {
+      toast.error("決済日の更新に失敗しました");
+      console.error(error);
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   // 日付をクリア
   const handleClearDate = async () => {
-    await handleDateSelect(undefined);
+    if (isSaving) return;
+
+    setIsSaving(true);
+    try {
+      await saveDate(null);
+      setOpen(false);
+    } catch (error) {
+      toast.error("決済日のクリアに失敗しました");
+      console.error(error);
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   // 編集不可の場合
@@ -102,7 +174,7 @@ export function SettlementDatePopoverEdit({
           variant="ghost"
           className={cn(
             "h-auto p-1 justify-start text-[10px] font-normal hover:bg-muted",
-            !currentDate && "text-muted-foreground",
+            !currentDate && "text-muted-foreground"
           )}
         >
           {displayFormatter(currentDate)}
@@ -113,7 +185,7 @@ export function SettlementDatePopoverEdit({
         <div className="flex items-center justify-between px-3 py-2 border-b">
           <span className="text-sm font-medium">決済日</span>
           <div className="flex gap-1">
-            {/* 月末ボタン */}
+            {/* 月末予定ボタン */}
             <Button
               variant="outline"
               size="sm"
@@ -121,7 +193,7 @@ export function SettlementDatePopoverEdit({
               disabled={isSaving}
               className="h-7 px-2 text-xs"
             >
-              月末
+              月末予定
             </Button>
             {/* クリアボタン */}
             {currentDate && (
@@ -149,6 +221,9 @@ export function SettlementDatePopoverEdit({
           locale={ja}
           className="p-3"
           captionLayout="dropdown"
+          startMonth={new Date(new Date().getFullYear() - 5, 0)}
+          endMonth={new Date(new Date().getFullYear() + 5, 11)}
+          required
         />
       </PopoverContent>
     </Popover>

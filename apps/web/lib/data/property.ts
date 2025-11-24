@@ -4,6 +4,7 @@ import { db } from "@workspace/drizzle/db";
 import { properties } from "@workspace/drizzle/schemas";
 import { and, eq, gte, lte, not, isNull } from "drizzle-orm";
 import type { DocumentStatus, ProgressStatus } from "@workspace/drizzle/types";
+import { getOrganizations } from "@/lib/data/organization";
 
 /**
  * 全案件を取得
@@ -159,11 +160,13 @@ export async function getFilteredProperties(options?: {
 }
 
 /**
- * 全案件を組織ごとに更新順で取得（検索画面用）
- * 組織名でグループ化し、各組織内で更新日時の降順でソート
+ * 指定組織の案件を決済日順で取得
+ * @param organizationId 組織ID
+ * @returns 指定組織の案件リスト（決済日の昇順、次に更新日の降順）
  */
-export async function getAllPropertiesByUpdated() {
+export async function getPropertiesBySettlementDate(organizationId: string) {
   return db.query.properties.findMany({
+    where: eq(properties.organizationId, organizationId),
     with: {
       organization: true,
       staff: {
@@ -175,9 +178,34 @@ export async function getAllPropertiesByUpdated() {
       documentProgress: true,
       settlementProgress: true,
     },
-    orderBy: (props, { asc, desc }) => [
-      asc(props.organizationId), // まず組織IDでソート
-      desc(props.updatedAt), // 次に更新日時でソート
+    orderBy: (props, { asc }) => [
+      asc(props.settlementDate),
+      asc(props.updatedAt),
     ],
   });
+}
+
+/**
+ * 全案件を組織ごとに決済日順で取得（検索画面用）
+ * ユーザーが所属する組織の案件のみを取得し、
+ * 組織の順序（レイジット → エスク → シャインテラス）を保持して返す
+ */
+export async function getAllPropertiesBySettlementDate() {
+  // ユーザーの所属組織を取得（既にソート済み）
+  const organizations = await getOrganizations();
+
+  if (!organizations || organizations.length === 0) {
+    return [];
+  }
+
+  // 各組織の案件を並列で取得
+  const propertyPromises = organizations.map((org) =>
+    getPropertiesBySettlementDate(org.id)
+  );
+
+  // 並列実行で高速化
+  const propertiesByOrg = await Promise.all(propertyPromises);
+
+  // 組織の順序を保持して結合
+  return propertiesByOrg.flat();
 }

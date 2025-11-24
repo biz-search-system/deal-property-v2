@@ -369,6 +369,7 @@ export async function updatePropertySettlementDate(data: {
 }) {
   // セッション認証
   const session = await verifySession();
+  console.log(data.settlementDate, "data.settlementDate");
 
   await db
     .update(properties)
