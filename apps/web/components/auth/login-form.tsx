@@ -71,7 +71,7 @@ export function LoginForm({
       }
 
       toast.success(
-        invitationId ? "招待の受け入れに成功しました" : "ログインしました"
+        invitationId ? "招待の受け入れに成功しました" : "ログインしました",
       );
       router.push("/properties/unconfirmed");
     });

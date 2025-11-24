@@ -40,9 +40,5 @@ export const refreshOrganizationData = async (orgId: string) => {
  * ログアウト時に使用
  */
 export const clearAllCache = async () => {
-  await mutate(
-    () => true,
-    undefined,
-    { revalidate: false }
-  );
+  await mutate(() => true, undefined, { revalidate: false });
 };

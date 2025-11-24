@@ -6,7 +6,7 @@ import { OrganizationTeamsResponse } from "@/lib/types/team";
 
 export async function GET(
   _req: NextRequest,
-  ctx: RouteContext<"/api/organization/[organizationId]/teams">
+  ctx: RouteContext<"/api/organization/[organizationId]/teams">,
 ): Promise<NextResponse<OrganizationTeamsResponse>> {
   const { organizationId } = await ctx.params;
 
@@ -18,7 +18,7 @@ export async function GET(
   if (!session) {
     return NextResponse.json(
       { error: { message: "Unauthorized" } },
-      { status: 401 }
+      { status: 401 },
     );
   }
 
@@ -32,19 +32,19 @@ export async function GET(
     if (!fullOrg) {
       return NextResponse.json(
         { error: { message: "Organization not found" } },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
     // 現在のユーザーのメンバー情報を探す
     const currentUserMember = fullOrg.members.find(
-      (m) => m.userId === session.user.id
+      (m) => m.userId === session.user.id,
     );
 
     if (!currentUserMember) {
       return NextResponse.json(
         { error: { message: "Not a member of this organization" } },
-        { status: 403 }
+        { status: 403 },
       );
     }
 
@@ -56,7 +56,7 @@ export async function GET(
     console.error("Failed to get organization teams:", error);
     return NextResponse.json(
       { error: { message: "Failed to get organization teams" } },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

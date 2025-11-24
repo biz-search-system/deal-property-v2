@@ -9,7 +9,7 @@ import { teams } from "@workspace/drizzle/schemas";
 
 export async function GET(
   _req: NextRequest,
-  ctx: RouteContext<"/api/team/[teamId]/members">
+  ctx: RouteContext<"/api/team/[teamId]/members">,
 ): Promise<NextResponse<TeamMembersResponse>> {
   const { teamId } = await ctx.params;
 
@@ -21,7 +21,7 @@ export async function GET(
   if (!session) {
     return NextResponse.json(
       { error: { message: "Unauthorized" } },
-      { status: 401 }
+      { status: 401 },
     );
   }
 
@@ -34,7 +34,7 @@ export async function GET(
     if (!team) {
       return NextResponse.json(
         { error: { message: "Team not found" } },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -47,19 +47,19 @@ export async function GET(
     if (!fullOrg) {
       return NextResponse.json(
         { error: { message: "Organization not found" } },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
     // 現在のユーザーのメンバー情報を探す
     const currentUserMember = fullOrg.members.find(
-      (m) => m.userId === session.user.id
+      (m) => m.userId === session.user.id,
     );
 
     if (!currentUserMember) {
       return NextResponse.json(
         { error: { message: "Not a member of this organization" } },
-        { status: 403 }
+        { status: 403 },
       );
     }
 
@@ -71,7 +71,7 @@ export async function GET(
     console.error("Failed to get team members:", error);
     return NextResponse.json(
       { error: { message: "Failed to get team members" } },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

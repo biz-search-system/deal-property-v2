@@ -10,7 +10,7 @@ import type {
 export const useOrganizationName = (organizationId: string | null) => {
   const { data, error, isLoading } = useSWR<OrganizationNameResponse>(
     organizationId ? `/api/organization/${organizationId}` : null,
-    fetcher
+    fetcher,
   );
 
   return {
@@ -24,7 +24,7 @@ export const useOrganizationMembers = (organizationId: string | null) => {
   const { data, error, isLoading, mutate } =
     useSWR<OrganizationMembersResponse>(
       organizationId ? `/api/organization/${organizationId}/members` : null,
-      fetcher
+      fetcher,
     );
 
   return {
@@ -39,7 +39,7 @@ export const useOrganizationInvitations = (organizationId: string | null) => {
   const { data, error, isLoading, mutate } =
     useSWR<OrganizationInvitationsResponse>(
       organizationId ? `/api/organization/${organizationId}/invitations` : null,
-      fetcher
+      fetcher,
     );
 
   return {

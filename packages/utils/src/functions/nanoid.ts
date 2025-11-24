@@ -10,6 +10,6 @@ import { customAlphabet } from "nanoid";
 export const customNanoid = (chars?: number) => {
   return customAlphabet(
     "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz",
-    chars || 7 // 7-character random string by default
+    chars || 7, // 7-character random string by default
   )();
 };

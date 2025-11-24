@@ -5,7 +5,7 @@ const passwordSchema = z
   .trim()
   .min(8, "パスワードは8文字以上で設定してください")
   .max(100, "パスワードは100文字以内で入力してください");
-export const emailSchema = z.email({
+const emailSchema = z.email({
   message: "メールアドレスの形式で入力してください。",
 });
 export const nameSchema = z
@@ -31,16 +31,21 @@ export const signupSchema = z.object({
   password: passwordSchema,
   invitationId: z.string().min(1, "招待IDが必要です"),
 });
-
+/** ログインフォームのバリデーションスキーマ */
 export const loginSchema = z.object({
   email: emailSchema,
   password: passwordSchema,
 });
-
+/** パスワード忘れフォームのバリデーションスキーマ */
 export const forgotPasswordSchema = z.object({
   email: emailSchema,
 });
-
+/** パスワードリセットフォームのバリデーションスキーマ */
 export const resetPasswordSchema = z.object({
   password: passwordSchema,
+});
+
+export const passwordChangeSchema = z.object({
+  currentPassword: passwordSchema,
+  newPassword: passwordSchema,
 });

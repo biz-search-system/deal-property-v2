@@ -13,7 +13,7 @@ import {
   propertyUpdateSchema,
   type PropertyCreate,
   type PropertyUpdate,
-} from "@workspace/drizzle/zod/index";
+} from "@workspace/drizzle/zod-schemas";
 import type { InsertProperty } from "@workspace/drizzle/types";
 import { auth } from "@workspace/auth";
 import { headers } from "next/headers";

@@ -30,7 +30,7 @@ export async function getOrganizationsWithUserRole(userId: string) {
 
       // 現在のユーザーのメンバー情報を探す
       const currentUserMember = fullOrg?.members.find(
-        (m) => m.userId === userId
+        (m) => m.userId === userId,
       );
 
       return {
@@ -43,7 +43,7 @@ export async function getOrganizationsWithUserRole(userId: string) {
         userRole: currentUserMember?.role || "member",
         memberCount: fullOrg?.members.length || 0,
       };
-    })
+    }),
   );
 
   return orgsWithRole;
@@ -62,7 +62,7 @@ export async function getActiveOrganization(activeOrgId: string) {
 
 export async function getFullOrganization(
   organizationId?: string,
-  membersLimit: number = 100
+  membersLimit: number = 100,
 ) {
   const result = await auth.api.getFullOrganization({
     query: {
@@ -77,7 +77,7 @@ export async function getFullOrganization(
 
 export async function getOrganizationMembers(
   organizationId: string,
-  membersLimit: number = 100
+  membersLimit: number = 100,
 ) {
   const result = await auth.api.listMembers({
     query: { organizationId, limit: membersLimit, offset: 0 },
@@ -119,7 +119,7 @@ export async function getSalesTeamMembers(organizationId: string) {
 
   // 営業チームを探す
   const salesTeam = teams.find(
-    (team) => team.name === "営業" || team.name === "営業チーム"
+    (team) => team.name === "営業" || team.name === "営業チーム",
   );
 
   if (!salesTeam) {
@@ -197,7 +197,7 @@ export async function getCurrentUserOrganizationInfo(organizationId: string) {
 
   // 現在のユーザーのメンバー情報を探す
   const currentUserMember = fullOrg.members.find(
-    (m) => m.userId === session.user.id
+    (m) => m.userId === session.user.id,
   );
 
   if (!currentUserMember) {
@@ -229,9 +229,8 @@ export async function getCurrentUserOrganizationInfo(organizationId: string) {
           });
 
           isMember =
-            teamMembers?.some(
-              (member) => member.userId === session.user.id
-            ) || false;
+            teamMembers?.some((member) => member.userId === session.user.id) ||
+            false;
         } catch (error) {
           console.error(`Failed to get members for team ${team.id}:`, error);
         }
@@ -242,7 +241,7 @@ export async function getCurrentUserOrganizationInfo(organizationId: string) {
         name: team.name,
         isMember,
       };
-    })
+    }),
   );
 
   return {

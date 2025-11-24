@@ -56,7 +56,7 @@ export default function BadgeSelectForm<
       name={name}
       render={({ field }) => {
         const selectedOption = options.find(
-          (option) => option.value === field.value
+          (option) => option.value === field.value,
         );
 
         return (
@@ -64,9 +64,7 @@ export default function BadgeSelectForm<
             {label && (
               <FormLabel>
                 {label}
-                {required && (
-                  <span className="text-destructive ml-1">*</span>
-                )}
+                {required && <span className="text-destructive ml-1">*</span>}
               </FormLabel>
             )}
             <Select

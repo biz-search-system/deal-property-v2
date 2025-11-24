@@ -14,11 +14,11 @@ export default function ContractTypeBadge({
       variant="outline"
       className={cn(
         "text-[9px] px-1 py-0",
-        contractType && CONTRACT_TYPE_COLORS[contractType]
+        contractType && CONTRACT_TYPE_COLORS[contractType],
       )}
     >
       {truncateText(
-        (contractType && CONTRACT_TYPE_LABELS[contractType]) || null
+        (contractType && CONTRACT_TYPE_LABELS[contractType]) || null,
       )}
     </Badge>
   );

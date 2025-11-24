@@ -63,7 +63,7 @@ export default function PropertyDetailPage({
               size="sm"
               onClick={() =>
                 router.push(
-                  `/properties/monthly/${resolvedParams.year}/${resolvedParams.month}`
+                  `/properties/monthly/${resolvedParams.year}/${resolvedParams.month}`,
                 )
               }
               className="gap-2"

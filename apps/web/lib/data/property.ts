@@ -52,7 +52,7 @@ export async function getPropertyById(id: string) {
 export async function getMonthlyProperties(
   year: number,
   month: number,
-  organizationId?: string
+  organizationId?: string,
 ) {
   // 月の開始日と終了日を計算
   const startDate = new Date(year, month - 1, 1);

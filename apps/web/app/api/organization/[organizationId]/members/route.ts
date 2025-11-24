@@ -7,7 +7,7 @@ import type { NextRequest } from "next/server";
 
 export async function GET(
   _req: NextRequest,
-  ctx: RouteContext<"/api/organization/[organizationId]/members">
+  ctx: RouteContext<"/api/organization/[organizationId]/members">,
 ): Promise<NextResponse<OrganizationMembersResponse>> {
   const { organizationId } = await ctx.params;
 
@@ -19,7 +19,7 @@ export async function GET(
   if (!session) {
     return NextResponse.json(
       { error: { message: "Unauthorized" } },
-      { status: 401 }
+      { status: 401 },
     );
   }
 
@@ -32,7 +32,7 @@ export async function GET(
     console.error("Failed to get organization members:", error);
     return NextResponse.json(
       { error: { message: "Failed to get organization members" } },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

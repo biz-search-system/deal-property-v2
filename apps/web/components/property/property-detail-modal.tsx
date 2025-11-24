@@ -130,7 +130,6 @@ export function PropertyDetailModal({
         } else {
           setAContractDate("");
         }
-
       });
     }
   }, [property, open]);

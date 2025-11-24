@@ -14,11 +14,11 @@ export default function BrokerCompanyBadge({
       variant="outline"
       className={cn(
         "text-[9px] px-1 py-0",
-        brokerCompany && BROKER_COMPANY_COLORS[brokerCompany]
+        brokerCompany && BROKER_COMPANY_COLORS[brokerCompany],
       )}
     >
       {truncateText(
-        (brokerCompany && BROKER_COMPANY_LABELS[brokerCompany]) || null
+        (brokerCompany && BROKER_COMPANY_LABELS[brokerCompany]) || null,
       )}
     </Badge>
   );

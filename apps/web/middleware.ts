@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getSessionCookie } from "better-auth/cookies";
 import { get } from "@vercel/edge-config";
 import { Maintenance } from "@/lib/types/maintenance";
 import { handleMaintenanceMode } from "@/lib/maintenance";
+import { getSessionCookie } from "better-auth/cookies";
 
 const publicRoutes = [
   "/login",
@@ -14,7 +14,11 @@ const publicRoutes = [
   "/maintenance",
 ];
 
+// Better AuthのデフォルトのセッションCookie名
+const SESSION_COOKIE_NAME = "better-auth.session_token";
+
 export async function middleware(request: NextRequest) {
+  // Cookieから直接セッショントークンを取得
   const sessionCookie = getSessionCookie(request);
   const currentPath = request.nextUrl.pathname;
   const isPrivateRoute = !publicRoutes.includes(currentPath);

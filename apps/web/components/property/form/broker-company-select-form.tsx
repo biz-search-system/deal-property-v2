@@ -33,7 +33,7 @@ export default function BrokerCompanySelectForm<
       value: company,
       label: BROKER_COMPANY_LABELS[company],
       color: BROKER_COMPANY_COLORS[company],
-    })
+    }),
   );
 
   return (

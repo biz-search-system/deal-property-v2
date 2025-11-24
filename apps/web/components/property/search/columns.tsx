@@ -44,7 +44,7 @@ const formatDateWithDay = (dateString: string | Date | null): string => {
 
 const truncateText = (
   text: string | null | undefined,
-  maxLength: number = 5
+  maxLength: number = 5,
 ) => {
   if (!text) return "-";
   return text.length > maxLength ? text.substring(0, maxLength) : text;
@@ -217,9 +217,7 @@ export const columns: ColumnDef<PropertyWithRelations>[] = [
     accessorKey: "brokerCompany",
     header: "仲介",
     cell: ({ row }) => {
-      return (
-        <BrokerCompanyBadge brokerCompany={row.original.brokerCompany} />
-      );
+      return <BrokerCompanyBadge brokerCompany={row.original.brokerCompany} />;
     },
   },
   {

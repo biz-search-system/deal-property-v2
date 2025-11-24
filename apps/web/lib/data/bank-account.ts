@@ -79,7 +79,7 @@ export async function getPropertyBankInfo(propertyId: string) {
  */
 export async function getDailyBankAccountUsage(
   date: Date,
-  organizationId?: string
+  organizationId?: string,
 ) {
   const conditions = [eq(properties.settlementDate, date)];
 
@@ -116,7 +116,7 @@ export async function getDailyBankAccountUsage(
 export async function getMonthlyBankAccountSummary(
   startDate: Date,
   endDate: Date,
-  organizationId?: string
+  organizationId?: string,
 ) {
   const conditions = [
     sql`${properties.settlementDate} BETWEEN ${startDate} AND ${endDate}`,
@@ -139,12 +139,12 @@ export async function getMonthlyBankAccountSummary(
     .groupBy(
       properties.settlementDate,
       properties.accountCompany,
-      properties.bankAccount
+      properties.bankAccount,
     )
     .orderBy(
       properties.settlementDate,
       properties.accountCompany,
-      properties.bankAccount
+      properties.bankAccount,
     );
 
   return result.map((row) => ({

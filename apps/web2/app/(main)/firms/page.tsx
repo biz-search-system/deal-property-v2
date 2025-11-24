@@ -74,17 +74,22 @@ export default function FirmsPage() {
     return `¥${value.toLocaleString()}`;
   };
 
-  const filteredFirms = firms.filter(firm =>
-    firm.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    firm.type.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredFirms = firms.filter(
+    (firm) =>
+      firm.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      firm.type.toLowerCase().includes(searchTerm.toLowerCase()),
   );
 
   // 統計情報
   const stats = {
     totalFirms: firms.length,
-    avgResponseRate: Math.round(firms.reduce((acc, f) => acc + f.responseRate, 0) / firms.length),
+    avgResponseRate: Math.round(
+      firms.reduce((acc, f) => acc + f.responseRate, 0) / firms.length,
+    ),
     totalDeals: firms.reduce((acc, f) => acc + f.totalDeals, 0),
-    avgSuccessRate: Math.round(firms.reduce((acc, f) => acc + f.successRate, 0) / firms.length),
+    avgSuccessRate: Math.round(
+      firms.reduce((acc, f) => acc + f.successRate, 0) / firms.length,
+    ),
   };
 
   return (
@@ -94,7 +99,9 @@ export default function FirmsPage() {
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-2xl font-semibold">業者管理</h1>
-            <p className="text-sm text-muted-foreground">買取業者・仲介会社の管理</p>
+            <p className="text-sm text-muted-foreground">
+              買取業者・仲介会社の管理
+            </p>
           </div>
           <Button>
             <Plus className="mr-2 h-4 w-4" />
@@ -196,7 +203,9 @@ export default function FirmsPage() {
                       </div>
                     </TableCell>
                     <TableCell>
-                      <Button variant="ghost" size="sm">詳細</Button>
+                      <Button variant="ghost" size="sm">
+                        詳細
+                      </Button>
                     </TableCell>
                   </TableRow>
                 ))}

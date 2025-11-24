@@ -35,7 +35,7 @@ interface InviteTabProps {
 export function InviteTab({ organizationId }: InviteTabProps) {
   const [inviteEmail, setInviteEmail] = useState("");
   const [inviteRole, setInviteRole] = useState<"member" | "owner" | "admin">(
-    "member"
+    "member",
   );
   const [selectedTeamId, setSelectedTeamId] = useState<string>("");
   const [sendingInvite, setSendingInvite] = useState(false);
@@ -49,7 +49,7 @@ export function InviteTab({ organizationId }: InviteTabProps) {
   // 選択可能なチーム一覧を取得
   const availableTeams =
     currentUserInfo?.teams?.filter(
-      (team) => currentUserInfo.role === "owner" || team.isMember
+      (team) => currentUserInfo.role === "owner" || team.isMember,
     ) || [];
 
   const handleInvite = async () => {

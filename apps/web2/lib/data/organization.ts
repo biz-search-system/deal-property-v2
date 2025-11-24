@@ -30,7 +30,7 @@ export async function getOrganizationsWithUserRole(userId: string) {
 
       // 現在のユーザーのメンバー情報を探す
       const currentUserMember = fullOrg?.members.find(
-        (m) => m.userId === userId
+        (m) => m.userId === userId,
       );
 
       return {
@@ -43,7 +43,7 @@ export async function getOrganizationsWithUserRole(userId: string) {
         userRole: currentUserMember?.role || "member",
         memberCount: fullOrg?.members.length || 0,
       };
-    })
+    }),
   );
 
   return orgsWithRole;
@@ -62,7 +62,7 @@ export async function getActiveOrganization(activeOrgId: string) {
 
 export async function getFullOrganization(
   organizationId?: string,
-  membersLimit: number = 100
+  membersLimit: number = 100,
 ) {
   const result = await auth.api.getFullOrganization({
     query: {
@@ -77,7 +77,7 @@ export async function getFullOrganization(
 
 export async function getOrganizationMembers(
   organizationId: string,
-  membersLimit: number = 100
+  membersLimit: number = 100,
 ) {
   const result = await auth.api.listMembers({
     query: { organizationId, limit: membersLimit, offset: 0 },

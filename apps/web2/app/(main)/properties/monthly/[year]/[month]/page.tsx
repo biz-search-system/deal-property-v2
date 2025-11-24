@@ -1,8 +1,5 @@
 import { MonthlyPropertiesClient } from "./monthly-properties-client";
-import {
-  BUSINESS_STATUS,
-  properties,
-} from "../../../data/property";
+import { BUSINESS_STATUS, properties } from "../../../data/property";
 import { startOfMonth, endOfMonth, isWithinInterval } from "date-fns";
 
 export default async function MonthlyPropertiesPage({

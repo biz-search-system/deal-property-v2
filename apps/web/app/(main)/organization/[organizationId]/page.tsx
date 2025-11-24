@@ -33,7 +33,7 @@ export default async function OrganizationMembersPage({
   if (session) {
     const fullOrg = await getFullOrganization(organizationId);
     const currentUserMember = fullOrg?.members.find(
-      (m) => m.userId === session.user.id
+      (m) => m.userId === session.user.id,
     );
     userRole = currentUserMember?.role;
   }

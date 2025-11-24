@@ -8,19 +8,9 @@ export default function HeroImage() {
   return (
     <>
       {/* ライトモード用画像 */}
-      <Image
-        src={Hero}
-        alt="Logo"
-        priority
-        className="block dark:hidden"
-      />
+      <Image src={Hero} alt="Logo" priority className="block dark:hidden" />
       {/* ダークモード用画像 */}
-      <Image
-        src={HeroDark}
-        alt="Logo"
-        priority
-        className="hidden dark:block"
-      />
+      <Image src={HeroDark} alt="Logo" priority className="hidden dark:block" />
     </>
   );
 }

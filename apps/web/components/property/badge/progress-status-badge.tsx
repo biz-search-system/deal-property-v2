@@ -27,7 +27,7 @@ export default function ProgressStatusBadge({
         "text-[9px] px-1 py-0 border",
         onClick && "cursor-pointer",
         PROGRESS_STATUS_COLORS[progressStatus],
-        className
+        className,
       )}
       onClick={onClick}
     >

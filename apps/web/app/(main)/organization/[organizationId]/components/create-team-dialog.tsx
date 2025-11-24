@@ -58,7 +58,8 @@ export function CreateTeamDialog({
         setTeamName("");
         onSuccess();
       } catch (error) {
-        const message = error instanceof Error ? error.message : "チームの作成に失敗しました";
+        const message =
+          error instanceof Error ? error.message : "チームの作成に失敗しました";
         setError(message);
         toast.error(message);
       }
@@ -86,9 +87,7 @@ export function CreateTeamDialog({
                 disabled={isPending}
                 autoComplete="off"
               />
-              {error && (
-                <p className="text-sm text-destructive">{error}</p>
-              )}
+              {error && <p className="text-sm text-destructive">{error}</p>}
             </div>
           </div>
           <DialogFooter>

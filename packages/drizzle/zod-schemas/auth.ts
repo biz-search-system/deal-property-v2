@@ -21,7 +21,7 @@ export const userInsertBaseSchema = createInsertSchema(users, {
       .max(20, "ユーザー名は20文字以内で入力してください")
       .regex(
         /^[a-zA-Z0-9_-]+$/,
-        "ユーザー名は英数字、ハイフン、アンダースコアのみ使用できます"
+        "ユーザー名は英数字、ハイフン、アンダースコアのみ使用できます",
       ),
 });
 

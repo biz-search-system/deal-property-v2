@@ -5,7 +5,7 @@ import type { OrganizationNameResponse } from "@/lib/types/organization";
 
 export async function GET(
   _request: Request,
-  context: RouteContext<"/api/organization/[organizationId]">
+  context: RouteContext<"/api/organization/[organizationId]">,
 ): Promise<NextResponse<OrganizationNameResponse>> {
   const { organizationId } = await context.params;
 
@@ -17,7 +17,7 @@ export async function GET(
   if (!session) {
     return NextResponse.json(
       { error: { message: "Unauthorized" } },
-      { status: 401 }
+      { status: 401 },
     );
   }
 
@@ -31,19 +31,19 @@ export async function GET(
     if (!organization) {
       return NextResponse.json(
         { error: { message: "Organization not found" } },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
     // ユーザーがこの組織のメンバーかチェック
     const isMember = organization.members.some(
-      (m) => m.userId === session.user.id
+      (m) => m.userId === session.user.id,
     );
 
     if (!isMember) {
       return NextResponse.json(
         { error: { message: "Forbidden" } },
-        { status: 403 }
+        { status: 403 },
       );
     }
 
@@ -54,7 +54,7 @@ export async function GET(
     console.error("Failed to fetch organization:", error);
     return NextResponse.json(
       { error: { message: "Internal server error" } },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

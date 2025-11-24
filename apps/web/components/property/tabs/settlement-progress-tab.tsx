@@ -26,7 +26,7 @@ export default function SettlementProgressTab() {
 
   // 選択された口座会社に基づいて銀行口座の選択肢を取得
   const availableBankAccounts = getBankAccountsByCompany(
-    selectedCompany as AccountCompany
+    selectedCompany as AccountCompany,
   );
 
   return (

@@ -11,13 +11,18 @@ import {
   getBankAccountDailyTotal,
   getPropertyBankInfo,
 } from "../data/bank-account";
-import { propertyBankAccountSchema, bankAccountSchema } from "../zod/schemas/bank-account";
+import {
+  propertyBankAccountSchema,
+  bankAccountSchema,
+} from "../zod/schemas/bank-account";
 import type { PropertyBankAccountInput } from "../types/bank-account";
 
 /**
  * 口座情報を更新
  */
-export async function updatePropertyBankAccount(input: PropertyBankAccountInput) {
+export async function updatePropertyBankAccount(
+  input: PropertyBankAccountInput,
+) {
   // セッション認証
   const session = await verifySession();
 
@@ -54,13 +59,13 @@ export async function updatePropertyBankAccount(input: PropertyBankAccountInput)
       // 上限金額を取得
       const accountLimit = getBankAccountLimit(
         validatedData.accountCompany,
-        validatedData.bankAccount
+        validatedData.bankAccount,
       );
 
       // 上限チェック
       if (totalWithCurrent > accountLimit) {
         throw new Error(
-          `決済上限（${formatAmountInYen(accountLimit)}）を超えています。他の口座を選択してください。`
+          `決済上限（${formatAmountInYen(accountLimit)}）を超えています。他の口座を選択してください。`,
         );
       }
     }

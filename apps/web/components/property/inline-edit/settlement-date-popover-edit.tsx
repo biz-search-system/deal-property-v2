@@ -35,13 +35,14 @@ export function SettlementDatePopoverEdit({
   const [open, setOpen] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [selectedMonth, setSelectedMonth] = useState<Date>(
-    currentDate ? new Date(currentDate) : new Date()
+    currentDate ? new Date(currentDate) : new Date(),
   );
 
   // デフォルトの日付フォーマット（曜日付き）
   const defaultFormatDisplay = (dateValue: Date | string | null): string => {
     if (!dateValue) return "-";
-    const date = typeof dateValue === "string" ? new Date(dateValue) : dateValue;
+    const date =
+      typeof dateValue === "string" ? new Date(dateValue) : dateValue;
 
     // 無効な日付チェック
     if (isNaN(date.getTime())) return "-";
@@ -91,11 +92,7 @@ export function SettlementDatePopoverEdit({
 
   // 編集不可の場合
   if (!editable) {
-    return (
-      <div className="text-[10px]">
-        {displayFormatter(currentDate)}
-      </div>
-    );
+    return <div className="text-[10px]">{displayFormatter(currentDate)}</div>;
   }
 
   return (
@@ -105,7 +102,7 @@ export function SettlementDatePopoverEdit({
           variant="ghost"
           className={cn(
             "h-auto p-1 justify-start text-[10px] font-normal hover:bg-muted",
-            !currentDate && "text-muted-foreground"
+            !currentDate && "text-muted-foreground",
           )}
         >
           {displayFormatter(currentDate)}

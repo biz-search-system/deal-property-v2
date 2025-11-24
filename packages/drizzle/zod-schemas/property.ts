@@ -1,5 +1,4 @@
 import { createInsertSchema, createSelectSchema } from "drizzle-zod";
-import { z } from "zod/v4";
 import {
   properties,
   propertyStaff,
@@ -7,6 +6,7 @@ import {
   documentProgress,
   settlementProgress,
 } from "../schemas/property";
+import z from "zod";
 
 // ==================== 案件テーブル ====================
 

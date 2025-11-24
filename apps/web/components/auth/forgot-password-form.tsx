@@ -56,7 +56,7 @@ export default function ForgotPasswordForm({
         toast.error(
           error instanceof Error
             ? error.message
-            : "メール送信に失敗しました。もう一度お試しください。"
+            : "メール送信に失敗しました。もう一度お試しください。",
         );
       }
     });

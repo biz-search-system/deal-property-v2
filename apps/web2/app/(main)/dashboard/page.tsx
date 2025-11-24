@@ -19,16 +19,49 @@ export default async function DashboardPage() {
   ];
 
   const alerts = [
-    { id: 1, type: "決済期限", message: "A物件101 - 決済日まで3日", date: "2/15" },
+    {
+      id: 1,
+      type: "決済期限",
+      message: "A物件101 - 決済日まで3日",
+      date: "2/15",
+    },
     { id: 2, type: "書類不備", message: "B物件202 - 重調未取得", date: "2/12" },
     { id: 3, type: "未確定", message: "C物件303 - BC業者未確定", date: "2/10" },
   ];
 
   const recentDeals = [
-    { id: 1, property: "渋谷区物件", owner: "山田太郎", price: "¥8,500,000", status: "BC確定", profit: "¥850,000" },
-    { id: 2, property: "新宿区物件", owner: "鈴木花子", price: "¥12,000,000", status: "決済完了", profit: "¥1,200,000" },
-    { id: 3, property: "港区物件", owner: "佐藤次郎", price: "¥15,000,000", status: "BC未確定", profit: "¥1,500,000" },
-    { id: 4, property: "品川区物件", owner: "田中美咲", price: "¥9,800,000", status: "書類待ち", profit: "¥980,000" },
+    {
+      id: 1,
+      property: "渋谷区物件",
+      owner: "山田太郎",
+      price: "¥8,500,000",
+      status: "BC確定",
+      profit: "¥850,000",
+    },
+    {
+      id: 2,
+      property: "新宿区物件",
+      owner: "鈴木花子",
+      price: "¥12,000,000",
+      status: "決済完了",
+      profit: "¥1,200,000",
+    },
+    {
+      id: 3,
+      property: "港区物件",
+      owner: "佐藤次郎",
+      price: "¥15,000,000",
+      status: "BC未確定",
+      profit: "¥1,500,000",
+    },
+    {
+      id: 4,
+      property: "品川区物件",
+      owner: "田中美咲",
+      price: "¥9,800,000",
+      status: "書類待ち",
+      profit: "¥980,000",
+    },
   ];
 
   return (
@@ -69,10 +102,15 @@ export default async function DashboardPage() {
             <CardContent>
               <div className="space-y-3">
                 {alerts.map((alert) => (
-                  <div key={alert.id} className="flex items-start justify-between border-b pb-3 last:border-0">
+                  <div
+                    key={alert.id}
+                    className="flex items-start justify-between border-b pb-3 last:border-0"
+                  >
                     <div className="space-y-1">
                       <p className="text-sm font-medium">{alert.type}</p>
-                      <p className="text-sm text-muted-foreground">{alert.message}</p>
+                      <p className="text-sm text-muted-foreground">
+                        {alert.message}
+                      </p>
                     </div>
                     <Badge variant="outline" className="ml-2">
                       {alert.date}
@@ -91,14 +129,21 @@ export default async function DashboardPage() {
             <CardContent>
               <div className="space-y-3">
                 {recentDeals.slice(0, 3).map((deal) => (
-                  <div key={deal.id} className="flex items-start justify-between border-b pb-3 last:border-0">
+                  <div
+                    key={deal.id}
+                    className="flex items-start justify-between border-b pb-3 last:border-0"
+                  >
                     <div className="space-y-1">
                       <p className="text-sm font-medium">{deal.property}</p>
-                      <p className="text-sm text-muted-foreground">{deal.owner}</p>
+                      <p className="text-sm text-muted-foreground">
+                        {deal.owner}
+                      </p>
                     </div>
                     <div className="text-right">
                       <Badge variant="outline">{deal.status}</Badge>
-                      <p className="text-sm text-muted-foreground mt-1">{deal.price}</p>
+                      <p className="text-sm text-muted-foreground mt-1">
+                        {deal.price}
+                      </p>
                     </div>
                   </div>
                 ))}
@@ -126,7 +171,9 @@ export default async function DashboardPage() {
               <TableBody>
                 {recentDeals.map((deal) => (
                   <TableRow key={deal.id}>
-                    <TableCell className="font-medium">{deal.property}</TableCell>
+                    <TableCell className="font-medium">
+                      {deal.property}
+                    </TableCell>
                     <TableCell>{deal.owner}</TableCell>
                     <TableCell>{deal.price}</TableCell>
                     <TableCell>

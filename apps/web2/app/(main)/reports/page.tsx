@@ -34,15 +34,39 @@ export default function ReportsPage() {
         revenue: 38000000,
         profit: 7200000,
         deals: 10,
-      }
-    }
+      },
+    },
   };
 
   const salesByAssignee = [
-    { name: "営業田中", deals: 4, revenue: 15200000, profit: 3040000, avgProfit: 760000 },
-    { name: "営業山田", deals: 3, revenue: 12500000, profit: 2500000, avgProfit: 833333 },
-    { name: "営業鈴木", deals: 3, revenue: 9800000, profit: 1960000, avgProfit: 653333 },
-    { name: "営業佐藤", deals: 2, revenue: 5000000, profit: 1000000, avgProfit: 500000 },
+    {
+      name: "営業田中",
+      deals: 4,
+      revenue: 15200000,
+      profit: 3040000,
+      avgProfit: 760000,
+    },
+    {
+      name: "営業山田",
+      deals: 3,
+      revenue: 12500000,
+      profit: 2500000,
+      avgProfit: 833333,
+    },
+    {
+      name: "営業鈴木",
+      deals: 3,
+      revenue: 9800000,
+      profit: 1960000,
+      avgProfit: 653333,
+    },
+    {
+      name: "営業佐藤",
+      deals: 2,
+      revenue: 5000000,
+      profit: 1000000,
+      avgProfit: 500000,
+    },
   ];
 
   const monthlyTrends = [
@@ -71,7 +95,9 @@ export default function ReportsPage() {
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-2xl font-semibold">レポート</h1>
-            <p className="text-sm text-muted-foreground">売上分析・業績レポート</p>
+            <p className="text-sm text-muted-foreground">
+              売上分析・業績レポート
+            </p>
           </div>
           <div className="flex gap-2">
             <Select value={period} onValueChange={setPeriod}>
@@ -101,9 +127,13 @@ export default function ReportsPage() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{formatCurrency(current.revenue)}</div>
+              <div className="text-2xl font-bold">
+                {formatCurrency(current.revenue)}
+              </div>
               <div className="flex items-center text-xs text-muted-foreground mt-1">
-                {parseFloat(calculateChange(current.revenue, previous.revenue)) > 0 ? (
+                {parseFloat(
+                  calculateChange(current.revenue, previous.revenue),
+                ) > 0 ? (
                   <TrendingUp className="mr-1 h-3 w-3" />
                 ) : (
                   <TrendingDown className="mr-1 h-3 w-3" />
@@ -119,9 +149,12 @@ export default function ReportsPage() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{formatCurrency(current.profit)}</div>
+              <div className="text-2xl font-bold">
+                {formatCurrency(current.profit)}
+              </div>
               <div className="flex items-center text-xs text-muted-foreground mt-1">
-                {parseFloat(calculateChange(current.profit, previous.profit)) > 0 ? (
+                {parseFloat(calculateChange(current.profit, previous.profit)) >
+                0 ? (
                   <TrendingUp className="mr-1 h-3 w-3" />
                 ) : (
                   <TrendingDown className="mr-1 h-3 w-3" />
@@ -144,7 +177,8 @@ export default function ReportsPage() {
                 ) : (
                   <TrendingDown className="mr-1 h-3 w-3" />
                 )}
-                前月比 {current.deals - previous.deals > 0 ? '+' : ''}{current.deals - previous.deals}件
+                前月比 {current.deals - previous.deals > 0 ? "+" : ""}
+                {current.deals - previous.deals}件
               </div>
             </CardContent>
           </Card>
@@ -155,7 +189,9 @@ export default function ReportsPage() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{formatCurrency(current.avgDealSize)}</div>
+              <div className="text-2xl font-bold">
+                {formatCurrency(current.avgDealSize)}
+              </div>
               <p className="text-xs text-muted-foreground mt-1">
                 利益率 {((current.profit / current.revenue) * 100).toFixed(1)}%
               </p>
@@ -183,7 +219,9 @@ export default function ReportsPage() {
               <TableBody>
                 {salesByAssignee.map((assignee, index) => (
                   <TableRow key={index}>
-                    <TableCell className="font-medium">{assignee.name}</TableCell>
+                    <TableCell className="font-medium">
+                      {assignee.name}
+                    </TableCell>
                     <TableCell>{assignee.deals}件</TableCell>
                     <TableCell>{formatCurrency(assignee.revenue)}</TableCell>
                     <TableCell>{formatCurrency(assignee.profit)}</TableCell>
@@ -193,10 +231,14 @@ export default function ReportsPage() {
                         <div className="w-20 bg-muted rounded-full h-2 mr-2">
                           <div
                             className="bg-primary h-2 rounded-full"
-                            style={{ width: `${(assignee.profit / 3000000) * 100}%` }}
+                            style={{
+                              width: `${(assignee.profit / 3000000) * 100}%`,
+                            }}
                           />
                         </div>
-                        <span className="text-sm">{Math.round((assignee.profit / 3000000) * 100)}%</span>
+                        <span className="text-sm">
+                          {Math.round((assignee.profit / 3000000) * 100)}%
+                        </span>
                       </div>
                     </TableCell>
                   </TableRow>
@@ -229,7 +271,9 @@ export default function ReportsPage() {
                     <TableCell>{formatCurrency(month.revenue)}</TableCell>
                     <TableCell>{formatCurrency(month.profit)}</TableCell>
                     <TableCell>{month.deals}件</TableCell>
-                    <TableCell>{((month.profit / month.revenue) * 100).toFixed(1)}%</TableCell>
+                    <TableCell>
+                      {((month.profit / month.revenue) * 100).toFixed(1)}%
+                    </TableCell>
                   </TableRow>
                 ))}
               </TableBody>

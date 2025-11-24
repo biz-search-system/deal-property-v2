@@ -15,4 +15,6 @@ export interface ErrorResponse {
 }
 
 // Union型で定義
-export type VerifiedSessionResponse = VerifiedSessionSuccessResponse | ErrorResponse;
+export type VerifiedSessionResponse =
+  | VerifiedSessionSuccessResponse
+  | ErrorResponse;

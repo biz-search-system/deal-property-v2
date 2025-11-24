@@ -6,7 +6,7 @@ import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 
 export async function GET(
-  _req: NextRequest
+  _req: NextRequest,
 ): Promise<NextResponse<OrganizationsWithUserRoleResponse>> {
   // セッション確認
   const session = await auth.api.getSession({
@@ -33,7 +33,7 @@ export async function GET(
     console.error("Failed to get organizations:", error);
     return NextResponse.json(
       { error: "Failed to get organizations" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

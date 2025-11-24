@@ -50,7 +50,7 @@ export default function BasicInfoTab({
     // 営業チームメンバーを再取得
     try {
       const response = await fetch(
-        `/api/organization/${organizationId}/sales-team`
+        `/api/organization/${organizationId}/sales-team`,
       );
       if (response.ok) {
         const data = await response.json();
@@ -70,7 +70,7 @@ export default function BasicInfoTab({
     } else {
       setValue(
         "staffIds",
-        selectedStaffIds.filter((id) => id !== staffId)
+        selectedStaffIds.filter((id) => id !== staffId),
       );
     }
   };
@@ -240,7 +240,7 @@ export default function BasicInfoTab({
                     value={field.value ?? ""}
                     onChange={(e) =>
                       field.onChange(
-                        e.target.value ? Number(e.target.value) : undefined
+                        e.target.value ? Number(e.target.value) : undefined,
                       )
                     }
                   />
@@ -266,7 +266,7 @@ export default function BasicInfoTab({
                     value={field.value ?? ""}
                     onChange={(e) =>
                       field.onChange(
-                        e.target.value ? Number(e.target.value) : undefined
+                        e.target.value ? Number(e.target.value) : undefined,
                       )
                     }
                   />
@@ -292,7 +292,7 @@ export default function BasicInfoTab({
                     value={field.value ?? ""}
                     onChange={(e) =>
                       field.onChange(
-                        e.target.value ? Number(e.target.value) : undefined
+                        e.target.value ? Number(e.target.value) : undefined,
                       )
                     }
                   />
@@ -318,7 +318,7 @@ export default function BasicInfoTab({
                     value={field.value ?? ""}
                     onChange={(e) =>
                       field.onChange(
-                        e.target.value ? Number(e.target.value) : undefined
+                        e.target.value ? Number(e.target.value) : undefined,
                       )
                     }
                   />

@@ -43,10 +43,7 @@ function isMonthScheduledPattern(text: string): {
   month?: number;
 } {
   // 「3月予定」「2025年3月予定」などのパターン
-  const patterns = [
-    /^(\d{4})年(\d{1,2})月予定$/,
-    /^(\d{1,2})月予定$/,
-  ];
+  const patterns = [/^(\d{4})年(\d{1,2})月予定$/, /^(\d{1,2})月予定$/];
 
   for (const pattern of patterns) {
     const match = text.match(pattern);
@@ -99,9 +96,17 @@ export function SettlementDatePicker({
     // 「〇月予定」パターンのチェック
     const scheduledPattern = isMonthScheduledPattern(text);
 
-    if (scheduledPattern.isMatch && scheduledPattern.year && scheduledPattern.month) {
+    if (
+      scheduledPattern.isMatch &&
+      scheduledPattern.year &&
+      scheduledPattern.month
+    ) {
       // 月予定の場合は月末日を設定
-      const lastDay = new Date(scheduledPattern.year, scheduledPattern.month, 0);
+      const lastDay = new Date(
+        scheduledPattern.year,
+        scheduledPattern.month,
+        0,
+      );
       setDate(lastDay);
       setMonth(lastDay);
       onChange?.(text); // 元のテキストを保存

@@ -135,7 +135,7 @@ export function InvitationsTab({ organizationId }: InvitationsTabProps) {
                     {new Date(
                       typeof invitation.expiresAt === "string"
                         ? invitation.expiresAt
-                        : invitation.expiresAt
+                        : invitation.expiresAt,
                     ).toLocaleDateString("ja-JP")}
                   </TableCell>
                   <TableCell>{invitation.inviterId || "不明"}</TableCell>

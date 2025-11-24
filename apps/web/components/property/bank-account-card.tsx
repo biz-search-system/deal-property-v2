@@ -51,10 +51,10 @@ export function BankAccountCard({
   initialBankAccount,
 }: BankAccountCardProps) {
   const [selectedAccountCompany, setSelectedAccountCompany] = useState<string>(
-    initialAccountCompany || ""
+    initialAccountCompany || "",
   );
   const [selectedBankAccount, setSelectedBankAccount] = useState<string>(
-    initialBankAccount || ""
+    initialBankAccount || "",
   );
   const [totalAmount, setTotalAmount] = useState<number>(0);
   const [isLoading, setIsLoading] = useState(false);
@@ -71,7 +71,7 @@ export function BankAccountCard({
       setIsLoading(true);
       try {
         const response = await fetch(
-          `/api/properties/bank-account-total?date=${settlementDate.toISOString()}&company=${selectedAccountCompany}&account=${selectedBankAccount}&excludeId=${propertyId}`
+          `/api/properties/bank-account-total?date=${settlementDate.toISOString()}&company=${selectedAccountCompany}&account=${selectedBankAccount}&excludeId=${propertyId}`,
         );
 
         if (response.ok) {
@@ -94,7 +94,7 @@ export function BankAccountCard({
   // 上限金額を取得
   const accountLimit = getBankAccountLimit(
     selectedAccountCompany as AccountCompany,
-    selectedBankAccount as any
+    selectedBankAccount as any,
   );
 
   const isOverLimitFlag = isOverLimit(totalWithCurrent, accountLimit);
@@ -188,7 +188,7 @@ export function BankAccountCard({
             <SelectContent>
               {selectedAccountCompany &&
                 getBankAccountsByCompany(
-                  selectedAccountCompany as AccountCompany
+                  selectedAccountCompany as AccountCompany,
                 ).map((account) => (
                   <SelectItem key={account} value={account}>
                     {BANK_ACCOUNT_LABELS[account]}

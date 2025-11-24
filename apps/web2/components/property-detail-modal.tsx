@@ -94,16 +94,16 @@ export function PropertyDetailModal({
   const [exitAmount, setExitAmount] = useState(property?.exitAmount || 0);
   const [commission, setCommission] = useState(property?.commission || 0);
   const [assignees, setAssignees] = useState<string[]>(
-    property?.assignee || []
+    property?.assignee || [],
   );
   const [settlementDate, setSettlementDate] = useState<string | null>(
-    property?.settlementDate || null
+    property?.settlementDate || null,
   );
   const [aContractDate, setAContractDate] = useState<string>(
-    property?.aContractDate || ""
+    property?.aContractDate || "",
   );
   const [selectedAccountCompany, setSelectedAccountCompany] = useState<string>(
-    property?.account || ""
+    property?.account || "",
   );
   const [selectedBankAccount, setSelectedBankAccount] = useState<string>("");
 
@@ -280,7 +280,10 @@ export function PropertyDetailModal({
                 <div className="space-y-2">
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                      <Button variant="outline" className="w-full justify-between">
+                      <Button
+                        variant="outline"
+                        className="w-full justify-between"
+                      >
                         {assignees.length > 0
                           ? `${assignees.length}名選択中`
                           : "担当者を選択..."}
@@ -514,26 +517,45 @@ export function PropertyDetailModal({
                 <CheckItemRow
                   label="契約書 保存完了"
                   checked={contractChecks.contractSaved}
-                  date={contractChecks.contractSaved ? "2025/01/10 14:30" : undefined}
+                  date={
+                    contractChecks.contractSaved
+                      ? "2025/01/10 14:30"
+                      : undefined
+                  }
                   user={contractChecks.contractSaved ? "田中" : undefined}
                   onChange={(checked) =>
-                    setContractChecks({ ...contractChecks, contractSaved: checked })
+                    setContractChecks({
+                      ...contractChecks,
+                      contractSaved: checked,
+                    })
                   }
                 />
                 <CheckItemRow
                   label="委任状関係 保存完了"
                   checked={contractChecks.powerOfAttorneySaved}
-                  date={contractChecks.powerOfAttorneySaved ? "2025/01/11 10:15" : undefined}
-                  user={contractChecks.powerOfAttorneySaved ? "山田" : undefined}
+                  date={
+                    contractChecks.powerOfAttorneySaved
+                      ? "2025/01/11 10:15"
+                      : undefined
+                  }
+                  user={
+                    contractChecks.powerOfAttorneySaved ? "山田" : undefined
+                  }
                   onChange={(checked) =>
-                    setContractChecks({ ...contractChecks, powerOfAttorneySaved: checked })
+                    setContractChecks({
+                      ...contractChecks,
+                      powerOfAttorneySaved: checked,
+                    })
                   }
                 />
                 <CheckItemRow
                   label="売主身分証 保存完了"
                   checked={contractChecks.sellerIdSaved}
                   onChange={(checked) =>
-                    setContractChecks({ ...contractChecks, sellerIdSaved: checked })
+                    setContractChecks({
+                      ...contractChecks,
+                      sellerIdSaved: checked,
+                    })
                   }
                 />
               </div>
@@ -547,47 +569,75 @@ export function PropertyDetailModal({
                 <CheckItemRow
                   label="BC売契作成"
                   checked={contractChecks.bcContractCreated}
-                  date={contractChecks.bcContractCreated ? "2025/01/15 09:00" : undefined}
+                  date={
+                    contractChecks.bcContractCreated
+                      ? "2025/01/15 09:00"
+                      : undefined
+                  }
                   user={contractChecks.bcContractCreated ? "鈴木" : undefined}
                   onChange={(checked) =>
-                    setContractChecks({ ...contractChecks, bcContractCreated: checked })
+                    setContractChecks({
+                      ...contractChecks,
+                      bcContractCreated: checked,
+                    })
                   }
                 />
                 <CheckItemRow
                   label="重説作成"
                   checked={contractChecks.importantMattersCreated}
-                  date={contractChecks.importantMattersCreated ? "2025/01/15 11:30" : undefined}
-                  user={contractChecks.importantMattersCreated ? "鈴木" : undefined}
+                  date={
+                    contractChecks.importantMattersCreated
+                      ? "2025/01/15 11:30"
+                      : undefined
+                  }
+                  user={
+                    contractChecks.importantMattersCreated ? "鈴木" : undefined
+                  }
                   onChange={(checked) =>
-                    setContractChecks({ ...contractChecks, importantMattersCreated: checked })
+                    setContractChecks({
+                      ...contractChecks,
+                      importantMattersCreated: checked,
+                    })
                   }
                 />
                 <CheckItemRow
                   label="BC売契送付"
                   checked={contractChecks.bcContractSent}
                   onChange={(checked) =>
-                    setContractChecks({ ...contractChecks, bcContractSent: checked })
+                    setContractChecks({
+                      ...contractChecks,
+                      bcContractSent: checked,
+                    })
                   }
                 />
                 <CheckItemRow
                   label="重説送付"
                   checked={contractChecks.importantMattersSent}
                   onChange={(checked) =>
-                    setContractChecks({ ...contractChecks, importantMattersSent: checked })
+                    setContractChecks({
+                      ...contractChecks,
+                      importantMattersSent: checked,
+                    })
                   }
                 />
                 <CheckItemRow
                   label="BC売契CB完了"
                   checked={contractChecks.bcContractCBCompleted}
                   onChange={(checked) =>
-                    setContractChecks({ ...contractChecks, bcContractCBCompleted: checked })
+                    setContractChecks({
+                      ...contractChecks,
+                      bcContractCBCompleted: checked,
+                    })
                   }
                 />
                 <CheckItemRow
                   label="重説CB完了"
                   checked={contractChecks.importantMattersCBCompleted}
                   onChange={(checked) =>
-                    setContractChecks({ ...contractChecks, importantMattersCBCompleted: checked })
+                    setContractChecks({
+                      ...contractChecks,
+                      importantMattersCBCompleted: checked,
+                    })
                   }
                 />
               </div>
@@ -699,7 +749,10 @@ export function PropertyDetailModal({
                       label="ローン計算書 保存"
                       checked={settlementChecks.loanCalculationSaved}
                       onChange={(checked) =>
-                        setSettlementChecks({ ...settlementChecks, loanCalculationSaved: checked })
+                        setSettlementChecks({
+                          ...settlementChecks,
+                          loanCalculationSaved: checked,
+                        })
                       }
                     />
                     <StageProgressRow
@@ -718,14 +771,20 @@ export function PropertyDetailModal({
                       label="司法書士依頼"
                       checked={settlementChecks.lawyerRequested}
                       onChange={(checked) =>
-                        setSettlementChecks({ ...settlementChecks, lawyerRequested: checked })
+                        setSettlementChecks({
+                          ...settlementChecks,
+                          lawyerRequested: checked,
+                        })
                       }
                     />
                     <CheckItemRow
                       label="必要書類共有"
                       checked={settlementChecks.documentsShared}
                       onChange={(checked) =>
-                        setSettlementChecks({ ...settlementChecks, documentsShared: checked })
+                        setSettlementChecks({
+                          ...settlementChecks,
+                          documentsShared: checked,
+                        })
                       }
                     />
                     <StageProgressRow
@@ -736,7 +795,10 @@ export function PropertyDetailModal({
                       label="書類不備なし"
                       checked={settlementChecks.documentsNoIssues}
                       onChange={(checked) =>
-                        setSettlementChecks({ ...settlementChecks, documentsNoIssues: checked })
+                        setSettlementChecks({
+                          ...settlementChecks,
+                          documentsNoIssues: checked,
+                        })
                       }
                     />
                   </div>
@@ -755,21 +817,30 @@ export function PropertyDetailModal({
                       label="書類不備なし"
                       checked={settlementChecks.mortgageDocumentsNoIssues}
                       onChange={(checked) =>
-                        setSettlementChecks({ ...settlementChecks, mortgageDocumentsNoIssues: checked })
+                        setSettlementChecks({
+                          ...settlementChecks,
+                          mortgageDocumentsNoIssues: checked,
+                        })
                       }
                     />
                     <CheckItemRow
                       label="ローン計算書 保存"
                       checked={settlementChecks.mortgageLoanCalculationSaved}
                       onChange={(checked) =>
-                        setSettlementChecks({ ...settlementChecks, mortgageLoanCalculationSaved: checked })
+                        setSettlementChecks({
+                          ...settlementChecks,
+                          mortgageLoanCalculationSaved: checked,
+                        })
                       }
                     />
                     <CheckItemRow
                       label="売主手出し完了"
                       checked={settlementChecks.sellerPaymentCompleted}
                       onChange={(checked) =>
-                        setSettlementChecks({ ...settlementChecks, sellerPaymentCompleted: checked })
+                        setSettlementChecks({
+                          ...settlementChecks,
+                          sellerPaymentCompleted: checked,
+                        })
                       }
                     />
                   </div>
@@ -797,7 +868,10 @@ export function PropertyDetailModal({
                       label="取引台帳記入"
                       checked={settlementChecks.transactionLedgerRecorded}
                       onChange={(checked) =>
-                        setSettlementChecks({ ...settlementChecks, transactionLedgerRecorded: checked })
+                        setSettlementChecks({
+                          ...settlementChecks,
+                          transactionLedgerRecorded: checked,
+                        })
                       }
                     />
                   </div>
@@ -841,19 +915,24 @@ export function PropertyDetailModal({
                         disabled={!selectedAccountCompany}
                       >
                         <SelectTrigger>
-                          <SelectValue placeholder={
-                            selectedAccountCompany
-                              ? "銀行口座を選択してください"
-                              : "先に口座会社を選択してください"
-                          } />
+                          <SelectValue
+                            placeholder={
+                              selectedAccountCompany
+                                ? "銀行口座を選択してください"
+                                : "先に口座会社を選択してください"
+                            }
+                          />
                         </SelectTrigger>
                         <SelectContent>
-                          {selectedAccountCompany === ACCOUNT_COMPANIES.REIJIT &&
-                            Object.values(BANK_ACCOUNTS.REIJIT).map((account) => (
-                              <SelectItem key={account} value={account}>
-                                {account}
-                              </SelectItem>
-                            ))}
+                          {selectedAccountCompany ===
+                            ACCOUNT_COMPANIES.REIJIT &&
+                            Object.values(BANK_ACCOUNTS.REIJIT).map(
+                              (account) => (
+                                <SelectItem key={account} value={account}>
+                                  {account}
+                                </SelectItem>
+                              ),
+                            )}
                           {selectedAccountCompany === ACCOUNT_COMPANIES.MS &&
                             Object.values(BANK_ACCOUNTS.MS).map((account) => (
                               <SelectItem key={account} value={account}>

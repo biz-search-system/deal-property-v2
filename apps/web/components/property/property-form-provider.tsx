@@ -5,7 +5,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import {
   propertyCreateSchema,
   type PropertyCreate,
-} from "@workspace/drizzle/zod/index";
+} from "@workspace/drizzle/zod-schemas";
 import { Form } from "@workspace/ui/components/form";
 import { createProperty, updateProperty } from "@/lib/actions/property";
 import { toast } from "sonner";

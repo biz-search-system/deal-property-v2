@@ -30,7 +30,7 @@ export default async function MonthlyPropertiesPage({
   // 月次案件を取得（DBでフィルタリング済み）
   const monthlyProperties = await getMonthlyProperties(
     Number(year),
-    Number(month)
+    Number(month),
   );
 
   // データを変換（クライアント側で使いやすい形式に）

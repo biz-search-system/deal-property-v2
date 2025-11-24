@@ -5,7 +5,7 @@ import type { VerifiedSessionResponse } from "@/lib/types/user";
 export const useSession = () => {
   const { data, error, isLoading, mutate } = useSWR<VerifiedSessionResponse>(
     "/api/session",
-    fetcher
+    fetcher,
   );
 
   return {
