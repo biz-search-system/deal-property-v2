@@ -14,9 +14,6 @@ const publicRoutes = [
   "/maintenance",
 ];
 
-// Better AuthのデフォルトのセッションCookie名
-const SESSION_COOKIE_NAME = "better-auth.session_token";
-
 export async function proxy(request: NextRequest) {
   // Cookieから直接セッショントークンを取得
   const sessionCookie = getSessionCookie(request);
