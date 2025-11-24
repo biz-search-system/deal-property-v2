@@ -35,6 +35,6 @@ export const profileUpdateSchema = createUpdateSchema(users, {
   banExpires: true,
   createdAt: true,
   updatedAt: true,
-  image: true,
+  // image: true,
   displayUsername: true,
 });

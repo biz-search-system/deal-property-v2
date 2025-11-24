@@ -1,31 +1,37 @@
 "use client";
 
-import { zodResolver } from "@hookform/resolvers/zod";
-import { Button } from "@workspace/ui/components/button";
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@workspace/ui/components/card";
-import { Form } from "@workspace/ui/components/form";
-import { Label } from "@workspace/ui/components/label";
-import { useForm } from "react-hook-form";
-
+  ImageCropper,
+  ImageCropperFileSelector,
+  ImageCropperPreview,
+} from "@/components/image-cropper";
 import { updateProfileAction } from "@/lib/actions/user";
 import { User } from "@/lib/types/auth";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { ProfileUpdate } from "@workspace/drizzle/types";
 import { profileUpdateSchema } from "@workspace/drizzle/zod-schemas";
-import { Avatar, AvatarFallback } from "@workspace/ui/components/avatar";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@workspace/ui/components/dialog";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@workspace/ui/components/form";
+import { Label } from "@workspace/ui/components/label";
 import { formatToJapaneseDateTime } from "@workspace/utils";
-import { UserIcon } from "lucide-react";
-import { useTransition } from "react";
+import { useState, useTransition } from "react";
+import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { mutate } from "swr";
-import InputForm from "./input-form";
 import FormSectionCard from "./form-section-card";
+import InputForm from "./input-form";
 
 interface ProfileCardProps {
   user: User;
@@ -33,11 +39,14 @@ interface ProfileCardProps {
 
 export function ProfileCard({ user }: ProfileCardProps) {
   const [isPending, startTransition] = useTransition();
+  const [open, setOpen] = useState(false);
+  const [file, setFile] = useState<File | null>(null);
   const form = useForm<ProfileUpdate>({
     resolver: zodResolver(profileUpdateSchema),
     defaultValues: {
       name: user.name,
       username: user.username || "",
+      image: user.image || "",
     },
   });
   const onSubmit = (formData: ProfileUpdate) => {
@@ -105,15 +114,63 @@ export function ProfileCard({ user }: ProfileCardProps) {
             </div>
           </div>
 
-          <div className="flex justify-center gap-4 basis-5/12 order-first md:order-last">
-            <Avatar className="size-36">
+          <div className="flex justify-center gap-4 basis-5/12 order-first md:order-last ">
+            {/* <Avatar className="size-36">
               <AvatarFallback className="bg-primary/10">
                 <UserIcon className="size-10 text-primary" />
               </AvatarFallback>
-            </Avatar>
+            </Avatar> */}
+            <FormField
+              control={form.control}
+              name="image"
+              render={({ field }) => (
+                <FormItem className="flex flex-col gap-2 items-center">
+                  <FormLabel>プロフィール画像</FormLabel>
+                  <FormControl>
+                    <ImageCropperFileSelector
+                      onFileSelect={(file) => {
+                        setFile(file);
+                        // setOpen(true);
+                      }}
+                      className="w-full aspect-square rounded-full size-36"
+                    >
+                      {field.value && (
+                        <ImageCropperPreview
+                          src={field.value}
+                          onRemove={() => field.onChange("")}
+                          showRemoveButton={false}
+                        />
+                      )}
+                    </ImageCropperFileSelector>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
           </div>
         </FormSectionCard>
       </form>
+      <Dialog open={open} onOpenChange={setOpen}>
+        <DialogHeader>
+          <DialogTitle className="sr-only">プロフィール画像</DialogTitle>
+        </DialogHeader>
+        <DialogContent className="max-w-md">
+          {file && (
+            <ImageCropper
+              image={file}
+              canvasWidth={200}
+              aspectRatio={1}
+              resultWidth={200}
+              circular={true}
+              onCrop={(dataUrl, blob) => {
+                form.setValue("image", dataUrl);
+                setOpen(false);
+              }}
+              onCancel={() => setOpen(false)}
+            />
+          )}
+        </DialogContent>
+      </Dialog>
     </Form>
   );
 }
