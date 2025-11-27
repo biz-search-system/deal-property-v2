@@ -65,15 +65,20 @@ export function DataTable<TData, TValue>({
       onView,
       onEdit,
     },
+    initialState: {
+      pagination: {
+        pageSize: 100,
+      },
+    },
   });
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 h-full bg-blue-500">
       <DataTableToolbar table={table} />
-      <div className="overflow-auto max-h-[calc(100vh-400px)]">
+      <div className="overflow-auto max-h-[calc(100vh-250px)] bg-green-500">
         <PopoverProvider>
-          <Table className="text-[10px]">
-            <TableHeader className="sticky top-0 bg-background z-10">
+          <Table className="text-[10px] bg-amber-500">
+            <TableHeader className="sticky top-0 bg-background z-10 bg-green-500">
               {table.getHeaderGroups().map((headerGroup) => (
                 <TableRow key={headerGroup.id}>
                   {headerGroup.headers.map((header) => {
@@ -126,7 +131,7 @@ export function DataTable<TData, TValue>({
                           ? null
                           : flexRender(
                               header.column.columnDef.header,
-                              header.getContext(),
+                              header.getContext()
                             )}
                       </TableHead>
                     );
@@ -169,7 +174,7 @@ export function DataTable<TData, TValue>({
                         <TableCell key={cell.id} className={getCellClass()}>
                           {flexRender(
                             cell.column.columnDef.cell,
-                            cell.getContext(),
+                            cell.getContext()
                           )}
                         </TableCell>
                       );

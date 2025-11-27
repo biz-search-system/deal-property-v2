@@ -40,18 +40,13 @@ export function SearchPropertiesClient({
 
   return (
     <div className="flex flex-1 flex-col overflow-hidden">
-      <div className="flex flex-col gap-3 p-4 lg:p-3">
-        {/* テーブル */}
-        <Card className="flex-1">
-          <CardContent className="p-4">
-            <DataTable
-              columns={columns}
-              data={properties}
-              onView={handleViewDetails}
-              onEdit={handlePropertyClick}
-            />
-          </CardContent>
-        </Card>
+      <div className="flex flex-col gap-3 p-4 lg:p-3 flex-1 bg-red-500">
+        <DataTable
+          columns={columns}
+          data={properties}
+          onView={handleViewDetails}
+          onEdit={handlePropertyClick}
+        />
       </div>
 
       {/* 編集モーダル */}
