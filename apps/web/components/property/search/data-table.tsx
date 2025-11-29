@@ -12,6 +12,7 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
+import { ScrollArea } from "@workspace/ui/components/scroll-area";
 
 import {
   Table,
@@ -25,6 +26,7 @@ import { DataTablePagination } from "./data-table-pagination";
 import { DataTableToolbar } from "./data-table-toolbar";
 import { PopoverProvider } from "../property-name-cell";
 import { useState } from "react";
+import { Card, CardContent } from "@workspace/ui/components/card";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -73,129 +75,135 @@ export function DataTable<TData, TValue>({
   });
 
   return (
-    <div className="space-y-4 h-full bg-blue-500">
-      <DataTableToolbar table={table} />
-      <div className="overflow-auto max-h-[calc(100vh-250px)] bg-green-500">
-        <PopoverProvider>
-          <Table className="text-[10px] bg-amber-500">
-            <TableHeader className="sticky top-0 bg-background z-10 bg-green-500">
-              {table.getHeaderGroups().map((headerGroup) => (
-                <TableRow key={headerGroup.id}>
-                  {headerGroup.headers.map((header) => {
-                    // カラム幅とstickyクラスを設定
-                    const getColumnClass = () => {
-                      const id = header.column.id;
-                      switch (id) {
-                        case "organization":
-                          return "sticky left-0 bg-background z-20 w-[70px]";
-                        case "staff":
-                          return "sticky left-[70px] bg-background z-20 min-w-[45px] w-[70px]";
-                        case "propertyName":
-                          return "sticky left-[140px] bg-background z-20 min-w-[65px]";
-                        case "roomNumber":
-                          return "sticky left-[205px] bg-background z-20 w-[40px]";
-                        case "ownerName":
-                          return "min-w-[55px]";
-                        case "amountA":
-                        case "amountExit":
-                        case "commission":
-                        case "profit":
-                          return "w-[50px]";
-                        case "bcDeposit":
-                          return "w-[50px]";
-                        case "settlementDate":
-                          return "w-[60px]";
-                        case "buyerCompany":
-                          return "min-w-[50px]";
-                        case "contractType":
-                        case "companyB":
-                        case "brokerCompany":
-                        case "progressStatus":
-                        case "documentStatus":
-                          return "w-[70px]";
-                        case "notes":
-                          return "min-w-[65px] w-[120px]";
-                        case "actions":
-                          return "sticky right-0 bg-background z-20 w-[50px]";
-                        default:
-                          return "";
-                      }
-                    };
-
-                    return (
-                      <TableHead
-                        key={header.id}
-                        className={`text-[10px] p-1 ${getColumnClass()}`}
-                      >
-                        {header.isPlaceholder
-                          ? null
-                          : flexRender(
-                              header.column.columnDef.header,
-                              header.getContext()
-                            )}
-                      </TableHead>
-                    );
-                  })}
-                </TableRow>
-              ))}
-            </TableHeader>
-            <TableBody>
-              {table.getRowModel().rows?.length ? (
-                table.getRowModel().rows.map((row) => (
-                  <TableRow
-                    key={row.id}
-                    data-state={row.getIsSelected() && "selected"}
-                    className="hover:bg-muted/50"
-                  >
-                    {row.getVisibleCells().map((cell) => {
-                      // セルのクラスを設定（ヘッダーと同じ）
-                      const getCellClass = () => {
-                        const id = cell.column.id;
-                        const base = "text-[10px] p-1";
+    <div className="flex h-full flex-col gap-3 overflow-hidden">
+      <div className="shrink-0">
+        <DataTableToolbar table={table} />
+      </div>
+      <Card className="overflow-hidden p-2">
+        <ScrollArea className="min-h-0 flex-1 overflow-auto">
+          <PopoverProvider>
+            <Table className="text-[10px]">
+              <TableHeader className="sticky top-0 bg-background z-10 border-b ">
+                {table.getHeaderGroups().map((headerGroup) => (
+                  <TableRow key={headerGroup.id}>
+                    {headerGroup.headers.map((header) => {
+                      // カラム幅とstickyクラスを設定
+                      const getColumnClass = () => {
+                        const id = header.column.id;
                         switch (id) {
                           case "organization":
-                            return `${base} sticky left-0 bg-background`;
+                            return "sticky left-0 bg-background z-20 w-[70px]";
                           case "staff":
-                            return `${base} sticky left-[70px] bg-background`;
+                            return "sticky left-[70px] bg-background z-20 min-w-[45px] w-[70px]";
                           case "propertyName":
-                            return `${base} sticky max-w-[120px]`;
+                            return "sticky left-[140px] bg-background z-20 min-w-[65px]";
                           case "roomNumber":
-                            return `${base} sticky left-[205px] bg-background`;
+                            return "sticky left-[205px] bg-background z-20 w-[40px]";
+                          case "ownerName":
+                            return "min-w-[55px]";
+                          case "amountA":
+                          case "amountExit":
+                          case "commission":
+                          case "profit":
+                            return "w-[50px]";
+                          case "bcDeposit":
+                            return "w-[50px]";
+                          case "settlementDate":
+                            return "w-[60px]";
+                          case "buyerCompany":
+                            return "min-w-[50px]";
+                          case "contractType":
+                          case "companyB":
+                          case "brokerCompany":
+                          case "progressStatus":
+                          case "documentStatus":
+                            return "w-[70px]";
                           case "notes":
-                            return `${base} sticky max-w-[100px]`;
+                            return "min-w-[65px] w-[120px]";
                           case "actions":
-                            return `${base} sticky right-0`;
+                            return "sticky right-0 bg-background z-20 w-[50px]";
                           default:
-                            return base;
+                            return "";
                         }
                       };
 
                       return (
-                        <TableCell key={cell.id} className={getCellClass()}>
-                          {flexRender(
-                            cell.column.columnDef.cell,
-                            cell.getContext()
-                          )}
-                        </TableCell>
+                        <TableHead
+                          key={header.id}
+                          className={`text-[10px] p-1 ${getColumnClass()}`}
+                        >
+                          {header.isPlaceholder
+                            ? null
+                            : flexRender(
+                                header.column.columnDef.header,
+                                header.getContext()
+                              )}
+                        </TableHead>
                       );
                     })}
                   </TableRow>
-                ))
-              ) : (
-                <TableRow>
-                  <TableCell
-                    colSpan={columns.length}
-                    className="h-24 text-center"
-                  >
-                    データがありません
-                  </TableCell>
-                </TableRow>
-              )}
-            </TableBody>
-          </Table>
-        </PopoverProvider>
+                ))}
+              </TableHeader>
+              <TableBody>
+                {table.getRowModel().rows?.length ? (
+                  table.getRowModel().rows.map((row) => (
+                    <TableRow
+                      key={row.id}
+                      data-state={row.getIsSelected() && "selected"}
+                      className="hover:bg-muted/50"
+                    >
+                      {row.getVisibleCells().map((cell) => {
+                        // セルのクラスを設定（ヘッダーと同じ）
+                        const getCellClass = () => {
+                          const id = cell.column.id;
+                          const base = "text-[10px] p-1";
+                          switch (id) {
+                            case "organization":
+                              return `${base} sticky left-0 bg-background`;
+                            case "staff":
+                              return `${base} sticky left-[70px] bg-background`;
+                            case "propertyName":
+                              return `${base} sticky max-w-[120px]`;
+                            case "roomNumber":
+                              return `${base} sticky left-[205px] bg-background`;
+                            case "notes":
+                              return `${base} sticky max-w-[100px]`;
+                            case "actions":
+                              return `${base} sticky right-0`;
+                            default:
+                              return base;
+                          }
+                        };
+
+                        return (
+                          <TableCell key={cell.id} className={getCellClass()}>
+                            {flexRender(
+                              cell.column.columnDef.cell,
+                              cell.getContext()
+                            )}
+                          </TableCell>
+                        );
+                      })}
+                    </TableRow>
+                  ))
+                ) : (
+                  <TableRow>
+                    <TableCell
+                      colSpan={columns.length}
+                      className="h-24 text-center"
+                    >
+                      データがありません
+                    </TableCell>
+                  </TableRow>
+                )}
+              </TableBody>
+            </Table>
+          </PopoverProvider>
+        </ScrollArea>
+      </Card>
+      <div className="shrink-0">
+        <DataTablePagination table={table} />
       </div>
-      <DataTablePagination table={table} />
     </div>
   );
 }

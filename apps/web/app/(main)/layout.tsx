@@ -17,15 +17,14 @@ export default async function Layout({
           // "--sidebar-width": "calc(var(--spacing) * 72)", // 18rem = 288px
           // "--sidebar-width": "calc(var(--spacing) * 60)", // 15rem = 240px
           "--sidebar-width": "calc(var(--spacing) * 58)", // 14.5rem = 232px
-          "--header-height": "calc(var(--spacing) * 12)", // 3rem = 48px
+          "--header-height": "calc(var(--spacing) * 12.25)", // 3rem = 48px
         } as React.CSSProperties
       }
     >
       <AppSidebar variant="inset" />
-      <SidebarInset className="">
+      <SidebarInset className="max-h-svh overflow-hidden md:max-h-[calc(100svh-1rem)]">
         <SiteHeader />
-
-        {children}
+        <div className="flex-1 overflow-hidden">{children}</div>
       </SidebarInset>
     </SidebarProvider>
   );
