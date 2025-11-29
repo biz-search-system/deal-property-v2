@@ -1,6 +1,6 @@
 import { users } from "../schemas/auth";
 import { createInsertSchema } from "drizzle-zod";
-import { z } from "zod/v4";
+import z from "zod";
 
 // 基本的なユーザーinsertスキーマ（テーブル構造ベース）
 export const userInsertBaseSchema = createInsertSchema(users, {
@@ -21,7 +21,7 @@ export const userInsertBaseSchema = createInsertSchema(users, {
       .max(20, "ユーザー名は20文字以内で入力してください")
       .regex(
         /^[a-zA-Z0-9_-]+$/,
-        "ユーザー名は英数字、ハイフン、アンダースコアのみ使用できます",
+        "ユーザー名は英数字、ハイフン、アンダースコアのみ使用できます"
       ),
 });
 

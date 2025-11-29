@@ -1,4 +1,4 @@
-import { z } from "zod/v4";
+import z from "zod";
 import { users } from "../schemas/auth";
 import {
   createInsertSchema,
