@@ -80,130 +80,128 @@ export function DataTable<TData, TValue>({
       </div>
       <Card className="overflow-hidden p-2">
         <ScrollArea className="min-h-0 flex-1 overflow-auto">
-          <PopoverProvider>
-            <Table className="text-[10px]">
-              <TableHeader className="sticky top-0 bg-background z-10 [&_tr]:border-b-0">
-                {table.getHeaderGroups().map((headerGroup) => (
+          <Table className="text-[10px]">
+            <TableHeader className="sticky top-0 bg-background z-10 [&_tr]:border-b-0">
+              {table.getHeaderGroups().map((headerGroup) => (
+                <TableRow
+                  key={headerGroup.id}
+                  className="hover:bg-transparent relative after:absolute after:bottom-0 after:left-0 after:right-0 after:h-px after:bg-border"
+                >
+                  {headerGroup.headers.map((header) => {
+                    // カラム幅とstickyクラスを設定
+                    const getColumnClass = () => {
+                      const id = header.column.id;
+                      switch (id) {
+                        case "organization":
+                          return "";
+                        case "staff":
+                          return "w-[50px]";
+                        case "propertyName":
+                          return "";
+                        case "roomNumber":
+                          return "w-[40px]";
+                        case "ownerName":
+                          return "min-w-[55px]";
+                        case "amountA":
+                          return "w-[50px]";
+                        case "amountExit":
+                          return "w-[50px]";
+                        case "commission":
+                          return "w-[100px]";
+                        case "profit":
+                          return "w-[50px]";
+                        case "bcDeposit":
+                          return "w-[50px]";
+                        case "settlementDate":
+                          return "w-[60px]";
+                        case "buyerCompany":
+                          return "min-w-[50px]";
+                        case "contractType":
+                        case "companyB":
+                        case "brokerCompany":
+                        case "progressStatus":
+                        case "documentStatus":
+                          return "w-[70px]";
+                        case "notes":
+                          return "min-w-[65px] w-[120px]";
+                        case "actions":
+                          return "sticky right-0 bg-background w-[50px]";
+                        default:
+                          return "";
+                      }
+                    };
+
+                    return (
+                      <TableHead
+                        key={header.id}
+                        className={`text-[10px] p-1 ${getColumnClass()}`}
+                      >
+                        {header.isPlaceholder
+                          ? null
+                          : flexRender(
+                              header.column.columnDef.header,
+                              header.getContext()
+                            )}
+                      </TableHead>
+                    );
+                  })}
+                </TableRow>
+              ))}
+            </TableHeader>
+            <TableBody>
+              {table.getRowModel().rows?.length ? (
+                table.getRowModel().rows.map((row) => (
                   <TableRow
-                    key={headerGroup.id}
-                    className="hover:bg-transparent relative after:absolute after:bottom-0 after:left-0 after:right-0 after:h-px after:bg-border"
+                    key={row.id}
+                    data-state={row.getIsSelected() && "selected"}
+                    className="hover:bg-muted/50"
                   >
-                    {headerGroup.headers.map((header) => {
-                      // カラム幅とstickyクラスを設定
-                      const getColumnClass = () => {
-                        const id = header.column.id;
+                    {row.getVisibleCells().map((cell) => {
+                      // セルのクラスを設定（ヘッダーと同じ）
+                      const getCellClass = () => {
+                        const id = cell.column.id;
+                        const base = "text-[10px] p-1";
                         switch (id) {
                           case "organization":
-                            return "";
+                            return `${base} bg-background`;
                           case "staff":
-                            return "w-[50px]";
+                            return `${base} bg-background w-[50px]`;
                           case "propertyName":
-                            return "";
+                            return `${base} max-w-[120px]`;
                           case "roomNumber":
-                            return "w-[40px]";
-                          case "ownerName":
-                            return "min-w-[55px]";
-                          case "amountA":
-                            return "w-[50px]";
-                          case "amountExit":
-                            return "w-[50px]";
-                          case "commission":
-                            return "w-[100px]";
-                          case "profit":
-                            return "w-[50px]";
-                          case "bcDeposit":
-                            return "w-[50px]";
-                          case "settlementDate":
-                            return "w-[60px]";
-                          case "buyerCompany":
-                            return "min-w-[50px]";
-                          case "contractType":
-                          case "companyB":
-                          case "brokerCompany":
-                          case "progressStatus":
-                          case "documentStatus":
-                            return "w-[70px]";
+                            return `${base}`;
                           case "notes":
-                            return "min-w-[65px] w-[120px]";
+                            return `${base} max-w-[100px]`;
                           case "actions":
-                            return "sticky right-0 bg-background w-[50px]";
+                            return `${base} right-0`;
                           default:
-                            return "";
+                            return base;
                         }
                       };
 
                       return (
-                        <TableHead
-                          key={header.id}
-                          className={`text-[10px] p-1 ${getColumnClass()}`}
-                        >
-                          {header.isPlaceholder
-                            ? null
-                            : flexRender(
-                                header.column.columnDef.header,
-                                header.getContext()
-                              )}
-                        </TableHead>
+                        <TableCell key={cell.id} className={getCellClass()}>
+                          {flexRender(
+                            cell.column.columnDef.cell,
+                            cell.getContext()
+                          )}
+                        </TableCell>
                       );
                     })}
                   </TableRow>
-                ))}
-              </TableHeader>
-              <TableBody>
-                {table.getRowModel().rows?.length ? (
-                  table.getRowModel().rows.map((row) => (
-                    <TableRow
-                      key={row.id}
-                      data-state={row.getIsSelected() && "selected"}
-                      className="hover:bg-muted/50"
-                    >
-                      {row.getVisibleCells().map((cell) => {
-                        // セルのクラスを設定（ヘッダーと同じ）
-                        const getCellClass = () => {
-                          const id = cell.column.id;
-                          const base = "text-[10px] p-1";
-                          switch (id) {
-                            case "organization":
-                              return `${base} bg-background`;
-                            case "staff":
-                              return `${base} bg-background w-[50px]`;
-                            case "propertyName":
-                              return `${base} max-w-[120px]`;
-                            case "roomNumber":
-                              return `${base}`;
-                            case "notes":
-                              return `${base} max-w-[100px]`;
-                            case "actions":
-                              return `${base} right-0`;
-                            default:
-                              return base;
-                          }
-                        };
-
-                        return (
-                          <TableCell key={cell.id} className={getCellClass()}>
-                            {flexRender(
-                              cell.column.columnDef.cell,
-                              cell.getContext()
-                            )}
-                          </TableCell>
-                        );
-                      })}
-                    </TableRow>
-                  ))
-                ) : (
-                  <TableRow>
-                    <TableCell
-                      colSpan={columns.length}
-                      className="h-24 text-center"
-                    >
-                      データがありません
-                    </TableCell>
-                  </TableRow>
-                )}
-              </TableBody>
-            </Table>
-          </PopoverProvider>
+                ))
+              ) : (
+                <TableRow>
+                  <TableCell
+                    colSpan={columns.length}
+                    className="h-24 text-center"
+                  >
+                    データがありません
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
         </ScrollArea>
       </Card>
       <div className="shrink-0">

@@ -139,14 +139,8 @@ export async function createProperty(data: PropertyCreate) {
  * 案件を更新する
  */
 export async function updateProperty(data: PropertyUpdate) {
-  // セッション確認
-  const session = await auth.api.getSession({
-    headers: await headers(),
-  });
-
-  if (!session) {
-    throw new Error("認証が必要です");
-  }
+  // セッション認証
+  const session = await verifySession();
 
   // バリデーション
   const validatedData = propertyUpdateSchema.parse(data);
@@ -243,14 +237,8 @@ export async function updateProperty(data: PropertyUpdate) {
  * 案件を削除する
  */
 export async function deleteProperty(id: string) {
-  // セッション確認
-  const session = await auth.api.getSession({
-    headers: await headers(),
-  });
-
-  if (!session) {
-    throw new Error("認証が必要です");
-  }
+  // セッション認証
+  const session = await verifySession();
 
   // トランザクションで案件と関連データを削除
   await db.transaction(async (tx) => {
@@ -286,13 +274,8 @@ export async function updatePropertyProgressStatus(data: {
   id: string;
   progressStatus: string;
 }) {
-  const session = await auth.api.getSession({
-    headers: await headers(),
-  });
-
-  if (!session) {
-    throw new Error("認証が必要です");
-  }
+  // セッション認証
+  const session = await verifySession();
 
   await db
     .update(properties)
@@ -314,13 +297,8 @@ export async function updatePropertyDocumentStatus(data: {
   id: string;
   documentStatus: string;
 }) {
-  const session = await auth.api.getSession({
-    headers: await headers(),
-  });
-
-  if (!session) {
-    throw new Error("認証が必要です");
-  }
+  // セッション認証
+  const session = await verifySession();
 
   await db
     .update(properties)
@@ -339,13 +317,8 @@ export async function updatePropertyDocumentStatus(data: {
  * 案件の備考を更新（インライン編集用）
  */
 export async function updatePropertyNotes(data: { id: string; notes: string }) {
-  const session = await auth.api.getSession({
-    headers: await headers(),
-  });
-
-  if (!session) {
-    throw new Error("認証が必要です");
-  }
+  // セッション認証
+  const session = await verifySession();
 
   await db
     .update(properties)
@@ -369,7 +342,6 @@ export async function updatePropertySettlementDate(data: {
 }) {
   // セッション認証
   const session = await verifySession();
-  console.log(data.settlementDate, "data.settlementDate");
 
   await db
     .update(properties)
@@ -388,4 +360,54 @@ export async function updatePropertySettlementDate(data: {
     const month = data.settlementDate.getMonth() + 1;
     revalidatePath(`/properties/monthly/${year}/${month}`);
   }
+}
+
+/**
+ * 案件の物件名を更新（インライン編集用）
+ */
+export async function updatePropertyName(data: {
+  id: string;
+  propertyName: string;
+}) {
+  // セッション認証
+  const session = await verifySession();
+
+  if (!data.propertyName.trim()) {
+    throw new Error("物件名は必須です");
+  }
+
+  await db
+    .update(properties)
+    .set({
+      propertyName: data.propertyName.trim(),
+      updatedBy: session.user.id,
+      updatedAt: new Date(),
+    })
+    .where(eq(properties.id, data.id));
+
+  revalidatePath("/properties");
+  revalidatePath("/properties/unconfirmed");
+}
+
+/**
+ * 案件のオーナー名を更新（インライン編集用）
+ */
+export async function updatePropertyOwnerName(data: {
+  id: string;
+  ownerName: string;
+}) {
+  // セッション認証
+  const session = await verifySession();
+
+  await db
+    .update(properties)
+    .set({
+      ownerName: data.ownerName.trim(),
+      updatedBy: session.user.id,
+      updatedAt: new Date(),
+    })
+    .where(eq(properties.id, data.id));
+
+  revalidatePath("/properties");
+  revalidatePath("/properties/unconfirmed");
 }

@@ -22,6 +22,13 @@ import { NotesPopoverEdit } from "@/components/property/inline-edit/notes-popove
 import { SettlementDatePopoverEdit } from "@/components/property/inline-edit/settlement-date-popover-edit";
 import { PropertyNameCell } from "../property-name-cell";
 import { DataTableColumnHeader } from "./data-table-column-header";
+import { PropertyNamePopoverEdit } from "../inline-edit/property-name-popover-edit";
+import {
+  updatePropertyName,
+  updatePropertyNotes,
+  updatePropertyOwnerName,
+} from "@/lib/actions/property";
+import { TextPopoverEdit } from "../inline-edit/text-popover-edit";
 
 // フォーマット関数
 const formatCurrency = (value: number | null | undefined) => {
@@ -117,7 +124,23 @@ export const columns: ColumnDef<PropertyWithRelations>[] = [
       return <DataTableColumnHeader column={column} title="物件名" />;
     },
     cell: ({ row }) => {
-      return <PropertyNameCell propertyName={row.original.propertyName} />;
+      return (
+        <TextPopoverEdit
+          id={row.original.id}
+          currentValue={row.original.propertyName}
+          onSave={async (id, value) => {
+            await updatePropertyName({ id, propertyName: value });
+          }}
+          required
+          maxLength={200}
+          title="物件名編集"
+          description="物件名を編集できます"
+          placeholder="物件名を入力してください"
+          successMessage="物件名を更新しました"
+          errorMessage="物件名の更新に失敗しました"
+          requiredErrorMessage="物件名は必須です"
+        />
+      );
     },
   },
   {
@@ -132,7 +155,23 @@ export const columns: ColumnDef<PropertyWithRelations>[] = [
     header: ({ column }) => {
       return <DataTableColumnHeader column={column} title="オーナー" />;
     },
-    cell: ({ row }) => row.original.ownerName || "-",
+    cell: ({ row }) => {
+      return (
+        <TextPopoverEdit
+          id={row.original.id}
+          currentValue={row.original.ownerName}
+          onSave={async (id, value) => {
+            await updatePropertyOwnerName({ id, ownerName: value });
+          }}
+          maxLength={100}
+          title="オーナー名編集"
+          description="オーナー名を編集できます"
+          placeholder="オーナー名を入力してください"
+          successMessage="オーナー名を更新しました"
+          errorMessage="オーナー名の更新に失敗しました"
+        />
+      );
+    },
   },
   {
     accessorKey: "amountA",
@@ -296,9 +335,17 @@ export const columns: ColumnDef<PropertyWithRelations>[] = [
     },
     cell: ({ row }) => {
       return (
-        <NotesPopoverEdit
-          propertyId={row.original.id}
-          currentNotes={row.original.notes}
+        <TextPopoverEdit
+          id={row.original.id}
+          currentValue={row.original.notes}
+          onSave={async (id, value) => {
+            await updatePropertyNotes({ id, notes: value });
+          }}
+          title="備考編集"
+          description="物件に関する備考を編集できます"
+          placeholder="備考を入力してください"
+          successMessage="備考を更新しました"
+          errorMessage="備考の更新に失敗しました"
         />
       );
     },
