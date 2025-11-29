@@ -32,7 +32,10 @@ export default async function UnconfirmedPropertiesPage() {
   return (
     <div className="flex flex-1 flex-col overflow-hidden">
       <BreadcrumbConfig
-        items={[{ label: "業者確定前", href: "/properties/unconfirmed" }]}
+        items={[
+          { label: "案件管理" },
+          { label: "業者確定前", href: "/properties/unconfirmed" },
+        ]}
       />
       <div className="flex flex-col gap-3 p-4 lg:p-3">
         {/* 集計表示（2カラム） */}

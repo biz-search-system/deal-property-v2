@@ -12,6 +12,7 @@ import { TeamsTab } from "./components/teams-tab";
 import { getFullOrganization } from "@/lib/data/organization";
 import { auth } from "@workspace/auth";
 import { headers } from "next/headers";
+import { BreadcrumbConfig } from "@/components/breadcrumb-provider";
 
 export const metadata = {
   title: "メンバー管理",
@@ -33,13 +34,19 @@ export default async function OrganizationMembersPage({
   if (session) {
     const fullOrg = await getFullOrganization(organizationId);
     const currentUserMember = fullOrg?.members.find(
-      (m) => m.userId === session.user.id,
+      (m) => m.userId === session.user.id
     );
     userRole = currentUserMember?.role;
   }
 
   return (
     <div className="container mx-auto py-6 space-y-8">
+      <BreadcrumbConfig
+        items={[
+          { label: "組織管理", href: "/organization" },
+          { label: "メンバー管理" },
+        ]}
+      />
       <Tabs defaultValue="members" className="space-y-4">
         <TabsList>
           <TabsTrigger value="members">

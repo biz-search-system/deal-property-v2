@@ -21,6 +21,7 @@ import { getPropertyById } from "@/lib/data/property";
 import { getOrganizations, getSalesTeamMembers } from "@/lib/data/organization";
 import type { Metadata } from "next";
 import { verifySession } from "@/lib/data/sesstion";
+import { BreadcrumbConfig } from "@/components/breadcrumb-provider";
 
 export async function generateMetadata({
   params,
@@ -65,9 +66,13 @@ export default async function PropertyEditPage({
 
   return (
     <div className="container mx-auto py-6 space-y-6">
-      <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-bold">案件編集</h1>
-      </div>
+      <BreadcrumbConfig
+        items={[
+          { label: "案件管理" },
+          { label: "業者確定前", href: "/properties/unconfirmed" },
+          { label: "案件編集" },
+        ]}
+      />
 
       <PropertyFormProvider
         mode="edit"
@@ -77,7 +82,7 @@ export default async function PropertyEditPage({
         }}
       >
         <Card>
-          <CardHeader>
+          {/* <CardHeader>
             <CardTitle>{property.propertyName}</CardTitle>
           </CardHeader>
           <CardContent>
@@ -110,7 +115,7 @@ export default async function PropertyEditPage({
             </Tabs>
 
             <PropertyFormActions mode="edit" />
-          </CardContent>
+          </CardContent> */}
         </Card>
       </PropertyFormProvider>
     </div>

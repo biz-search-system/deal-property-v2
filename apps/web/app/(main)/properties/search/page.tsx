@@ -1,6 +1,7 @@
 import { getAllPropertiesBySettlementDate } from "@/lib/data/property";
 import { SearchPropertiesClient } from "./search-properties-client";
 import type { Metadata } from "next";
+import { BreadcrumbConfig } from "@/components/breadcrumb-provider";
 
 export const metadata: Metadata = {
   title: "案件検索",
@@ -20,5 +21,15 @@ export default async function SearchPage() {
     organizationName: property.organization?.name || "",
   }));
 
-  return <SearchPropertiesClient properties={transformedProperties} />;
+  return (
+    <>
+      <BreadcrumbConfig
+        items={[
+          { label: "案件管理" },
+          { label: "案件検索", href: "/properties/search" },
+        ]}
+      />
+      <SearchPropertiesClient properties={transformedProperties} />;
+    </>
+  );
 }

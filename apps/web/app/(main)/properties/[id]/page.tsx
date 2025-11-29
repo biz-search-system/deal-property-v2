@@ -24,6 +24,7 @@ import { getPropertyById } from "@/lib/data/property";
 import { format } from "date-fns";
 import { ja } from "date-fns/locale";
 import type { Metadata } from "next";
+import { BreadcrumbConfig } from "@/components/breadcrumb-provider";
 
 export async function generateMetadata({
   params,

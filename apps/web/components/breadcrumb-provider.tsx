@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Fragment } from "react";
+import { Fragment, type ReactNode } from "react";
 import { createContext, use, useEffect, useState } from "react";
 import {
   Breadcrumb,
@@ -11,11 +11,13 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@workspace/ui/components/breadcrumb";
-import { Home } from "lucide-react";
+import { Home, SlashIcon } from "lucide-react";
 
-type BreadCrumbItem = {
+export type BreadCrumbItem = {
   label: string;
   href?: string;
+  /** カスタムレンダラー（年・月セレクトなど） */
+  render?: () => ReactNode;
 };
 
 const BreadcrumbContext = createContext<{
@@ -56,21 +58,31 @@ export function BreadcrumbConfig({ items }: { items: BreadCrumbItem[] }) {
 export function BreadcrumbMain({ homeHref = "/" }: { homeHref?: string }) {
   const { breadcrumbs } = use(BreadcrumbContext);
 
+  // パンくずが設定されていない場合は何も表示しない
+  if (breadcrumbs.length === 0) {
+    return null;
+  }
+
   return (
-    <Breadcrumb>
+    <Breadcrumb className="flex-1">
       <BreadcrumbList>
         <BreadcrumbItem>
           <BreadcrumbLink asChild>
             <Link href={homeHref}>
-              <Home className="size-5" />
+              <Home className="size-4" />
             </Link>
           </BreadcrumbLink>
         </BreadcrumbItem>
         {breadcrumbs.map((breadcrumb) => (
           <Fragment key={breadcrumb.label}>
-            <BreadcrumbSeparator />
+            <BreadcrumbSeparator>
+              <SlashIcon />
+            </BreadcrumbSeparator>
             <BreadcrumbItem>
-              {breadcrumb.href ? (
+              {breadcrumb.render ? (
+                // カスタムレンダラーがある場合はそれを使用
+                breadcrumb.render()
+              ) : breadcrumb.href ? (
                 <BreadcrumbLink asChild>
                   <Link href={breadcrumb.href}>{breadcrumb.label}</Link>
                 </BreadcrumbLink>
