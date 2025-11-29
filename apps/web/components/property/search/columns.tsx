@@ -16,7 +16,7 @@ import ContractTypeBadge from "@/components/property/badge/contract-type-badge";
 import CompanyBBadge from "@/components/property/badge/company-b-badge";
 import BrokerCompanyBadge from "@/components/property/badge/broker-company-badge";
 import OrganizationBadge from "@/components/property/badge/organization-badge";
-import { ProgressStatusInlineEdit } from "@/components/property/inline-edit/progress-status-inline-edit";
+import { ProgressStatusDropdownEdit } from "@/components/property/inline-edit/progress-status-dropdown-edit";
 import { DocumentStatusInlineEdit } from "@/components/property/inline-edit/document-status-inline-edit";
 import { NotesPopoverEdit } from "@/components/property/inline-edit/notes-popover-edit";
 import { SettlementDatePopoverEdit } from "@/components/property/inline-edit/settlement-date-popover-edit";
@@ -330,7 +330,7 @@ export const columns: ColumnDef<PropertyWithRelations>[] = [
     },
     cell: ({ row }) => {
       return (
-        <ProgressStatusInlineEdit
+        <ProgressStatusDropdownEdit
           propertyId={row.original.id}
           currentStatus={row.original.progressStatus}
         />
