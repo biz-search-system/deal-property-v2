@@ -1,4 +1,4 @@
-# shadcn/ui Monorepo
+# shadcn/ui Monorepo１
 
 このプロジェクトは、shadcn/ui と Turborepo を使用した Next.js モノレポテンプレートです。
 
