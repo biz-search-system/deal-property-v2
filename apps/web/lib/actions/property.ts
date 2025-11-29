@@ -411,3 +411,61 @@ export async function updatePropertyOwnerName(data: {
   revalidatePath("/properties");
   revalidatePath("/properties/unconfirmed");
 }
+
+/**
+ * 案件の金額フィールドを更新（インライン編集用）
+ * amountA: A金額
+ * amountExit: 出口金額
+ * commission: 仲手等
+ * bcDeposit: BC手付
+ */
+export async function updatePropertyAmount(data: {
+  id: string;
+  field: "amountA" | "amountExit" | "commission" | "bcDeposit";
+  value: number | null;
+}) {
+  // セッション認証
+  const session = await verifySession();
+
+  // 現在の案件データを取得して利益を再計算
+  const currentProperty = await db.query.properties.findFirst({
+    where: eq(properties.id, data.id),
+  });
+
+  if (!currentProperty) {
+    throw new Error("案件が見つかりません");
+  }
+
+  // 更新後の値を計算
+  const updatedValues = {
+    amountA: data.field === "amountA" ? data.value : currentProperty.amountA,
+    amountExit:
+      data.field === "amountExit" ? data.value : currentProperty.amountExit,
+    commission:
+      data.field === "commission" ? data.value : currentProperty.commission,
+    bcDeposit:
+      data.field === "bcDeposit" ? data.value : currentProperty.bcDeposit,
+  };
+
+  // 利益を再計算（出口金額 - A金額 + 仲手等）
+  let profit: number | null = null;
+  if (updatedValues.amountExit !== null && updatedValues.amountA !== null) {
+    profit = updatedValues.amountExit - updatedValues.amountA;
+    if (updatedValues.commission !== null) {
+      profit += updatedValues.commission;
+    }
+  }
+
+  await db
+    .update(properties)
+    .set({
+      [data.field]: data.value,
+      profit,
+      updatedBy: session.user.id,
+      updatedAt: new Date(),
+    })
+    .where(eq(properties.id, data.id));
+
+  revalidatePath("/properties");
+  revalidatePath("/properties/unconfirmed");
+}

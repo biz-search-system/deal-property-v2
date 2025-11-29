@@ -24,22 +24,13 @@ import { PropertyNameCell } from "../property-name-cell";
 import { DataTableColumnHeader } from "./data-table-column-header";
 import { PropertyNamePopoverEdit } from "../inline-edit/property-name-popover-edit";
 import {
+  updatePropertyAmount,
   updatePropertyName,
   updatePropertyNotes,
   updatePropertyOwnerName,
 } from "@/lib/actions/property";
 import { TextPopoverEdit } from "../inline-edit/text-popover-edit";
-
-// フォーマット関数
-const formatCurrency = (value: number | null | undefined) => {
-  if (value === null || value === undefined) return "-";
-  // 1万円未満の場合は円単位で表示
-  if (value < 10000) {
-    return `${value.toLocaleString()}円`;
-  }
-  // 1万円以上の場合は万円単位で表示
-  return `${(value / 10000).toFixed(0)}万`;
-};
+import { CurrencyPopoverEdit } from "../inline-edit/currency-popover-edit";
 
 const formatDateWithDay = (dateString: string | Date | null): string => {
   if (!dateString) return "-";
@@ -180,7 +171,17 @@ export const columns: ColumnDef<PropertyWithRelations>[] = [
     },
     cell: ({ row }) => {
       return (
-        <div className="text-right">{formatCurrency(row.original.amountA)}</div>
+        <CurrencyPopoverEdit
+          id={row.original.id}
+          currentValue={row.original.amountA}
+          onSave={async (id, value) => {
+            await updatePropertyAmount({ id, field: "amountA", value });
+          }}
+          title="A金額編集"
+          description="A金額を編集できます"
+          successMessage="A金額を更新しました"
+          errorMessage="A金額の更新に失敗しました"
+        />
       );
     },
   },
@@ -191,9 +192,17 @@ export const columns: ColumnDef<PropertyWithRelations>[] = [
     },
     cell: ({ row }) => {
       return (
-        <div className="text-right">
-          {formatCurrency(row.original.amountExit)}
-        </div>
+        <CurrencyPopoverEdit
+          id={row.original.id}
+          currentValue={row.original.amountExit}
+          onSave={async (id, value) => {
+            await updatePropertyAmount({ id, field: "amountExit", value });
+          }}
+          title="出口金額編集"
+          description="出口金額を編集できます"
+          successMessage="出口金額を更新しました"
+          errorMessage="出口金額の更新に失敗しました"
+        />
       );
     },
   },
@@ -204,9 +213,17 @@ export const columns: ColumnDef<PropertyWithRelations>[] = [
     },
     cell: ({ row }) => {
       return (
-        <div className="text-right">
-          {formatCurrency(row.original.commission)}
-        </div>
+        <CurrencyPopoverEdit
+          id={row.original.id}
+          currentValue={row.original.commission}
+          onSave={async (id, value) => {
+            await updatePropertyAmount({ id, field: "commission", value });
+          }}
+          title="仲手等編集"
+          description="仲手等を編集できます"
+          successMessage="仲手等を更新しました"
+          errorMessage="仲手等の更新に失敗しました"
+        />
       );
     },
   },
@@ -217,9 +234,13 @@ export const columns: ColumnDef<PropertyWithRelations>[] = [
     },
     cell: ({ row }) => {
       return (
-        <div className="text-right font-semibold text-green-600 dark:text-green-400">
-          {formatCurrency(row.original.profit)}
-        </div>
+        <CurrencyPopoverEdit
+          id={row.original.id}
+          currentValue={row.original.profit}
+          editable={false}
+          title="利益"
+          highlight
+        />
       );
     },
   },
@@ -230,9 +251,17 @@ export const columns: ColumnDef<PropertyWithRelations>[] = [
     },
     cell: ({ row }) => {
       return (
-        <div className="text-right">
-          {formatCurrency(row.original.bcDeposit)}
-        </div>
+        <CurrencyPopoverEdit
+          id={row.original.id}
+          currentValue={row.original.bcDeposit}
+          onSave={async (id, value) => {
+            await updatePropertyAmount({ id, field: "bcDeposit", value });
+          }}
+          title="BC手付編集"
+          description="BC手付金額を編集できます"
+          successMessage="BC手付を更新しました"
+          errorMessage="BC手付の更新に失敗しました"
+        />
       );
     },
   },

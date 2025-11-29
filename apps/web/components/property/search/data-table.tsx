@@ -23,7 +23,6 @@ import {
   TableRow,
 } from "@workspace/ui/components/table";
 import { useState } from "react";
-import { PopoverProvider } from "../property-name-cell";
 import { DataTablePagination } from "./data-table-pagination";
 import { DataTableToolbar } from "./data-table-toolbar";
 
@@ -170,10 +169,12 @@ export function DataTable<TData, TValue>({
                             return `${base} max-w-[120px]`;
                           case "roomNumber":
                             return `${base}`;
+                          case "ownerName":
+                            return `${base} max-w-[120px] `;
                           case "notes":
                             return `${base} max-w-[100px]`;
                           case "actions":
-                            return `${base} right-0`;
+                            return `${base} sticky right-2`;
                           default:
                             return base;
                         }
