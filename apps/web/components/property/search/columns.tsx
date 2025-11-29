@@ -72,7 +72,10 @@ const truncateText = (
 export const columns: ColumnDef<PropertyWithRelations>[] = [
   {
     accessorKey: "organization",
-    header: "管理組織",
+    // header: "管理組織",
+    header: ({ column }) => {
+      return <DataTableColumnHeader column={column} title="管理組織" />;
+    },
     cell: ({ row }) => {
       const organization = row.original.organization;
       return (
@@ -87,7 +90,10 @@ export const columns: ColumnDef<PropertyWithRelations>[] = [
   },
   {
     accessorKey: "staff",
-    header: "担当",
+    // header: "担当",
+    header: ({ column }) => {
+      return <DataTableColumnHeader column={column} title="担当" />;
+    },
     cell: ({ row }) => {
       const staff = row.original.staff;
       return (
@@ -116,7 +122,9 @@ export const columns: ColumnDef<PropertyWithRelations>[] = [
   },
   {
     accessorKey: "roomNumber",
-    header: "号室",
+    header: ({ column }) => {
+      return <DataTableColumnHeader column={column} title="号室" />;
+    },
     cell: ({ row }) => row.original.roomNumber || "-",
   },
   {
@@ -206,7 +214,9 @@ export const columns: ColumnDef<PropertyWithRelations>[] = [
   },
   {
     accessorKey: "buyerCompany",
-    header: "買取",
+    header: ({ column }) => {
+      return <DataTableColumnHeader column={column} title="買取" />;
+    },
     cell: ({ row }) => {
       return (
         <Badge variant="outline" className="text-[9px] px-1 py-0">
@@ -217,7 +227,9 @@ export const columns: ColumnDef<PropertyWithRelations>[] = [
   },
   {
     accessorKey: "contractType",
-    header: "契約形態",
+    header: ({ column }) => {
+      return <DataTableColumnHeader column={column} title="契約形態" />;
+    },
     cell: ({ row }) => {
       return <ContractTypeBadge contractType={row.original.contractType} />;
     },
@@ -227,21 +239,27 @@ export const columns: ColumnDef<PropertyWithRelations>[] = [
   },
   {
     accessorKey: "companyB",
-    header: "B会社",
+    header: ({ column }) => {
+      return <DataTableColumnHeader column={column} title="B会社" />;
+    },
     cell: ({ row }) => {
       return <CompanyBBadge companyB={row.original.companyB} />;
     },
   },
   {
     accessorKey: "brokerCompany",
-    header: "仲介",
+    header: ({ column }) => {
+      return <DataTableColumnHeader column={column} title="仲介" />;
+    },
     cell: ({ row }) => {
       return <BrokerCompanyBadge brokerCompany={row.original.brokerCompany} />;
     },
   },
   {
     accessorKey: "progressStatus",
-    header: "進捗",
+    header: ({ column }) => {
+      return <DataTableColumnHeader column={column} title="進捗" />;
+    },
     cell: ({ row }) => {
       return (
         <ProgressStatusInlineEdit
@@ -256,7 +274,9 @@ export const columns: ColumnDef<PropertyWithRelations>[] = [
   },
   {
     accessorKey: "documentStatus",
-    header: "書類",
+    header: ({ column }) => {
+      return <DataTableColumnHeader column={column} title="書類" />;
+    },
     cell: ({ row }) => {
       return (
         <DocumentStatusInlineEdit
@@ -271,7 +291,9 @@ export const columns: ColumnDef<PropertyWithRelations>[] = [
   },
   {
     accessorKey: "notes",
-    header: "備考",
+    header: ({ column }) => {
+      return <DataTableColumnHeader column={column} title="備考" />;
+    },
     cell: ({ row }) => {
       return (
         <NotesPopoverEdit

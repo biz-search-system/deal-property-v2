@@ -12,8 +12,8 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
+import { Card } from "@workspace/ui/components/card";
 import { ScrollArea } from "@workspace/ui/components/scroll-area";
-
 import {
   Table,
   TableBody,
@@ -22,11 +22,10 @@ import {
   TableHeader,
   TableRow,
 } from "@workspace/ui/components/table";
+import { useState } from "react";
+import { PopoverProvider } from "../property-name-cell";
 import { DataTablePagination } from "./data-table-pagination";
 import { DataTableToolbar } from "./data-table-toolbar";
-import { PopoverProvider } from "../property-name-cell";
-import { useState } from "react";
-import { Card, CardContent } from "@workspace/ui/components/card";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -83,27 +82,33 @@ export function DataTable<TData, TValue>({
         <ScrollArea className="min-h-0 flex-1 overflow-auto">
           <PopoverProvider>
             <Table className="text-[10px]">
-              <TableHeader className="sticky top-0 bg-background z-10 border-b ">
+              <TableHeader className="sticky top-0 bg-background z-10 [&_tr]:border-b-0">
                 {table.getHeaderGroups().map((headerGroup) => (
-                  <TableRow key={headerGroup.id}>
+                  <TableRow
+                    key={headerGroup.id}
+                    className="hover:bg-transparent relative after:absolute after:bottom-0 after:left-0 after:right-0 after:h-px after:bg-border"
+                  >
                     {headerGroup.headers.map((header) => {
                       // カラム幅とstickyクラスを設定
                       const getColumnClass = () => {
                         const id = header.column.id;
                         switch (id) {
                           case "organization":
-                            return "sticky left-0 bg-background z-20 w-[70px]";
+                            return "";
                           case "staff":
-                            return "sticky left-[70px] bg-background z-20 min-w-[45px] w-[70px]";
+                            return "w-[50px]";
                           case "propertyName":
-                            return "sticky left-[140px] bg-background z-20 min-w-[65px]";
+                            return "";
                           case "roomNumber":
-                            return "sticky left-[205px] bg-background z-20 w-[40px]";
+                            return "w-[40px]";
                           case "ownerName":
                             return "min-w-[55px]";
                           case "amountA":
+                            return "w-[50px]";
                           case "amountExit":
+                            return "w-[50px]";
                           case "commission":
+                            return "w-[100px]";
                           case "profit":
                             return "w-[50px]";
                           case "bcDeposit":
@@ -121,7 +126,7 @@ export function DataTable<TData, TValue>({
                           case "notes":
                             return "min-w-[65px] w-[120px]";
                           case "actions":
-                            return "sticky right-0 bg-background z-20 w-[50px]";
+                            return "sticky right-0 bg-background w-[50px]";
                           default:
                             return "";
                         }
@@ -159,17 +164,17 @@ export function DataTable<TData, TValue>({
                           const base = "text-[10px] p-1";
                           switch (id) {
                             case "organization":
-                              return `${base} sticky left-0 bg-background`;
+                              return `${base} bg-background`;
                             case "staff":
-                              return `${base} sticky left-[70px] bg-background`;
+                              return `${base} bg-background w-[50px]`;
                             case "propertyName":
-                              return `${base} sticky max-w-[120px]`;
+                              return `${base} max-w-[120px]`;
                             case "roomNumber":
-                              return `${base} sticky left-[205px] bg-background`;
+                              return `${base}`;
                             case "notes":
-                              return `${base} sticky max-w-[100px]`;
+                              return `${base} max-w-[100px]`;
                             case "actions":
-                              return `${base} sticky right-0`;
+                              return `${base} right-0`;
                             default:
                               return base;
                           }
