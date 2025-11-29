@@ -3,15 +3,17 @@
 import { Separator } from "@workspace/ui/components/separator";
 import { SidebarTrigger } from "@workspace/ui/components/sidebar";
 import { Button } from "@workspace/ui/components/button";
-import { usePathname } from "next/navigation";
+import { useParams, usePathname } from "next/navigation";
 import Link from "next/link";
-import { Plus } from "lucide-react";
+import { ArrowLeft, Edit, Plus } from "lucide-react";
 import { useSession } from "@/lib/swr/session";
 import { AppConfig } from "@/app.config";
 import { BreadcrumbMain } from "../breadcrumb-provider";
 
 export function SiteHeader() {
   const pathname = usePathname();
+  const params = useParams();
+  const propertyId = params?.id as string | undefined;
   const { user } = useSession();
   const isSystemOwner = AppConfig.systemOwnerIds.includes(user?.id || "");
 
@@ -27,9 +29,9 @@ export function SiteHeader() {
         {/* パンくずリスト（BreadcrumbConfigで設定された場合のみ表示） */}
         <BreadcrumbMain homeHref="/properties/unconfirmed" />
 
-        {pathname === "/properties/unconfirmed" && (
+        {pathname === `/properties/unconfirmed` && (
           <div className="ml-auto flex items-center gap-2">
-            <Button asChild>
+            <Button size="sm" asChild>
               <Link href="/properties/new">
                 <Plus />
                 新規案件登録
@@ -37,10 +39,26 @@ export function SiteHeader() {
             </Button>
           </div>
         )}
+        {pathname === `/properties/unconfirmed/${propertyId}` && (
+          <div className="ml-auto flex items-center gap-2">
+            <Button variant="outline" size="sm" asChild className="gap-2">
+              <Link href="/properties/unconfirmed">
+                <ArrowLeft />
+                戻る
+              </Link>
+            </Button>
+            <Button size="sm" asChild>
+              <Link href={`/properties/${propertyId}/edit`}>
+                <Edit />
+                編集
+              </Link>
+            </Button>
+          </div>
+        )}
 
         {pathname === "/organization" && isSystemOwner && (
           <div className="ml-auto flex items-center gap-2">
-            <Button asChild>
+            <Button size="sm" asChild>
               <Link href="/organization/new">
                 <Plus />
                 新しい組織を作成

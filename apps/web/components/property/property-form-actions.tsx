@@ -17,9 +17,9 @@ export default function PropertyFormActions({
   };
 
   return (
-    <div className="flex justify-end gap-4">
+    <div className="flex justify-end gap-3">
       <Button type="button" variant="outline" onClick={handleCancel}>
-        キャンセル
+        一覧に戻る
       </Button>
       <Button type="submit">{mode === "create" ? "登録" : "更新"}</Button>
     </div>
