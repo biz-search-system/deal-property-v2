@@ -65,7 +65,7 @@ export default async function PropertyEditPage({
   const staffIds = property.staff.map((s) => s.userId);
 
   return (
-    <div className="container mx-auto py-6 space-y-6">
+    <div className="flex h-full min-h-0 flex-col overflow-hidden p-4 lg:p-3">
       <BreadcrumbConfig
         items={[
           { label: "案件管理" },
@@ -81,41 +81,44 @@ export default async function PropertyEditPage({
           staffIds,
         }}
       >
-        <Card>
-          {/* <CardHeader>
-            <CardTitle>{property.propertyName}</CardTitle>
+        <Card className="flex min-h-0 flex-1 flex-col gap-3">
+          <CardHeader className="shrink-0">
+            <div className="flex items-center justify-between">
+              <CardTitle>{property.propertyName}</CardTitle>
+              <PropertyFormActions mode="edit" />
+            </div>
           </CardHeader>
-          <CardContent>
-            <Tabs defaultValue="basic" className="w-full">
-              <TabsList className="grid w-full grid-cols-4">
+          <CardContent className="flex min-h-0 flex-1 flex-col">
+            <Tabs defaultValue="basic" className="flex min-h-0 flex-1 flex-col">
+              <TabsList className="grid w-full shrink-0 grid-cols-4">
                 <TabsTrigger value="basic">基本情報</TabsTrigger>
                 <TabsTrigger value="contract">契約進捗</TabsTrigger>
                 <TabsTrigger value="document">書類進捗</TabsTrigger>
                 <TabsTrigger value="settlement">決済進捗</TabsTrigger>
               </TabsList>
 
-              <TabsContent value="basic" className="mt-6">
-                <BasicInfoTab
-                  availableStaff={availableStaff}
-                  organizations={organizations}
-                />
-              </TabsContent>
+              <div className="min-h-0 flex-1 overflow-auto">
+                <TabsContent value="basic" className="mt-6">
+                  <BasicInfoTab
+                    availableStaff={availableStaff}
+                    organizations={organizations}
+                  />
+                </TabsContent>
 
-              <TabsContent value="contract" className="mt-6">
-                <ContractProgressTab />
-              </TabsContent>
+                <TabsContent value="contract" className="mt-6">
+                  <ContractProgressTab />
+                </TabsContent>
 
-              <TabsContent value="document" className="mt-6">
-                <DocumentProgressTab />
-              </TabsContent>
+                <TabsContent value="document" className="mt-6">
+                  <DocumentProgressTab />
+                </TabsContent>
 
-              <TabsContent value="settlement" className="mt-6">
-                <SettlementProgressTab />
-              </TabsContent>
+                <TabsContent value="settlement" className="mt-6">
+                  <SettlementProgressTab />
+                </TabsContent>
+              </div>
             </Tabs>
-
-            <PropertyFormActions mode="edit" />
-          </CardContent> */}
+          </CardContent>
         </Card>
       </PropertyFormProvider>
     </div>

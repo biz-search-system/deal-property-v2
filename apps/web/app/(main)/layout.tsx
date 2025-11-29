@@ -27,9 +27,9 @@ export default async function Layout({
         }
       >
         <AppSidebar variant="inset" />
-        <SidebarInset className="max-h-svh overflow-hidden md:max-h-[calc(100svh-1rem)]">
+        <SidebarInset className="flex max-h-svh flex-col overflow-hidden md:max-h-[calc(100svh-1rem)]">
           <SiteHeader />
-          <div className="flex-1 overflow-hidden">{children}</div>
+          <div className="min-h-0 flex-1 overflow-hidden">{children}</div>
         </SidebarInset>
       </SidebarProvider>
     </BreadcrumbProvider>

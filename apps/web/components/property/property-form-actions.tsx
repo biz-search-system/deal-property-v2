@@ -17,7 +17,7 @@ export default function PropertyFormActions({
   };
 
   return (
-    <div className="flex justify-end gap-4 mt-6">
+    <div className="flex justify-end gap-4">
       <Button type="button" variant="outline" onClick={handleCancel}>
         キャンセル
       </Button>
