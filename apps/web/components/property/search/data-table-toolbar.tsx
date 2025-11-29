@@ -27,6 +27,28 @@ import {
   ORGANIZATION_LABELS,
 } from "@workspace/utils";
 
+/** カラムIDから日本語表示名へのマッピング */
+const COLUMN_LABELS: Record<string, string> = {
+  organization: "管理組織",
+  staff: "担当",
+  propertyName: "物件名",
+  roomNumber: "号室",
+  ownerName: "オーナー",
+  amountA: "A金額",
+  amountExit: "出口",
+  commission: "仲手等",
+  profit: "利益",
+  bcDeposit: "BC手付",
+  settlementDate: "決済日",
+  buyerCompany: "買取",
+  contractType: "契約形態",
+  companyB: "B会社",
+  brokerCompany: "仲介",
+  progressStatus: "進捗",
+  documentStatus: "書類",
+  notes: "備考",
+};
+
 interface DataTableToolbarProps<TData> {
   table: Table<TData>;
 }
@@ -188,13 +210,11 @@ export function DataTableToolbar<TData>({
                     column.getCanHide()
                 )
                 .map((column) => {
-                  const header = column.columnDef.header;
                   const displayName =
-                    typeof header === "string" ? header : column.id;
+                    COLUMN_LABELS[column.id] || column.id;
                   return (
                     <DropdownMenuCheckboxItem
                       key={column.id}
-                      className="capitalize"
                       checked={column.getIsVisible()}
                       onCheckedChange={(value) =>
                         column.toggleVisibility(!!value)

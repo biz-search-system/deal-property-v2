@@ -469,3 +469,53 @@ export async function updatePropertyAmount(data: {
   revalidatePath("/properties");
   revalidatePath("/properties/unconfirmed");
 }
+
+/**
+ * 案件のEnum型フィールドを更新（インライン編集用）
+ * contractType: 契約形態
+ * companyB: B会社
+ * brokerCompany: 仲介会社
+ */
+export async function updatePropertyEnumField(data: {
+  id: string;
+  field: "contractType" | "companyB" | "brokerCompany";
+  value: string | null;
+}) {
+  // セッション認証
+  const session = await verifySession();
+
+  await db
+    .update(properties)
+    .set({
+      [data.field]: data.value,
+      updatedBy: session.user.id,
+      updatedAt: new Date(),
+    })
+    .where(eq(properties.id, data.id));
+
+  revalidatePath("/properties");
+  revalidatePath("/properties/unconfirmed");
+}
+
+/**
+ * 案件の買取会社を更新（インライン編集用）
+ */
+export async function updatePropertyBuyerCompany(data: {
+  id: string;
+  buyerCompany: string | null;
+}) {
+  // セッション認証
+  const session = await verifySession();
+
+  await db
+    .update(properties)
+    .set({
+      buyerCompany: data.buyerCompany?.trim() || null,
+      updatedBy: session.user.id,
+      updatedAt: new Date(),
+    })
+    .where(eq(properties.id, data.id));
+
+  revalidatePath("/properties");
+  revalidatePath("/properties/unconfirmed");
+}

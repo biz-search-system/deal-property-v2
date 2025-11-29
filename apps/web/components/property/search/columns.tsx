@@ -11,26 +11,49 @@ import {
   DropdownMenuTrigger,
 } from "@workspace/ui/components/dropdown-menu";
 import { MoreHorizontal } from "lucide-react";
-import { OrganizationNameType } from "@workspace/utils";
-import ContractTypeBadge from "@/components/property/badge/contract-type-badge";
-import CompanyBBadge from "@/components/property/badge/company-b-badge";
-import BrokerCompanyBadge from "@/components/property/badge/broker-company-badge";
+import {
+  OrganizationNameType,
+  CONTRACT_TYPE_LABELS,
+  CONTRACT_TYPE_COLORS,
+  COMPANY_B_LABELS,
+  COMPANY_B_COLORS,
+  BROKER_COMPANY_LABELS,
+  BROKER_COMPANY_COLORS,
+  PROGRESS_STATUS_LABELS,
+  PROGRESS_STATUS_COLORS,
+  DOCUMENT_STATUS_LABELS,
+  DOCUMENT_STATUS_COLORS,
+} from "@workspace/utils";
+import {
+  contractType,
+  companyB,
+  brokerCompany,
+  progressStatus,
+  documentStatus,
+} from "@workspace/drizzle/schemas";
 import OrganizationBadge from "@/components/property/badge/organization-badge";
-import { ProgressStatusDropdownEdit } from "@/components/property/inline-edit/progress-status-dropdown-edit";
-import { DocumentStatusInlineEdit } from "@/components/property/inline-edit/document-status-inline-edit";
-import { NotesPopoverEdit } from "@/components/property/inline-edit/notes-popover-edit";
 import { SettlementDatePopoverEdit } from "@/components/property/inline-edit/settlement-date-popover-edit";
-import { PropertyNameCell } from "../property-name-cell";
 import { DataTableColumnHeader } from "./data-table-column-header";
-import { PropertyNamePopoverEdit } from "../inline-edit/property-name-popover-edit";
 import {
   updatePropertyAmount,
   updatePropertyName,
   updatePropertyNotes,
   updatePropertyOwnerName,
+  updatePropertyEnumField,
+  updatePropertyBuyerCompany,
+  updatePropertyProgressStatus,
+  updatePropertyDocumentStatus,
 } from "@/lib/actions/property";
 import { TextPopoverEdit } from "../inline-edit/text-popover-edit";
 import { CurrencyPopoverEdit } from "../inline-edit/currency-popover-edit";
+import { BadgeDropdownEdit } from "../inline-edit/badge-dropdown-edit";
+import type {
+  ContractType,
+  CompanyB,
+  BrokerCompany,
+  ProgressStatus,
+  DocumentStatus,
+} from "@workspace/drizzle/types";
 
 const formatDateWithDay = (dateString: string | Date | null): string => {
   if (!dateString) return "-";
@@ -57,14 +80,6 @@ const formatDateWithDay = (dateString: string | Date | null): string => {
   // 通常の曜日付きフォーマット
   const days = ["日", "月", "火", "水", "木", "金", "土"];
   return `${date.getMonth() + 1}/${date.getDate()}(${days[date.getDay()]})`;
-};
-
-const truncateText = (
-  text: string | null | undefined,
-  maxLength: number = 5
-) => {
-  if (!text) return "-";
-  return text.length > maxLength ? text.substring(0, maxLength) : text;
 };
 
 export const columns: ColumnDef<PropertyWithRelations>[] = [
@@ -287,9 +302,22 @@ export const columns: ColumnDef<PropertyWithRelations>[] = [
     },
     cell: ({ row }) => {
       return (
-        <Badge variant="outline" className="text-[9px] px-1 py-0">
-          {truncateText(row.original.buyerCompany)}
-        </Badge>
+        <TextPopoverEdit
+          id={row.original.id}
+          currentValue={row.original.buyerCompany}
+          onSave={async (id, value) => {
+            await updatePropertyBuyerCompany({
+              id,
+              buyerCompany: value || null,
+            });
+          }}
+          maxLength={100}
+          title="買取会社編集"
+          description="買取会社を編集できます"
+          placeholder="買取会社を入力してください"
+          successMessage="買取会社を更新しました"
+          errorMessage="買取会社の更新に失敗しました"
+        />
       );
     },
   },
@@ -299,7 +327,21 @@ export const columns: ColumnDef<PropertyWithRelations>[] = [
       return <DataTableColumnHeader column={column} title="契約形態" />;
     },
     cell: ({ row }) => {
-      return <ContractTypeBadge contractType={row.original.contractType} />;
+      return (
+        <BadgeDropdownEdit<ContractType>
+          id={row.original.id}
+          currentValue={row.original.contractType}
+          options={contractType}
+          labels={CONTRACT_TYPE_LABELS}
+          colors={CONTRACT_TYPE_COLORS}
+          onSave={async (id, value) => {
+            await updatePropertyEnumField({ id, field: "contractType", value });
+          }}
+          successMessage="契約形態を更新しました"
+          errorMessage="契約形態の更新に失敗しました"
+          allowNull
+        />
+      );
     },
     filterFn: (row, id, value) => {
       return row.original.contractType === value;
@@ -311,7 +353,21 @@ export const columns: ColumnDef<PropertyWithRelations>[] = [
       return <DataTableColumnHeader column={column} title="B会社" />;
     },
     cell: ({ row }) => {
-      return <CompanyBBadge companyB={row.original.companyB} />;
+      return (
+        <BadgeDropdownEdit<CompanyB>
+          id={row.original.id}
+          currentValue={row.original.companyB}
+          options={companyB}
+          labels={COMPANY_B_LABELS}
+          colors={COMPANY_B_COLORS}
+          onSave={async (id, value) => {
+            await updatePropertyEnumField({ id, field: "companyB", value });
+          }}
+          successMessage="B会社を更新しました"
+          errorMessage="B会社の更新に失敗しました"
+          allowNull
+        />
+      );
     },
   },
   {
@@ -320,7 +376,25 @@ export const columns: ColumnDef<PropertyWithRelations>[] = [
       return <DataTableColumnHeader column={column} title="仲介" />;
     },
     cell: ({ row }) => {
-      return <BrokerCompanyBadge brokerCompany={row.original.brokerCompany} />;
+      return (
+        <BadgeDropdownEdit<BrokerCompany>
+          id={row.original.id}
+          currentValue={row.original.brokerCompany}
+          options={brokerCompany}
+          labels={BROKER_COMPANY_LABELS}
+          colors={BROKER_COMPANY_COLORS}
+          onSave={async (id, value) => {
+            await updatePropertyEnumField({
+              id,
+              field: "brokerCompany",
+              value,
+            });
+          }}
+          successMessage="仲介会社を更新しました"
+          errorMessage="仲介会社の更新に失敗しました"
+          allowNull
+        />
+      );
     },
   },
   {
@@ -330,9 +404,19 @@ export const columns: ColumnDef<PropertyWithRelations>[] = [
     },
     cell: ({ row }) => {
       return (
-        <ProgressStatusDropdownEdit
-          propertyId={row.original.id}
-          currentStatus={row.original.progressStatus}
+        <BadgeDropdownEdit<ProgressStatus>
+          id={row.original.id}
+          currentValue={row.original.progressStatus}
+          options={progressStatus}
+          labels={PROGRESS_STATUS_LABELS}
+          colors={PROGRESS_STATUS_COLORS}
+          onSave={async (id, value) => {
+            if (value) {
+              await updatePropertyProgressStatus({ id, progressStatus: value });
+            }
+          }}
+          successMessage="進捗ステータスを更新しました"
+          errorMessage="進捗ステータスの更新に失敗しました"
         />
       );
     },
@@ -347,9 +431,19 @@ export const columns: ColumnDef<PropertyWithRelations>[] = [
     },
     cell: ({ row }) => {
       return (
-        <DocumentStatusInlineEdit
-          propertyId={row.original.id}
-          currentStatus={row.original.documentStatus}
+        <BadgeDropdownEdit<DocumentStatus>
+          id={row.original.id}
+          currentValue={row.original.documentStatus}
+          options={documentStatus}
+          labels={DOCUMENT_STATUS_LABELS}
+          colors={DOCUMENT_STATUS_COLORS}
+          onSave={async (id, value) => {
+            if (value) {
+              await updatePropertyDocumentStatus({ id, documentStatus: value });
+            }
+          }}
+          successMessage="書類ステータスを更新しました"
+          errorMessage="書類ステータスの更新に失敗しました"
         />
       );
     },
