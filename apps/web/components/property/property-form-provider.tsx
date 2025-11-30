@@ -8,6 +8,7 @@ import {
 } from "@workspace/drizzle/zod-schemas";
 import { Form } from "@workspace/ui/components/form";
 import { createProperty, updateProperty } from "@/lib/actions/property";
+import { useNavigationGuard } from "@/hooks/use-navigation-guard";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import type { Property, ContractProgress } from "@workspace/drizzle/types";
@@ -88,6 +89,9 @@ export default function PropertyFormProvider({
         defaultValues?.contractProgress?.bcDescriptionCbDone ?? false,
     },
   });
+
+  // 未保存変更がある場合の離脱防止
+  useNavigationGuard(form.formState.isDirty);
 
   const onSubmit = async (data: PropertyCreate) => {
     try {
