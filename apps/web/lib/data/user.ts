@@ -7,6 +7,7 @@ import { users } from "@workspace/drizzle/schemas";
 import { eq } from "drizzle-orm";
 import { redirect } from "next/navigation";
 import { ProfileUpdate } from "@workspace/drizzle/types";
+import { resolveImageUpload } from "../../../../packages/utils/src/functions/storage";
 
 /**
  * 現在のユーザー情報を取得
@@ -43,6 +44,7 @@ export async function updateProfile(userId: string, data: ProfileUpdate) {
     .update(users)
     .set({
       ...data,
+      image: await resolveImageUpload(`avatars/${userId}`, data.image),
       updatedAt: new Date(),
     })
     .where(eq(users.id, userId))

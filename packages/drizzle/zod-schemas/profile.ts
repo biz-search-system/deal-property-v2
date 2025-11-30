@@ -24,6 +24,7 @@ export const usernameSchema = z
 export const profileUpdateSchema = createUpdateSchema(users, {
   name: nameSchema,
   username: usernameSchema,
+  image: z.string().url(),
 }).omit({
   id: true,
   email: true,

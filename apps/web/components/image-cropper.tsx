@@ -231,7 +231,7 @@ export function ImageCropperPreview({
   showRemoveButton = true,
 }: ImageCropperPreviewProps) {
   return (
-    <div className="relative w-full h-full">
+    <div className="relative w-full h-full ">
       <Image unoptimized className="object-cover" fill src={src} alt={alt} />
 
       {showRemoveButton && onRemove && (

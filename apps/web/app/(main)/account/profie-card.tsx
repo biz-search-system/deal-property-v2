@@ -24,14 +24,17 @@ import {
   FormLabel,
   FormMessage,
 } from "@workspace/ui/components/form";
+import { Button } from "@workspace/ui/components/button";
 import { Label } from "@workspace/ui/components/label";
 import { formatToJapaneseDateTime } from "@workspace/utils";
+import { Trash2Icon, X } from "lucide-react";
 import { useState, useTransition } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { mutate } from "swr";
 import FormSectionCard from "./form-section-card";
 import InputForm from "./input-form";
+import { getAvatarUrl } from "@/lib/avatar";
 
 interface ProfileCardProps {
   user: User;
@@ -41,12 +44,17 @@ export function ProfileCard({ user }: ProfileCardProps) {
   const [isPending, startTransition] = useTransition();
   const [open, setOpen] = useState(false);
   const [file, setFile] = useState<File | null>(null);
+  const avatarUrl = getAvatarUrl({
+    username: user.username,
+    email: user.email,
+  });
+  console.log(avatarUrl);
   const form = useForm<ProfileUpdate>({
     resolver: zodResolver(profileUpdateSchema),
     defaultValues: {
       name: user.name,
       username: user.username || "",
-      image: user.image || "",
+      image: user.image || avatarUrl.url,
     },
   });
   const onSubmit = (formData: ProfileUpdate) => {
@@ -127,21 +135,37 @@ export function ProfileCard({ user }: ProfileCardProps) {
                 <FormItem className="flex flex-col gap-2 items-center">
                   <FormLabel>プロフィール画像</FormLabel>
                   <FormControl>
-                    <ImageCropperFileSelector
-                      onFileSelect={(file) => {
-                        setFile(file);
-                        // setOpen(true);
-                      }}
-                      className="w-full aspect-square rounded-full size-36"
-                    >
-                      {field.value && (
-                        <ImageCropperPreview
-                          src={field.value}
-                          onRemove={() => field.onChange("")}
-                          showRemoveButton={false}
-                        />
+                    <div className="relative">
+                      <ImageCropperFileSelector
+                        onFileSelect={(file) => {
+                          setFile(file);
+                          setOpen(true);
+                        }}
+                        className="w-full aspect-square rounded-full size-36"
+                      >
+                        {field.value && (
+                          <ImageCropperPreview
+                            src={field.value}
+                            showRemoveButton={false}
+                          />
+                        )}
+                      </ImageCropperFileSelector>
+                      {field.value && field.value !== avatarUrl.url && (
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="icon"
+                          className="absolute bottom-2 left-2 size-8 text-muted-foreground"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            field.onChange(avatarUrl.url);
+                          }}
+                        >
+                          <Trash2Icon size={16} />
+                          <span className="sr-only">画像を削除</span>
+                        </Button>
                       )}
-                    </ImageCropperFileSelector>
+                    </div>
                   </FormControl>
                   <FormMessage />
                 </FormItem>
