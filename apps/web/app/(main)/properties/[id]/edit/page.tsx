@@ -50,6 +50,7 @@ export default async function PropertyEditPage({
 
   // プロパティを取得
   const property = await getPropertyById(id);
+  // console.log(property);
 
   if (!property) {
     notFound();
@@ -79,6 +80,7 @@ export default async function PropertyEditPage({
         defaultValues={{
           ...property,
           staffIds,
+          contractProgress: property.contractProgress,
         }}
       >
         <Card className="flex min-h-0 flex-1 flex-col gap-3">
@@ -106,7 +108,9 @@ export default async function PropertyEditPage({
                 </TabsContent>
 
                 <TabsContent value="contract" className="mt-6">
-                  <ContractProgressTab />
+                  <ContractProgressTab
+                    contractProgress={property.contractProgress}
+                  />
                 </TabsContent>
 
                 <TabsContent value="document" className="mt-6">

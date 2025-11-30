@@ -8,8 +8,11 @@ import {
   FormLabel,
   FormMessage,
 } from "@workspace/ui/components/form";
+import { Checkbox } from "@workspace/ui/components/checkbox";
 import { Input } from "@workspace/ui/components/input";
+import { Label } from "@workspace/ui/components/label";
 import {
+  formatRelativeTime,
   PROGRESS_STATUS_COLORS,
   PROGRESS_STATUS_LABELS,
 } from "@workspace/utils";
@@ -18,17 +21,23 @@ import { CheckItemRow } from "../check-item-row";
 import BadgeSelectForm from "../form/badge-select-form";
 import { usePropertyForm } from "../property-form-provider";
 import SectionCard from "../section-card";
+import type { PropertyDetail } from "@/lib/types/property";
 
-export default function ContractProgressTab() {
+type ContractProgressData = NonNullable<
+  NonNullable<PropertyDetail>["contractProgress"]
+>;
+
+interface ContractProgressTabProps {
+  contractProgress?: ContractProgressData | null;
+}
+
+export default function ContractProgressTab({
+  contractProgress,
+}: ContractProgressTabProps) {
   const form = usePropertyForm();
   const { control } = form;
-  // 契約進捗のチェック状態
+  // 契約進捗のチェック状態（BC関係 - まだフォーム統合未実装）
   const [contractChecks, setContractChecks] = useState({
-    // AB関係
-    contractSaved: false,
-    powerOfAttorneySaved: false,
-    sellerIdSaved: false,
-    // BC関係
     bcContractCreated: false,
     importantMattersCreated: false,
     bcContractSent: false,
@@ -122,45 +131,84 @@ export default function ContractProgressTab() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <SectionCard title="AB関係">
             <div className="space-y-1">
-              <CheckItemRow
-                label="契約書 保存完了"
-                checked={contractChecks.contractSaved}
-                date={
-                  contractChecks.contractSaved ? "2025/01/10 14:30" : undefined
-                }
-                user={contractChecks.contractSaved ? "田中" : undefined}
-                onChange={(checked) =>
-                  setContractChecks({
-                    ...contractChecks,
-                    contractSaved: checked,
-                  })
-                }
+              <FormField
+                control={control}
+                name="abContractSaved"
+                render={({ field }) => (
+                  <div className="flex items-center justify-between py-2">
+                    <div className="flex items-center gap-2">
+                      <Checkbox
+                        checked={field.value ?? false}
+                        onCheckedChange={field.onChange}
+                      />
+                      <Label className="cursor-pointer">契約書 保存完了</Label>
+                    </div>
+                    {contractProgress?.abContractSaved && (
+                      <div className="text-xs text-muted-foreground">
+                        {formatRelativeTime(contractProgress.abContractSavedAt)}
+                        {contractProgress.abContractSavedByUser?.name && (
+                          <span className="ml-2">
+                            {contractProgress.abContractSavedByUser.name}
+                          </span>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                )}
               />
-              <CheckItemRow
-                label="委任状関係 保存完了"
-                checked={contractChecks.powerOfAttorneySaved}
-                date={
-                  contractChecks.powerOfAttorneySaved
-                    ? "2025/01/11 10:15"
-                    : undefined
-                }
-                user={contractChecks.powerOfAttorneySaved ? "山田" : undefined}
-                onChange={(checked) =>
-                  setContractChecks({
-                    ...contractChecks,
-                    powerOfAttorneySaved: checked,
-                  })
-                }
+              <FormField
+                control={control}
+                name="abAuthorizationSaved"
+                render={({ field }) => (
+                  <div className="flex items-center justify-between py-2">
+                    <div className="flex items-center gap-2">
+                      <Checkbox
+                        checked={field.value ?? false}
+                        onCheckedChange={field.onChange}
+                      />
+                      <Label className="cursor-pointer">
+                        委任状関係 保存完了
+                      </Label>
+                    </div>
+                    {contractProgress?.abAuthorizationSaved && (
+                      <div className="text-xs text-muted-foreground">
+                        {formatRelativeTime(contractProgress.abAuthorizationSavedAt)}
+                        {contractProgress.abAuthorizationSavedByUser?.name && (
+                          <span className="ml-2">
+                            {contractProgress.abAuthorizationSavedByUser.name}
+                          </span>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                )}
               />
-              <CheckItemRow
-                label="売主身分証 保存完了"
-                checked={contractChecks.sellerIdSaved}
-                onChange={(checked) =>
-                  setContractChecks({
-                    ...contractChecks,
-                    sellerIdSaved: checked,
-                  })
-                }
+              <FormField
+                control={control}
+                name="abSellerIdSaved"
+                render={({ field }) => (
+                  <div className="flex items-center justify-between py-2">
+                    <div className="flex items-center gap-2">
+                      <Checkbox
+                        checked={field.value ?? false}
+                        onCheckedChange={field.onChange}
+                      />
+                      <Label className="cursor-pointer">
+                        売主身分証 保存完了
+                      </Label>
+                    </div>
+                    {contractProgress?.abSellerIdSaved && (
+                      <div className="text-xs text-muted-foreground">
+                        {formatRelativeTime(contractProgress.abSellerIdSavedAt)}
+                        {contractProgress.abSellerIdSavedByUser?.name && (
+                          <span className="ml-2">
+                            {contractProgress.abSellerIdSavedByUser.name}
+                          </span>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                )}
               />
             </div>
           </SectionCard>

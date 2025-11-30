@@ -454,6 +454,22 @@ export const contractProgressRelations = relations(
       fields: [contractProgress.propertyId],
       references: [properties.id],
     }),
+    // AB関係の更新者ユーザー
+    abContractSavedByUser: one(users, {
+      fields: [contractProgress.abContractSavedBy],
+      references: [users.id],
+      relationName: "abContractSavedBy",
+    }),
+    abAuthorizationSavedByUser: one(users, {
+      fields: [contractProgress.abAuthorizationSavedBy],
+      references: [users.id],
+      relationName: "abAuthorizationSavedBy",
+    }),
+    abSellerIdSavedByUser: one(users, {
+      fields: [contractProgress.abSellerIdSavedBy],
+      references: [users.id],
+      relationName: "abSellerIdSavedBy",
+    }),
   }),
 );
 

@@ -10,11 +10,14 @@ import { Form } from "@workspace/ui/components/form";
 import { createProperty, updateProperty } from "@/lib/actions/property";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
-import type { Property } from "@workspace/drizzle/types";
+import type { Property, ContractProgress } from "@workspace/drizzle/types";
 
 interface PropertyFormProviderProps {
   children: React.ReactNode;
-  defaultValues?: Partial<Property> & { staffIds?: string[] };
+  defaultValues?: Partial<Property> & {
+    staffIds?: string[];
+    contractProgress?: ContractProgress | null;
+  };
   mode: "create" | "edit";
 }
 
@@ -63,6 +66,13 @@ export default function PropertyFormProvider({
       accountCompany: defaultValues?.accountCompany || "",
       bankAccount: defaultValues?.bankAccount || "",
       staffIds: defaultValues?.staffIds || [],
+      // 契約進捗 AB関係
+      abContractSaved:
+        defaultValues?.contractProgress?.abContractSaved ?? false,
+      abAuthorizationSaved:
+        defaultValues?.contractProgress?.abAuthorizationSaved ?? false,
+      abSellerIdSaved:
+        defaultValues?.contractProgress?.abSellerIdSaved ?? false,
     },
   });
 

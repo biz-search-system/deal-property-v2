@@ -225,6 +225,64 @@ export async function updateProperty(data: PropertyUpdate) {
       );
     }
 
+    // 4. 契約進捗 AB関係を更新
+    // 現在のcontractProgressを取得して差分を確認
+    const currentProgress = await tx.query.contractProgress.findFirst({
+      where: eq(contractProgress.propertyId, validatedData.id),
+    });
+
+    const now = new Date();
+    await tx
+      .update(contractProgress)
+      .set({
+        // 契約書保存 - falseからtrueになった時のみ日時・ユーザーを記録
+        abContractSaved: validatedData.abContractSaved ?? false,
+        abContractSavedAt:
+          validatedData.abContractSaved && !currentProgress?.abContractSaved
+            ? now
+            : validatedData.abContractSaved
+              ? currentProgress?.abContractSavedAt
+              : null,
+        abContractSavedBy:
+          validatedData.abContractSaved && !currentProgress?.abContractSaved
+            ? session.user.id
+            : validatedData.abContractSaved
+              ? currentProgress?.abContractSavedBy
+              : null,
+        // 委任状関係保存 - falseからtrueになった時のみ日時・ユーザーを記録
+        abAuthorizationSaved: validatedData.abAuthorizationSaved ?? false,
+        abAuthorizationSavedAt:
+          validatedData.abAuthorizationSaved &&
+          !currentProgress?.abAuthorizationSaved
+            ? now
+            : validatedData.abAuthorizationSaved
+              ? currentProgress?.abAuthorizationSavedAt
+              : null,
+        abAuthorizationSavedBy:
+          validatedData.abAuthorizationSaved &&
+          !currentProgress?.abAuthorizationSaved
+            ? session.user.id
+            : validatedData.abAuthorizationSaved
+              ? currentProgress?.abAuthorizationSavedBy
+              : null,
+        // 売主身分証保存 - falseからtrueになった時のみ日時・ユーザーを記録
+        abSellerIdSaved: validatedData.abSellerIdSaved ?? false,
+        abSellerIdSavedAt:
+          validatedData.abSellerIdSaved && !currentProgress?.abSellerIdSaved
+            ? now
+            : validatedData.abSellerIdSaved
+              ? currentProgress?.abSellerIdSavedAt
+              : null,
+        abSellerIdSavedBy:
+          validatedData.abSellerIdSaved && !currentProgress?.abSellerIdSaved
+            ? session.user.id
+            : validatedData.abSellerIdSaved
+              ? currentProgress?.abSellerIdSavedBy
+              : null,
+        updatedAt: now,
+      })
+      .where(eq(contractProgress.propertyId, validatedData.id));
+
     return property;
   });
 

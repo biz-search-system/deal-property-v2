@@ -39,7 +39,20 @@ export async function getPropertyById(id: string) {
           user: true,
         },
       },
-      contractProgress: true,
+      contractProgress: {
+        with: {
+          // AB関係の更新者ユーザー情報（必要なカラムのみ）
+          abContractSavedByUser: {
+            columns: { id: true, name: true, email: true, image: true },
+          },
+          abAuthorizationSavedByUser: {
+            columns: { id: true, name: true, email: true, image: true },
+          },
+          abSellerIdSavedByUser: {
+            columns: { id: true, name: true, email: true, image: true },
+          },
+        },
+      },
       documentProgress: true,
       settlementProgress: true,
     },
