@@ -66,7 +66,7 @@ export default async function PropertyEditPage({
   const staffIds = property.staff.map((s) => s.userId);
 
   return (
-    <div className="flex h-full min-h-0 flex-col overflow-hidden p-4 lg:p-3">
+    <div className="flex h-full min-h-0 flex-col overflow-hidden p-3 lg:p-2">
       <BreadcrumbConfig
         items={[
           { label: "案件管理" },
@@ -83,14 +83,14 @@ export default async function PropertyEditPage({
           contractProgress: property.contractProgress,
         }}
       >
-        <Card className="flex min-h-0 flex-1 flex-col gap-3">
+        <Card className="flex min-h-0 flex-1 flex-col gap-2 p-3 lg:p-5">
           <CardHeader className="shrink-0">
             <div className="flex items-center justify-between">
               <CardTitle>{property.propertyName}</CardTitle>
               <PropertyFormActions mode="edit" />
             </div>
           </CardHeader>
-          <CardContent className="flex min-h-0 flex-1 flex-col">
+          <CardContent className="flex min-h-0 flex-1 flex-col px-3 lg:px-4">
             <Tabs defaultValue="basic" className="flex min-h-0 flex-1 flex-col">
               <TabsList className="grid w-full shrink-0 grid-cols-4">
                 <TabsTrigger value="basic">基本情報</TabsTrigger>
@@ -100,24 +100,24 @@ export default async function PropertyEditPage({
               </TabsList>
 
               <div className="min-h-0 flex-1 overflow-auto">
-                <TabsContent value="basic" className="mt-6">
+                <TabsContent value="basic" className="mt-3">
                   <BasicInfoTab
                     availableStaff={availableStaff}
                     organizations={organizations}
                   />
                 </TabsContent>
 
-                <TabsContent value="contract" className="mt-6">
+                <TabsContent value="contract" className="mt-3">
                   <ContractProgressTab
                     contractProgress={property.contractProgress}
                   />
                 </TabsContent>
 
-                <TabsContent value="document" className="mt-6">
+                <TabsContent value="document" className="mt-3">
                   <DocumentProgressTab />
                 </TabsContent>
 
-                <TabsContent value="settlement" className="mt-6">
+                <TabsContent value="settlement" className="mt-3">
                   <SettlementProgressTab />
                 </TabsContent>
               </div>

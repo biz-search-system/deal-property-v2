@@ -233,7 +233,7 @@ export async function updateProperty(data: PropertyUpdate) {
 
     const now = new Date();
 
-    // 状態が変更されたかどうかを判定
+    // AB関係 - 状態が変更されたかどうかを判定
     const abContractChanged =
       (validatedData.abContractSaved ?? false) !==
       (currentProgress?.abContractSaved ?? false);
@@ -244,10 +244,30 @@ export async function updateProperty(data: PropertyUpdate) {
       (validatedData.abSellerIdSaved ?? false) !==
       (currentProgress?.abSellerIdSaved ?? false);
 
+    // BC関係 - 状態が変更されたかどうかを判定
+    const bcContractCreatedChanged =
+      (validatedData.bcContractCreated ?? false) !==
+      (currentProgress?.bcContractCreated ?? false);
+    const bcDescriptionCreatedChanged =
+      (validatedData.bcDescriptionCreated ?? false) !==
+      (currentProgress?.bcDescriptionCreated ?? false);
+    const bcContractSentChanged =
+      (validatedData.bcContractSent ?? false) !==
+      (currentProgress?.bcContractSent ?? false);
+    const bcDescriptionSentChanged =
+      (validatedData.bcDescriptionSent ?? false) !==
+      (currentProgress?.bcDescriptionSent ?? false);
+    const bcContractCbDoneChanged =
+      (validatedData.bcContractCbDone ?? false) !==
+      (currentProgress?.bcContractCbDone ?? false);
+    const bcDescriptionCbDoneChanged =
+      (validatedData.bcDescriptionCbDone ?? false) !==
+      (currentProgress?.bcDescriptionCbDone ?? false);
+
     await tx
       .update(contractProgress)
       .set({
-        // 契約書保存 - 状態が変更された場合のみ日時・ユーザーを更新
+        // AB関係 - 契約書保存
         abContractSaved: validatedData.abContractSaved ?? false,
         abContractSavedAt: abContractChanged
           ? now
@@ -255,7 +275,7 @@ export async function updateProperty(data: PropertyUpdate) {
         abContractSavedBy: abContractChanged
           ? session.user.id
           : currentProgress?.abContractSavedBy,
-        // 委任状関係保存 - 状態が変更された場合のみ日時・ユーザーを更新
+        // AB関係 - 委任状関係保存
         abAuthorizationSaved: validatedData.abAuthorizationSaved ?? false,
         abAuthorizationSavedAt: abAuthorizationChanged
           ? now
@@ -263,7 +283,7 @@ export async function updateProperty(data: PropertyUpdate) {
         abAuthorizationSavedBy: abAuthorizationChanged
           ? session.user.id
           : currentProgress?.abAuthorizationSavedBy,
-        // 売主身分証保存 - 状態が変更された場合のみ日時・ユーザーを更新
+        // AB関係 - 売主身分証保存
         abSellerIdSaved: validatedData.abSellerIdSaved ?? false,
         abSellerIdSavedAt: abSellerIdChanged
           ? now
@@ -271,6 +291,54 @@ export async function updateProperty(data: PropertyUpdate) {
         abSellerIdSavedBy: abSellerIdChanged
           ? session.user.id
           : currentProgress?.abSellerIdSavedBy,
+        // BC関係 - BC売契作成
+        bcContractCreated: validatedData.bcContractCreated ?? false,
+        bcContractCreatedAt: bcContractCreatedChanged
+          ? now
+          : currentProgress?.bcContractCreatedAt,
+        bcContractCreatedBy: bcContractCreatedChanged
+          ? session.user.id
+          : currentProgress?.bcContractCreatedBy,
+        // BC関係 - 重説作成
+        bcDescriptionCreated: validatedData.bcDescriptionCreated ?? false,
+        bcDescriptionCreatedAt: bcDescriptionCreatedChanged
+          ? now
+          : currentProgress?.bcDescriptionCreatedAt,
+        bcDescriptionCreatedBy: bcDescriptionCreatedChanged
+          ? session.user.id
+          : currentProgress?.bcDescriptionCreatedBy,
+        // BC関係 - BC売契送付
+        bcContractSent: validatedData.bcContractSent ?? false,
+        bcContractSentAt: bcContractSentChanged
+          ? now
+          : currentProgress?.bcContractSentAt,
+        bcContractSentBy: bcContractSentChanged
+          ? session.user.id
+          : currentProgress?.bcContractSentBy,
+        // BC関係 - 重説送付
+        bcDescriptionSent: validatedData.bcDescriptionSent ?? false,
+        bcDescriptionSentAt: bcDescriptionSentChanged
+          ? now
+          : currentProgress?.bcDescriptionSentAt,
+        bcDescriptionSentBy: bcDescriptionSentChanged
+          ? session.user.id
+          : currentProgress?.bcDescriptionSentBy,
+        // BC関係 - BC売契CB完了
+        bcContractCbDone: validatedData.bcContractCbDone ?? false,
+        bcContractCbDoneAt: bcContractCbDoneChanged
+          ? now
+          : currentProgress?.bcContractCbDoneAt,
+        bcContractCbDoneBy: bcContractCbDoneChanged
+          ? session.user.id
+          : currentProgress?.bcContractCbDoneBy,
+        // BC関係 - 重説CB完了
+        bcDescriptionCbDone: validatedData.bcDescriptionCbDone ?? false,
+        bcDescriptionCbDoneAt: bcDescriptionCbDoneChanged
+          ? now
+          : currentProgress?.bcDescriptionCbDoneAt,
+        bcDescriptionCbDoneBy: bcDescriptionCbDoneChanged
+          ? session.user.id
+          : currentProgress?.bcDescriptionCbDoneBy,
         updatedAt: now,
       })
       .where(eq(contractProgress.propertyId, validatedData.id));

@@ -810,7 +810,7 @@ export function PropertyDetailModal({
   );
 }
 
-function DocumentRow({
+export function DocumentRow({
   label,
   status,
   date,

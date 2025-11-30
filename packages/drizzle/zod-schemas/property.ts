@@ -190,6 +190,14 @@ export const propertyCreateSchema = z.object({
   abContractSaved: z.boolean().optional(),
   abAuthorizationSaved: z.boolean().optional(),
   abSellerIdSaved: z.boolean().optional(),
+
+  // 契約進捗 BC関係
+  bcContractCreated: z.boolean().optional(),
+  bcDescriptionCreated: z.boolean().optional(),
+  bcContractSent: z.boolean().optional(),
+  bcDescriptionSent: z.boolean().optional(),
+  bcContractCbDone: z.boolean().optional(),
+  bcDescriptionCbDone: z.boolean().optional(),
 });
 
 /**

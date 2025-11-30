@@ -73,6 +73,19 @@ export default function PropertyFormProvider({
         defaultValues?.contractProgress?.abAuthorizationSaved ?? false,
       abSellerIdSaved:
         defaultValues?.contractProgress?.abSellerIdSaved ?? false,
+      // 契約進捗 BC関係
+      bcContractCreated:
+        defaultValues?.contractProgress?.bcContractCreated ?? false,
+      bcDescriptionCreated:
+        defaultValues?.contractProgress?.bcDescriptionCreated ?? false,
+      bcContractSent:
+        defaultValues?.contractProgress?.bcContractSent ?? false,
+      bcDescriptionSent:
+        defaultValues?.contractProgress?.bcDescriptionSent ?? false,
+      bcContractCbDone:
+        defaultValues?.contractProgress?.bcContractCbDone ?? false,
+      bcDescriptionCbDone:
+        defaultValues?.contractProgress?.bcDescriptionCbDone ?? false,
     },
   });
 
