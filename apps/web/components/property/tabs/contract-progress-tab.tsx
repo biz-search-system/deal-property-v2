@@ -12,7 +12,6 @@ import { Checkbox } from "@workspace/ui/components/checkbox";
 import { Input } from "@workspace/ui/components/input";
 import { Label } from "@workspace/ui/components/label";
 import {
-  formatRelativeTime,
   PROGRESS_STATUS_COLORS,
   PROGRESS_STATUS_LABELS,
 } from "@workspace/utils";
@@ -21,6 +20,7 @@ import { CheckItemRow } from "../check-item-row";
 import BadgeSelectForm from "../form/badge-select-form";
 import { usePropertyForm } from "../property-form-provider";
 import SectionCard from "../section-card";
+import { UserActionBadge } from "../user-action-badge";
 import type { PropertyDetail } from "@/lib/types/property";
 
 type ContractProgressData = NonNullable<
@@ -129,8 +129,8 @@ export default function ContractProgressTab({
       <div className="space-y-4">
         <h3 className="text-lg font-semibold">契約進捗チェックリスト</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <SectionCard title="AB関係">
-            <div className="space-y-1">
+          <SectionCard title="AB関係 ">
+            <div className="space-y-1 w-full">
               <FormField
                 control={control}
                 name="abContractSaved"
@@ -143,15 +143,11 @@ export default function ContractProgressTab({
                       />
                       <Label className="cursor-pointer">契約書 保存完了</Label>
                     </div>
-                    {contractProgress?.abContractSaved && (
-                      <div className="text-xs text-muted-foreground">
-                        {formatRelativeTime(contractProgress.abContractSavedAt)}
-                        {contractProgress.abContractSavedByUser?.name && (
-                          <span className="ml-2">
-                            {contractProgress.abContractSavedByUser.name}
-                          </span>
-                        )}
-                      </div>
+                    {contractProgress?.abContractSavedAt && (
+                      <UserActionBadge
+                        timestamp={contractProgress.abContractSavedAt}
+                        user={contractProgress.abContractSavedByUser}
+                      />
                     )}
                   </div>
                 )}
@@ -170,15 +166,11 @@ export default function ContractProgressTab({
                         委任状関係 保存完了
                       </Label>
                     </div>
-                    {contractProgress?.abAuthorizationSaved && (
-                      <div className="text-xs text-muted-foreground">
-                        {formatRelativeTime(contractProgress.abAuthorizationSavedAt)}
-                        {contractProgress.abAuthorizationSavedByUser?.name && (
-                          <span className="ml-2">
-                            {contractProgress.abAuthorizationSavedByUser.name}
-                          </span>
-                        )}
-                      </div>
+                    {contractProgress?.abAuthorizationSavedAt && (
+                      <UserActionBadge
+                        timestamp={contractProgress.abAuthorizationSavedAt}
+                        user={contractProgress.abAuthorizationSavedByUser}
+                      />
                     )}
                   </div>
                 )}
@@ -197,15 +189,11 @@ export default function ContractProgressTab({
                         売主身分証 保存完了
                       </Label>
                     </div>
-                    {contractProgress?.abSellerIdSaved && (
-                      <div className="text-xs text-muted-foreground">
-                        {formatRelativeTime(contractProgress.abSellerIdSavedAt)}
-                        {contractProgress.abSellerIdSavedByUser?.name && (
-                          <span className="ml-2">
-                            {contractProgress.abSellerIdSavedByUser.name}
-                          </span>
-                        )}
-                      </div>
+                    {contractProgress?.abSellerIdSavedAt && (
+                      <UserActionBadge
+                        timestamp={contractProgress.abSellerIdSavedAt}
+                        user={contractProgress.abSellerIdSavedByUser}
+                      />
                     )}
                   </div>
                 )}

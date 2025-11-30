@@ -232,53 +232,45 @@ export async function updateProperty(data: PropertyUpdate) {
     });
 
     const now = new Date();
+
+    // 状態が変更されたかどうかを判定
+    const abContractChanged =
+      (validatedData.abContractSaved ?? false) !==
+      (currentProgress?.abContractSaved ?? false);
+    const abAuthorizationChanged =
+      (validatedData.abAuthorizationSaved ?? false) !==
+      (currentProgress?.abAuthorizationSaved ?? false);
+    const abSellerIdChanged =
+      (validatedData.abSellerIdSaved ?? false) !==
+      (currentProgress?.abSellerIdSaved ?? false);
+
     await tx
       .update(contractProgress)
       .set({
-        // 契約書保存 - falseからtrueになった時のみ日時・ユーザーを記録
+        // 契約書保存 - 状態が変更された場合のみ日時・ユーザーを更新
         abContractSaved: validatedData.abContractSaved ?? false,
-        abContractSavedAt:
-          validatedData.abContractSaved && !currentProgress?.abContractSaved
-            ? now
-            : validatedData.abContractSaved
-              ? currentProgress?.abContractSavedAt
-              : null,
-        abContractSavedBy:
-          validatedData.abContractSaved && !currentProgress?.abContractSaved
-            ? session.user.id
-            : validatedData.abContractSaved
-              ? currentProgress?.abContractSavedBy
-              : null,
-        // 委任状関係保存 - falseからtrueになった時のみ日時・ユーザーを記録
+        abContractSavedAt: abContractChanged
+          ? now
+          : currentProgress?.abContractSavedAt,
+        abContractSavedBy: abContractChanged
+          ? session.user.id
+          : currentProgress?.abContractSavedBy,
+        // 委任状関係保存 - 状態が変更された場合のみ日時・ユーザーを更新
         abAuthorizationSaved: validatedData.abAuthorizationSaved ?? false,
-        abAuthorizationSavedAt:
-          validatedData.abAuthorizationSaved &&
-          !currentProgress?.abAuthorizationSaved
-            ? now
-            : validatedData.abAuthorizationSaved
-              ? currentProgress?.abAuthorizationSavedAt
-              : null,
-        abAuthorizationSavedBy:
-          validatedData.abAuthorizationSaved &&
-          !currentProgress?.abAuthorizationSaved
-            ? session.user.id
-            : validatedData.abAuthorizationSaved
-              ? currentProgress?.abAuthorizationSavedBy
-              : null,
-        // 売主身分証保存 - falseからtrueになった時のみ日時・ユーザーを記録
+        abAuthorizationSavedAt: abAuthorizationChanged
+          ? now
+          : currentProgress?.abAuthorizationSavedAt,
+        abAuthorizationSavedBy: abAuthorizationChanged
+          ? session.user.id
+          : currentProgress?.abAuthorizationSavedBy,
+        // 売主身分証保存 - 状態が変更された場合のみ日時・ユーザーを更新
         abSellerIdSaved: validatedData.abSellerIdSaved ?? false,
-        abSellerIdSavedAt:
-          validatedData.abSellerIdSaved && !currentProgress?.abSellerIdSaved
-            ? now
-            : validatedData.abSellerIdSaved
-              ? currentProgress?.abSellerIdSavedAt
-              : null,
-        abSellerIdSavedBy:
-          validatedData.abSellerIdSaved && !currentProgress?.abSellerIdSaved
-            ? session.user.id
-            : validatedData.abSellerIdSaved
-              ? currentProgress?.abSellerIdSavedBy
-              : null,
+        abSellerIdSavedAt: abSellerIdChanged
+          ? now
+          : currentProgress?.abSellerIdSavedAt,
+        abSellerIdSavedBy: abSellerIdChanged
+          ? session.user.id
+          : currentProgress?.abSellerIdSavedBy,
         updatedAt: now,
       })
       .where(eq(contractProgress.propertyId, validatedData.id));

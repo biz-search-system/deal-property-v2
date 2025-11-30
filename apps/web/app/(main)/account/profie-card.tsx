@@ -35,6 +35,7 @@ import { mutate } from "swr";
 import FormSectionCard from "./form-section-card";
 import InputForm from "./input-form";
 import { getAvatarUrl } from "@/lib/avatar";
+import { clearAllCache } from "@/lib/swr/mutate";
 
 interface ProfileCardProps {
   user: User;
@@ -48,7 +49,7 @@ export function ProfileCard({ user }: ProfileCardProps) {
     username: user.username,
     email: user.email,
   });
-  console.log(avatarUrl);
+
   const form = useForm<ProfileUpdate>({
     resolver: zodResolver(profileUpdateSchema),
     defaultValues: {
@@ -61,7 +62,10 @@ export function ProfileCard({ user }: ProfileCardProps) {
     startTransition(async () => {
       try {
         await updateProfileAction(formData);
+
+        // await clearAllCache()
         mutate("/api/session");
+
         toast.success("プロフィールを更新しました");
       } catch (error) {
         toast.error("更新に失敗しました");

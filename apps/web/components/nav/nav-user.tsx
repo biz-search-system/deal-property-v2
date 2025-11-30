@@ -46,7 +46,6 @@ export function NavUser() {
     email: user?.email,
     avatarUrl: user?.image,
   });
-  console.log("url", url);
 
   const [isPending, startTransition] = useTransition();
 
