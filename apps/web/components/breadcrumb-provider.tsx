@@ -12,6 +12,7 @@ import {
   BreadcrumbSeparator,
 } from "@workspace/ui/components/breadcrumb";
 import { Home, SlashIcon } from "lucide-react";
+import { IconDashboard } from "@tabler/icons-react";
 
 export type BreadCrumbItem = {
   label: string;
@@ -68,16 +69,13 @@ export function BreadcrumbMain({ homeHref = "/" }: { homeHref?: string }) {
       <BreadcrumbList>
         <BreadcrumbItem>
           <BreadcrumbLink asChild>
-            <Link href={homeHref}>
-              <Home className="size-4" />
-            </Link>
+            {/* <Link href={homeHref}>
+              <IconDashboard className="size-4" />
+            </Link> */}
           </BreadcrumbLink>
         </BreadcrumbItem>
-        {breadcrumbs.map((breadcrumb) => (
+        {breadcrumbs.map((breadcrumb, index) => (
           <Fragment key={breadcrumb.label}>
-            <BreadcrumbSeparator>
-              <SlashIcon />
-            </BreadcrumbSeparator>
             <BreadcrumbItem>
               {breadcrumb.render ? (
                 // カスタムレンダラーがある場合はそれを使用
@@ -90,6 +88,11 @@ export function BreadcrumbMain({ homeHref = "/" }: { homeHref?: string }) {
                 <BreadcrumbPage>{breadcrumb.label}</BreadcrumbPage>
               )}
             </BreadcrumbItem>
+            {index < breadcrumbs.length - 1 && (
+              <BreadcrumbSeparator>
+                <SlashIcon />
+              </BreadcrumbSeparator>
+            )}
           </Fragment>
         ))}
       </BreadcrumbList>
