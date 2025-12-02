@@ -1,8 +1,9 @@
 import "server-only";
 
 import { headers } from "next/headers";
-import { auth } from "../better-auth/auth";
+
 import { redirect } from "next/navigation";
+import { auth } from "@workspace/auth";
 
 export const verifySession = async () => {
   const session = await auth.api.getSession({

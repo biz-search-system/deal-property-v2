@@ -22,8 +22,6 @@ export const authClient = createAuthClient({
       },
     }),
     usernameClient(),
-    emailOTPClient(),
     adminClient(),
-    magicLinkClient(),
   ],
 });

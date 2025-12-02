@@ -1,7 +1,6 @@
 "use client";
 
 import HeroImage from "@/components/hero-image";
-import { loginAction } from "@/lib/actions/auth";
 import { refreshAuthenticatedData } from "@/lib/swr/mutate";
 import type { Login } from "@/lib/types/auth";
 import { loginSchema } from "@/lib/zod/schemas/auth";
@@ -46,11 +45,10 @@ export function LoginForm({
 
   const onSubmit = (data: Login) => {
     startTransition(async () => {
-      // ログイン
-      const result = await loginAction(data);
+      const result = await authClient.signIn.email(data);
 
       if (result.error) {
-        toast.error(result.error);
+        toast.error(result.error.message || "ログインに失敗しました");
         return;
       }
       // 認証関連データを一括更新
@@ -71,7 +69,7 @@ export function LoginForm({
       }
 
       toast.success(
-        invitationId ? "招待の受け入れに成功しました" : "ログインしました",
+        invitationId ? "招待の受け入れに成功しました" : "ログインしました"
       );
       router.push("/properties/unconfirmed");
     });

@@ -1,13 +1,13 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
-import { auth } from "@/lib/better-auth/auth";
-import { headers } from "next/headers";
-import { ProfileUpdate } from "@workspace/drizzle/types";
 import { verifySession } from "@/lib/data/sesstion";
-import { profileUpdateSchema } from "@workspace/drizzle/zod-schemas";
-import { updateProfile } from "@/lib/data/user";
 import { PasswordChange } from "@/lib/types/auth";
+import { auth } from "@workspace/auth";
+import { ProfileUpdate } from "@workspace/drizzle/types";
+import { profileUpdateSchema } from "@workspace/drizzle/zod-schemas";
+import { resolveImageUpload } from "@workspace/utils/storage";
+import { revalidatePath } from "next/cache";
+import { headers } from "next/headers";
 import { passwordChangeSchema } from "../zod/schemas/auth";
 
 /**
@@ -15,11 +15,24 @@ import { passwordChangeSchema } from "../zod/schemas/auth";
  */
 export async function updateProfileAction(data: ProfileUpdate) {
   const session = await verifySession();
-  const validatedData = profileUpdateSchema.parse(data);
+  const userId = session.user.id;
+  const { name, username, image } = profileUpdateSchema.parse(data);
 
-  await updateProfile(session.user.id, validatedData);
+  const imageUrl = image.startsWith("http")
+    ? image
+    : (await resolveImageUpload(`avatars/${userId}`, image)) +
+      `?v=${Date.now()}`;
 
-  revalidatePath("/account");
+  await resolveImageUpload(`avatars/${userId}`, image);
+  await auth.api.updateUser({
+    headers: await headers(),
+    body: {
+      name,
+      username,
+      image: imageUrl,
+    },
+  });
+
   revalidatePath("/");
 }
 

@@ -1,3 +1,5 @@
+import "server-only";
+
 import {
   DeleteObjectCommand,
   PutObjectCommand,
@@ -75,6 +77,7 @@ export const resolveImageUpload = async (
   key: string,
   imageUrl: string
 ): Promise<string> => {
+  // console.log("imageUrl", imageUrl);
   if (imageUrl.startsWith("http")) {
     return imageUrl;
   } else {

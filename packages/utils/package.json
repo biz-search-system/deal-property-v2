@@ -5,6 +5,10 @@
     ".": {
       "types": "./src/index.ts",
       "default": "./src/index.ts"
+    },
+    "./storage": {
+      "types": "./src/functions/storage.ts",
+      "default": "./src/functions/storage.ts"
     }
   },
   "scripts": {

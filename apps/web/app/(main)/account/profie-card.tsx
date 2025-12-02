@@ -36,6 +36,8 @@ import FormSectionCard from "./form-section-card";
 import InputForm from "./input-form";
 import { getAvatarUrl } from "@/lib/avatar";
 import { clearAllCache } from "@/lib/swr/mutate";
+import { useRouter } from "next/navigation";
+import { authClient } from "@workspace/auth/client";
 
 interface ProfileCardProps {
   user: User;
@@ -43,8 +45,11 @@ interface ProfileCardProps {
 
 export function ProfileCard({ user }: ProfileCardProps) {
   const [isPending, startTransition] = useTransition();
+  const router = useRouter();
   const [open, setOpen] = useState(false);
   const [file, setFile] = useState<File | null>(null);
+  const { refetch } = authClient.useSession();
+
   const avatarUrl = getAvatarUrl({
     username: user.username,
     email: user.email,
@@ -62,9 +67,7 @@ export function ProfileCard({ user }: ProfileCardProps) {
     startTransition(async () => {
       try {
         await updateProfileAction(formData);
-
-        // await clearAllCache()
-        mutate("/api/session");
+        await refetch();
 
         toast.success("プロフィールを更新しました");
       } catch (error) {
@@ -145,7 +148,7 @@ export function ProfileCard({ user }: ProfileCardProps) {
                           setFile(file);
                           setOpen(true);
                         }}
-                        className="w-full aspect-square rounded-full size-36"
+                        className="w-full aspect-square rounded-full size-40"
                       >
                         {field.value && (
                           <ImageCropperPreview
@@ -158,8 +161,8 @@ export function ProfileCard({ user }: ProfileCardProps) {
                         <Button
                           type="button"
                           variant="outline"
-                          size="icon"
-                          className="absolute bottom-2 left-2 size-8 text-muted-foreground"
+                          size="sm"
+                          className="absolute bottom-1 left-3 text-muted-foreground size-8 rounded-full"
                           onClick={(e) => {
                             e.stopPropagation();
                             field.onChange(avatarUrl.url);
