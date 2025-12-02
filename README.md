@@ -1,8 +1,4 @@
-# shadcn/ui Monorepo
-
-このプロジェクトは、shadcn/ui と Turborepo を使用した Next.js モノレポテンプレートです。
-
-## 技術スタック
+# 技術スタック
 
 - **モノレポ管理**: Turborepo
 - **パッケージマネージャー**: pnpm

@@ -7,8 +7,6 @@ import { Form } from "@workspace/ui/components/form";
 
 import { ResetPassword } from "@/lib/types/auth";
 import { resetPasswordSchema } from "@/lib/zod/schemas/auth";
-
-import { updatePasswordAction } from "@/lib/actions/auth";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { cn } from "@workspace/utils";
 import { Loader2 } from "lucide-react";
@@ -17,6 +15,7 @@ import { useTransition } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import HeroImage from "../hero-image";
+import { authClient } from "@workspace/auth/client";
 
 export default function ResetPasswordForm({
   className,
@@ -25,8 +24,7 @@ export default function ResetPasswordForm({
   const [isPending, startTransition] = useTransition();
   const searchParams = useSearchParams();
   const fromPath = searchParams.get("from");
-  const otp = searchParams.get("otp");
-  const email = searchParams.get("email");
+  const token = searchParams.get("token");
   const router = useRouter();
   const form = useForm<ResetPassword>({
     mode: "onChange",
@@ -38,23 +36,25 @@ export default function ResetPasswordForm({
   const { isSubmitting } = form.formState;
 
   const onSubmit = async (data: ResetPassword) => {
-    if (!otp || !email) {
-      toast.error("無効なリクエストです");
-      return;
-    }
     startTransition(async () => {
-      await updatePasswordAction(data, otp, email)
-        .then(() => {
-          toast.success("パスワードを設定しました。");
-          if (fromPath) {
-            router.push(fromPath);
-          } else {
-            router.push("/properties/unconfirmed");
-          }
-        })
-        .catch((error: Error) => {
-          toast.error(error.message);
-        });
+      if (!token) {
+        toast.error("無効なリクエストです");
+        return;
+      }
+      const { error } = await authClient.resetPassword({
+        newPassword: data.password,
+        token,
+      });
+      if (error) {
+        toast.error(error.message || "パスワードの設定に失敗しました");
+        return;
+      }
+      toast.success("パスワードを設定しました。");
+      if (fromPath) {
+        router.push(fromPath);
+      } else {
+        router.push("/properties/unconfirmed");
+      }
     });
   };
 

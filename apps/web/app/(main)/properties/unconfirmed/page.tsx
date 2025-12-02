@@ -1,13 +1,14 @@
 import { Card, CardContent } from "@workspace/ui/components/card";
 import { getProperties } from "@/lib/data/property";
 import { UnconfirmedPropertiesTable } from "@/components/property/unconfirmed-properties-table";
+import { BreadcrumbConfig } from "@/components/breadcrumb-provider";
 
 export default async function UnconfirmedPropertiesPage() {
   // BC確定前の案件のみフィルター
   const allProperties = await getProperties();
   // console.log(allProperties);
   const unconfirmedProperties = allProperties.filter(
-    (p) => p.progressStatus === "bc_before_confirmed",
+    (p) => p.progressStatus === "bc_before_confirmed"
   );
 
   // 集計計算（利益はprofitフィールドから直接取得）
@@ -30,6 +31,12 @@ export default async function UnconfirmedPropertiesPage() {
 
   return (
     <div className="flex flex-1 flex-col overflow-hidden">
+      <BreadcrumbConfig
+        items={[
+          { label: "案件管理" },
+          { label: "業者確定前", href: "/properties/unconfirmed" },
+        ]}
+      />
       <div className="flex flex-col gap-3 p-4 lg:p-3">
         {/* 集計表示（2カラム） */}
         <div className="grid grid-cols-2 gap-4">

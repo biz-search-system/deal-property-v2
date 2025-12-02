@@ -8,13 +8,17 @@ import {
 } from "@workspace/drizzle/zod-schemas";
 import { Form } from "@workspace/ui/components/form";
 import { createProperty, updateProperty } from "@/lib/actions/property";
+import { useNavigationGuard } from "@/hooks/use-navigation-guard";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
-import type { Property } from "@workspace/drizzle/types";
+import type { Property, ContractProgress } from "@workspace/drizzle/types";
 
 interface PropertyFormProviderProps {
   children: React.ReactNode;
-  defaultValues?: Partial<Property> & { staffIds?: string[] };
+  defaultValues?: Partial<Property> & {
+    staffIds?: string[];
+    contractProgress?: ContractProgress | null;
+  };
   mode: "create" | "edit";
 }
 
@@ -63,8 +67,31 @@ export default function PropertyFormProvider({
       accountCompany: defaultValues?.accountCompany || "",
       bankAccount: defaultValues?.bankAccount || "",
       staffIds: defaultValues?.staffIds || [],
+      // 契約進捗 AB関係
+      abContractSaved:
+        defaultValues?.contractProgress?.abContractSaved ?? false,
+      abAuthorizationSaved:
+        defaultValues?.contractProgress?.abAuthorizationSaved ?? false,
+      abSellerIdSaved:
+        defaultValues?.contractProgress?.abSellerIdSaved ?? false,
+      // 契約進捗 BC関係
+      bcContractCreated:
+        defaultValues?.contractProgress?.bcContractCreated ?? false,
+      bcDescriptionCreated:
+        defaultValues?.contractProgress?.bcDescriptionCreated ?? false,
+      bcContractSent:
+        defaultValues?.contractProgress?.bcContractSent ?? false,
+      bcDescriptionSent:
+        defaultValues?.contractProgress?.bcDescriptionSent ?? false,
+      bcContractCbDone:
+        defaultValues?.contractProgress?.bcContractCbDone ?? false,
+      bcDescriptionCbDone:
+        defaultValues?.contractProgress?.bcDescriptionCbDone ?? false,
     },
   });
+
+  // 未保存変更がある場合の離脱防止
+  useNavigationGuard(form.formState.isDirty);
 
   const onSubmit = async (data: PropertyCreate) => {
     try {
@@ -79,7 +106,7 @@ export default function PropertyFormProvider({
         }
         await updateProperty({ ...data, id: defaultValues.id });
         toast.success("案件を更新しました");
-        router.push("/properties/unconfirmed");
+        // router.push("/properties/unconfirmed");
       }
     } catch (error) {
       toast.error(
@@ -93,7 +120,10 @@ export default function PropertyFormProvider({
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+      <form
+        onSubmit={form.handleSubmit(onSubmit)}
+        className="flex min-h-0 flex-1 flex-col"
+      >
         {children}
       </form>
     </Form>

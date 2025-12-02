@@ -1,4 +1,4 @@
-import { z } from "zod/v4";
+import z from "zod";
 import { users } from "../schemas/auth";
 import {
   createInsertSchema,
@@ -24,6 +24,7 @@ export const usernameSchema = z
 export const profileUpdateSchema = createUpdateSchema(users, {
   name: nameSchema,
   username: usernameSchema,
+  image: z.string().url(),
 }).omit({
   id: true,
   email: true,

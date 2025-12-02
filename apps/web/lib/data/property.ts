@@ -39,7 +39,39 @@ export async function getPropertyById(id: string) {
           user: true,
         },
       },
-      contractProgress: true,
+      contractProgress: {
+        with: {
+          // AB関係の更新者ユーザー情報（必要なカラムのみ）
+          abContractSavedByUser: {
+            columns: { id: true, name: true, email: true, image: true },
+          },
+          abAuthorizationSavedByUser: {
+            columns: { id: true, name: true, email: true, image: true },
+          },
+          abSellerIdSavedByUser: {
+            columns: { id: true, name: true, email: true, image: true },
+          },
+          // BC関係の更新者ユーザー情報（必要なカラムのみ）
+          bcContractCreatedByUser: {
+            columns: { id: true, name: true, email: true, image: true },
+          },
+          bcDescriptionCreatedByUser: {
+            columns: { id: true, name: true, email: true, image: true },
+          },
+          bcContractSentByUser: {
+            columns: { id: true, name: true, email: true, image: true },
+          },
+          bcDescriptionSentByUser: {
+            columns: { id: true, name: true, email: true, image: true },
+          },
+          bcContractCbDoneByUser: {
+            columns: { id: true, name: true, email: true, image: true },
+          },
+          bcDescriptionCbDoneByUser: {
+            columns: { id: true, name: true, email: true, image: true },
+          },
+        },
+      },
       documentProgress: true,
       settlementProgress: true,
     },

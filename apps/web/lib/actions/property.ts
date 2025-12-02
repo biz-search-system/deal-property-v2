@@ -139,14 +139,8 @@ export async function createProperty(data: PropertyCreate) {
  * 案件を更新する
  */
 export async function updateProperty(data: PropertyUpdate) {
-  // セッション確認
-  const session = await auth.api.getSession({
-    headers: await headers(),
-  });
-
-  if (!session) {
-    throw new Error("認証が必要です");
-  }
+  // セッション認証
+  const session = await verifySession();
 
   // バリデーション
   const validatedData = propertyUpdateSchema.parse(data);
@@ -231,6 +225,124 @@ export async function updateProperty(data: PropertyUpdate) {
       );
     }
 
+    // 4. 契約進捗 AB関係を更新
+    // 現在のcontractProgressを取得して差分を確認
+    const currentProgress = await tx.query.contractProgress.findFirst({
+      where: eq(contractProgress.propertyId, validatedData.id),
+    });
+
+    const now = new Date();
+
+    // AB関係 - 状態が変更されたかどうかを判定
+    const abContractChanged =
+      (validatedData.abContractSaved ?? false) !==
+      (currentProgress?.abContractSaved ?? false);
+    const abAuthorizationChanged =
+      (validatedData.abAuthorizationSaved ?? false) !==
+      (currentProgress?.abAuthorizationSaved ?? false);
+    const abSellerIdChanged =
+      (validatedData.abSellerIdSaved ?? false) !==
+      (currentProgress?.abSellerIdSaved ?? false);
+
+    // BC関係 - 状態が変更されたかどうかを判定
+    const bcContractCreatedChanged =
+      (validatedData.bcContractCreated ?? false) !==
+      (currentProgress?.bcContractCreated ?? false);
+    const bcDescriptionCreatedChanged =
+      (validatedData.bcDescriptionCreated ?? false) !==
+      (currentProgress?.bcDescriptionCreated ?? false);
+    const bcContractSentChanged =
+      (validatedData.bcContractSent ?? false) !==
+      (currentProgress?.bcContractSent ?? false);
+    const bcDescriptionSentChanged =
+      (validatedData.bcDescriptionSent ?? false) !==
+      (currentProgress?.bcDescriptionSent ?? false);
+    const bcContractCbDoneChanged =
+      (validatedData.bcContractCbDone ?? false) !==
+      (currentProgress?.bcContractCbDone ?? false);
+    const bcDescriptionCbDoneChanged =
+      (validatedData.bcDescriptionCbDone ?? false) !==
+      (currentProgress?.bcDescriptionCbDone ?? false);
+
+    await tx
+      .update(contractProgress)
+      .set({
+        // AB関係 - 契約書保存
+        abContractSaved: validatedData.abContractSaved ?? false,
+        abContractSavedAt: abContractChanged
+          ? now
+          : currentProgress?.abContractSavedAt,
+        abContractSavedBy: abContractChanged
+          ? session.user.id
+          : currentProgress?.abContractSavedBy,
+        // AB関係 - 委任状関係保存
+        abAuthorizationSaved: validatedData.abAuthorizationSaved ?? false,
+        abAuthorizationSavedAt: abAuthorizationChanged
+          ? now
+          : currentProgress?.abAuthorizationSavedAt,
+        abAuthorizationSavedBy: abAuthorizationChanged
+          ? session.user.id
+          : currentProgress?.abAuthorizationSavedBy,
+        // AB関係 - 売主身分証保存
+        abSellerIdSaved: validatedData.abSellerIdSaved ?? false,
+        abSellerIdSavedAt: abSellerIdChanged
+          ? now
+          : currentProgress?.abSellerIdSavedAt,
+        abSellerIdSavedBy: abSellerIdChanged
+          ? session.user.id
+          : currentProgress?.abSellerIdSavedBy,
+        // BC関係 - BC売契作成
+        bcContractCreated: validatedData.bcContractCreated ?? false,
+        bcContractCreatedAt: bcContractCreatedChanged
+          ? now
+          : currentProgress?.bcContractCreatedAt,
+        bcContractCreatedBy: bcContractCreatedChanged
+          ? session.user.id
+          : currentProgress?.bcContractCreatedBy,
+        // BC関係 - 重説作成
+        bcDescriptionCreated: validatedData.bcDescriptionCreated ?? false,
+        bcDescriptionCreatedAt: bcDescriptionCreatedChanged
+          ? now
+          : currentProgress?.bcDescriptionCreatedAt,
+        bcDescriptionCreatedBy: bcDescriptionCreatedChanged
+          ? session.user.id
+          : currentProgress?.bcDescriptionCreatedBy,
+        // BC関係 - BC売契送付
+        bcContractSent: validatedData.bcContractSent ?? false,
+        bcContractSentAt: bcContractSentChanged
+          ? now
+          : currentProgress?.bcContractSentAt,
+        bcContractSentBy: bcContractSentChanged
+          ? session.user.id
+          : currentProgress?.bcContractSentBy,
+        // BC関係 - 重説送付
+        bcDescriptionSent: validatedData.bcDescriptionSent ?? false,
+        bcDescriptionSentAt: bcDescriptionSentChanged
+          ? now
+          : currentProgress?.bcDescriptionSentAt,
+        bcDescriptionSentBy: bcDescriptionSentChanged
+          ? session.user.id
+          : currentProgress?.bcDescriptionSentBy,
+        // BC関係 - BC売契CB完了
+        bcContractCbDone: validatedData.bcContractCbDone ?? false,
+        bcContractCbDoneAt: bcContractCbDoneChanged
+          ? now
+          : currentProgress?.bcContractCbDoneAt,
+        bcContractCbDoneBy: bcContractCbDoneChanged
+          ? session.user.id
+          : currentProgress?.bcContractCbDoneBy,
+        // BC関係 - 重説CB完了
+        bcDescriptionCbDone: validatedData.bcDescriptionCbDone ?? false,
+        bcDescriptionCbDoneAt: bcDescriptionCbDoneChanged
+          ? now
+          : currentProgress?.bcDescriptionCbDoneAt,
+        bcDescriptionCbDoneBy: bcDescriptionCbDoneChanged
+          ? session.user.id
+          : currentProgress?.bcDescriptionCbDoneBy,
+        updatedAt: now,
+      })
+      .where(eq(contractProgress.propertyId, validatedData.id));
+
     return property;
   });
 
@@ -243,14 +355,8 @@ export async function updateProperty(data: PropertyUpdate) {
  * 案件を削除する
  */
 export async function deleteProperty(id: string) {
-  // セッション確認
-  const session = await auth.api.getSession({
-    headers: await headers(),
-  });
-
-  if (!session) {
-    throw new Error("認証が必要です");
-  }
+  // セッション認証
+  const session = await verifySession();
 
   // トランザクションで案件と関連データを削除
   await db.transaction(async (tx) => {
@@ -286,13 +392,8 @@ export async function updatePropertyProgressStatus(data: {
   id: string;
   progressStatus: string;
 }) {
-  const session = await auth.api.getSession({
-    headers: await headers(),
-  });
-
-  if (!session) {
-    throw new Error("認証が必要です");
-  }
+  // セッション認証
+  const session = await verifySession();
 
   await db
     .update(properties)
@@ -314,13 +415,8 @@ export async function updatePropertyDocumentStatus(data: {
   id: string;
   documentStatus: string;
 }) {
-  const session = await auth.api.getSession({
-    headers: await headers(),
-  });
-
-  if (!session) {
-    throw new Error("認証が必要です");
-  }
+  // セッション認証
+  const session = await verifySession();
 
   await db
     .update(properties)
@@ -339,13 +435,8 @@ export async function updatePropertyDocumentStatus(data: {
  * 案件の備考を更新（インライン編集用）
  */
 export async function updatePropertyNotes(data: { id: string; notes: string }) {
-  const session = await auth.api.getSession({
-    headers: await headers(),
-  });
-
-  if (!session) {
-    throw new Error("認証が必要です");
-  }
+  // セッション認証
+  const session = await verifySession();
 
   await db
     .update(properties)
@@ -369,7 +460,6 @@ export async function updatePropertySettlementDate(data: {
 }) {
   // セッション認証
   const session = await verifySession();
-  console.log(data.settlementDate, "data.settlementDate");
 
   await db
     .update(properties)
@@ -388,4 +478,162 @@ export async function updatePropertySettlementDate(data: {
     const month = data.settlementDate.getMonth() + 1;
     revalidatePath(`/properties/monthly/${year}/${month}`);
   }
+}
+
+/**
+ * 案件の物件名を更新（インライン編集用）
+ */
+export async function updatePropertyName(data: {
+  id: string;
+  propertyName: string;
+}) {
+  // セッション認証
+  const session = await verifySession();
+
+  if (!data.propertyName.trim()) {
+    throw new Error("物件名は必須です");
+  }
+
+  await db
+    .update(properties)
+    .set({
+      propertyName: data.propertyName.trim(),
+      updatedBy: session.user.id,
+      updatedAt: new Date(),
+    })
+    .where(eq(properties.id, data.id));
+
+  revalidatePath("/properties");
+  revalidatePath("/properties/unconfirmed");
+}
+
+/**
+ * 案件のオーナー名を更新（インライン編集用）
+ */
+export async function updatePropertyOwnerName(data: {
+  id: string;
+  ownerName: string;
+}) {
+  // セッション認証
+  const session = await verifySession();
+
+  await db
+    .update(properties)
+    .set({
+      ownerName: data.ownerName.trim(),
+      updatedBy: session.user.id,
+      updatedAt: new Date(),
+    })
+    .where(eq(properties.id, data.id));
+
+  revalidatePath("/properties");
+  revalidatePath("/properties/unconfirmed");
+}
+
+/**
+ * 案件の金額フィールドを更新（インライン編集用）
+ * amountA: A金額
+ * amountExit: 出口金額
+ * commission: 仲手等
+ * bcDeposit: BC手付
+ */
+export async function updatePropertyAmount(data: {
+  id: string;
+  field: "amountA" | "amountExit" | "commission" | "bcDeposit";
+  value: number | null;
+}) {
+  // セッション認証
+  const session = await verifySession();
+
+  // 現在の案件データを取得して利益を再計算
+  const currentProperty = await db.query.properties.findFirst({
+    where: eq(properties.id, data.id),
+  });
+
+  if (!currentProperty) {
+    throw new Error("案件が見つかりません");
+  }
+
+  // 更新後の値を計算
+  const updatedValues = {
+    amountA: data.field === "amountA" ? data.value : currentProperty.amountA,
+    amountExit:
+      data.field === "amountExit" ? data.value : currentProperty.amountExit,
+    commission:
+      data.field === "commission" ? data.value : currentProperty.commission,
+    bcDeposit:
+      data.field === "bcDeposit" ? data.value : currentProperty.bcDeposit,
+  };
+
+  // 利益を再計算（出口金額 - A金額 + 仲手等）
+  let profit: number | null = null;
+  if (updatedValues.amountExit !== null && updatedValues.amountA !== null) {
+    profit = updatedValues.amountExit - updatedValues.amountA;
+    if (updatedValues.commission !== null) {
+      profit += updatedValues.commission;
+    }
+  }
+
+  await db
+    .update(properties)
+    .set({
+      [data.field]: data.value,
+      profit,
+      updatedBy: session.user.id,
+      updatedAt: new Date(),
+    })
+    .where(eq(properties.id, data.id));
+
+  revalidatePath("/properties");
+  revalidatePath("/properties/unconfirmed");
+}
+
+/**
+ * 案件のEnum型フィールドを更新（インライン編集用）
+ * contractType: 契約形態
+ * companyB: B会社
+ * brokerCompany: 仲介会社
+ */
+export async function updatePropertyEnumField(data: {
+  id: string;
+  field: "contractType" | "companyB" | "brokerCompany";
+  value: string | null;
+}) {
+  // セッション認証
+  const session = await verifySession();
+
+  await db
+    .update(properties)
+    .set({
+      [data.field]: data.value,
+      updatedBy: session.user.id,
+      updatedAt: new Date(),
+    })
+    .where(eq(properties.id, data.id));
+
+  revalidatePath("/properties");
+  revalidatePath("/properties/unconfirmed");
+}
+
+/**
+ * 案件の買取会社を更新（インライン編集用）
+ */
+export async function updatePropertyBuyerCompany(data: {
+  id: string;
+  buyerCompany: string | null;
+}) {
+  // セッション認証
+  const session = await verifySession();
+
+  await db
+    .update(properties)
+    .set({
+      buyerCompany: data.buyerCompany?.trim() || null,
+      updatedBy: session.user.id,
+      updatedAt: new Date(),
+    })
+    .where(eq(properties.id, data.id));
+
+  revalidatePath("/properties");
+  revalidatePath("/properties/unconfirmed");
 }

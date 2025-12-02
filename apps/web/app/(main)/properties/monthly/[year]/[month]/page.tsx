@@ -3,6 +3,7 @@ import { getMonthlyProperties } from "@/lib/data/property";
 import { auth } from "@workspace/auth";
 import { headers } from "next/headers";
 import type { Metadata } from "next";
+import { MonthlyBreadcrumb } from "@/components/property/monthly/monthly-breadcrumb";
 
 export async function generateMetadata({
   params,
@@ -30,7 +31,7 @@ export default async function MonthlyPropertiesPage({
   // 月次案件を取得（DBでフィルタリング済み）
   const monthlyProperties = await getMonthlyProperties(
     Number(year),
-    Number(month),
+    Number(month)
   );
 
   // データを変換（クライアント側で使いやすい形式に）
@@ -44,10 +45,14 @@ export default async function MonthlyPropertiesPage({
   }));
 
   return (
-    <MonthlyPropertiesClient
-      year={year}
-      month={month}
-      properties={transformedProperties}
-    />
+    <>
+      {/* パンくずリスト設定 */}
+      <MonthlyBreadcrumb year={year} month={month} />
+      <MonthlyPropertiesClient
+        year={year}
+        month={month}
+        properties={transformedProperties}
+      />
+    </>
   );
 }

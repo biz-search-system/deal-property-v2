@@ -1,12 +1,11 @@
 "use client";
 
-import { DataTable } from "@/components/property/search/data-table";
-import { columns } from "@/components/property/search/columns";
-import type { PropertyWithRelations } from "@/lib/types/property";
-import { Card, CardContent } from "@workspace/ui/components/card";
-import { useState } from "react";
 import { PropertyDetailModal } from "@/components/property/property-detail-modal";
+import { columns } from "@/components/property/search/columns";
+import { DataTable } from "@/components/property/search/data-table";
+import type { PropertyWithRelations } from "@/lib/types/property";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 interface SearchPropertiesClientProps {
   properties: PropertyWithRelations[];
@@ -39,19 +38,14 @@ export function SearchPropertiesClient({
   };
 
   return (
-    <div className="flex flex-1 flex-col overflow-hidden">
-      <div className="flex flex-col gap-3 p-4 lg:p-3">
-        {/* テーブル */}
-        <Card className="flex-1">
-          <CardContent className="p-4">
-            <DataTable
-              columns={columns}
-              data={properties}
-              onView={handleViewDetails}
-              onEdit={handlePropertyClick}
-            />
-          </CardContent>
-        </Card>
+    <div className="flex h-full flex-col overflow-hidden">
+      <div className="flex flex-1 flex-col gap-3 overflow-hidden p-4 lg:p-3">
+        <DataTable
+          columns={columns}
+          data={properties}
+          onView={handleViewDetails}
+          onEdit={handlePropertyClick}
+        />
       </div>
 
       {/* 編集モーダル */}

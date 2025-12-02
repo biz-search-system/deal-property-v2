@@ -127,6 +127,10 @@
     @apply border-border outline-ring/50;
   }
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground wrap-anywhere;
   }
+}
+
+@utility container {
+  @apply mx-auto px-4 sm:px-6 lg:px-8;
 }

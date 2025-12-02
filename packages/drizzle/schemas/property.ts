@@ -454,6 +454,53 @@ export const contractProgressRelations = relations(
       fields: [contractProgress.propertyId],
       references: [properties.id],
     }),
+    // AB関係の更新者ユーザー
+    abContractSavedByUser: one(users, {
+      fields: [contractProgress.abContractSavedBy],
+      references: [users.id],
+      relationName: "abContractSavedBy",
+    }),
+    abAuthorizationSavedByUser: one(users, {
+      fields: [contractProgress.abAuthorizationSavedBy],
+      references: [users.id],
+      relationName: "abAuthorizationSavedBy",
+    }),
+    abSellerIdSavedByUser: one(users, {
+      fields: [contractProgress.abSellerIdSavedBy],
+      references: [users.id],
+      relationName: "abSellerIdSavedBy",
+    }),
+    // BC関係の更新者ユーザー
+    bcContractCreatedByUser: one(users, {
+      fields: [contractProgress.bcContractCreatedBy],
+      references: [users.id],
+      relationName: "bcContractCreatedBy",
+    }),
+    bcDescriptionCreatedByUser: one(users, {
+      fields: [contractProgress.bcDescriptionCreatedBy],
+      references: [users.id],
+      relationName: "bcDescriptionCreatedBy",
+    }),
+    bcContractSentByUser: one(users, {
+      fields: [contractProgress.bcContractSentBy],
+      references: [users.id],
+      relationName: "bcContractSentBy",
+    }),
+    bcDescriptionSentByUser: one(users, {
+      fields: [contractProgress.bcDescriptionSentBy],
+      references: [users.id],
+      relationName: "bcDescriptionSentBy",
+    }),
+    bcContractCbDoneByUser: one(users, {
+      fields: [contractProgress.bcContractCbDoneBy],
+      references: [users.id],
+      relationName: "bcContractCbDoneBy",
+    }),
+    bcDescriptionCbDoneByUser: one(users, {
+      fields: [contractProgress.bcDescriptionCbDoneBy],
+      references: [users.id],
+      relationName: "bcDescriptionCbDoneBy",
+    }),
   }),
 );
 

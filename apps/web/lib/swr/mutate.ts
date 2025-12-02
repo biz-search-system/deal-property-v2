@@ -12,7 +12,7 @@ export const mutatePrefix = (prefix: string | string[]) =>
         ? prefix.some((p) => key.startsWith(p))
         : key.startsWith(prefix)),
     undefined,
-    { revalidate: true },
+    { revalidate: true }
   );
 
 /**

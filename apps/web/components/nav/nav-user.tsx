@@ -42,7 +42,9 @@ export function NavUser() {
   const router = useRouter();
   const { isMobile } = useSidebar();
   const { text, url } = getAvatarUrl({
+    username: user?.username,
     email: user?.email,
+    avatarUrl: user?.image,
   });
 
   const [isPending, startTransition] = useTransition();

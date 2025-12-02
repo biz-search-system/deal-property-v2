@@ -20,9 +20,9 @@ import {
 } from "@workspace/ui/components/form";
 import { Input } from "@workspace/ui/components/input";
 
-import { forgotPasswordAction } from "@/lib/actions/auth";
 import { ForgotPassword } from "@/lib/types/auth";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { authClient } from "@workspace/auth/client";
 import { cn } from "@workspace/utils";
 import { CheckCircle, Loader2 } from "lucide-react";
 import Link from "next/link";
@@ -48,17 +48,16 @@ export default function ForgotPasswordForm({
 
   const onSubmit = async (data: ForgotPassword) => {
     startTransition(async () => {
-      try {
-        await forgotPasswordAction(data);
-        setIsEmailSent(true);
-        toast.success("パスワードリセットメールを送信しました");
-      } catch (error) {
+      // const { error } = await authClient.forgetPassword.emailOtp(data);
+      const { error } = await authClient.requestPasswordReset(data);
+      if (error) {
         toast.error(
-          error instanceof Error
-            ? error.message
-            : "メール送信に失敗しました。もう一度お試しください。",
+          error.message || "パスワードリセットメールを送信に失敗しました"
         );
+        return;
       }
+      setIsEmailSent(true);
+      toast.success("パスワードリセットメールを送信しました");
     });
   };
 

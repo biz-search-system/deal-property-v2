@@ -46,6 +46,23 @@ export const auth = betterAuth({
   },
   emailAndPassword: {
     enabled: true,
+    sendResetPassword: async ({ user, url, token }, request) => {
+      const email = user.email;
+      const resetPasswordLink = `${getBaseURL()}/reset-password?token=${token}`;
+      await resend.emails.send({
+        from: "noreply@biz-search.tech",
+        to: email,
+        subject: `パスワードリセットのご案内`,
+        react: PasswordResetEmail({
+          email: email,
+          resetUrl: resetPasswordLink,
+        }),
+      });
+    },
+    onPasswordReset: async ({ user }, request) => {
+      // your logic here
+      console.log(`Password for user ${user.email} has been reset.`);
+    },
   },
   plugins: [
     anonymous(),
@@ -65,7 +82,7 @@ export const auth = betterAuth({
         const inviterEmail = data.inviter.user.email;
         // サインアップページへの直接リンク（組織名を含む）
         const inviteLink = `${getBaseURL()}/signup?id=${invitationId}&email=${encodeURIComponent(
-          data.email,
+          data.email
         )}&org=${encodeURIComponent(data.organization.name)}`;
         const teamId = data.invitation?.teamId;
         const teamName = teamId ? await getTeamName(teamId) : null;
@@ -82,42 +99,6 @@ export const auth = betterAuth({
             teamName: teamName,
           }),
         });
-      },
-    }),
-    emailOTP({
-      async sendVerificationOTP({ email, otp, type }) {
-        if (type === "sign-in") {
-          // Send the OTP for sign in
-          // const resetPasswordLink = `${getBaseURL()}/api/auth/forget-password?otp=${otp}&email=${email}&type=${type}`;
-          // await resend.emails.send({
-          //   from: "noreply@biz-search.tech",
-          //   to: email,
-          //   subject: `パスワードリセットのご案内`,
-          //   react: PasswordResetEmail({
-          //     email: email,
-          //     resetUrl: resetPasswordLink,
-          //   }),
-          // });
-        } else if (type === "email-verification") {
-          // Send the OTP for email verification
-        } else if (type === "forget-password") {
-          // Send the OTP for password reset
-          const resetPasswordLink = `${getBaseURL()}/api/auth/forget-password?otp=${otp}&email=${email}&type=${type}`;
-          await resend.emails.send({
-            from: "noreply@biz-search.tech",
-            to: email,
-            subject: `パスワードリセットのご案内`,
-            react: PasswordResetEmail({
-              email: email,
-              resetUrl: resetPasswordLink,
-            }),
-          });
-        }
-      },
-    }),
-    magicLink({
-      sendMagicLink: async ({ email, token, url }, request) => {
-        // send email to user
       },
     }),
     admin(),

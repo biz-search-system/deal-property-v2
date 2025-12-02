@@ -27,6 +27,28 @@ import {
   ORGANIZATION_LABELS,
 } from "@workspace/utils";
 
+/** カラムIDから日本語表示名へのマッピング */
+const COLUMN_LABELS: Record<string, string> = {
+  organization: "管理組織",
+  staff: "担当",
+  propertyName: "物件名",
+  roomNumber: "号室",
+  ownerName: "オーナー",
+  amountA: "A金額",
+  amountExit: "出口",
+  commission: "仲手等",
+  profit: "利益",
+  bcDeposit: "BC手付",
+  settlementDate: "決済日",
+  buyerCompany: "買取",
+  contractType: "契約形態",
+  companyB: "B会社",
+  brokerCompany: "仲介",
+  progressStatus: "進捗",
+  documentStatus: "書類",
+  notes: "備考",
+};
+
 interface DataTableToolbarProps<TData> {
   table: Table<TData>;
 }
@@ -36,46 +58,8 @@ export function DataTableToolbar<TData>({
 }: DataTableToolbarProps<TData>) {
   const isFiltered = table.getState().columnFilters.length > 0;
 
-  // CSVエクスポート機能
-  const handleExport = () => {
-    const headers = table
-      .getAllColumns()
-      .filter((column) => column.getIsVisible() && column.id !== "actions")
-      .map((column) => {
-        const header = column.columnDef.header;
-        if (typeof header === "string") return header;
-        return column.id;
-      });
-
-    const rows = table.getFilteredRowModel().rows.map((row) => {
-      return headers.map((_, index) => {
-        const cell = row.getVisibleCells()[index];
-        const value = cell?.getValue();
-        if (value === null || value === undefined) return "";
-        return String(value);
-      });
-    });
-
-    // CSV形式に変換
-    const csvContent = [
-      headers.join(","),
-      ...rows.map((row) => row.join(",")),
-    ].join("\n");
-
-    // ダウンロード
-    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
-    const link = document.createElement("a");
-    const url = URL.createObjectURL(blob);
-    link.setAttribute("href", url);
-    link.setAttribute("download", `properties_${new Date().toISOString()}.csv`);
-    link.style.visibility = "hidden";
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-  };
-
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-3">
       {/* 検索バー */}
       <div className="flex items-center gap-2">
         <div className="relative flex-1 max-w-sm">
@@ -207,17 +191,6 @@ export function DataTableToolbar<TData>({
 
         {/* 右側のアクション */}
         <div className="flex items-center gap-2">
-          {/* エクスポート */}
-          <Button
-            variant="outline"
-            size="sm"
-            className="h-8"
-            onClick={handleExport}
-          >
-            <Download className="mr-2 h-4 w-4" />
-            CSV出力
-          </Button>
-
           {/* カラム表示制御 */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -234,16 +207,14 @@ export function DataTableToolbar<TData>({
                 .filter(
                   (column) =>
                     typeof column.accessorFn !== "undefined" &&
-                    column.getCanHide(),
+                    column.getCanHide()
                 )
                 .map((column) => {
-                  const header = column.columnDef.header;
                   const displayName =
-                    typeof header === "string" ? header : column.id;
+                    COLUMN_LABELS[column.id] || column.id;
                   return (
                     <DropdownMenuCheckboxItem
                       key={column.id}
-                      className="capitalize"
                       checked={column.getIsVisible()}
                       onCheckedChange={(value) =>
                         column.toggleVisibility(!!value)
@@ -256,14 +227,6 @@ export function DataTableToolbar<TData>({
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
-      </div>
-
-      {/* 選択中のフィルター表示 */}
-      <div className="flex items-center gap-2 text-sm text-muted-foreground">
-        <span>
-          {table.getFilteredRowModel().rows.length} 件 /{" "}
-          {table.getCoreRowModel().rows.length} 件中
-        </span>
       </div>
     </div>
   );

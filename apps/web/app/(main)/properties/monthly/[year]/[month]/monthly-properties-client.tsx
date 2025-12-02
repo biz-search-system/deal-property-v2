@@ -1,7 +1,7 @@
 "use client";
 
-import { PropertyDetailModal } from "@/components/property/property-detail-modal";
 import { AccountSettlementSummary } from "@/components/property/account-settlement-summary";
+import { PropertyDetailModal } from "@/components/property/property-detail-modal";
 import type { PropertyWithRelations } from "@/lib/types/property";
 import { Card, CardContent } from "@workspace/ui/components/card";
 import {
@@ -33,10 +33,10 @@ export function MonthlyPropertiesClient({
   const categorizedProperties = useMemo(() => {
     return {
       confirmed: properties.filter(
-        (p) => p.progressStatus !== "settlement_completed",
+        (p) => p.progressStatus !== "settlement_completed"
       ),
       completed: properties.filter(
-        (p) => p.progressStatus === "settlement_completed",
+        (p) => p.progressStatus === "settlement_completed"
       ),
     };
   }, [properties]);
@@ -53,7 +53,7 @@ export function MonthlyPropertiesClient({
   // 口座別決済日集計
   const accountSettlementSummary = useMemo(() => {
     const filteredProperties = categorizedProperties.confirmed.filter(
-      (p) => p.accountCompany === selectedAccount,
+      (p) => p.accountCompany === selectedAccount
     );
 
     // 決済日ごとにグループ化
@@ -106,7 +106,7 @@ export function MonthlyPropertiesClient({
 
   const truncateText = (
     text: string | null | undefined,
-    maxLength: number = 5,
+    maxLength: number = 5
   ) => {
     if (!text) return "-";
     return text.length > maxLength ? text.substring(0, maxLength) : text;
@@ -141,7 +141,7 @@ export function MonthlyPropertiesClient({
                   </span>
                   <p className="text-sm font-bold">
                     {formatCurrency(
-                      calculateTotals(categorizedProperties.confirmed).profit,
+                      calculateTotals(categorizedProperties.confirmed).profit
                     )}
                   </p>
                 </div>
@@ -153,8 +153,7 @@ export function MonthlyPropertiesClient({
                   </span>
                   <p className="text-sm font-bold">
                     {formatCurrency(
-                      calculateTotals(categorizedProperties.confirmed)
-                        .bcDeposit,
+                      calculateTotals(categorizedProperties.confirmed).bcDeposit
                     )}
                   </p>
                 </div>
@@ -202,7 +201,7 @@ export function MonthlyPropertiesClient({
                       <p className="text-sm font-bold">
                         {formatCurrency(
                           calculateTotals(categorizedProperties.completed)
-                            .profit,
+                            .profit
                         )}
                       </p>
                     </div>
@@ -215,7 +214,7 @@ export function MonthlyPropertiesClient({
                       <p className="text-sm font-bold">
                         {formatCurrency(
                           calculateTotals(categorizedProperties.completed)
-                            .bcDeposit,
+                            .bcDeposit
                         )}
                       </p>
                     </div>

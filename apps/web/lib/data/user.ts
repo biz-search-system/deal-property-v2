@@ -1,12 +1,13 @@
 import "server-only";
 
 import { headers } from "next/headers";
-import { auth } from "../better-auth/auth";
+import { auth } from "@workspace/auth";
 import { db } from "@workspace/drizzle/db";
 import { users } from "@workspace/drizzle/schemas";
 import { eq } from "drizzle-orm";
 import { redirect } from "next/navigation";
 import { ProfileUpdate } from "@workspace/drizzle/types";
+import { resolveImageUpload } from "../../../../packages/utils/src/functions/storage";
 
 /**
  * 現在のユーザー情報を取得
@@ -38,19 +39,4 @@ export async function getCurrentUser() {
  * @param data 更新データ
  * @returns 更新されたユーザー情報
  */
-export async function updateProfile(userId: string, data: ProfileUpdate) {
-  const result = await db
-    .update(users)
-    .set({
-      ...data,
-      updatedAt: new Date(),
-    })
-    .where(eq(users.id, userId))
-    .returning({
-      id: users.id,
-      name: users.name,
-      username: users.username,
-    });
-
-  return result;
-}
+export async function updateProfile(userId: string, data: ProfileUpdate) {}
