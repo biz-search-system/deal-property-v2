@@ -49,13 +49,15 @@ export default function ForgotPasswordForm({
   const onSubmit = async (data: ForgotPassword) => {
     startTransition(async () => {
       // const { error } = await authClient.forgetPassword.emailOtp(data);
-      const { error } = await authClient.requestPasswordReset(data);
+      const { data: resetPasswordData, error } =
+        await authClient.requestPasswordReset(data);
       if (error) {
         toast.error(
           error.message || "パスワードリセットメールを送信に失敗しました"
         );
         return;
       }
+      console.log(resetPasswordData);
       setIsEmailSent(true);
       toast.success("パスワードリセットメールを送信しました");
     });
