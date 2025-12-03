@@ -74,7 +74,7 @@ const formatDateWithDay = (dateString: string | Date | null): string => {
 
   if (isMonthEnd) {
     // 月末表示（例: 11月末）
-    return `${date.getMonth() + 1}月末`;
+    return `${date.getMonth() + 1}月末予定`;
   }
 
   // 通常の曜日付きフォーマット
