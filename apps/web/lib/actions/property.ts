@@ -472,6 +472,7 @@ export async function updatePropertySettlementDate(data: {
 
   revalidatePath("/properties");
   revalidatePath("/properties/unconfirmed");
+  revalidatePath("/properties/search");
   // 月次ビューも更新
   if (data.settlementDate) {
     const year = data.settlementDate.getFullYear();

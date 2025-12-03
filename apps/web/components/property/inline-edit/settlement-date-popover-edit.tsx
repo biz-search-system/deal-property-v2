@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { format, endOfMonth } from "date-fns";
 import { ja } from "date-fns/locale";
 import { Button } from "@workspace/ui/components/button";
@@ -38,6 +38,13 @@ export function SettlementDatePopoverEdit({
     currentDate ? new Date(currentDate) : new Date()
   );
 
+  // propsの値が変更されたときにステートを同期（テーブルの再ソート対応）
+  useEffect(() => {
+    if (!open) {
+      setSelectedMonth(currentDate ? new Date(currentDate) : new Date());
+    }
+  }, [currentDate, open]);
+
   // デフォルトの日付フォーマット（月末判定付き）
   const defaultFormatDisplay = (dateValue: Date | string | null): string => {
     if (!dateValue) return "-";
@@ -57,7 +64,7 @@ export function SettlementDatePopoverEdit({
 
     if (isMonthEnd) {
       // 月末表示（例: 11月末）
-      return `${date.getMonth() + 1}月末`;
+      return `${date.getMonth() + 1}月末予定`;
     }
 
     // 通常の曜日付きフォーマット（例: 2024/11/22(金)）

@@ -7,7 +7,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@workspace/ui/components/popover";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { toast } from "sonner";
 
 interface CurrencyPopoverEditProps {
@@ -38,7 +38,12 @@ const defaultFormatCurrency = (value: number | null): string => {
   if (value < 10000) {
     return `${value.toLocaleString()}円`;
   }
-  return `${(value / 10000).toFixed(0)}万`;
+  const man = value / 10000;
+  // 小数点以下がある場合は小数第一位まで表示
+  if (man % 1 !== 0) {
+    return `${man.toFixed(1)}万`;
+  }
+  return `${man.toFixed(0)}万`;
 };
 
 export function CurrencyPopoverEdit({
@@ -59,6 +64,13 @@ export function CurrencyPopoverEdit({
     currentValue !== null ? String(currentValue / 10000) : ""
   );
   const [isSaving, setIsSaving] = useState(false);
+
+  // propsの値が変更されたときにステートを同期（テーブルの再ソート対応）
+  useEffect(() => {
+    if (!open) {
+      setValue(currentValue !== null ? String(currentValue / 10000) : "");
+    }
+  }, [currentValue, open]);
 
   const handleSave = async () => {
     if (!onSave) return;
@@ -129,6 +141,7 @@ export function CurrencyPopoverEdit({
             <div className="flex items-center gap-2">
               <Input
                 type="number"
+                step="0.1"
                 value={value}
                 onChange={(e) => setValue(e.target.value)}
                 onKeyDown={handleKeyDown}

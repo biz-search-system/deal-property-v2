@@ -18,6 +18,7 @@ import DocumentProgressTab from "@/components/property/tabs/document-progress-ta
 import SettlementProgressTab from "@/components/property/tabs/settlement-progress-tab";
 import { getOrganizations, getSalesTeamMembers } from "@/lib/data/organization";
 import { verifySession } from "@/lib/data/sesstion";
+import { BreadcrumbConfig } from "@/components/breadcrumb-provider";
 
 export const metadata = {
   title: "案件登録",
@@ -37,10 +38,12 @@ export default async function PropertyNewPage() {
 
   return (
     <div className="container mx-auto py-6 space-y-6">
-      <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-bold">案件登録</h1>
-      </div>
-
+      <BreadcrumbConfig
+        items={[
+          { label: "事業者確定前", href: "/properties/unconfirmed" },
+          { label: "案件登録" },
+        ]}
+      />
       <PropertyFormProvider
         mode="create"
         defaultValues={{

@@ -8,7 +8,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@workspace/ui/components/popover";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { toast } from "sonner";
 
 interface PropertyNamePopoverEditProps {
@@ -29,6 +29,13 @@ export function PropertyNamePopoverEdit({
   const [open, setOpen] = useState(false);
   const [value, setValue] = useState(currentName);
   const [isSaving, setIsSaving] = useState(false);
+
+  // propsの値が変更されたときにステートを同期（テーブルの再ソート対応）
+  useEffect(() => {
+    if (!open) {
+      setValue(currentName);
+    }
+  }, [currentName, open]);
 
   const handleSave = async () => {
     if (!value.trim()) {
