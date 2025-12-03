@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@workspace/ui/components/button";
 import { Textarea } from "@workspace/ui/components/textarea";
 import {
@@ -32,6 +32,13 @@ export function NotesPopoverEdit({
   const [open, setOpen] = useState(false);
   const [value, setValue] = useState(currentNotes || "");
   const [isSaving, setIsSaving] = useState(false);
+
+  // propsの値が変更されたときにステートを同期（テーブルの再ソート対応）
+  useEffect(() => {
+    if (!open) {
+      setValue(currentNotes || "");
+    }
+  }, [currentNotes, open]);
 
   const handleSave = async () => {
     setIsSaving(true);
