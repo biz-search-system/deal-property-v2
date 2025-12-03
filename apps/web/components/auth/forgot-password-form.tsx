@@ -30,6 +30,7 @@ import { useState, useTransition } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import HeroImage from "../hero-image";
+import { forgotPasswordAction } from "@/app/(auth)/forgot-password/action";
 
 export default function ForgotPasswordForm({
   className,
@@ -48,16 +49,18 @@ export default function ForgotPasswordForm({
 
   const onSubmit = async (data: ForgotPassword) => {
     startTransition(async () => {
-      // const { error } = await authClient.forgetPassword.emailOtp(data);
-      const { data: resetPasswordData, error } =
-        await authClient.requestPasswordReset(data);
-      if (error) {
+      // // const { error } = await authClient.forgetPassword.emailOtp(data);
+      // const { data: resetPasswordData, error } =
+      //   await authClient.requestPasswordReset(data);
+      const result = await forgotPasswordAction(data);
+      console.log(result);
+      if (!result.status) {
+        console.error(result.message);
         toast.error(
-          error.message || "パスワードリセットメールを送信に失敗しました"
+          result.message || "パスワードリセットメールを送信に失敗しました"
         );
         return;
       }
-      console.log(resetPasswordData);
       setIsEmailSent(true);
       toast.success("パスワードリセットメールを送信しました");
     });
