@@ -50,7 +50,7 @@ export const auth = betterAuth({
       const email = user.email;
       const resetPasswordLink = `${getBaseURL()}/reset-password?token=${token}`;
       const result = await resend.emails.send({
-        from: "noreply@biz-search.tech",
+        from: "passwordreset@biz-search.tech",
         to: email,
         subject: `パスワードリセットのご案内`,
         react: PasswordResetEmail({
