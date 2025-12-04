@@ -1,6 +1,5 @@
 "use client";
 
-import { Button } from "@workspace/ui/components/button";
 import {
   FormControl,
   FormDescription,
@@ -10,9 +9,6 @@ import {
   FormMessage,
 } from "@workspace/ui/components/form";
 import { Input } from "@workspace/ui/components/input";
-import { Eye, EyeOff } from "lucide-react";
-import Link from "next/link";
-import { useState } from "react";
 import { FieldPath, FieldValues, UseFormReturn } from "react-hook-form";
 
 export default function InputForm<
