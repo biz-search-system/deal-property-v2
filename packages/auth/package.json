@@ -32,7 +32,7 @@
     "@workspace/email": "workspace:*",
     "@workspace/ui": "workspace:*",
     "@workspace/utils": "workspace:*",
-    "better-auth": "^1.4.3",
+    "better-auth": "^1.4.5",
     "drizzle-orm": "^0.44.7",
     "nanoid": "^5.1.6"
   },
