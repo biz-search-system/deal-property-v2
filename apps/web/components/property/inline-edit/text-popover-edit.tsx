@@ -7,7 +7,7 @@ import {
   PopoverTrigger,
 } from "@workspace/ui/components/popover";
 import { Textarea } from "@workspace/ui/components/textarea";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { toast } from "sonner";
 
 interface TextPopoverEditProps {
@@ -60,9 +60,17 @@ export function TextPopoverEdit({
   const [open, setOpen] = useState(false);
   const [value, setValue] = useState(currentValue || "");
   const [isSaving, setIsSaving] = useState(false);
+  const justSavedRef = useRef(false);
 
-  // propsの値が変更されたときにステートを同期（テーブルの再ソート対応）
+  // propsの値が変更されたときにステートを同期
   useEffect(() => {
+    // 保存直後のデータ更新の場合は閉じた状態を維持
+    if (justSavedRef.current) {
+      justSavedRef.current = false;
+      setValue(currentValue || "");
+      return;
+    }
+    // Popoverが閉じている時のみ値を同期
     if (!open) {
       setValue(currentValue || "");
     }
@@ -77,6 +85,7 @@ export function TextPopoverEdit({
     setIsSaving(true);
     try {
       await onSave(id, value.trim());
+      justSavedRef.current = true;
       toast.success(successMessage);
       setOpen(false);
     } catch (error) {
