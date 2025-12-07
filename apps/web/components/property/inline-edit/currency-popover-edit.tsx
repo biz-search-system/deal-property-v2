@@ -124,7 +124,9 @@ export function CurrencyPopoverEdit({
       <PopoverTrigger asChild>
         <div
           className={`cursor-pointer rounded px-1 text-right text-[10px] hover:bg-muted ${highlight ? "font-semibold text-green-600 dark:text-green-400" : ""}`}
-          title={currentValue !== null ? `${currentValue.toLocaleString()}円` : ""}
+          title={
+            currentValue !== null ? `${currentValue.toLocaleString()}円` : ""
+          }
         >
           {formatDisplay(currentValue)}
         </div>
