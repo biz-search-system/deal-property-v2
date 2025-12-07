@@ -7,7 +7,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@workspace/ui/components/popover";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { toast } from "sonner";
 
 interface CurrencyPopoverEditProps {
@@ -31,6 +31,8 @@ interface CurrencyPopoverEditProps {
   formatDisplay?: (value: number | null) => string;
   /** 強調表示するか（利益用） */
   highlight?: boolean;
+  /** 入力のステップ（小数点以下の桁数制御） */
+  step?: string;
 }
 
 const defaultFormatCurrency = (value: number | null): string => {
@@ -39,9 +41,9 @@ const defaultFormatCurrency = (value: number | null): string => {
     return `${value.toLocaleString()}円`;
   }
   const man = value / 10000;
-  // 小数点以下がある場合は小数第一位まで表示
+  // 小数点以下がある場合は小数第二位まで表示（末尾の0は削除）
   if (man % 1 !== 0) {
-    return `${man.toFixed(1)}万`;
+    return `${parseFloat(man.toFixed(2))}万`;
   }
   return `${man.toFixed(0)}万`;
 };
@@ -57,6 +59,7 @@ export function CurrencyPopoverEdit({
   errorMessage = "更新に失敗しました",
   formatDisplay = defaultFormatCurrency,
   highlight = false,
+  step = "0.1",
 }: CurrencyPopoverEditProps) {
   const [open, setOpen] = useState(false);
   // 万円単位で入力・表示
@@ -64,13 +67,6 @@ export function CurrencyPopoverEdit({
     currentValue !== null ? String(currentValue / 10000) : ""
   );
   const [isSaving, setIsSaving] = useState(false);
-
-  // propsの値が変更されたときにステートを同期（テーブルの再ソート対応）
-  useEffect(() => {
-    if (!open) {
-      setValue(currentValue !== null ? String(currentValue / 10000) : "");
-    }
-  }, [currentValue, open]);
 
   const handleSave = async () => {
     if (!onSave) return;
@@ -143,7 +139,7 @@ export function CurrencyPopoverEdit({
             <div className="flex items-center gap-2">
               <Input
                 type="number"
-                step="0.1"
+                step={step}
                 value={value}
                 onChange={(e) => setValue(e.target.value)}
                 onKeyDown={handleKeyDown}
