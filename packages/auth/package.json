@@ -11,12 +11,20 @@
   },
   "exports": {
     ".": {
-      "types": "./src/auth.ts",
-      "default": "./src/auth.ts"
+      "types": "./src/index.ts",
+      "default": "./src/index.ts"
     },
     "./client": {
       "types": "./src/auth-client.ts",
       "default": "./src/auth-client.ts"
+    },
+    "./handlers": {
+      "types": "./src/handlers.ts",
+      "default": "./src/handlers.ts"
+    },
+    "./cookies": {
+      "types": "./src/cookies.ts",
+      "default": "./src/cookies.ts"
     }
   },
   "dependencies": {
