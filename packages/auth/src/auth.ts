@@ -50,7 +50,7 @@ export const auth = betterAuth({
       const email = user.email;
       const resetPasswordLink = `${getBaseURL()}/reset-password?token=${token}`;
       const result = await resend.emails.send({
-        from: "パスワードリセット <no-reply@deal-property.space>",
+        from: "パスワードリセット <password-reset@deal-property.space>",
         to: email,
         subject: `パスワードリセットのご案内`,
         react: PasswordResetEmail({
@@ -88,7 +88,7 @@ export const auth = betterAuth({
         const teamId = data.invitation?.teamId;
         const teamName = teamId ? await getTeamName(teamId) : null;
         await resend.emails.send({
-          from: "no-reply@deal-property.space",
+          from: "招待 <invitation@deal-property.space>",
           to: data.email,
           subject: `${data.organization.name}への招待`,
           react: InvitationEmail({
