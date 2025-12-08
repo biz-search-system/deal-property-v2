@@ -15,16 +15,16 @@
   },
   "devDependencies": {
     "@workspace/utils": "workspace:*",
-    "drizzle-kit": "^0.31.5"
+    "drizzle-kit": "^0.31.8"
   },
   "dependencies": {
     "@libsql/client": "^0.15.15",
     "@workspace/eslint-config": "workspace:^",
     "@workspace/typescript-config": "workspace:*",
     "dotenv": "^17.2.3",
-    "drizzle-orm": "^0.44.6",
+    "drizzle-orm": "^0.44.7",
     "drizzle-zod": "^0.8.3",
     "nanoid": "^5.1.6",
-    "zod": "^4.1.12"
+    "zod": "^4.1.13"
   }
 }

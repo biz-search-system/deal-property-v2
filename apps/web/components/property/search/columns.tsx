@@ -132,6 +132,7 @@ export const columns: ColumnDef<PropertyWithRelations>[] = [
     cell: ({ row }) => {
       return (
         <TextPopoverEdit
+          key={`${row.original.id}-${row.original.propertyName}`}
           id={row.original.id}
           currentValue={row.original.propertyName}
           onSave={async (id, value) => {
@@ -164,6 +165,7 @@ export const columns: ColumnDef<PropertyWithRelations>[] = [
     cell: ({ row }) => {
       return (
         <TextPopoverEdit
+          key={`${row.original.id}-${row.original.ownerName}`}
           id={row.original.id}
           currentValue={row.original.ownerName}
           onSave={async (id, value) => {
@@ -187,6 +189,7 @@ export const columns: ColumnDef<PropertyWithRelations>[] = [
     cell: ({ row }) => {
       return (
         <CurrencyPopoverEdit
+          key={`${row.original.id}-${row.original.amountA}`}
           id={row.original.id}
           currentValue={row.original.amountA}
           onSave={async (id, value) => {
@@ -208,6 +211,7 @@ export const columns: ColumnDef<PropertyWithRelations>[] = [
     cell: ({ row }) => {
       return (
         <CurrencyPopoverEdit
+          key={`${row.original.id}-${row.original.amountExit}`}
           id={row.original.id}
           currentValue={row.original.amountExit}
           onSave={async (id, value) => {
@@ -229,6 +233,7 @@ export const columns: ColumnDef<PropertyWithRelations>[] = [
     cell: ({ row }) => {
       return (
         <CurrencyPopoverEdit
+          key={`${row.original.id}-${row.original.commission}`}
           id={row.original.id}
           currentValue={row.original.commission}
           onSave={async (id, value) => {
@@ -238,6 +243,7 @@ export const columns: ColumnDef<PropertyWithRelations>[] = [
           description="仲手等を編集できます"
           successMessage="仲手等を更新しました"
           errorMessage="仲手等の更新に失敗しました"
+          step="0.01"
         />
       );
     },
@@ -250,6 +256,7 @@ export const columns: ColumnDef<PropertyWithRelations>[] = [
     cell: ({ row }) => {
       return (
         <CurrencyPopoverEdit
+          key={`${row.original.id}-${row.original.profit}`}
           id={row.original.id}
           currentValue={row.original.profit}
           editable={false}
@@ -267,6 +274,7 @@ export const columns: ColumnDef<PropertyWithRelations>[] = [
     cell: ({ row }) => {
       return (
         <CurrencyPopoverEdit
+          key={`${row.original.id}-${row.original.bcDeposit}`}
           id={row.original.id}
           currentValue={row.original.bcDeposit}
           onSave={async (id, value) => {
@@ -288,6 +296,7 @@ export const columns: ColumnDef<PropertyWithRelations>[] = [
     cell: ({ row }) => {
       return (
         <SettlementDatePopoverEdit
+          key={`${row.original.id}-${row.original.settlementDate}`}
           propertyId={row.original.id}
           currentDate={row.original.settlementDate}
           formatDisplay={formatDateWithDay}
@@ -303,6 +312,7 @@ export const columns: ColumnDef<PropertyWithRelations>[] = [
     cell: ({ row }) => {
       return (
         <TextPopoverEdit
+          key={`${row.original.id}-${row.original.buyerCompany}`}
           id={row.original.id}
           currentValue={row.original.buyerCompany}
           onSave={async (id, value) => {
@@ -329,6 +339,7 @@ export const columns: ColumnDef<PropertyWithRelations>[] = [
     cell: ({ row }) => {
       return (
         <BadgeDropdownEdit<ContractType>
+          key={`${row.original.id}-${row.original.contractType}`}
           id={row.original.id}
           currentValue={row.original.contractType}
           options={contractType}
@@ -355,6 +366,7 @@ export const columns: ColumnDef<PropertyWithRelations>[] = [
     cell: ({ row }) => {
       return (
         <BadgeDropdownEdit<CompanyB>
+          key={`${row.original.id}-${row.original.companyB}`}
           id={row.original.id}
           currentValue={row.original.companyB}
           options={companyB}
@@ -378,6 +390,7 @@ export const columns: ColumnDef<PropertyWithRelations>[] = [
     cell: ({ row }) => {
       return (
         <BadgeDropdownEdit<BrokerCompany>
+          key={`${row.original.id}-${row.original.brokerCompany}`}
           id={row.original.id}
           currentValue={row.original.brokerCompany}
           options={brokerCompany}
@@ -405,6 +418,7 @@ export const columns: ColumnDef<PropertyWithRelations>[] = [
     cell: ({ row }) => {
       return (
         <BadgeDropdownEdit<ProgressStatus>
+          key={`${row.original.id}-${row.original.progressStatus}`}
           id={row.original.id}
           currentValue={row.original.progressStatus}
           options={progressStatus}
@@ -432,6 +446,7 @@ export const columns: ColumnDef<PropertyWithRelations>[] = [
     cell: ({ row }) => {
       return (
         <BadgeDropdownEdit<DocumentStatus>
+          key={`${row.original.id}-${row.original.documentStatus}`}
           id={row.original.id}
           currentValue={row.original.documentStatus}
           options={documentStatus}
@@ -459,6 +474,7 @@ export const columns: ColumnDef<PropertyWithRelations>[] = [
     cell: ({ row }) => {
       return (
         <TextPopoverEdit
+          key={`${row.original.id}-${row.original.notes}`}
           id={row.original.id}
           currentValue={row.original.notes}
           onSave={async (id, value) => {

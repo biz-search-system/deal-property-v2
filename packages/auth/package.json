@@ -11,12 +11,20 @@
   },
   "exports": {
     ".": {
-      "types": "./src/auth.ts",
-      "default": "./src/auth.ts"
+      "types": "./src/index.ts",
+      "default": "./src/index.ts"
     },
     "./client": {
       "types": "./src/auth-client.ts",
       "default": "./src/auth-client.ts"
+    },
+    "./handlers": {
+      "types": "./src/handlers.ts",
+      "default": "./src/handlers.ts"
+    },
+    "./cookies": {
+      "types": "./src/cookies.ts",
+      "default": "./src/cookies.ts"
     }
   },
   "dependencies": {
@@ -24,7 +32,7 @@
     "@workspace/email": "workspace:*",
     "@workspace/ui": "workspace:*",
     "@workspace/utils": "workspace:*",
-    "better-auth": "^1.4.3",
+    "better-auth": "^1.4.5",
     "drizzle-orm": "^0.44.7",
     "nanoid": "^5.1.6"
   },

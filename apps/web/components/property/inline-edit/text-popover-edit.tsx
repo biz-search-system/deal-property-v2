@@ -7,7 +7,7 @@ import {
   PopoverTrigger,
 } from "@workspace/ui/components/popover";
 import { Textarea } from "@workspace/ui/components/textarea";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { toast } from "sonner";
 
 interface TextPopoverEditProps {
@@ -60,13 +60,6 @@ export function TextPopoverEdit({
   const [open, setOpen] = useState(false);
   const [value, setValue] = useState(currentValue || "");
   const [isSaving, setIsSaving] = useState(false);
-
-  // propsの値が変更されたときにステートを同期（テーブルの再ソート対応）
-  useEffect(() => {
-    if (!open) {
-      setValue(currentValue || "");
-    }
-  }, [currentValue, open]);
 
   const handleSave = async () => {
     if (required && !value.trim()) {

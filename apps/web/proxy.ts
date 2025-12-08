@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { get } from "@vercel/edge-config";
 import { Maintenance } from "@/lib/types/maintenance";
 import { handleMaintenanceMode } from "@/lib/maintenance";
-import { getSessionCookie } from "better-auth/cookies";
+import { getSessionCookie } from "@workspace/auth/cookies";
 
 const publicRoutes = [
   "/login",

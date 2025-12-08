@@ -122,7 +122,7 @@ export function DataTable<TData, TValue>({
                         case "documentStatus":
                           return "w-[70px]";
                         case "notes":
-                          return "min-w-[65px] w-[120px]";
+                          return "min-w-[65px] max-w-[120px]";
                         case "actions":
                           return "sticky right-0 bg-background w-[50px]";
                         default:
@@ -172,7 +172,7 @@ export function DataTable<TData, TValue>({
                           case "ownerName":
                             return `${base} max-w-[120px] `;
                           case "notes":
-                            return `${base} max-w-[100px]`;
+                            return `${base} max-w-[80px]`;
                           case "actions":
                             return `${base} sticky right-2`;
                           default:
