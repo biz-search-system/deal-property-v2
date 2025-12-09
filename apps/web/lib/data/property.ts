@@ -212,7 +212,7 @@ export async function getPropertiesBySettlementDate(organizationId: string) {
     },
     orderBy: (props, { asc }) => [
       asc(props.settlementDate),
-      asc(props.updatedAt),
+      // asc(props.updatedAt),
     ],
   });
 }

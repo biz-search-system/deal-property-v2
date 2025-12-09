@@ -506,7 +506,7 @@ export async function updatePropertyName(data: {
 
   // revalidatePath("/properties");
   // revalidatePath("/properties/unconfirmed");
-  revalidatePath("/properties/search");
+  // revalidatePath("/properties/search");
 }
 
 /**

@@ -7,6 +7,7 @@ import {
   PopoverTrigger,
 } from "@workspace/ui/components/popover";
 import { Textarea } from "@workspace/ui/components/textarea";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
 
@@ -60,6 +61,7 @@ export function TextPopoverEdit({
   const [open, setOpen] = useState(false);
   const [value, setValue] = useState(currentValue || "");
   const [isSaving, setIsSaving] = useState(false);
+  const router = useRouter();
 
   const handleSave = async () => {
     if (required && !value.trim()) {
@@ -72,6 +74,7 @@ export function TextPopoverEdit({
       await onSave(id, value.trim());
       toast.success(successMessage);
       setOpen(false);
+      router.refresh();
     } catch (error) {
       toast.error(errorMessage);
       console.error(error);
