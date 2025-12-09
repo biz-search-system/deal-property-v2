@@ -79,8 +79,7 @@ export default function PropertyFormProvider({
         defaultValues?.contractProgress?.bcContractCreated ?? false,
       bcDescriptionCreated:
         defaultValues?.contractProgress?.bcDescriptionCreated ?? false,
-      bcContractSent:
-        defaultValues?.contractProgress?.bcContractSent ?? false,
+      bcContractSent: defaultValues?.contractProgress?.bcContractSent ?? false,
       bcDescriptionSent:
         defaultValues?.contractProgress?.bcDescriptionSent ?? false,
       bcContractCbDone:
