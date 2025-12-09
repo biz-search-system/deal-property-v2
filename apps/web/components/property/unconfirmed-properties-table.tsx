@@ -112,7 +112,7 @@ export function UnconfirmedPropertiesTable({
                   />
                 </TableCell>
                 {/* 担当 */}
-                <TableCell className="text-[10px] p-1 sticky left-0 bg-background">
+                <TableCell className="text-[10px] p-1 sticky left-0 ">
                   <div className="flex gap-1 flex-wrap">
                     {property.staff.map((staff) => (
                       <Badge

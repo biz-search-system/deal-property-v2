@@ -162,9 +162,9 @@ export function DataTable<TData, TValue>({
                         const base = "text-[10px] p-1";
                         switch (id) {
                           case "organization":
-                            return `${base} bg-background`;
+                            return `${base}`;
                           case "staff":
-                            return `${base} bg-background w-[50px]`;
+                            return `${base} w-[50px]`;
                           case "propertyName":
                             return `${base} max-w-[120px]`;
                           case "roomNumber":

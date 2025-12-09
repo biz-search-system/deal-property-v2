@@ -28,6 +28,7 @@ import OrganizationSelectForm from "../form/organization-select-form";
 import { Organization } from "@/lib/types/organization";
 import { contractType } from "@workspace/drizzle/schemas";
 import { CONTRACT_TYPE_COLORS, CONTRACT_TYPE_LABELS } from "@workspace/utils";
+import { Badge } from "@workspace/ui/components/badge";
 
 interface BasicInfoTabProps {
   availableStaff: { id: string; name: string; email: string; role: string }[];
@@ -50,7 +51,7 @@ export default function BasicInfoTab({
     // 営業チームメンバーを再取得
     try {
       const response = await fetch(
-        `/api/organization/${organizationId}/sales-team`,
+        `/api/organization/${organizationId}/sales-team`
       );
       if (response.ok) {
         const data = await response.json();
@@ -70,7 +71,7 @@ export default function BasicInfoTab({
     } else {
       setValue(
         "staffIds",
-        selectedStaffIds.filter((id) => id !== staffId),
+        selectedStaffIds.filter((id) => id !== staffId)
       );
     }
   };
@@ -103,10 +104,26 @@ export default function BasicInfoTab({
                         variant="outline"
                         className="w-full justify-between"
                       >
-                        {selectedStaffIds.length > 0
-                          ? `${selectedStaffIds.length}名選択中`
-                          : "選択"}
-                        <ChevronDown className="ml-2 h-4 w-4" />
+                        {selectedStaffIds.length > 0 ? (
+                          <div className="flex flex-wrap gap-1">
+                            {availableStaff
+                              .filter((staff) =>
+                                selectedStaffIds.includes(staff.id)
+                              )
+                              .map((staff) => (
+                                <Badge
+                                  key={staff.id}
+                                  variant="outline"
+                                  className=""
+                                >
+                                  {staff.name || "名前なし"}
+                                </Badge>
+                              ))}
+                          </div>
+                        ) : (
+                          "選択"
+                        )}
+                        <ChevronDown className="shrink-0" />
                       </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent className="w-72">
@@ -138,14 +155,6 @@ export default function BasicInfoTab({
                       )}
                     </DropdownMenuContent>
                   </DropdownMenu>
-                  {selectedStaffIds.length > 0 && (
-                    <div className="mt-2 text-sm text-muted-foreground">
-                      {availableStaff
-                        .filter((staff) => selectedStaffIds.includes(staff.id))
-                        .map((staff) => staff.name || "名前なし")
-                        .join(", ")}
-                    </div>
-                  )}
                   <FormMessage />
                 </FormItem>
               )}
@@ -209,7 +218,7 @@ export default function BasicInfoTab({
                 <Input
                   id="ownerName"
                   placeholder="オーナー名を入力"
-                  autoComplete="name"
+                  autoComplete="off"
                   {...field}
                 />
               </FormControl>
@@ -240,7 +249,7 @@ export default function BasicInfoTab({
                     value={field.value ?? ""}
                     onChange={(e) =>
                       field.onChange(
-                        e.target.value ? Number(e.target.value) : undefined,
+                        e.target.value ? Number(e.target.value) : undefined
                       )
                     }
                   />
@@ -266,7 +275,7 @@ export default function BasicInfoTab({
                     value={field.value ?? ""}
                     onChange={(e) =>
                       field.onChange(
-                        e.target.value ? Number(e.target.value) : undefined,
+                        e.target.value ? Number(e.target.value) : undefined
                       )
                     }
                   />
@@ -292,7 +301,7 @@ export default function BasicInfoTab({
                     value={field.value ?? ""}
                     onChange={(e) =>
                       field.onChange(
-                        e.target.value ? Number(e.target.value) : undefined,
+                        e.target.value ? Number(e.target.value) : undefined
                       )
                     }
                   />
@@ -318,7 +327,7 @@ export default function BasicInfoTab({
                     value={field.value ?? ""}
                     onChange={(e) =>
                       field.onChange(
-                        e.target.value ? Number(e.target.value) : undefined,
+                        e.target.value ? Number(e.target.value) : undefined
                       )
                     }
                   />

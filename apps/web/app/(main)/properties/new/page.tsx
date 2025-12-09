@@ -67,22 +67,22 @@ export default async function PropertyNewPage() {
               </TabsList>
 
               <div className="min-h-0 flex-1 overflow-auto">
-                <TabsContent value="basic" className="mt-3">
+                <TabsContent value="basic" className="mt-3 px-1">
                   <BasicInfoTab
                     availableStaff={availableStaff}
                     organizations={organizations}
                   />
                 </TabsContent>
 
-                <TabsContent value="contract" className="mt-3">
+                <TabsContent value="contract" className="mt-3 px-1">
                   <ContractProgressTab />
                 </TabsContent>
 
-                <TabsContent value="document" className="mt-3">
+                <TabsContent value="document" className="mt-3 px-1">
                   <DocumentProgressTab />
                 </TabsContent>
 
-                <TabsContent value="settlement" className="mt-3">
+                <TabsContent value="settlement" className="mt-3 px-1">
                   <SettlementProgressTab />
                 </TabsContent>
               </div>
