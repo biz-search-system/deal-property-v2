@@ -360,7 +360,12 @@ export default function BasicInfoTab({
 
           {/* 利益（自動計算） */}
           <FormItem>
-            <FormLabel>利益（自動計算）</FormLabel>
+            <div className="flex flex-row justify-between gap-2">
+              <FormLabel>利益（自動計算）</FormLabel>
+              <p className="text-xs text-muted-foreground">
+                出口金額 - A金額 + 仲手等
+              </p>
+            </div>
             <FormControl>
               <Input
                 readOnly
@@ -374,9 +379,6 @@ export default function BasicInfoTab({
                 })()}
               />
             </FormControl>
-            <p className="text-xs text-muted-foreground">
-              出口金額 - A金額 + 仲手等
-            </p>
           </FormItem>
 
           <FormField

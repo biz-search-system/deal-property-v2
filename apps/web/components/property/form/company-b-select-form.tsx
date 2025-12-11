@@ -61,7 +61,7 @@ export default function CompanyBSelectForm<
             disabled={disabled}
           >
             <FormControl>
-              <SelectTrigger>
+              <SelectTrigger className="w-1/2">
                 <SelectValue placeholder={placeholder}>
                   {field.value && (
                     <Badge

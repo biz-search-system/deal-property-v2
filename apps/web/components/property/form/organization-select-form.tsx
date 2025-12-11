@@ -54,7 +54,7 @@ export default function OrganizationSelectForm<
   // 選択された組織を取得
   const selectedOrganizationId = form.watch(name);
   const selectedOrganization = organizations.find(
-    (org) => org.id === selectedOrganizationId,
+    (org) => org.id === selectedOrganizationId
   );
 
   return (
@@ -78,7 +78,7 @@ export default function OrganizationSelectForm<
             disabled={disabled}
           >
             <FormControl>
-              <SelectTrigger>
+              <SelectTrigger className="w-1/2">
                 <SelectValue placeholder={placeholder}>
                   {selectedOrganization && (
                     <OrganizationBadge
