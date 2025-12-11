@@ -112,9 +112,55 @@ export async function createProperty(data: PropertyCreate) {
       );
     }
 
-    // 3. 契約進捗を初期化
+    // 3. 契約進捗を初期化（フォームの値があれば設定）
+    const now = new Date();
     await tx.insert(contractProgress).values({
       propertyId: property.id,
+      // AB関係
+      abContractSaved: validatedData.abContractSaved ?? false,
+      abContractSavedAt: validatedData.abContractSaved ? now : null,
+      abContractSavedBy: validatedData.abContractSaved
+        ? session.user.id
+        : null,
+      abAuthorizationSaved: validatedData.abAuthorizationSaved ?? false,
+      abAuthorizationSavedAt: validatedData.abAuthorizationSaved ? now : null,
+      abAuthorizationSavedBy: validatedData.abAuthorizationSaved
+        ? session.user.id
+        : null,
+      abSellerIdSaved: validatedData.abSellerIdSaved ?? false,
+      abSellerIdSavedAt: validatedData.abSellerIdSaved ? now : null,
+      abSellerIdSavedBy: validatedData.abSellerIdSaved
+        ? session.user.id
+        : null,
+      // BC関係
+      bcContractCreated: validatedData.bcContractCreated ?? false,
+      bcContractCreatedAt: validatedData.bcContractCreated ? now : null,
+      bcContractCreatedBy: validatedData.bcContractCreated
+        ? session.user.id
+        : null,
+      bcDescriptionCreated: validatedData.bcDescriptionCreated ?? false,
+      bcDescriptionCreatedAt: validatedData.bcDescriptionCreated ? now : null,
+      bcDescriptionCreatedBy: validatedData.bcDescriptionCreated
+        ? session.user.id
+        : null,
+      bcContractSent: validatedData.bcContractSent ?? false,
+      bcContractSentAt: validatedData.bcContractSent ? now : null,
+      bcContractSentBy: validatedData.bcContractSent ? session.user.id : null,
+      bcDescriptionSent: validatedData.bcDescriptionSent ?? false,
+      bcDescriptionSentAt: validatedData.bcDescriptionSent ? now : null,
+      bcDescriptionSentBy: validatedData.bcDescriptionSent
+        ? session.user.id
+        : null,
+      bcContractCbDone: validatedData.bcContractCbDone ?? false,
+      bcContractCbDoneAt: validatedData.bcContractCbDone ? now : null,
+      bcContractCbDoneBy: validatedData.bcContractCbDone
+        ? session.user.id
+        : null,
+      bcDescriptionCbDone: validatedData.bcDescriptionCbDone ?? false,
+      bcDescriptionCbDoneAt: validatedData.bcDescriptionCbDone ? now : null,
+      bcDescriptionCbDoneBy: validatedData.bcDescriptionCbDone
+        ? session.user.id
+        : null,
     });
 
     // 4. 書類進捗を初期化
