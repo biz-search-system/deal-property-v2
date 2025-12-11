@@ -201,6 +201,30 @@ export const propertyCreateSchema = z.object({
   bcDescriptionSent: z.boolean().optional(),
   bcContractCbDone: z.boolean().optional(),
   bcDescriptionCbDone: z.boolean().optional(),
+
+  // 書類項目（銀行関係）
+  documentItem_loan_calculation: z.string().optional(),
+
+  // 書類項目（賃貸管理関係）
+  documentItem_rental_contract: z.string().optional(),
+  documentItem_management_contract: z.string().optional(),
+  documentItem_move_in_application: z.string().optional(),
+
+  // 書類項目（建物管理関係）
+  documentItem_important_matters_report: z.string().optional(),
+  documentItem_management_rules: z.string().optional(),
+  documentItem_long_term_repair_plan: z.string().optional(),
+  documentItem_general_meeting_minutes: z.string().optional(),
+  documentItem_pamphlet: z.string().optional(),
+  documentItem_bank_transfer_form: z.string().optional(),
+  documentItem_owner_change_notification: z.string().optional(),
+
+  // 書類項目（役所関係）
+  documentItem_tax_certificate: z.string().optional(),
+  documentItem_building_plan_overview: z.string().optional(),
+  documentItem_ledger_certificate: z.string().optional(),
+  documentItem_zoning_district: z.string().optional(),
+  documentItem_road_ledger: z.string().optional(),
 });
 
 /**

@@ -8,4 +8,5 @@ export * from "./bank-account";
 export * from "./bank-account-mapping";
 export * from "./bank-account-limits";
 export * from "./document-status";
+export * from "./document-item";
 export * from "./organization";

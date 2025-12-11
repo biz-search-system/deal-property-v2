@@ -97,6 +97,52 @@ export const maisokuDistributionStatus = [
   "distributed",
 ] as const;
 
+/** 書類項目ステータス */
+export const documentItemStatus = [
+  "not_requested",
+  "requesting",
+  "acquired",
+  "not_required",
+] as const;
+
+/** 書類項目種別（銀行関係） */
+export const documentItemTypeBank = ["loan_calculation"] as const;
+
+/** 書類項目種別（賃貸管理関係） */
+export const documentItemTypeRentalManagement = [
+  "rental_contract",
+  "management_contract",
+  "move_in_application",
+] as const;
+
+/** 書類項目種別（建物管理関係） */
+export const documentItemTypeBuildingManagement = [
+  "important_matters_report",
+  "management_rules",
+  "long_term_repair_plan",
+  "general_meeting_minutes",
+  "pamphlet",
+  "bank_transfer_form",
+  "owner_change_notification",
+] as const;
+
+/** 書類項目種別（役所関係） */
+export const documentItemTypeGovernment = [
+  "tax_certificate",
+  "building_plan_overview",
+  "ledger_certificate",
+  "zoning_district",
+  "road_ledger",
+] as const;
+
+/** 書類項目種別（全体） */
+export const documentItemType = [
+  ...documentItemTypeBank,
+  ...documentItemTypeRentalManagement,
+  ...documentItemTypeBuildingManagement,
+  ...documentItemTypeGovernment,
+] as const;
+
 // ==================== テーブル定義 ====================
 
 /**
@@ -159,6 +205,12 @@ export const properties = sqliteTable(
     documentStatus: text("document_status", { enum: documentStatus })
       .notNull()
       .default("waiting_request"),
+    documentStatusUpdatedAt: integer("document_status_updated_at", {
+      mode: "timestamp_ms",
+    }),
+    documentStatusUpdatedBy: text("document_status_updated_by").references(
+      () => users.id
+    ),
     notes: text("notes"),
     accountCompany: text("account_company", { enum: accountCompany }),
     bankAccount: text("bank_account", { enum: bankAccount }),
@@ -417,6 +469,34 @@ export const settlementProgress = sqliteTable("settlement_progress", {
 });
 
 /**
+ * 書類項目テーブル
+ * 案件ごとの各書類項目のステータスを管理するテーブル。
+ * 銀行関係、賃貸管理関係、建物管理関係、役所関係の4カテゴリの書類項目を管理します。
+ */
+export const propertyDocumentItems = sqliteTable(
+  "property_document_items",
+  {
+    id,
+    propertyId: text("property_id")
+      .notNull()
+      .references(() => properties.id, { onDelete: "cascade" }),
+    itemType: text("item_type", { enum: documentItemType }).notNull(),
+    status: text("status", { enum: documentItemStatus })
+      .notNull()
+      .default("not_requested"),
+    updatedAt: integer("updated_at", { mode: "timestamp_ms" }),
+    updatedBy: text("updated_by").references(() => users.id),
+  },
+  (table) => [
+    index("idx_property_document_items_property_id").on(table.propertyId),
+    unique("uk_property_document_items_property_item").on(
+      table.propertyId,
+      table.itemType
+    ),
+  ]
+);
+
+/**
  * 案件進捗履歴テーブル
  * 案件の進捗ステータス変更履歴を記録するテーブル。
  * 案件のメイン進捗ステータスが変更された際に、変更前・変更後のステータス、
@@ -460,6 +540,7 @@ export const propertiesRelations = relations(properties, ({ many, one }) => ({
     fields: [properties.id],
     references: [documentProgress.propertyId],
   }),
+  documentItems: many(propertyDocumentItems),
   settlementProgress: one(settlementProgress, {
     fields: [properties.id],
     references: [settlementProgress.propertyId],
@@ -480,6 +561,12 @@ export const propertiesRelations = relations(properties, ({ many, one }) => ({
     fields: [properties.progressStatusUpdatedBy],
     references: [users.id],
     relationName: "progressStatusUpdatedBy",
+  }),
+  // 書類ステータス更新者
+  documentStatusUpdatedByUser: one(users, {
+    fields: [properties.documentStatusUpdatedBy],
+    references: [users.id],
+    relationName: "documentStatusUpdatedBy",
   }),
   // スケジュール更新者
   contractDateAUpdatedByUser: one(users, {
@@ -583,6 +670,21 @@ export const documentProgressRelations = relations(
     updatedByUser: one(users, {
       fields: [documentProgress.updatedBy],
       references: [users.id],
+    }),
+  })
+);
+
+export const propertyDocumentItemsRelations = relations(
+  propertyDocumentItems,
+  ({ one }) => ({
+    property: one(properties, {
+      fields: [propertyDocumentItems.propertyId],
+      references: [properties.id],
+    }),
+    updatedByUser: one(users, {
+      fields: [propertyDocumentItems.updatedBy],
+      references: [users.id],
+      relationName: "documentItemUpdatedBy",
     }),
   })
 );

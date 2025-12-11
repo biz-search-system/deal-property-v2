@@ -3,10 +3,17 @@ import type {
   propertyStaff,
   contractProgress,
   documentProgress,
+  propertyDocumentItems,
   settlementProgress,
   propertyProgressHistory,
   progressStatus,
   documentStatus,
+  documentItemStatus,
+  documentItemType,
+  documentItemTypeBank,
+  documentItemTypeRentalManagement,
+  documentItemTypeBuildingManagement,
+  documentItemTypeGovernment,
   accountCompany,
   bankAccount,
   brokerCompany,
@@ -30,6 +37,21 @@ export type BrokerCompany = (typeof brokerCompany)[number];
 export type CompanyB = (typeof companyB)[number];
 /** 契約形態の型 */
 export type ContractType = (typeof contractType)[number];
+/** 書類項目ステータスの型 */
+export type DocumentItemStatus = (typeof documentItemStatus)[number];
+/** 書類項目種別の型（全体） */
+export type DocumentItemType = (typeof documentItemType)[number];
+/** 書類項目種別の型（銀行関係） */
+export type DocumentItemTypeBank = (typeof documentItemTypeBank)[number];
+/** 書類項目種別の型（賃貸管理関係） */
+export type DocumentItemTypeRentalManagement =
+  (typeof documentItemTypeRentalManagement)[number];
+/** 書類項目種別の型（建物管理関係） */
+export type DocumentItemTypeBuildingManagement =
+  (typeof documentItemTypeBuildingManagement)[number];
+/** 書類項目種別の型（役所関係） */
+export type DocumentItemTypeGovernment =
+  (typeof documentItemTypeGovernment)[number];
 
 // ==================== Enum定義 ====================
 
@@ -105,3 +127,7 @@ export type PropertyProgressHistory =
   typeof propertyProgressHistory.$inferSelect;
 export type InsertPropertyProgressHistory =
   typeof propertyProgressHistory.$inferInsert;
+
+export type PropertyDocumentItem = typeof propertyDocumentItems.$inferSelect;
+export type InsertPropertyDocumentItem =
+  typeof propertyDocumentItems.$inferInsert;

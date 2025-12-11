@@ -43,6 +43,10 @@ export async function getPropertyById(id: string) {
       progressStatusUpdatedByUser: {
         columns: { id: true, name: true, email: true, image: true },
       },
+      // 書類ステータス更新者ユーザー情報
+      documentStatusUpdatedByUser: {
+        columns: { id: true, name: true, email: true, image: true },
+      },
       // スケジュール更新者ユーザー情報
       contractDateAUpdatedByUser: {
         columns: { id: true, name: true, email: true, image: true },
@@ -91,6 +95,14 @@ export async function getPropertyById(id: string) {
         },
       },
       documentProgress: true,
+      // 書類項目（更新者ユーザー情報付き）
+      documentItems: {
+        with: {
+          updatedByUser: {
+            columns: { id: true, name: true, email: true, image: true },
+          },
+        },
+      },
       settlementProgress: true,
     },
   });

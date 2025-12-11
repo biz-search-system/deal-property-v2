@@ -6,6 +6,7 @@ import {
   propertyStaff,
   contractProgress,
   documentProgress,
+  propertyDocumentItems,
   settlementProgress,
 } from "@workspace/drizzle/schemas";
 import {
@@ -14,11 +15,15 @@ import {
   type PropertyCreate,
   type PropertyUpdate,
 } from "@workspace/drizzle/zod-schemas";
-import type { InsertProperty } from "@workspace/drizzle/types";
+import type {
+  InsertProperty,
+  DocumentItemType,
+  DocumentItemStatus,
+} from "@workspace/drizzle/types";
 import { auth } from "@workspace/auth";
 import { headers } from "next/headers";
 import { revalidatePath } from "next/cache";
-import { eq } from "drizzle-orm";
+import { eq, and } from "drizzle-orm";
 import { verifySession } from "../data/sesstion";
 
 /**
@@ -101,6 +106,8 @@ export async function createProperty(data: PropertyCreate) {
       documentStatus:
         (validatedData.documentStatus as InsertProperty["documentStatus"]) ||
         "waiting_request",
+      documentStatusUpdatedAt: new Date(),
+      documentStatusUpdatedBy: session.user.id,
       accountCompany:
         (validatedData.accountCompany as InsertProperty["accountCompany"]) ||
         undefined,
@@ -265,6 +272,10 @@ export async function updateProperty(data: PropertyUpdate) {
     const progressStatusChanged =
       currentProperty?.progressStatus !== validatedData.progressStatus;
 
+    // 書類ステータス変更の検出
+    const documentStatusChanged =
+      currentProperty?.documentStatus !== validatedData.documentStatus;
+
     // 1. 案件本体を更新
     const [property] = await tx
       .update(properties)
@@ -329,6 +340,12 @@ export async function updateProperty(data: PropertyUpdate) {
         documentStatus:
           (validatedData.documentStatus as InsertProperty["documentStatus"]) ||
           undefined,
+        documentStatusUpdatedAt: documentStatusChanged
+          ? now
+          : currentProperty?.documentStatusUpdatedAt,
+        documentStatusUpdatedBy: documentStatusChanged
+          ? session.user.id
+          : currentProperty?.documentStatusUpdatedBy,
         accountCompany:
           (validatedData.accountCompany as InsertProperty["accountCompany"]) ||
           undefined,
@@ -486,6 +503,68 @@ export async function updateProperty(data: PropertyUpdate) {
       })
       .where(eq(contractProgress.propertyId, validatedData.id));
 
+    // 5. 書類項目を更新（UPSERT）
+    const documentItemTypes = [
+      "loan_calculation",
+      "rental_contract",
+      "management_contract",
+      "move_in_application",
+      "important_matters_report",
+      "management_rules",
+      "long_term_repair_plan",
+      "general_meeting_minutes",
+      "pamphlet",
+      "bank_transfer_form",
+      "owner_change_notification",
+      "tax_certificate",
+      "building_plan_overview",
+      "ledger_certificate",
+      "zoning_district",
+      "road_ledger",
+    ] as const;
+
+    // 現在の書類項目を取得
+    const currentDocumentItems = await tx.query.propertyDocumentItems.findMany({
+      where: eq(propertyDocumentItems.propertyId, validatedData.id),
+    });
+
+    for (const itemType of documentItemTypes) {
+      const fieldName =
+        `documentItem_${itemType}` as keyof typeof validatedData;
+      const newStatus = validatedData[fieldName] as string | undefined;
+
+      if (!newStatus) continue;
+
+      const existingItem = currentDocumentItems.find(
+        (item) => item.itemType === itemType
+      );
+
+      if (existingItem) {
+        // 値が変更された場合のみ更新
+        if (existingItem.status !== newStatus) {
+          await tx
+            .update(propertyDocumentItems)
+            .set({
+              status: newStatus as DocumentItemStatus,
+              updatedAt: now,
+              updatedBy: session.user.id,
+            })
+            .where(eq(propertyDocumentItems.id, existingItem.id));
+        }
+      } else {
+        // 新規作成（デフォルト以外の値の場合のみ）
+        if (newStatus !== "not_requested") {
+          await tx.insert(propertyDocumentItems).values({
+            propertyId: validatedData.id,
+            itemType: itemType as DocumentItemType,
+            status: newStatus as DocumentItemStatus,
+            updatedAt: now,
+            updatedBy: session.user.id,
+          });
+        }
+      }
+    }
+
     return property;
   });
 
@@ -561,12 +640,16 @@ export async function updatePropertyDocumentStatus(data: {
   // セッション認証
   const session = await verifySession();
 
+  const now = new Date();
+
   await db
     .update(properties)
     .set({
       documentStatus: data.documentStatus as InsertProperty["documentStatus"],
+      documentStatusUpdatedAt: now,
+      documentStatusUpdatedBy: session.user.id,
       updatedBy: session.user.id,
-      updatedAt: new Date(),
+      updatedAt: now,
     })
     .where(eq(properties.id, data.id));
 
@@ -782,6 +865,51 @@ export async function updatePropertyBuyerCompany(data: {
       updatedAt: new Date(),
     })
     .where(eq(properties.id, data.id));
+
+  revalidatePath("/properties");
+  revalidatePath("/properties/unconfirmed");
+}
+
+/**
+ * 案件の書類項目ステータスを更新
+ * @param data.propertyId 案件ID
+ * @param data.itemType 書類項目種別
+ * @param data.status 更新後のステータス
+ */
+export async function updatePropertyDocumentItem(data: {
+  propertyId: string;
+  itemType: DocumentItemType;
+  status: DocumentItemStatus;
+}) {
+  const session = await verifySession();
+  const now = new Date();
+
+  // UPSERT: 存在すれば更新、なければ新規作成
+  const existing = await db.query.propertyDocumentItems.findFirst({
+    where: and(
+      eq(propertyDocumentItems.propertyId, data.propertyId),
+      eq(propertyDocumentItems.itemType, data.itemType)
+    ),
+  });
+
+  if (existing) {
+    await db
+      .update(propertyDocumentItems)
+      .set({
+        status: data.status,
+        updatedAt: now,
+        updatedBy: session.user.id,
+      })
+      .where(eq(propertyDocumentItems.id, existing.id));
+  } else {
+    await db.insert(propertyDocumentItems).values({
+      propertyId: data.propertyId,
+      itemType: data.itemType,
+      status: data.status,
+      updatedAt: now,
+      updatedBy: session.user.id,
+    });
+  }
 
   revalidatePath("/properties");
   revalidatePath("/properties/unconfirmed");

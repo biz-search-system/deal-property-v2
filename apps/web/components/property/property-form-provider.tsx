@@ -11,15 +11,28 @@ import { createProperty, updateProperty } from "@/lib/actions/property";
 import { useNavigationGuard } from "@/hooks/use-navigation-guard";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
-import type { Property, ContractProgress } from "@workspace/drizzle/types";
+import type {
+  Property,
+  ContractProgress,
+  PropertyDocumentItem,
+} from "@workspace/drizzle/types";
 
 interface PropertyFormProviderProps {
   children: React.ReactNode;
   defaultValues?: Partial<Property> & {
     staffIds?: string[];
     contractProgress?: ContractProgress | null;
+    documentItems?: PropertyDocumentItem[];
   };
   mode: "create" | "edit";
+}
+
+/** 書類項目配列からitemTypeでステータスを取得するヘルパー */
+function getDocumentItemStatus(
+  items: PropertyDocumentItem[] | undefined,
+  itemType: string
+): string {
+  return items?.find((item) => item.itemType === itemType)?.status || "not_requested";
 }
 
 export default function PropertyFormProvider({
@@ -89,6 +102,78 @@ export default function PropertyFormProvider({
         defaultValues?.contractProgress?.bcContractCbDone ?? false,
       bcDescriptionCbDone:
         defaultValues?.contractProgress?.bcDescriptionCbDone ?? false,
+
+      // 書類項目（銀行関係）
+      documentItem_loan_calculation: getDocumentItemStatus(
+        defaultValues?.documentItems,
+        "loan_calculation"
+      ),
+
+      // 書類項目（賃貸管理関係）
+      documentItem_rental_contract: getDocumentItemStatus(
+        defaultValues?.documentItems,
+        "rental_contract"
+      ),
+      documentItem_management_contract: getDocumentItemStatus(
+        defaultValues?.documentItems,
+        "management_contract"
+      ),
+      documentItem_move_in_application: getDocumentItemStatus(
+        defaultValues?.documentItems,
+        "move_in_application"
+      ),
+
+      // 書類項目（建物管理関係）
+      documentItem_important_matters_report: getDocumentItemStatus(
+        defaultValues?.documentItems,
+        "important_matters_report"
+      ),
+      documentItem_management_rules: getDocumentItemStatus(
+        defaultValues?.documentItems,
+        "management_rules"
+      ),
+      documentItem_long_term_repair_plan: getDocumentItemStatus(
+        defaultValues?.documentItems,
+        "long_term_repair_plan"
+      ),
+      documentItem_general_meeting_minutes: getDocumentItemStatus(
+        defaultValues?.documentItems,
+        "general_meeting_minutes"
+      ),
+      documentItem_pamphlet: getDocumentItemStatus(
+        defaultValues?.documentItems,
+        "pamphlet"
+      ),
+      documentItem_bank_transfer_form: getDocumentItemStatus(
+        defaultValues?.documentItems,
+        "bank_transfer_form"
+      ),
+      documentItem_owner_change_notification: getDocumentItemStatus(
+        defaultValues?.documentItems,
+        "owner_change_notification"
+      ),
+
+      // 書類項目（役所関係）
+      documentItem_tax_certificate: getDocumentItemStatus(
+        defaultValues?.documentItems,
+        "tax_certificate"
+      ),
+      documentItem_building_plan_overview: getDocumentItemStatus(
+        defaultValues?.documentItems,
+        "building_plan_overview"
+      ),
+      documentItem_ledger_certificate: getDocumentItemStatus(
+        defaultValues?.documentItems,
+        "ledger_certificate"
+      ),
+      documentItem_zoning_district: getDocumentItemStatus(
+        defaultValues?.documentItems,
+        "zoning_district"
+      ),
+      documentItem_road_ledger: getDocumentItemStatus(
+        defaultValues?.documentItems,
+        "road_ledger"
+      ),
     },
   });
 
