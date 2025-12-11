@@ -85,6 +85,27 @@
       "when": 1765474229072,
       "tag": "0011_light_machine_man",
       "breakpoints": true
+    },
+    {
+      "idx": 12,
+      "version": "6",
+      "when": 1765481267787,
+      "tag": "0012_wealthy_argent",
+      "breakpoints": true
+    },
+    {
+      "idx": 13,
+      "version": "6",
+      "when": 1765482777050,
+      "tag": "0013_magenta_joseph",
+      "breakpoints": true
+    },
+    {
+      "idx": 14,
+      "version": "6",
+      "when": 1765486021087,
+      "tag": "0014_silent_maverick",
+      "breakpoints": true
     }
   ]
 }

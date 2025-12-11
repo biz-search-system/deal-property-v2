@@ -388,9 +388,21 @@ export const settlementProgress = sqliteTable("settlement_progress", {
   bcSettlementStatus: text("bc_settlement_status", { enum: bcSettlementStatus })
     .notNull()
     .default("not_created"),
+  bcSettlementStatusAt: integer("bc_settlement_status_at", {
+    mode: "timestamp_ms",
+  }),
+  bcSettlementStatusBy: text("bc_settlement_status_by").references(
+    () => users.id
+  ),
   abSettlementStatus: text("ab_settlement_status", { enum: abSettlementStatus })
     .notNull()
     .default("not_created"),
+  abSettlementStatusAt: integer("ab_settlement_status_at", {
+    mode: "timestamp_ms",
+  }),
+  abSettlementStatusBy: text("ab_settlement_status_by").references(
+    () => users.id
+  ),
   loanCalculationSaved: integer("loan_calculation_saved", { mode: "boolean" })
     .notNull()
     .default(false),
@@ -410,6 +422,33 @@ export const settlementProgress = sqliteTable("settlement_progress", {
     .default(false),
   documentsSharedAt: integer("documents_shared_at", { mode: "timestamp_ms" }),
   documentsSharedBy: text("documents_shared_by").references(() => users.id),
+  // 賃貸管理関係 - 管理解約予定月
+  managementCancelScheduledMonth: text("management_cancel_scheduled_month"),
+  managementCancelScheduledMonthAt: integer(
+    "management_cancel_scheduled_month_at",
+    { mode: "timestamp_ms" }
+  ),
+  managementCancelScheduledMonthBy: text(
+    "management_cancel_scheduled_month_by"
+  ).references(() => users.id),
+  // 賃貸管理関係 - 管理解約依頼日
+  managementCancelRequestedDate: text("management_cancel_requested_date"),
+  managementCancelRequestedDateAt: integer(
+    "management_cancel_requested_date_at",
+    { mode: "timestamp_ms" }
+  ),
+  managementCancelRequestedDateBy: text(
+    "management_cancel_requested_date_by"
+  ).references(() => users.id),
+  // 賃貸管理関係 - 管理解約完了日
+  managementCancelCompletedDate: text("management_cancel_completed_date"),
+  managementCancelCompletedDateAt: integer(
+    "management_cancel_completed_date_at",
+    { mode: "timestamp_ms" }
+  ),
+  managementCancelCompletedDateBy: text(
+    "management_cancel_completed_date_by"
+  ).references(() => users.id),
   identityVerification: text("identity_verification", {
     enum: identityVerification,
   })
@@ -695,6 +734,44 @@ export const settlementProgressRelations = relations(
     property: one(properties, {
       fields: [settlementProgress.propertyId],
       references: [properties.id],
+    }),
+    // 精算書関係の更新者ユーザー
+    bcSettlementStatusByUser: one(users, {
+      fields: [settlementProgress.bcSettlementStatusBy],
+      references: [users.id],
+      relationName: "bcSettlementStatusBy",
+    }),
+    abSettlementStatusByUser: one(users, {
+      fields: [settlementProgress.abSettlementStatusBy],
+      references: [users.id],
+      relationName: "abSettlementStatusBy",
+    }),
+    // 司法書士関係の更新者ユーザー
+    lawyerRequestedByUser: one(users, {
+      fields: [settlementProgress.lawyerRequestedBy],
+      references: [users.id],
+      relationName: "lawyerRequestedBy",
+    }),
+    documentsSharedByUser: one(users, {
+      fields: [settlementProgress.documentsSharedBy],
+      references: [users.id],
+      relationName: "documentsSharedBy",
+    }),
+    // 賃貸管理関係の更新者ユーザー
+    managementCancelScheduledMonthByUser: one(users, {
+      fields: [settlementProgress.managementCancelScheduledMonthBy],
+      references: [users.id],
+      relationName: "managementCancelScheduledMonthBy",
+    }),
+    managementCancelRequestedDateByUser: one(users, {
+      fields: [settlementProgress.managementCancelRequestedDateBy],
+      references: [users.id],
+      relationName: "managementCancelRequestedDateBy",
+    }),
+    managementCancelCompletedDateByUser: one(users, {
+      fields: [settlementProgress.managementCancelCompletedDateBy],
+      references: [users.id],
+      relationName: "managementCancelCompletedDateBy",
     }),
   })
 );

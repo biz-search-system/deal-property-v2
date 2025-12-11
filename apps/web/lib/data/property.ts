@@ -103,7 +103,34 @@ export async function getPropertyById(id: string) {
           },
         },
       },
-      settlementProgress: true,
+      settlementProgress: {
+        with: {
+          // 精算書関係の更新者ユーザー情報
+          bcSettlementStatusByUser: {
+            columns: { id: true, name: true, email: true, image: true },
+          },
+          abSettlementStatusByUser: {
+            columns: { id: true, name: true, email: true, image: true },
+          },
+          // 司法書士関係の更新者ユーザー情報
+          lawyerRequestedByUser: {
+            columns: { id: true, name: true, email: true, image: true },
+          },
+          documentsSharedByUser: {
+            columns: { id: true, name: true, email: true, image: true },
+          },
+          // 賃貸管理関係の更新者ユーザー情報
+          managementCancelScheduledMonthByUser: {
+            columns: { id: true, name: true, email: true, image: true },
+          },
+          managementCancelRequestedDateByUser: {
+            columns: { id: true, name: true, email: true, image: true },
+          },
+          managementCancelCompletedDateByUser: {
+            columns: { id: true, name: true, email: true, image: true },
+          },
+        },
+      },
     },
   });
 }

@@ -1,26 +1,22 @@
 "use client";
 
 import { progressStatus } from "@workspace/drizzle/schemas";
-import { FormField } from "@workspace/ui/components/form";
-import { Checkbox } from "@workspace/ui/components/checkbox";
-import { Label } from "@workspace/ui/components/label";
 import {
   PROGRESS_STATUS_COLORS,
   PROGRESS_STATUS_LABELS,
 } from "@workspace/utils";
 import BadgeSelectForm from "../form/badge-select-form";
+import CheckboxForm from "../form/checkbox-form";
 import DatePickerForm from "../form/date-picker-form";
 import SelectForm from "../form/select-form";
 import { usePropertyForm } from "../property-form-provider";
 import SectionCard from "../section-card";
-import { UserActionBadge } from "../user-action-badge";
 import { useProperty } from "../property-provider";
 
 export default function ContractProgressTab() {
   const property = useProperty();
   const contractProgress = property.contractProgress;
   const form = usePropertyForm();
-  const { control } = form;
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
@@ -54,68 +50,26 @@ export default function ContractProgressTab() {
 
       <SectionCard title="AB関係">
         <div className="space-y-1 w-full">
-          <FormField
-            control={control}
+          <CheckboxForm
+            form={form}
             name="abContractSaved"
-            render={({ field }) => (
-              <div className="flex items-center justify-between py-2">
-                <div className="flex items-center gap-2">
-                  <Checkbox
-                    checked={field.value ?? false}
-                    onCheckedChange={field.onChange}
-                  />
-                  <Label className="cursor-pointer">契約書 保存完了</Label>
-                </div>
-                {contractProgress?.abContractSavedAt && (
-                  <UserActionBadge
-                    timestamp={contractProgress.abContractSavedAt}
-                    user={contractProgress.abContractSavedByUser}
-                  />
-                )}
-              </div>
-            )}
+            label="契約書 保存完了"
+            updatedAt={contractProgress?.abContractSavedAt}
+            updatedByUser={contractProgress?.abContractSavedByUser}
           />
-          <FormField
-            control={control}
+          <CheckboxForm
+            form={form}
             name="abAuthorizationSaved"
-            render={({ field }) => (
-              <div className="flex items-center justify-between py-2">
-                <div className="flex items-center gap-2">
-                  <Checkbox
-                    checked={field.value ?? false}
-                    onCheckedChange={field.onChange}
-                  />
-                  <Label className="cursor-pointer">委任状関係 保存完了</Label>
-                </div>
-                {contractProgress?.abAuthorizationSavedAt && (
-                  <UserActionBadge
-                    timestamp={contractProgress.abAuthorizationSavedAt}
-                    user={contractProgress.abAuthorizationSavedByUser}
-                  />
-                )}
-              </div>
-            )}
+            label="委任状関係 保存完了"
+            updatedAt={contractProgress?.abAuthorizationSavedAt}
+            updatedByUser={contractProgress?.abAuthorizationSavedByUser}
           />
-          <FormField
-            control={control}
+          <CheckboxForm
+            form={form}
             name="abSellerIdSaved"
-            render={({ field }) => (
-              <div className="flex items-center justify-between py-2">
-                <div className="flex items-center gap-2">
-                  <Checkbox
-                    checked={field.value ?? false}
-                    onCheckedChange={field.onChange}
-                  />
-                  <Label className="cursor-pointer">売主身分証 保存完了</Label>
-                </div>
-                {contractProgress?.abSellerIdSavedAt && (
-                  <UserActionBadge
-                    timestamp={contractProgress.abSellerIdSavedAt}
-                    user={contractProgress.abSellerIdSavedByUser}
-                  />
-                )}
-              </div>
-            )}
+            label="売主身分証 保存完了"
+            updatedAt={contractProgress?.abSellerIdSavedAt}
+            updatedByUser={contractProgress?.abSellerIdSavedByUser}
           />
         </div>
       </SectionCard>
@@ -148,131 +102,47 @@ export default function ContractProgressTab() {
 
       <SectionCard title="BC関係">
         <div className="space-y-1 w-full">
-          <FormField
-            control={control}
+          <CheckboxForm
+            form={form}
             name="bcContractCreated"
-            render={({ field }) => (
-              <div className="flex items-center justify-between py-2">
-                <div className="flex items-center gap-2">
-                  <Checkbox
-                    checked={field.value ?? false}
-                    onCheckedChange={field.onChange}
-                  />
-                  <Label className="cursor-pointer">BC売契作成</Label>
-                </div>
-                {contractProgress?.bcContractCreatedAt && (
-                  <UserActionBadge
-                    timestamp={contractProgress.bcContractCreatedAt}
-                    user={contractProgress.bcContractCreatedByUser}
-                  />
-                )}
-              </div>
-            )}
+            label="BC売契作成"
+            updatedAt={contractProgress?.bcContractCreatedAt}
+            updatedByUser={contractProgress?.bcContractCreatedByUser}
           />
-          <FormField
-            control={control}
+          <CheckboxForm
+            form={form}
             name="bcDescriptionCreated"
-            render={({ field }) => (
-              <div className="flex items-center justify-between py-2">
-                <div className="flex items-center gap-2">
-                  <Checkbox
-                    checked={field.value ?? false}
-                    onCheckedChange={field.onChange}
-                  />
-                  <Label className="cursor-pointer">重説作成</Label>
-                </div>
-                {contractProgress?.bcDescriptionCreatedAt && (
-                  <UserActionBadge
-                    timestamp={contractProgress.bcDescriptionCreatedAt}
-                    user={contractProgress.bcDescriptionCreatedByUser}
-                  />
-                )}
-              </div>
-            )}
+            label="重説作成"
+            updatedAt={contractProgress?.bcDescriptionCreatedAt}
+            updatedByUser={contractProgress?.bcDescriptionCreatedByUser}
           />
-          <FormField
-            control={control}
+          <CheckboxForm
+            form={form}
             name="bcContractSent"
-            render={({ field }) => (
-              <div className="flex items-center justify-between py-2">
-                <div className="flex items-center gap-2">
-                  <Checkbox
-                    checked={field.value ?? false}
-                    onCheckedChange={field.onChange}
-                  />
-                  <Label className="cursor-pointer">BC売契送付</Label>
-                </div>
-                {contractProgress?.bcContractSentAt && (
-                  <UserActionBadge
-                    timestamp={contractProgress.bcContractSentAt}
-                    user={contractProgress.bcContractSentByUser}
-                  />
-                )}
-              </div>
-            )}
+            label="BC売契送付"
+            updatedAt={contractProgress?.bcContractSentAt}
+            updatedByUser={contractProgress?.bcContractSentByUser}
           />
-          <FormField
-            control={control}
+          <CheckboxForm
+            form={form}
             name="bcDescriptionSent"
-            render={({ field }) => (
-              <div className="flex items-center justify-between py-2">
-                <div className="flex items-center gap-2">
-                  <Checkbox
-                    checked={field.value ?? false}
-                    onCheckedChange={field.onChange}
-                  />
-                  <Label className="cursor-pointer">重説送付</Label>
-                </div>
-                {contractProgress?.bcDescriptionSentAt && (
-                  <UserActionBadge
-                    timestamp={contractProgress.bcDescriptionSentAt}
-                    user={contractProgress.bcDescriptionSentByUser}
-                  />
-                )}
-              </div>
-            )}
+            label="重説送付"
+            updatedAt={contractProgress?.bcDescriptionSentAt}
+            updatedByUser={contractProgress?.bcDescriptionSentByUser}
           />
-          <FormField
-            control={control}
+          <CheckboxForm
+            form={form}
             name="bcContractCbDone"
-            render={({ field }) => (
-              <div className="flex items-center justify-between py-2">
-                <div className="flex items-center gap-2">
-                  <Checkbox
-                    checked={field.value ?? false}
-                    onCheckedChange={field.onChange}
-                  />
-                  <Label className="cursor-pointer">BC売契CB完了</Label>
-                </div>
-                {contractProgress?.bcContractCbDoneAt && (
-                  <UserActionBadge
-                    timestamp={contractProgress.bcContractCbDoneAt}
-                    user={contractProgress.bcContractCbDoneByUser}
-                  />
-                )}
-              </div>
-            )}
+            label="BC売契CB完了"
+            updatedAt={contractProgress?.bcContractCbDoneAt}
+            updatedByUser={contractProgress?.bcContractCbDoneByUser}
           />
-          <FormField
-            control={control}
+          <CheckboxForm
+            form={form}
             name="bcDescriptionCbDone"
-            render={({ field }) => (
-              <div className="flex items-center justify-between py-2">
-                <div className="flex items-center gap-2">
-                  <Checkbox
-                    checked={field.value ?? false}
-                    onCheckedChange={field.onChange}
-                  />
-                  <Label className="cursor-pointer">重説CB完了</Label>
-                </div>
-                {contractProgress?.bcDescriptionCbDoneAt && (
-                  <UserActionBadge
-                    timestamp={contractProgress.bcDescriptionCbDoneAt}
-                    user={contractProgress.bcDescriptionCbDoneByUser}
-                  />
-                )}
-              </div>
-            )}
+            label="重説CB完了"
+            updatedAt={contractProgress?.bcDescriptionCbDoneAt}
+            updatedByUser={contractProgress?.bcDescriptionCbDoneByUser}
           />
         </div>
       </SectionCard>

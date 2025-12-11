@@ -25,13 +25,18 @@ import { updatePropertyBankAccount } from "@/lib/actions/property-bank-account";
 import { toast } from "sonner";
 import {
   ACCOUNT_COMPANY_LABELS,
+  ACCOUNT_COMPANY_COLORS,
   BANK_ACCOUNT_LABELS,
+  BANK_ACCOUNT_COLORS,
   getBankAccountsByCompany,
   getBankAccountLimit,
   isNearLimit,
   isOverLimit,
   formatAmountInYen,
+  cn,
 } from "@workspace/utils";
+import type { BankAccount } from "@workspace/drizzle/types";
+import { Badge } from "@workspace/ui/components/badge";
 import type { AccountCompany } from "@workspace/drizzle/types";
 import { accountCompany, bankAccount } from "@workspace/drizzle/schemas";
 
@@ -157,12 +162,34 @@ export function BankAccountCard({
             }}
           >
             <SelectTrigger id="account-company">
-              <SelectValue placeholder="選択してください" />
+              <SelectValue placeholder="選択してください">
+                {selectedAccountCompany && (
+                  <Badge
+                    variant="outline"
+                    className={cn(
+                      "text-xs",
+                      ACCOUNT_COMPANY_COLORS[
+                        selectedAccountCompany as AccountCompany
+                      ]
+                    )}
+                  >
+                    {ACCOUNT_COMPANY_LABELS[selectedAccountCompany as AccountCompany]}
+                  </Badge>
+                )}
+              </SelectValue>
             </SelectTrigger>
             <SelectContent>
               {Object.entries(ACCOUNT_COMPANY_LABELS).map(([key, label]) => (
                 <SelectItem key={key} value={key}>
-                  {label}
+                  <Badge
+                    variant="outline"
+                    className={cn(
+                      "text-xs",
+                      ACCOUNT_COMPANY_COLORS[key as AccountCompany]
+                    )}
+                  >
+                    {label}
+                  </Badge>
                 </SelectItem>
               ))}
             </SelectContent>
@@ -183,7 +210,19 @@ export function BankAccountCard({
                     ? "銀行口座を選択してください"
                     : "先に口座会社を選択してください"
                 }
-              />
+              >
+                {selectedBankAccount && (
+                  <Badge
+                    variant="outline"
+                    className={cn(
+                      "text-xs",
+                      BANK_ACCOUNT_COLORS[selectedBankAccount as BankAccount]
+                    )}
+                  >
+                    {BANK_ACCOUNT_LABELS[selectedBankAccount as BankAccount]}
+                  </Badge>
+                )}
+              </SelectValue>
             </SelectTrigger>
             <SelectContent>
               {selectedAccountCompany &&
@@ -191,7 +230,12 @@ export function BankAccountCard({
                   selectedAccountCompany as AccountCompany,
                 ).map((account) => (
                   <SelectItem key={account} value={account}>
-                    {BANK_ACCOUNT_LABELS[account]}
+                    <Badge
+                      variant="outline"
+                      className={cn("text-xs", BANK_ACCOUNT_COLORS[account])}
+                    >
+                      {BANK_ACCOUNT_LABELS[account]}
+                    </Badge>
                   </SelectItem>
                 ))}
             </SelectContent>

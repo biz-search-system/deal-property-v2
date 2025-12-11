@@ -24,12 +24,18 @@ import { ChevronDown } from "lucide-react";
 import CompanyBSelectForm from "../form/company-b-select-form";
 import BrokerCompanySelectForm from "../form/broker-company-select-form";
 import BadgeSelectForm from "../form/badge-select-form";
+import ComboboxForm from "../form/combobox-form";
 import OrganizationSelectForm from "../form/organization-select-form";
 import { Organization } from "@/lib/types/organization";
 import { contractType } from "@workspace/drizzle/schemas";
 import { CONTRACT_TYPE_COLORS, CONTRACT_TYPE_LABELS } from "@workspace/utils";
 import { Badge } from "@workspace/ui/components/badge";
 import SectionCard from "../section-card";
+import { useMasterOptions } from "@/lib/swr/master-option";
+import {
+  createMasterOption,
+  deleteMasterOption,
+} from "@/lib/actions/master-option";
 
 interface BasicInfoTabProps {
   availableStaff: { id: string; name: string; email: string; role: string }[];
@@ -44,6 +50,51 @@ export default function BasicInfoTab({
   const { control, watch, setValue } = form;
   const selectedStaffIds = watch("staffIds") || [];
   const [availableStaff, setAvailableStaff] = useState(initialStaff);
+  const organizationId = watch("organizationId");
+
+  // マスタオプションの取得
+  const {
+    options: buyerCompanyOptions,
+    mutate: mutateBuyerCompany,
+    isLoading: isLoadingBuyerCompany,
+  } = useMasterOptions("buyer_company", organizationId);
+  const {
+    options: mortgageBankOptions,
+    mutate: mutateMortgageBank,
+    isLoading: isLoadingMortgageBank,
+  } = useMasterOptions("mortgage_bank", organizationId);
+
+  // 買取業者の追加
+  const handleAddBuyerCompany = async (value: string) => {
+    await createMasterOption({
+      category: "buyer_company",
+      value,
+      organizationId: organizationId || undefined,
+    });
+    mutateBuyerCompany();
+  };
+
+  // 買取業者の削除
+  const handleDeleteBuyerCompany = async (id: string) => {
+    await deleteMasterOption(id);
+    mutateBuyerCompany();
+  };
+
+  // 抵当銀行の追加
+  const handleAddMortgageBank = async (value: string) => {
+    await createMasterOption({
+      category: "mortgage_bank",
+      value,
+      organizationId: organizationId || undefined,
+    });
+    mutateMortgageBank();
+  };
+
+  // 抵当銀行の削除
+  const handleDeleteMortgageBank = async (id: string) => {
+    await deleteMasterOption(id);
+    mutateMortgageBank();
+  };
 
   // 組織変更時の処理
   const handleOrganizationChange = async (organizationId: string) => {
@@ -359,33 +410,21 @@ export default function BasicInfoTab({
       {/* 契約情報 */}
       <SectionCard title="契約情報">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4 w-full">
-          <FormField
-            control={control}
+          <ComboboxForm
+            form={form}
             name="buyerCompany"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>買取業者</FormLabel>
-                <FormControl>
-                  <Input
-                    id="buyerCompany"
-                    placeholder="入力中に候補が表示されます"
-                    autoComplete="off"
-                    list="buyer-companies"
-                    {...field}
-                    value={field.value || ""}
-                  />
-                </FormControl>
-                <datalist id="buyer-companies">
-                  <option value="株式会社A不動産" />
-                  <option value="株式会社B建設" />
-                  <option value="C投資" />
-                </datalist>
-                <p className="text-xs text-muted-foreground">
-                  検索方式 & 手入力可能
-                </p>
-                <FormMessage />
-              </FormItem>
-            )}
+            label="買取業者"
+            placeholder="選択または入力"
+            searchPlaceholder="業者名を検索..."
+            emptyMessage="該当する業者がありません"
+            options={buyerCompanyOptions.map((opt) => ({
+              id: opt.id,
+              value: opt.value,
+              label: opt.value,
+            }))}
+            isLoading={isLoadingBuyerCompany}
+            onAddOption={handleAddBuyerCompany}
+            onDeleteOption={handleDeleteBuyerCompany}
           />
 
           <BadgeSelectForm
@@ -407,34 +446,21 @@ export default function BasicInfoTab({
             label="仲介会社"
           />
 
-          <FormField
-            control={control}
+          <ComboboxForm
+            form={form}
             name="mortgageBank"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>抵当銀行</FormLabel>
-                <FormControl>
-                  <Input
-                    id="mortgageBank"
-                    placeholder="入力中に候補が表示されます"
-                    autoComplete="off"
-                    list="mortgage-banks"
-                    {...field}
-                    value={field.value || ""}
-                  />
-                </FormControl>
-                <datalist id="mortgage-banks">
-                  <option value="三菱UFJ銀行" />
-                  <option value="三井住友銀行" />
-                  <option value="みずほ銀行" />
-                  <option value="りそな銀行" />
-                </datalist>
-                <p className="text-xs text-muted-foreground">
-                  検索方式 & 手入力可能
-                </p>
-                <FormMessage />
-              </FormItem>
-            )}
+            label="抵当銀行"
+            placeholder="選択または入力"
+            searchPlaceholder="銀行名を検索..."
+            emptyMessage="該当する銀行がありません"
+            options={mortgageBankOptions.map((opt) => ({
+              id: opt.id,
+              value: opt.value,
+              label: opt.value,
+            }))}
+            isLoading={isLoadingMortgageBank}
+            onAddOption={handleAddMortgageBank}
+            onDeleteOption={handleDeleteMortgageBank}
           />
 
           <FormField

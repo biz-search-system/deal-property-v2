@@ -7,6 +7,7 @@ import {
   settlementProgress,
 } from "../schemas/property";
 import z from "zod";
+import { abSettlementStatus } from "../types/property";
 
 // ==================== 案件テーブル ====================
 
@@ -225,6 +226,19 @@ export const propertyCreateSchema = z.object({
   documentItem_ledger_certificate: z.string().optional(),
   documentItem_zoning_district: z.string().optional(),
   documentItem_road_ledger: z.string().optional(),
+
+  // 決済進捗 精算書関係
+  bcSettlementStatus: z.string().optional(),
+  abSettlementStatus: z.enum(abSettlementStatus).optional(),
+
+  // 決済進捗 司法書士関係
+  lawyerRequested: z.boolean().optional(),
+  documentsShared: z.boolean().optional(),
+
+  // 決済進捗 賃貸管理関係
+  managementCancelScheduledMonth: z.string().optional(),
+  managementCancelRequestedDate: z.string().optional(),
+  managementCancelCompletedDate: z.string().optional(),
 });
 
 /**

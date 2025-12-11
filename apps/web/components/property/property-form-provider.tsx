@@ -15,6 +15,7 @@ import type {
   Property,
   ContractProgress,
   PropertyDocumentItem,
+  SettlementProgress,
 } from "@workspace/drizzle/types";
 
 interface PropertyFormProviderProps {
@@ -23,6 +24,7 @@ interface PropertyFormProviderProps {
     staffIds?: string[];
     contractProgress?: ContractProgress | null;
     documentItems?: PropertyDocumentItem[];
+    settlementProgress?: SettlementProgress | null;
   };
   mode: "create" | "edit";
 }
@@ -174,6 +176,26 @@ export default function PropertyFormProvider({
         defaultValues?.documentItems,
         "road_ledger"
       ),
+
+      // 決済進捗 精算書関係
+      bcSettlementStatus:
+        defaultValues?.settlementProgress?.bcSettlementStatus || "not_created",
+      abSettlementStatus:
+        defaultValues?.settlementProgress?.abSettlementStatus || "not_created",
+
+      // 決済進捗 司法書士関係
+      lawyerRequested:
+        defaultValues?.settlementProgress?.lawyerRequested ?? false,
+      documentsShared:
+        defaultValues?.settlementProgress?.documentsShared ?? false,
+
+      // 決済進捗 賃貸管理関係
+      managementCancelScheduledMonth:
+        defaultValues?.settlementProgress?.managementCancelScheduledMonth || "",
+      managementCancelRequestedDate:
+        defaultValues?.settlementProgress?.managementCancelRequestedDate || "",
+      managementCancelCompletedDate:
+        defaultValues?.settlementProgress?.managementCancelCompletedDate || "",
     },
   });
 

@@ -9,18 +9,18 @@ export const BANK_ACCOUNT_LIMITS: Record<
   Partial<Record<BankAccount, number>>
 > = {
   legit: {
-    gmo_main: 100000, // 10億円
+    gmo_main: 50000, // 5億円
     gmo_sub: 10000, // 1億円
     kinsan: 10000, // 1億円
   },
   life: {
-    main_1727088: 50000, // 5億円
+    main_1727088: 10000, // 1億円
     sub_1728218: 10000, // 1億円
     new_main_2309414: 10000, // 1億円
   },
   ms: {
     sumi_shin: 10000, // 1億円
-    gmo_main: 10000, // 1億円
+    gmo_main: 100000, // 10億円
     gmo_sub: 10000, // 1億円
     rakuten: 10000, // 1億円
     paypay_1: 10000, // 1億円
@@ -47,7 +47,7 @@ export const WARNING_THRESHOLD_PERCENTAGE = 80; // 80%
  */
 export function getBankAccountLimit(
   company: AccountCompany | null | undefined,
-  account: BankAccount | null | undefined,
+  account: BankAccount | null | undefined
 ): number {
   if (!company || !account) return DEFAULT_BANK_ACCOUNT_LIMIT;
   return BANK_ACCOUNT_LIMITS[company]?.[account] || DEFAULT_BANK_ACCOUNT_LIMIT;

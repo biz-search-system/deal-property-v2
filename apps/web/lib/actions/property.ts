@@ -2,28 +2,26 @@
 
 import { db } from "@workspace/drizzle/db";
 import {
-  properties,
-  propertyStaff,
   contractProgress,
   documentProgress,
+  properties,
   propertyDocumentItems,
+  propertyStaff,
   settlementProgress,
 } from "@workspace/drizzle/schemas";
+import type {
+  DocumentItemStatus,
+  DocumentItemType,
+  InsertProperty,
+} from "@workspace/drizzle/types";
 import {
   propertyCreateSchema,
   propertyUpdateSchema,
   type PropertyCreate,
   type PropertyUpdate,
 } from "@workspace/drizzle/zod-schemas";
-import type {
-  InsertProperty,
-  DocumentItemType,
-  DocumentItemStatus,
-} from "@workspace/drizzle/types";
-import { auth } from "@workspace/auth";
-import { headers } from "next/headers";
+import { and, eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
-import { eq, and } from "drizzle-orm";
 import { verifySession } from "../data/sesstion";
 
 /**
@@ -64,7 +62,9 @@ export async function createProperty(data: PropertyCreate) {
       contractDateA: validatedData.contractDateA
         ? new Date(validatedData.contractDateA)
         : undefined,
-      contractDateAUpdatedAt: validatedData.contractDateA ? new Date() : undefined,
+      contractDateAUpdatedAt: validatedData.contractDateA
+        ? new Date()
+        : undefined,
       contractDateAUpdatedBy: validatedData.contractDateA
         ? session.user.id
         : undefined,
@@ -154,9 +154,7 @@ export async function createProperty(data: PropertyCreate) {
       // AB関係
       abContractSaved: validatedData.abContractSaved ?? false,
       abContractSavedAt: validatedData.abContractSaved ? now : null,
-      abContractSavedBy: validatedData.abContractSaved
-        ? session.user.id
-        : null,
+      abContractSavedBy: validatedData.abContractSaved ? session.user.id : null,
       abAuthorizationSaved: validatedData.abAuthorizationSaved ?? false,
       abAuthorizationSavedAt: validatedData.abAuthorizationSaved ? now : null,
       abAuthorizationSavedBy: validatedData.abAuthorizationSaved
@@ -164,9 +162,7 @@ export async function createProperty(data: PropertyCreate) {
         : null,
       abSellerIdSaved: validatedData.abSellerIdSaved ?? false,
       abSellerIdSavedAt: validatedData.abSellerIdSaved ? now : null,
-      abSellerIdSavedBy: validatedData.abSellerIdSaved
-        ? session.user.id
-        : null,
+      abSellerIdSavedBy: validatedData.abSellerIdSaved ? session.user.id : null,
       // BC関係
       bcContractCreated: validatedData.bcContractCreated ?? false,
       bcContractCreatedAt: validatedData.bcContractCreated ? now : null,
@@ -204,9 +200,63 @@ export async function createProperty(data: PropertyCreate) {
       updatedBy: session.user.id,
     });
 
-    // 5. 決済進捗を初期化
+    // 5. 決済進捗を初期化（フォームの値があれば設定）
+    const bcSettlementStatusValue =
+      validatedData.bcSettlementStatus ?? "not_created";
+    const abSettlementStatusValue =
+      validatedData.abSettlementStatus ?? "not_created";
+    const lawyerRequestedValue = validatedData.lawyerRequested ?? false;
+    const documentsSharedValue = validatedData.documentsShared ?? false;
     await tx.insert(settlementProgress).values({
       propertyId: property.id,
+      // 精算書関係 - BC精算書
+      bcSettlementStatus: bcSettlementStatusValue as
+        | "not_created"
+        | "created"
+        | "sent"
+        | "cb_done",
+      bcSettlementStatusAt:
+        bcSettlementStatusValue !== "not_created" ? now : null,
+      bcSettlementStatusBy:
+        bcSettlementStatusValue !== "not_created" ? session.user.id : null,
+      // 精算書関係 - AB精算書
+      abSettlementStatus: abSettlementStatusValue,
+      abSettlementStatusAt:
+        abSettlementStatusValue !== "not_created" ? now : null,
+      abSettlementStatusBy:
+        abSettlementStatusValue !== "not_created" ? session.user.id : null,
+      // 司法書士関係
+      lawyerRequested: lawyerRequestedValue,
+      lawyerRequestedAt: lawyerRequestedValue ? now : null,
+      lawyerRequestedBy: lawyerRequestedValue ? session.user.id : null,
+      documentsShared: documentsSharedValue,
+      documentsSharedAt: documentsSharedValue ? now : null,
+      documentsSharedBy: documentsSharedValue ? session.user.id : null,
+      // 賃貸管理関係
+      managementCancelScheduledMonth:
+        validatedData.managementCancelScheduledMonth || null,
+      managementCancelScheduledMonthAt: validatedData.managementCancelScheduledMonth
+        ? now
+        : null,
+      managementCancelScheduledMonthBy: validatedData.managementCancelScheduledMonth
+        ? session.user.id
+        : null,
+      managementCancelRequestedDate:
+        validatedData.managementCancelRequestedDate || null,
+      managementCancelRequestedDateAt: validatedData.managementCancelRequestedDate
+        ? now
+        : null,
+      managementCancelRequestedDateBy: validatedData.managementCancelRequestedDate
+        ? session.user.id
+        : null,
+      managementCancelCompletedDate:
+        validatedData.managementCancelCompletedDate || null,
+      managementCancelCompletedDateAt: validatedData.managementCancelCompletedDate
+        ? now
+        : null,
+      managementCancelCompletedDateBy: validatedData.managementCancelCompletedDate
+        ? session.user.id
+        : null,
     });
 
     return property;
@@ -419,8 +469,9 @@ export async function updateProperty(data: PropertyUpdate) {
       .set({
         // マイソク配布
         maisokuDistribution:
-          (validatedData.maisokuDistribution as "not_distributed" | "distributed") ??
-          "not_distributed",
+          (validatedData.maisokuDistribution as
+            | "not_distributed"
+            | "distributed") ?? "not_distributed",
         maisokuDistributionAt: maisokuDistributionChanged
           ? now
           : currentProgress?.maisokuDistributionAt,
@@ -503,7 +554,114 @@ export async function updateProperty(data: PropertyUpdate) {
       })
       .where(eq(contractProgress.propertyId, validatedData.id));
 
-    // 5. 書類項目を更新（UPSERT）
+    // 5. 決済進捗を更新
+    const currentSettlement = await tx.query.settlementProgress.findFirst({
+      where: eq(settlementProgress.propertyId, validatedData.id),
+    });
+
+    // 精算書関係 - ステータス変更の検出
+    const bcSettlementStatusChanged =
+      (validatedData.bcSettlementStatus ?? "not_created") !==
+      (currentSettlement?.bcSettlementStatus ?? "not_created");
+    const abSettlementStatusChanged =
+      (validatedData.abSettlementStatus ?? "not_created") !==
+      (currentSettlement?.abSettlementStatus ?? "not_created");
+
+    // 司法書士関係 - 状態が変更されたかどうかを判定
+    const lawyerRequestedChanged =
+      (validatedData.lawyerRequested ?? false) !==
+      (currentSettlement?.lawyerRequested ?? false);
+    const documentsSharedChanged =
+      (validatedData.documentsShared ?? false) !==
+      (currentSettlement?.documentsShared ?? false);
+
+    // 賃貸管理関係 - 状態が変更されたかどうかを判定
+    const managementCancelScheduledMonthChanged =
+      (validatedData.managementCancelScheduledMonth || null) !==
+      (currentSettlement?.managementCancelScheduledMonth || null);
+    const managementCancelRequestedDateChanged =
+      (validatedData.managementCancelRequestedDate || null) !==
+      (currentSettlement?.managementCancelRequestedDate || null);
+    const managementCancelCompletedDateChanged =
+      (validatedData.managementCancelCompletedDate || null) !==
+      (currentSettlement?.managementCancelCompletedDate || null);
+
+    await tx
+      .update(settlementProgress)
+      .set({
+        // 精算書関係 - BC精算書
+        bcSettlementStatus:
+          (validatedData.bcSettlementStatus as
+            | "not_created"
+            | "created"
+            | "sent"
+            | "cb_done") ?? "not_created",
+        bcSettlementStatusAt: bcSettlementStatusChanged
+          ? now
+          : currentSettlement?.bcSettlementStatusAt,
+        bcSettlementStatusBy: bcSettlementStatusChanged
+          ? session.user.id
+          : currentSettlement?.bcSettlementStatusBy,
+        // 精算書関係 - AB精算書
+        abSettlementStatus:
+          (validatedData.abSettlementStatus as
+            | "not_created"
+            | "created"
+            | "sent"
+            | "cr_done") ?? "not_created",
+        abSettlementStatusAt: abSettlementStatusChanged
+          ? now
+          : currentSettlement?.abSettlementStatusAt,
+        abSettlementStatusBy: abSettlementStatusChanged
+          ? session.user.id
+          : currentSettlement?.abSettlementStatusBy,
+        // 司法書士関係 - 司法書士依頼
+        lawyerRequested: validatedData.lawyerRequested ?? false,
+        lawyerRequestedAt: lawyerRequestedChanged
+          ? now
+          : currentSettlement?.lawyerRequestedAt,
+        lawyerRequestedBy: lawyerRequestedChanged
+          ? session.user.id
+          : currentSettlement?.lawyerRequestedBy,
+        // 司法書士関係 - 必要書類共有
+        documentsShared: validatedData.documentsShared ?? false,
+        documentsSharedAt: documentsSharedChanged
+          ? now
+          : currentSettlement?.documentsSharedAt,
+        documentsSharedBy: documentsSharedChanged
+          ? session.user.id
+          : currentSettlement?.documentsSharedBy,
+        // 賃貸管理関係 - 管理解約予定月
+        managementCancelScheduledMonth:
+          validatedData.managementCancelScheduledMonth || null,
+        managementCancelScheduledMonthAt: managementCancelScheduledMonthChanged
+          ? now
+          : currentSettlement?.managementCancelScheduledMonthAt,
+        managementCancelScheduledMonthBy: managementCancelScheduledMonthChanged
+          ? session.user.id
+          : currentSettlement?.managementCancelScheduledMonthBy,
+        // 賃貸管理関係 - 管理解約依頼日
+        managementCancelRequestedDate:
+          validatedData.managementCancelRequestedDate || null,
+        managementCancelRequestedDateAt: managementCancelRequestedDateChanged
+          ? now
+          : currentSettlement?.managementCancelRequestedDateAt,
+        managementCancelRequestedDateBy: managementCancelRequestedDateChanged
+          ? session.user.id
+          : currentSettlement?.managementCancelRequestedDateBy,
+        // 賃貸管理関係 - 管理解約完了日
+        managementCancelCompletedDate:
+          validatedData.managementCancelCompletedDate || null,
+        managementCancelCompletedDateAt: managementCancelCompletedDateChanged
+          ? now
+          : currentSettlement?.managementCancelCompletedDateAt,
+        managementCancelCompletedDateBy: managementCancelCompletedDateChanged
+          ? session.user.id
+          : currentSettlement?.managementCancelCompletedDateBy,
+      })
+      .where(eq(settlementProgress.propertyId, validatedData.id));
+
+    // 6. 書類項目を更新（UPSERT）
     const documentItemTypes = [
       "loan_calculation",
       "rental_contract",
