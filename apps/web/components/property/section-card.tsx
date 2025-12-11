@@ -17,9 +17,7 @@ export default function SectionCard({
       <CardHeader className="m-0 border-b [.border-b]:py-5 bg-muted/30 flex items-center">
         <CardTitle className="">{title}</CardTitle>
       </CardHeader>
-      <CardContent className="flex md:flex-row flex-col">
-        {children}
-      </CardContent>
+      <CardContent className="">{children}</CardContent>
     </Card>
   );
 }
