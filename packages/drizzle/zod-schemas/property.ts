@@ -186,6 +186,9 @@ export const propertyCreateSchema = z.object({
   // 担当者（必須、最低1名）
   staffIds: z.array(z.string()).min(1, "担当者は最低1名選択してください"),
 
+  // 契約進捗 マイソク配布
+  maisokuDistribution: z.string().optional(),
+
   // 契約進捗 AB関係
   abContractSaved: z.boolean().optional(),
   abAuthorizationSaved: z.boolean().optional(),

@@ -59,11 +59,27 @@ export async function createProperty(data: PropertyCreate) {
       contractDateA: validatedData.contractDateA
         ? new Date(validatedData.contractDateA)
         : undefined,
+      contractDateAUpdatedAt: validatedData.contractDateA ? new Date() : undefined,
+      contractDateAUpdatedBy: validatedData.contractDateA
+        ? session.user.id
+        : undefined,
       contractDateBc: validatedData.contractDateBc
         ? new Date(validatedData.contractDateBc)
         : undefined,
+      contractDateBcUpdatedAt: validatedData.contractDateBc
+        ? new Date()
+        : undefined,
+      contractDateBcUpdatedBy: validatedData.contractDateBc
+        ? session.user.id
+        : undefined,
       settlementDate: validatedData.settlementDate
         ? new Date(validatedData.settlementDate)
+        : undefined,
+      settlementDateUpdatedAt: validatedData.settlementDate
+        ? new Date()
+        : undefined,
+      settlementDateUpdatedBy: validatedData.settlementDate
+        ? session.user.id
         : undefined,
       contractType:
         (validatedData.contractType as InsertProperty["contractType"]) ||
@@ -80,6 +96,8 @@ export async function createProperty(data: PropertyCreate) {
       progressStatus:
         (validatedData.progressStatus as InsertProperty["progressStatus"]) ||
         "bc_before_confirmed",
+      progressStatusUpdatedAt: new Date(),
+      progressStatusUpdatedBy: session.user.id,
       documentStatus:
         (validatedData.documentStatus as InsertProperty["documentStatus"]) ||
         "waiting_request",
@@ -114,8 +132,18 @@ export async function createProperty(data: PropertyCreate) {
 
     // 3. 契約進捗を初期化（フォームの値があれば設定）
     const now = new Date();
+    const maisokuValue =
+      validatedData.maisokuDistribution &&
+      validatedData.maisokuDistribution !== "not_distributed";
     await tx.insert(contractProgress).values({
       propertyId: property.id,
+      // マイソク配布
+      maisokuDistribution:
+        (validatedData.maisokuDistribution as
+          | "not_distributed"
+          | "distributed") ?? "not_distributed",
+      maisokuDistributionAt: maisokuValue ? now : null,
+      maisokuDistributionBy: maisokuValue ? session.user.id : null,
       // AB関係
       abContractSaved: validatedData.abContractSaved ?? false,
       abContractSavedAt: validatedData.abContractSaved ? now : null,
@@ -193,6 +221,11 @@ export async function updateProperty(data: PropertyUpdate) {
 
   // トランザクションで案件と関連データを更新
   const result = await db.transaction(async (tx) => {
+    // 現在の案件データを取得（日付変更検出用）
+    const currentProperty = await tx.query.properties.findFirst({
+      where: eq(properties.id, validatedData.id),
+    });
+
     // 利益を自動計算（出口金額 - A金額 + 仲手等）
     let profit: number | undefined = undefined;
     if (
@@ -204,6 +237,33 @@ export async function updateProperty(data: PropertyUpdate) {
         profit += validatedData.commission;
       }
     }
+
+    const now = new Date();
+
+    // 日付変更の検出（文字列比較で差分を確認）
+    const currentContractDateA = currentProperty?.contractDateA?.toISOString();
+    const newContractDateA = validatedData.contractDateA
+      ? new Date(validatedData.contractDateA).toISOString()
+      : undefined;
+    const contractDateAChanged = currentContractDateA !== newContractDateA;
+
+    const currentContractDateBc =
+      currentProperty?.contractDateBc?.toISOString();
+    const newContractDateBc = validatedData.contractDateBc
+      ? new Date(validatedData.contractDateBc).toISOString()
+      : undefined;
+    const contractDateBcChanged = currentContractDateBc !== newContractDateBc;
+
+    const currentSettlementDate =
+      currentProperty?.settlementDate?.toISOString();
+    const newSettlementDate = validatedData.settlementDate
+      ? new Date(validatedData.settlementDate).toISOString()
+      : undefined;
+    const settlementDateChanged = currentSettlementDate !== newSettlementDate;
+
+    // 進捗ステータス変更の検出
+    const progressStatusChanged =
+      currentProperty?.progressStatus !== validatedData.progressStatus;
 
     // 1. 案件本体を更新
     const [property] = await tx
@@ -221,12 +281,30 @@ export async function updateProperty(data: PropertyUpdate) {
         contractDateA: validatedData.contractDateA
           ? new Date(validatedData.contractDateA)
           : undefined,
+        contractDateAUpdatedAt: contractDateAChanged
+          ? now
+          : currentProperty?.contractDateAUpdatedAt,
+        contractDateAUpdatedBy: contractDateAChanged
+          ? session.user.id
+          : currentProperty?.contractDateAUpdatedBy,
         contractDateBc: validatedData.contractDateBc
           ? new Date(validatedData.contractDateBc)
           : undefined,
+        contractDateBcUpdatedAt: contractDateBcChanged
+          ? now
+          : currentProperty?.contractDateBcUpdatedAt,
+        contractDateBcUpdatedBy: contractDateBcChanged
+          ? session.user.id
+          : currentProperty?.contractDateBcUpdatedBy,
         settlementDate: validatedData.settlementDate
           ? new Date(validatedData.settlementDate)
           : undefined,
+        settlementDateUpdatedAt: settlementDateChanged
+          ? now
+          : currentProperty?.settlementDateUpdatedAt,
+        settlementDateUpdatedBy: settlementDateChanged
+          ? session.user.id
+          : currentProperty?.settlementDateUpdatedBy,
         contractType:
           (validatedData.contractType as InsertProperty["contractType"]) ||
           undefined,
@@ -242,6 +320,12 @@ export async function updateProperty(data: PropertyUpdate) {
         progressStatus:
           (validatedData.progressStatus as InsertProperty["progressStatus"]) ||
           undefined,
+        progressStatusUpdatedAt: progressStatusChanged
+          ? now
+          : currentProperty?.progressStatusUpdatedAt,
+        progressStatusUpdatedBy: progressStatusChanged
+          ? session.user.id
+          : currentProperty?.progressStatusUpdatedBy,
         documentStatus:
           (validatedData.documentStatus as InsertProperty["documentStatus"]) ||
           undefined,
@@ -277,7 +361,10 @@ export async function updateProperty(data: PropertyUpdate) {
       where: eq(contractProgress.propertyId, validatedData.id),
     });
 
-    const now = new Date();
+    // マイソク配布 - 状態が変更されたかどうかを判定
+    const maisokuDistributionChanged =
+      (validatedData.maisokuDistribution ?? "not_distributed") !==
+      (currentProgress?.maisokuDistribution ?? "not_distributed");
 
     // AB関係 - 状態が変更されたかどうかを判定
     const abContractChanged =
@@ -313,6 +400,16 @@ export async function updateProperty(data: PropertyUpdate) {
     await tx
       .update(contractProgress)
       .set({
+        // マイソク配布
+        maisokuDistribution:
+          (validatedData.maisokuDistribution as "not_distributed" | "distributed") ??
+          "not_distributed",
+        maisokuDistributionAt: maisokuDistributionChanged
+          ? now
+          : currentProgress?.maisokuDistributionAt,
+        maisokuDistributionBy: maisokuDistributionChanged
+          ? session.user.id
+          : currentProgress?.maisokuDistributionBy,
         // AB関係 - 契約書保存
         abContractSaved: validatedData.abContractSaved ?? false,
         abContractSavedAt: abContractChanged
@@ -507,12 +604,16 @@ export async function updatePropertySettlementDate(data: {
   // セッション認証
   const session = await verifySession();
 
+  const now = new Date();
+
   await db
     .update(properties)
     .set({
       settlementDate: data.settlementDate,
+      settlementDateUpdatedAt: now,
+      settlementDateUpdatedBy: session.user.id,
       updatedBy: session.user.id,
-      updatedAt: new Date(),
+      updatedAt: now,
     })
     .where(eq(properties.id, data.id));
 

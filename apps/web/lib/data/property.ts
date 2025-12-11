@@ -39,8 +39,26 @@ export async function getPropertyById(id: string) {
           user: true,
         },
       },
+      // 進捗ステータス更新者ユーザー情報
+      progressStatusUpdatedByUser: {
+        columns: { id: true, name: true, email: true, image: true },
+      },
+      // スケジュール更新者ユーザー情報
+      contractDateAUpdatedByUser: {
+        columns: { id: true, name: true, email: true, image: true },
+      },
+      contractDateBcUpdatedByUser: {
+        columns: { id: true, name: true, email: true, image: true },
+      },
+      settlementDateUpdatedByUser: {
+        columns: { id: true, name: true, email: true, image: true },
+      },
       contractProgress: {
         with: {
+          // マイソク配布の更新者ユーザー情報
+          maisokuDistributionByUser: {
+            columns: { id: true, name: true, email: true, image: true },
+          },
           // AB関係の更新者ユーザー情報（必要なカラムのみ）
           abContractSavedByUser: {
             columns: { id: true, name: true, email: true, image: true },

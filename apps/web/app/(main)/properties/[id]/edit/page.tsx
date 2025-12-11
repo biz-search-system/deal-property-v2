@@ -12,6 +12,7 @@ import {
   TabsTrigger,
 } from "@workspace/ui/components/tabs";
 import PropertyFormProvider from "@/components/property/property-form-provider";
+import { PropertyProvider } from "@/components/property/property-provider";
 import PropertyFormActions from "@/components/property/property-form-actions";
 import BasicInfoTab from "@/components/property/tabs/basic-info-tab";
 import ContractProgressTab from "@/components/property/tabs/contract-progress-tab";
@@ -74,56 +75,56 @@ export default async function PropertyEditPage({
           { label: "案件編集" },
         ]}
       />
-      <PropertyFormProvider
-        mode="edit"
-        defaultValues={{
-          ...property,
-          staffIds,
-          contractProgress: property.contractProgress,
-        }}
-      >
-        <Card className="flex min-h-0 flex-1 flex-col gap-2 p-3 lg:p-5">
-          <CardHeader className="shrink-0">
-            <div className="flex items-center justify-between">
-              <CardTitle>{property.propertyName}</CardTitle>
-              <PropertyFormActions mode="edit" />
-            </div>
-          </CardHeader>
-          <CardContent className="flex min-h-0 flex-1 flex-col px-3 lg:px-4">
-            <Tabs defaultValue="basic" className="flex min-h-0 flex-1 flex-col">
-              <TabsList className="grid w-full shrink-0 grid-cols-4">
-                <TabsTrigger value="basic">基本情報</TabsTrigger>
-                <TabsTrigger value="contract">契約進捗</TabsTrigger>
-                <TabsTrigger value="document">書類進捗</TabsTrigger>
-                <TabsTrigger value="settlement">決済進捗</TabsTrigger>
-              </TabsList>
-
-              <div className="min-h-0 flex-1 overflow-auto">
-                <TabsContent value="basic" className="mt-3 px-1">
-                  <BasicInfoTab
-                    availableStaff={availableStaff}
-                    organizations={organizations}
-                  />
-                </TabsContent>
-
-                <TabsContent value="contract" className="mt-2 px-1">
-                  <ContractProgressTab
-                    contractProgress={property.contractProgress}
-                  />
-                </TabsContent>
-
-                <TabsContent value="document" className="mt-3 px-1">
-                  <DocumentProgressTab />
-                </TabsContent>
-
-                <TabsContent value="settlement" className="mt-3 px-1">
-                  <SettlementProgressTab />
-                </TabsContent>
+      <PropertyProvider property={property}>
+        <PropertyFormProvider
+          mode="edit"
+          defaultValues={{
+            ...property,
+            staffIds,
+            contractProgress: property.contractProgress,
+          }}
+        >
+          <Card className="flex min-h-0 flex-1 flex-col gap-2 p-3 lg:p-5">
+            <CardHeader className="shrink-0">
+              <div className="flex items-center justify-between">
+                <CardTitle>{property.propertyName}</CardTitle>
+                <PropertyFormActions mode="edit" />
               </div>
-            </Tabs>
-          </CardContent>
-        </Card>
-      </PropertyFormProvider>
+            </CardHeader>
+            <CardContent className="flex min-h-0 flex-1 flex-col px-3 lg:px-4">
+              <Tabs defaultValue="basic" className="flex min-h-0 flex-1 flex-col">
+                <TabsList className="grid w-full shrink-0 grid-cols-4">
+                  <TabsTrigger value="basic">基本情報</TabsTrigger>
+                  <TabsTrigger value="contract">契約進捗</TabsTrigger>
+                  <TabsTrigger value="document">書類進捗</TabsTrigger>
+                  <TabsTrigger value="settlement">決済進捗</TabsTrigger>
+                </TabsList>
+
+                <div className="min-h-0 flex-1 overflow-auto">
+                  <TabsContent value="basic" className="mt-3 px-1">
+                    <BasicInfoTab
+                      availableStaff={availableStaff}
+                      organizations={organizations}
+                    />
+                  </TabsContent>
+
+                  <TabsContent value="contract" className="mt-2 px-1">
+                    <ContractProgressTab />
+                  </TabsContent>
+
+                  <TabsContent value="document" className="mt-3 px-1">
+                    <DocumentProgressTab />
+                  </TabsContent>
+
+                  <TabsContent value="settlement" className="mt-3 px-1">
+                    <SettlementProgressTab />
+                  </TabsContent>
+                </div>
+              </Tabs>
+            </CardContent>
+          </Card>
+        </PropertyFormProvider>
+      </PropertyProvider>
     </div>
   );
 }

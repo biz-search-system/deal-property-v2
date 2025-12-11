@@ -91,6 +91,11 @@ export const contractType = [
   "kaichu",
   "iyaku_yotei",
 ] as const;
+/** マイソク配布ステータス */
+export const maisokuDistributionStatus = [
+  "not_distributed",
+  "distributed",
+] as const;
 
 // ==================== テーブル定義 ====================
 
@@ -145,6 +150,12 @@ export const properties = sqliteTable(
     progressStatus: text("progress_status", { enum: progressStatus })
       .notNull()
       .default("bc_before_confirmed"),
+    progressStatusUpdatedAt: integer("progress_status_updated_at", {
+      mode: "timestamp_ms",
+    }),
+    progressStatusUpdatedBy: text("progress_status_updated_by").references(
+      () => users.id
+    ),
     documentStatus: text("document_status", { enum: documentStatus })
       .notNull()
       .default("waiting_request"),
@@ -207,6 +218,18 @@ export const contractProgress = sqliteTable("contract_progress", {
     .notNull()
     .unique("uk_contract_progress_property_id")
     .references(() => properties.id, { onDelete: "cascade" }),
+  // マイソク配布
+  maisokuDistribution: text("maisoku_distribution", {
+    enum: maisokuDistributionStatus,
+  })
+    .notNull()
+    .default("not_distributed"),
+  maisokuDistributionAt: integer("maisoku_distribution_at", {
+    mode: "timestamp_ms",
+  }),
+  maisokuDistributionBy: text("maisoku_distribution_by").references(
+    () => users.id
+  ),
   abContractSaved: integer("ab_contract_saved", { mode: "boolean" })
     .notNull()
     .default(false),
@@ -452,6 +475,28 @@ export const propertiesRelations = relations(properties, ({ many, one }) => ({
     references: [users.id],
     relationName: "propertyUpdatedBy",
   }),
+  // 進捗ステータス更新者
+  progressStatusUpdatedByUser: one(users, {
+    fields: [properties.progressStatusUpdatedBy],
+    references: [users.id],
+    relationName: "progressStatusUpdatedBy",
+  }),
+  // スケジュール更新者
+  contractDateAUpdatedByUser: one(users, {
+    fields: [properties.contractDateAUpdatedBy],
+    references: [users.id],
+    relationName: "contractDateAUpdatedBy",
+  }),
+  contractDateBcUpdatedByUser: one(users, {
+    fields: [properties.contractDateBcUpdatedBy],
+    references: [users.id],
+    relationName: "contractDateBcUpdatedBy",
+  }),
+  settlementDateUpdatedByUser: one(users, {
+    fields: [properties.settlementDateUpdatedBy],
+    references: [users.id],
+    relationName: "settlementDateUpdatedBy",
+  }),
 }));
 
 export const propertyStaffRelations = relations(propertyStaff, ({ one }) => ({
@@ -471,6 +516,12 @@ export const contractProgressRelations = relations(
     property: one(properties, {
       fields: [contractProgress.propertyId],
       references: [properties.id],
+    }),
+    // マイソク配布の更新者ユーザー
+    maisokuDistributionByUser: one(users, {
+      fields: [contractProgress.maisokuDistributionBy],
+      references: [users.id],
+      relationName: "maisokuDistributionBy",
     }),
     // AB関係の更新者ユーザー
     abContractSavedByUser: one(users, {

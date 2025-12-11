@@ -5,34 +5,20 @@ import { FormField } from "@workspace/ui/components/form";
 import { Checkbox } from "@workspace/ui/components/checkbox";
 import { Label } from "@workspace/ui/components/label";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@workspace/ui/components/select";
-import {
   PROGRESS_STATUS_COLORS,
   PROGRESS_STATUS_LABELS,
 } from "@workspace/utils";
 import BadgeSelectForm from "../form/badge-select-form";
 import DatePickerForm from "../form/date-picker-form";
+import SelectForm from "../form/select-form";
 import { usePropertyForm } from "../property-form-provider";
 import SectionCard from "../section-card";
 import { UserActionBadge } from "../user-action-badge";
-import type { PropertyDetail } from "@/lib/types/property";
+import { useProperty } from "../property-provider";
 
-type ContractProgressData = NonNullable<
-  NonNullable<PropertyDetail>["contractProgress"]
->;
-
-interface ContractProgressTabProps {
-  contractProgress?: ContractProgressData | null;
-}
-
-export default function ContractProgressTab({
-  contractProgress,
-}: ContractProgressTabProps) {
+export default function ContractProgressTab() {
+  const property = useProperty();
+  const contractProgress = property.contractProgress;
   const form = usePropertyForm();
   const { control } = form;
 
@@ -40,48 +26,29 @@ export default function ContractProgressTab({
     <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
       <SectionCard title="業務進捗">
         <div className="space-y-4 w-full">
-          <div className="space-y-2">
-            <div className="flex items-center justify-between">
-              <Label>マイソク配布</Label>
-              <UserActionBadge
-                timestamp={new Date("2025-01-15T10:30:00")}
-                user={{
-                  name: "山田 太郎",
-                  email: "yamada@example.com",
-                  image: null,
-                }}
-              />
-            </div>
-            <Select defaultValue="配布済">
-              <SelectTrigger>
-                <SelectValue placeholder="選択してください" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="未配布">未配布</SelectItem>
-                <SelectItem value="配布済">配布済</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-          <div className="flex items-center justify-between">
-            <BadgeSelectForm
-              form={form}
-              name="progressStatus"
-              label="進捗"
-              options={progressStatus.map((type) => ({
-                value: type,
-                label: PROGRESS_STATUS_LABELS[type],
-                color: PROGRESS_STATUS_COLORS[type],
-              }))}
-            />
-            <UserActionBadge
-              timestamp={new Date("2025-01-15T10:30:00")}
-              user={{
-                name: "山田 太郎",
-                email: "yamada@example.com",
-                image: null,
-              }}
-            />
-          </div>
+          <SelectForm
+            form={form}
+            name="maisokuDistribution"
+            label="マイソク配布"
+            options={[
+              { value: "not_distributed", label: "未配布" },
+              { value: "distributed", label: "配布済" },
+            ]}
+            updatedAt={contractProgress?.maisokuDistributionAt}
+            updatedByUser={contractProgress?.maisokuDistributionByUser}
+          />
+          <BadgeSelectForm
+            form={form}
+            name="progressStatus"
+            label="進捗"
+            options={progressStatus.map((type) => ({
+              value: type,
+              label: PROGRESS_STATUS_LABELS[type],
+              color: PROGRESS_STATUS_COLORS[type],
+            }))}
+            updatedAt={property.progressStatusUpdatedAt}
+            updatedByUser={property.progressStatusUpdatedByUser}
+          />
         </div>
       </SectionCard>
 
@@ -155,9 +122,27 @@ export default function ContractProgressTab({
 
       <SectionCard title="スケジュール">
         <div className="space-y-4 w-full">
-          <DatePickerForm form={form} name="contractDateA" label="A契約日" />
-          <DatePickerForm form={form} name="contractDateBc" label="BC契約日" />
-          <DatePickerForm form={form} name="settlementDate" label="決済日" />
+          <DatePickerForm
+            form={form}
+            name="contractDateA"
+            label="A契約日"
+            updatedAt={property.contractDateAUpdatedAt}
+            updatedByUser={property.contractDateAUpdatedByUser}
+          />
+          <DatePickerForm
+            form={form}
+            name="contractDateBc"
+            label="BC契約日"
+            updatedAt={property.contractDateBcUpdatedAt}
+            updatedByUser={property.contractDateBcUpdatedByUser}
+          />
+          <DatePickerForm
+            form={form}
+            name="settlementDate"
+            label="決済日"
+            updatedAt={property.settlementDateUpdatedAt}
+            updatedByUser={property.settlementDateUpdatedByUser}
+          />
         </div>
       </SectionCard>
 

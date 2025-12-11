@@ -22,16 +22,26 @@ import { cn } from "@workspace/utils";
 import type { FieldValues, Path, UseFormReturn } from "react-hook-form";
 import { UserActionBadge } from "../user-action-badge";
 
+interface UserInfo {
+  name: string | null;
+  email: string;
+  image: string | null;
+}
+
 interface DatePickerFormProps<T extends FieldValues> {
   form: UseFormReturn<T>;
   name: Path<T>;
   label: string;
+  updatedAt?: Date | null;
+  updatedByUser?: UserInfo | null;
 }
 
 export default function DatePickerForm<T extends FieldValues>({
   form,
   name,
   label,
+  updatedAt,
+  updatedByUser,
 }: DatePickerFormProps<T>) {
   const [open, setOpen] = useState(false);
   const [selectedMonth, setSelectedMonth] = useState<Date>(new Date());
@@ -104,6 +114,7 @@ export default function DatePickerForm<T extends FieldValues>({
                 <div className="grid grid-cols-2 gap-4">
                   <Button
                     variant="outline"
+                    type="button"
                     className={cn(
                       "w-full pl-3 text-left font-normal",
                       !field.value && "text-muted-foreground"
@@ -112,16 +123,14 @@ export default function DatePickerForm<T extends FieldValues>({
                     {formatDisplayDate(field.value)}
                     <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                   </Button>
-                  <div className="flex justify-end">
-                    <UserActionBadge
-                      timestamp={new Date("2025-01-15T10:30:00")}
-                      user={{
-                        name: "山田 太郎",
-                        email: "yamada@example.com",
-                        image: null,
-                      }}
-                    />
-                  </div>
+                  {updatedAt && (
+                    <div className="flex justify-end">
+                      <UserActionBadge
+                        timestamp={updatedAt}
+                        user={updatedByUser}
+                      />
+                    </div>
+                  )}
                 </div>
               </FormControl>
             </PopoverTrigger>

@@ -67,6 +67,9 @@ export default function PropertyFormProvider({
       accountCompany: defaultValues?.accountCompany || "",
       bankAccount: defaultValues?.bankAccount || "",
       staffIds: defaultValues?.staffIds || [],
+      // 契約進捗 マイソク配布
+      maisokuDistribution:
+        defaultValues?.contractProgress?.maisokuDistribution || "not_distributed",
       // 契約進捗 AB関係
       abContractSaved:
         defaultValues?.contractProgress?.abContractSaved ?? false,

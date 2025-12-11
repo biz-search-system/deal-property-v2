@@ -271,7 +271,7 @@ export const BUSINESS_STATUS = {
 
 // 書類ステータス（3段階）
 export const DOCUMENT_STATUS = {
-  REQUEST_WAITING: "書類依頼待ち",
+  REQUEST_WAITING: "営業依頼待ち",
   ACQUIRING: "書類取得中",
   ALL_ACQUIRED: "全書類取得完了",
 } as const;
