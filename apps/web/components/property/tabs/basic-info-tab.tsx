@@ -29,6 +29,7 @@ import { Organization } from "@/lib/types/organization";
 import { contractType } from "@workspace/drizzle/schemas";
 import { CONTRACT_TYPE_COLORS, CONTRACT_TYPE_LABELS } from "@workspace/utils";
 import { Badge } from "@workspace/ui/components/badge";
+import SectionCard from "../section-card";
 
 interface BasicInfoTabProps {
   availableStaff: { id: string; name: string; email: string; role: string }[];
@@ -80,9 +81,8 @@ export default function BasicInfoTab({
     <div className="space-y-6">
       {/* 組織情報 */}
       {organizations.length > 0 && (
-        <div className="space-y-4">
-          <h3 className="text-lg font-semibold">組織情報</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <SectionCard title="組織情報">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4 w-full">
             {/* 管理組織 */}
             <OrganizationSelectForm
               form={form}
@@ -160,14 +160,12 @@ export default function BasicInfoTab({
               )}
             />
           </div>
-        </div>
+        </SectionCard>
       )}
 
       {/* 物件情報 */}
-      <div className="space-y-4">
-        <h3 className="text-lg font-semibold">物件情報</h3>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <SectionCard title="物件情報">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4 w-full">
           <FormField
             control={control}
             name="propertyName"
@@ -206,39 +204,37 @@ export default function BasicInfoTab({
               </FormItem>
             )}
           />
-        </div>
 
-        <FormField
-          control={control}
-          name="ownerName"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>オーナー名</FormLabel>
-              <FormControl>
-                <Input
-                  id="ownerName"
-                  placeholder="オーナー名を入力"
-                  autoComplete="off"
-                  {...field}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-      </div>
+          <FormField
+            control={control}
+            name="ownerName"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>オーナー名</FormLabel>
+                <FormControl>
+                  <Input
+                    id="ownerName"
+                    placeholder="オーナー名を入力"
+                    autoComplete="off"
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
+      </SectionCard>
 
       {/* 金額情報 */}
-      <div className="space-y-4">
-        <h3 className="text-lg font-semibold">金額情報</h3>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <SectionCard title="金額情報">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4 w-full">
           <FormField
             control={control}
             name="amountA"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>A金額</FormLabel>
+                <FormLabel>A金額（万円）</FormLabel>
                 <FormControl>
                   <Input
                     id="amountA"
@@ -264,7 +260,7 @@ export default function BasicInfoTab({
             name="amountExit"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>出口金額</FormLabel>
+                <FormLabel>出口金額（万円）</FormLabel>
                 <FormControl>
                   <Input
                     id="amountExit"
@@ -290,7 +286,7 @@ export default function BasicInfoTab({
             name="commission"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>仲手等</FormLabel>
+                <FormLabel>仲手等（万円）</FormLabel>
                 <FormControl>
                   <Input
                     id="commission"
@@ -311,12 +307,33 @@ export default function BasicInfoTab({
             )}
           />
 
+          {/* 利益（自動計算） */}
+          <FormItem>
+            <FormLabel>利益（自動計算）</FormLabel>
+            <FormControl>
+              <Input
+                readOnly
+                className="bg-muted font-semibold text-green-600"
+                value={(() => {
+                  const amountA = watch("amountA") || 0;
+                  const amountExit = watch("amountExit") || 0;
+                  const commission = watch("commission") || 0;
+                  const profit = amountExit - amountA + commission;
+                  return profit !== 0 ? `${profit.toLocaleString()}万円` : "-";
+                })()}
+              />
+            </FormControl>
+            <p className="text-xs text-muted-foreground">
+              出口金額 - A金額 + 仲手等
+            </p>
+          </FormItem>
+
           <FormField
             control={control}
             name="bcDeposit"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>BC手付</FormLabel>
+                <FormLabel>BC手付（万円）</FormLabel>
                 <FormControl>
                   <Input
                     id="bcDeposit"
@@ -337,13 +354,40 @@ export default function BasicInfoTab({
             )}
           />
         </div>
-      </div>
+      </SectionCard>
 
       {/* 契約情報 */}
-      <div className="space-y-4">
-        <h3 className="text-lg font-semibold">契約情報</h3>
+      <SectionCard title="契約情報">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4 w-full">
+          <FormField
+            control={control}
+            name="buyerCompany"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>買取業者</FormLabel>
+                <FormControl>
+                  <Input
+                    id="buyerCompany"
+                    placeholder="入力中に候補が表示されます"
+                    autoComplete="off"
+                    list="buyer-companies"
+                    {...field}
+                    value={field.value || ""}
+                  />
+                </FormControl>
+                <datalist id="buyer-companies">
+                  <option value="株式会社A不動産" />
+                  <option value="株式会社B建設" />
+                  <option value="C投資" />
+                </datalist>
+                <p className="text-xs text-muted-foreground">
+                  検索方式 & 手入力可能
+                </p>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <BadgeSelectForm
             form={form}
             name="contractType"
@@ -365,26 +409,6 @@ export default function BasicInfoTab({
 
           <FormField
             control={control}
-            name="buyerCompany"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>買取業者</FormLabel>
-                <FormControl>
-                  <Input
-                    id="buyerCompany"
-                    placeholder="買取業者を入力"
-                    autoComplete="off"
-                    {...field}
-                    value={field.value || ""}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            control={control}
             name="mortgageBank"
             render={({ field }) => (
               <FormItem>
@@ -392,12 +416,22 @@ export default function BasicInfoTab({
                 <FormControl>
                   <Input
                     id="mortgageBank"
-                    placeholder="抵当銀行を入力"
+                    placeholder="入力中に候補が表示されます"
                     autoComplete="off"
+                    list="mortgage-banks"
                     {...field}
                     value={field.value || ""}
                   />
                 </FormControl>
+                <datalist id="mortgage-banks">
+                  <option value="三菱UFJ銀行" />
+                  <option value="三井住友銀行" />
+                  <option value="みずほ銀行" />
+                  <option value="りそな銀行" />
+                </datalist>
+                <p className="text-xs text-muted-foreground">
+                  検索方式 & 手入力可能
+                </p>
                 <FormMessage />
               </FormItem>
             )}
@@ -423,22 +457,20 @@ export default function BasicInfoTab({
             )}
           />
         </div>
-      </div>
+      </SectionCard>
 
       {/* 備考 */}
-      <div className="space-y-4">
-        <h3 className="text-lg font-semibold">備考</h3>
+      <SectionCard title="備考">
         <FormField
           control={control}
           name="notes"
           render={({ field }) => (
-            <FormItem>
-              <FormLabel>備考</FormLabel>
+            <FormItem className="w-full">
               <FormControl>
                 <Textarea
                   id="notes"
                   placeholder="備考を入力"
-                  rows={4}
+                  rows={3}
                   {...field}
                   value={field.value || ""}
                 />
@@ -447,7 +479,7 @@ export default function BasicInfoTab({
             </FormItem>
           )}
         />
-      </div>
+      </SectionCard>
     </div>
   );
 }

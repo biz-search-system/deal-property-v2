@@ -116,8 +116,26 @@ export const properties = sqliteTable(
     profit: real("profit"), // 利益（出口金額 - A金額 + 仲手等）※アプリケーション側で自動計算
     bcDeposit: real("bc_deposit"), // BC手付金額
     contractDateA: integer("contract_date_a", { mode: "timestamp_ms" }),
+    contractDateAUpdatedAt: integer("contract_date_a_updated_at", {
+      mode: "timestamp_ms",
+    }),
+    contractDateAUpdatedBy: text("contract_date_a_updated_by").references(
+      () => users.id
+    ),
     contractDateBc: integer("contract_date_bc", { mode: "timestamp_ms" }),
+    contractDateBcUpdatedAt: integer("contract_date_bc_updated_at", {
+      mode: "timestamp_ms",
+    }),
+    contractDateBcUpdatedBy: text("contract_date_bc_updated_by").references(
+      () => users.id
+    ),
     settlementDate: integer("settlement_date", { mode: "timestamp_ms" }), // 決済日
+    settlementDateUpdatedAt: integer("settlement_date_updated_at", {
+      mode: "timestamp_ms",
+    }),
+    settlementDateUpdatedBy: text("settlement_date_updated_by").references(
+      () => users.id
+    ),
     contractType: text("contract_type", { enum: contractType }),
     companyB: text("company_b", { enum: companyB }),
     brokerCompany: text("broker_company", { enum: brokerCompany }),

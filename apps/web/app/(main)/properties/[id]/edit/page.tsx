@@ -106,7 +106,7 @@ export default async function PropertyEditPage({
                   />
                 </TabsContent>
 
-                <TabsContent value="contract" className="mt-3 px-1">
+                <TabsContent value="contract" className="mt-2 px-1">
                   <ContractProgressTab
                     contractProgress={property.contractProgress}
                   />

@@ -20,6 +20,7 @@ import {
 } from "@workspace/ui/components/popover";
 import { cn } from "@workspace/utils";
 import type { FieldValues, Path, UseFormReturn } from "react-hook-form";
+import { UserActionBadge } from "../user-action-badge";
 
 interface DatePickerFormProps<T extends FieldValues> {
   form: UseFormReturn<T>;
@@ -64,7 +65,9 @@ export default function DatePickerForm<T extends FieldValues>({
   };
 
   // 日付文字列をDate型に変換（カレンダー表示用）
-  const parseDate = (dateValue: string | null | undefined): Date | undefined => {
+  const parseDate = (
+    dateValue: string | null | undefined
+  ): Date | undefined => {
     if (!dateValue) return undefined;
     const date = new Date(dateValue);
     return isNaN(date.getTime()) ? undefined : date;
@@ -98,16 +101,28 @@ export default function DatePickerForm<T extends FieldValues>({
           <Popover open={open} onOpenChange={setOpen}>
             <PopoverTrigger asChild>
               <FormControl>
-                <Button
-                  variant="outline"
-                  className={cn(
-                    "w-full pl-3 text-left font-normal",
-                    !field.value && "text-muted-foreground"
-                  )}
-                >
-                  {formatDisplayDate(field.value)}
-                  <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                </Button>
+                <div className="grid grid-cols-2 gap-4">
+                  <Button
+                    variant="outline"
+                    className={cn(
+                      "w-full pl-3 text-left font-normal",
+                      !field.value && "text-muted-foreground"
+                    )}
+                  >
+                    {formatDisplayDate(field.value)}
+                    <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                  </Button>
+                  <div className="flex justify-end">
+                    <UserActionBadge
+                      timestamp={new Date("2025-01-15T10:30:00")}
+                      user={{
+                        name: "山田 太郎",
+                        email: "yamada@example.com",
+                        image: null,
+                      }}
+                    />
+                  </div>
+                </div>
               </FormControl>
             </PopoverTrigger>
             <PopoverContent className="w-auto p-0" align="start">
@@ -121,7 +136,8 @@ export default function DatePickerForm<T extends FieldValues>({
                     variant="outline"
                     size="sm"
                     onClick={() => {
-                      const monthEndStr = formatMonthEndDateString(selectedMonth);
+                      const monthEndStr =
+                        formatMonthEndDateString(selectedMonth);
                       field.onChange(monthEndStr);
                       setOpen(false);
                     }}
@@ -167,6 +183,7 @@ export default function DatePickerForm<T extends FieldValues>({
               />
             </PopoverContent>
           </Popover>
+
           <FormMessage />
         </FormItem>
       )}
