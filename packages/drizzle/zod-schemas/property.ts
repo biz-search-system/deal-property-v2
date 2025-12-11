@@ -127,18 +127,25 @@ export const propertyCreateSchema = z.object({
     .max(100, "オーナー名は100文字以内で入力してください"),
 
   // 金額情報
-  amountA: z.number().nonnegative("A金額は0以上で入力してください").optional(),
+  amountA: z
+    .number()
+    .nonnegative("A金額は0以上で入力してください")
+    .nullable()
+    .optional(),
   amountExit: z
     .number()
     .nonnegative("出口金額は0以上で入力してください")
+    .nullable()
     .optional(),
   commission: z
     .number()
     .nonnegative("仲手等は0以上で入力してください")
+    .nullable()
     .optional(),
   bcDeposit: z
     .number()
     .nonnegative("BC手付は0以上で入力してください")
+    .nullable()
     .optional(),
 
   // 日付情報

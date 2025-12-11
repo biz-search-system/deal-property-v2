@@ -283,7 +283,7 @@ export default function BasicInfoTab({
           <FormField
             control={control}
             name="amountA"
-            render={({ field }) => (
+            render={({ field: { value, onChange, ...field } }) => (
               <FormItem>
                 <FormLabel>A金額（万円）</FormLabel>
                 <FormControl>
@@ -293,10 +293,10 @@ export default function BasicInfoTab({
                     placeholder="金額を入力"
                     autoComplete="off"
                     {...field}
-                    value={field.value ?? ""}
+                    value={value ?? ""}
                     onChange={(e) =>
-                      field.onChange(
-                        e.target.value ? Number(e.target.value) : undefined
+                      onChange(
+                        e.target.value === "" ? null : Number(e.target.value)
                       )
                     }
                   />
@@ -309,7 +309,7 @@ export default function BasicInfoTab({
           <FormField
             control={control}
             name="amountExit"
-            render={({ field }) => (
+            render={({ field: { value, onChange, ...field } }) => (
               <FormItem>
                 <FormLabel>出口金額（万円）</FormLabel>
                 <FormControl>
@@ -319,10 +319,10 @@ export default function BasicInfoTab({
                     placeholder="金額を入力"
                     autoComplete="off"
                     {...field}
-                    value={field.value ?? ""}
+                    value={value ?? ""}
                     onChange={(e) =>
-                      field.onChange(
-                        e.target.value ? Number(e.target.value) : undefined
+                      onChange(
+                        e.target.value === "" ? null : Number(e.target.value)
                       )
                     }
                   />
@@ -335,7 +335,7 @@ export default function BasicInfoTab({
           <FormField
             control={control}
             name="commission"
-            render={({ field }) => (
+            render={({ field: { value, onChange, ...field } }) => (
               <FormItem>
                 <FormLabel>仲手等（万円）</FormLabel>
                 <FormControl>
@@ -345,10 +345,10 @@ export default function BasicInfoTab({
                     placeholder="金額を入力"
                     autoComplete="off"
                     {...field}
-                    value={field.value ?? ""}
+                    value={value ?? ""}
                     onChange={(e) =>
-                      field.onChange(
-                        e.target.value ? Number(e.target.value) : undefined
+                      onChange(
+                        e.target.value === "" ? null : Number(e.target.value)
                       )
                     }
                   />
@@ -382,7 +382,7 @@ export default function BasicInfoTab({
           <FormField
             control={control}
             name="bcDeposit"
-            render={({ field }) => (
+            render={({ field: { value, onChange, ...field } }) => (
               <FormItem>
                 <FormLabel>BC手付（万円）</FormLabel>
                 <FormControl>
@@ -392,10 +392,10 @@ export default function BasicInfoTab({
                     placeholder="金額を入力"
                     autoComplete="off"
                     {...field}
-                    value={field.value ?? ""}
+                    value={value ?? ""}
                     onChange={(e) =>
-                      field.onChange(
-                        e.target.value ? Number(e.target.value) : undefined
+                      onChange(
+                        e.target.value === "" ? null : Number(e.target.value)
                       )
                     }
                   />
