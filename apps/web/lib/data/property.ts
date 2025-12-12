@@ -210,6 +210,55 @@ export async function getUnconfirmedProperties(organizationId?: string) {
 }
 
 /**
+ * 指定組織のBC確定前案件を決済日順で取得
+ */
+async function getUnconfirmedPropertiesBySettlementDate(organizationId: string) {
+  return db.query.properties.findMany({
+    where: and(
+      eq(properties.organizationId, organizationId),
+      eq(properties.progressStatus, "bc_before_confirmed")
+    ),
+    with: {
+      organization: true,
+      staff: {
+        with: {
+          user: true,
+        },
+      },
+      contractProgress: true,
+      documentProgress: true,
+      settlementProgress: true,
+    },
+    orderBy: (props, { asc }) => [asc(props.settlementDate)],
+  });
+}
+
+/**
+ * 全組織のBC確定前案件を組織順・決済日順で取得
+ * ユーザーが所属する組織の案件のみを取得し、
+ * 組織の順序を保持して決済日順で返す
+ */
+export async function getAllUnconfirmedPropertiesBySettlementDate() {
+  // ユーザーの所属組織を取得（既にソート済み）
+  const organizations = await getOrganizations();
+
+  if (!organizations || organizations.length === 0) {
+    return [];
+  }
+
+  // 各組織のBC確定前案件を並列で取得
+  const propertyPromises = organizations.map((org) =>
+    getUnconfirmedPropertiesBySettlementDate(org.id)
+  );
+
+  // 並列実行で高速化
+  const propertiesByOrg = await Promise.all(propertyPromises);
+
+  // 組織の順序を保持して結合
+  return propertiesByOrg.flat();
+}
+
+/**
  * 案件一覧用のデータ取得（フィルタオプション付き）
  * 進捗状況や組織でフィルタリング可能
  */
