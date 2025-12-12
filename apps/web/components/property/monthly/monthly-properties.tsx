@@ -12,19 +12,19 @@ import {
 } from "@workspace/ui/components/tabs";
 import { useMemo, useState } from "react";
 import { useQueryState } from "nuqs";
-import { PropertiesTable } from "./properties-table";
+import { PropertiesTable } from "./monthly-properties-table";
 
-interface MonthlyPropertiesClientProps {
+interface MonthlyPropertiesProps {
   year: string;
   month: string;
   properties: PropertyWithRelations[];
 }
 
-export function MonthlyPropertiesClient({
+export function MonthlyProperties({
   year,
   month,
   properties,
-}: MonthlyPropertiesClientProps) {
+}: MonthlyPropertiesProps) {
   const [selectedAccount, setSelectedAccount] = useState<string>("legit");
   const [, setPropertyId] = useQueryState("propertyId");
 

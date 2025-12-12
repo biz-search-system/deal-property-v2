@@ -1,4 +1,4 @@
-import { MonthlyPropertiesClient } from "./monthly-properties-client";
+import { MonthlyProperties } from "../../../../../../components/property/monthly/monthly-properties";
 import { getMonthlyProperties } from "@/lib/data/property";
 import { auth } from "@workspace/auth";
 import { headers } from "next/headers";
@@ -48,7 +48,7 @@ export default async function MonthlyPropertiesPage({
     <>
       {/* パンくずリスト設定 */}
       <MonthlyBreadcrumb year={year} month={month} />
-      <MonthlyPropertiesClient
+      <MonthlyProperties
         year={year}
         month={month}
         properties={transformedProperties}

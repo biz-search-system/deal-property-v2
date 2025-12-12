@@ -1,6 +1,6 @@
 import { Card, CardContent } from "@workspace/ui/components/card";
 import { getProperties } from "@/lib/data/property";
-import { UnconfirmedPropertiesTable } from "@/components/property/unconfirmed-properties-table";
+import { UnconfirmedPropertiesTable } from "@/components/property/unconfirmed/unconfirmed-properties-table";
 import { BreadcrumbConfig } from "@/components/breadcrumb-provider";
 
 export default async function UnconfirmedPropertiesPage() {
