@@ -11,6 +11,7 @@ import {
   TabsTrigger,
 } from "@workspace/ui/components/tabs";
 import PropertyFormProvider from "@/components/property/property-form-provider";
+import { PropertyProvider } from "@/components/property/property-provider";
 import PropertyFormActions from "@/components/property/property-form-actions";
 import BasicInfoTab from "@/components/property/tabs/basic-info-tab";
 import ContractProgressTab from "@/components/property/tabs/contract-progress-tab";
@@ -44,13 +45,14 @@ export default async function PropertyNewPage() {
           { label: "案件登録" },
         ]}
       />
-      <PropertyFormProvider
-        mode="create"
-        defaultValues={{
-          organizationId: activeOrganizationId || "",
-        }}
-      >
-        <Card className="flex min-h-0 flex-1 flex-col gap-2 p-3 lg:p-5">
+      <PropertyProvider>
+        <PropertyFormProvider
+          mode="create"
+          defaultValues={{
+            organizationId: activeOrganizationId || "",
+          }}
+        >
+          <Card className="flex min-h-0 flex-1 flex-col gap-2 p-3 lg:p-5">
           <CardHeader className="shrink-0">
             <div className="flex items-center justify-between">
               <CardTitle>案件情報</CardTitle>
@@ -88,8 +90,9 @@ export default async function PropertyNewPage() {
               </div>
             </Tabs>
           </CardContent>
-        </Card>
-      </PropertyFormProvider>
+          </Card>
+        </PropertyFormProvider>
+      </PropertyProvider>
     </div>
   );
 }

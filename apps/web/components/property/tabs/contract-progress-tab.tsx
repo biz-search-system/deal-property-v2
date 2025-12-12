@@ -11,11 +11,11 @@ import DatePickerForm from "../form/date-picker-form";
 import SelectForm from "../form/select-form";
 import { usePropertyForm } from "../property-form-provider";
 import SectionCard from "../section-card";
-import { useProperty } from "../property-provider";
+import { usePropertyOptional } from "../property-provider";
 
 export default function ContractProgressTab() {
-  const property = useProperty();
-  const contractProgress = property.contractProgress;
+  const property = usePropertyOptional();
+  const contractProgress = property?.contractProgress;
   const form = usePropertyForm();
 
   return (
@@ -42,8 +42,8 @@ export default function ContractProgressTab() {
               label: PROGRESS_STATUS_LABELS[type],
               color: PROGRESS_STATUS_COLORS[type],
             }))}
-            updatedAt={property.progressStatusUpdatedAt}
-            updatedByUser={property.progressStatusUpdatedByUser}
+            updatedAt={property?.progressStatusUpdatedAt}
+            updatedByUser={property?.progressStatusUpdatedByUser}
           />
         </div>
       </SectionCard>
@@ -80,22 +80,22 @@ export default function ContractProgressTab() {
             form={form}
             name="contractDateA"
             label="A契約日"
-            updatedAt={property.contractDateAUpdatedAt}
-            updatedByUser={property.contractDateAUpdatedByUser}
+            updatedAt={property?.contractDateAUpdatedAt}
+            updatedByUser={property?.contractDateAUpdatedByUser}
           />
           <DatePickerForm
             form={form}
             name="contractDateBc"
             label="BC契約日"
-            updatedAt={property.contractDateBcUpdatedAt}
-            updatedByUser={property.contractDateBcUpdatedByUser}
+            updatedAt={property?.contractDateBcUpdatedAt}
+            updatedByUser={property?.contractDateBcUpdatedByUser}
           />
           <DatePickerForm
             form={form}
             name="settlementDate"
             label="決済日"
-            updatedAt={property.settlementDateUpdatedAt}
-            updatedByUser={property.settlementDateUpdatedByUser}
+            updatedAt={property?.settlementDateUpdatedAt}
+            updatedByUser={property?.settlementDateUpdatedByUser}
           />
         </div>
       </SectionCard>

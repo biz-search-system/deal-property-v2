@@ -35,40 +35,55 @@ import { usePropertyForm } from "./property-form-provider";
 import SectionCard from "./section-card";
 
 interface BankAccountFormCardProps {
-  propertyId: string;
-  settlementDate?: Date | null;
-  amountExit?: number | null;
+  propertyId?: string;
 }
 
 export function BankAccountFormCard({
   propertyId,
-  settlementDate,
-  amountExit,
 }: BankAccountFormCardProps) {
   const form = usePropertyForm();
   const selectedAccountCompany = form.watch("accountCompany");
   const selectedBankAccount = form.watch("bankAccount");
+  const settlementDate = form.watch("settlementDate");
+  const amountExit = form.watch("amountExit");
 
-  const [totalAmount, setTotalAmount] = useState<number>(0);
+  // APIから取得した他案件の合計金額（円単位）
+  const [totalAmountYen, setTotalAmountYen] = useState<number>(0);
   const [isLoading, setIsLoading] = useState(false);
+
+  // フォームの値は万円単位なのでそのまま使用
+  const amountExitManyen = amountExit ?? 0;
+  // APIからの合計金額（円）を万円に変換
+  const totalAmountManyen = totalAmountYen / 10000;
+  // 合計（万円単位）
+  const totalWithCurrentManyen = totalAmountManyen + amountExitManyen;
 
   // 同日同口座の合計金額を取得
   useEffect(() => {
     if (!settlementDate || !selectedAccountCompany || !selectedBankAccount) {
-      setTotalAmount(0);
+      setTotalAmountYen(0);
       return;
     }
 
     const fetchTotalAmount = async () => {
       setIsLoading(true);
       try {
+        const dateValue = new Date(settlementDate).toISOString();
+        const params = new URLSearchParams({
+          date: dateValue,
+          company: selectedAccountCompany,
+          account: selectedBankAccount,
+        });
+        if (propertyId) {
+          params.append("excludeId", propertyId);
+        }
         const response = await fetch(
-          `/api/properties/bank-account-total?date=${settlementDate.toISOString()}&company=${selectedAccountCompany}&account=${selectedBankAccount}&excludeId=${propertyId}`
+          `/api/properties/bank-account-total?${params.toString()}`
         );
 
         if (response.ok) {
           const data = await response.json();
-          setTotalAmount(data.total || 0);
+          setTotalAmountYen(data.total || 0);
         }
       } catch (error) {
         console.error("Failed to fetch total amount:", error);
@@ -80,17 +95,15 @@ export function BankAccountFormCard({
     fetchTotalAmount();
   }, [settlementDate, selectedAccountCompany, selectedBankAccount, propertyId]);
 
-  // 現在の案件を含めた合計金額
-  const totalWithCurrent = totalAmount + (amountExit || 0);
-
-  // 上限金額を取得
+  // 上限金額を取得（万円単位）
   const accountLimit = getBankAccountLimit(
     selectedAccountCompany as AccountCompany,
     selectedBankAccount as BankAccount
   );
 
-  const isOverLimitFlag = isOverLimit(totalWithCurrent, accountLimit);
-  const isNearLimitFlag = isNearLimit(totalWithCurrent, accountLimit);
+  // isOverLimit/isNearLimitは万円単位を期待
+  const isOverLimitFlag = isOverLimit(totalWithCurrentManyen, accountLimit);
+  const isNearLimitFlag = isNearLimit(totalWithCurrentManyen, accountLimit);
 
   return (
     <SectionCard title="口座情報">
@@ -235,11 +248,11 @@ export function BankAccountFormCard({
           <>
             <div className="space-y-1">
               <p className="text-2xl font-semibold">
-                {formatAmountInYen(totalWithCurrent)}
+                {formatAmountInYen(totalWithCurrentManyen)}
               </p>
               <p className="text-xs text-muted-foreground">
-                (他案件: {formatAmountInYen(totalAmount)} + 当案件:{" "}
-                {formatAmountInYen(amountExit || 0)})
+                (他案件: {formatAmountInYen(totalAmountManyen)} + 当案件:{" "}
+                {formatAmountInYen(amountExitManyen)})
               </p>
             </div>
 
@@ -254,7 +267,7 @@ export function BankAccountFormCard({
                       : "text-muted-foreground"
                 }
               >
-                使用率: {((totalWithCurrent / accountLimit) * 100).toFixed(1)}%
+                使用率: {((totalWithCurrentManyen / accountLimit) * 100).toFixed(1)}%
               </span>
             </div>
           </>

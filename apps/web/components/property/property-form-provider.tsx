@@ -37,6 +37,12 @@ function getDocumentItemStatus(
   return items?.find((item) => item.itemType === itemType)?.status || "not_requested";
 }
 
+/** 円から万円に変換（DB → フォーム） */
+function yenToManyen(yen: number | null | undefined): number | undefined {
+  if (yen == null) return undefined;
+  return yen / 10000;
+}
+
 export default function PropertyFormProvider({
   children,
   defaultValues,
@@ -51,10 +57,11 @@ export default function PropertyFormProvider({
       propertyName: defaultValues?.propertyName || "",
       roomNumber: defaultValues?.roomNumber || "",
       ownerName: defaultValues?.ownerName || "",
-      amountA: defaultValues?.amountA || undefined,
-      amountExit: defaultValues?.amountExit || undefined,
-      commission: defaultValues?.commission || undefined,
-      bcDeposit: defaultValues?.bcDeposit || undefined,
+      // DB（円）→ フォーム（万円）への変換
+      amountA: yenToManyen(defaultValues?.amountA),
+      amountExit: yenToManyen(defaultValues?.amountExit),
+      commission: yenToManyen(defaultValues?.commission),
+      bcDeposit: yenToManyen(defaultValues?.bcDeposit),
       contractDateA: defaultValues?.contractDateA
         ? defaultValues.contractDateA instanceof Date
           ? defaultValues.contractDateA.toISOString().split("T")[0]

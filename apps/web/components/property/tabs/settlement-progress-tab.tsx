@@ -13,14 +13,14 @@ import {
 import BadgeToggleForm from "../form/badge-toggle-form";
 import CheckboxForm from "../form/checkbox-form";
 import SectionCard from "../section-card";
-import { useProperty } from "../property-provider";
+import { usePropertyOptional } from "../property-provider";
 import { usePropertyForm } from "../property-form-provider";
 import { BankAccountFormCard } from "../bank-account-form-card";
 import DatePickerForm from "../form/date-picker-form";
 
 export default function SettlementProgressTab() {
-  const property = useProperty();
-  const settlementProgress = property.settlementProgress;
+  const property = usePropertyOptional();
+  const settlementProgress = property?.settlementProgress;
   const form = usePropertyForm();
 
   return (
@@ -114,11 +114,7 @@ export default function SettlementProgressTab() {
 
         {/* 右側: 口座関係 */}
         <div className="space-y-3">
-          <BankAccountFormCard
-            propertyId={property.id}
-            settlementDate={property.settlementDate}
-            amountExit={property.amountExit}
-          />
+          <BankAccountFormCard propertyId={property?.id} />
         </div>
       </div>
     </div>

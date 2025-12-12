@@ -279,6 +279,9 @@ export default function BasicInfoTab({
 
       {/* 金額情報 */}
       <SectionCard title="金額情報">
+        <p className="text-xs text-muted-foreground mb-4">
+          ※ 入力は万円単位です。DBには円単位で保存されます。
+        </p>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4 w-full">
           <FormField
             control={control}
@@ -290,6 +293,7 @@ export default function BasicInfoTab({
                   <Input
                     id="amountA"
                     type="number"
+                    step="0.01"
                     placeholder="金額を入力"
                     autoComplete="off"
                     {...field}
@@ -316,6 +320,7 @@ export default function BasicInfoTab({
                   <Input
                     id="amountExit"
                     type="number"
+                    step="0.01"
                     placeholder="金額を入力"
                     autoComplete="off"
                     {...field}
@@ -342,6 +347,7 @@ export default function BasicInfoTab({
                   <Input
                     id="commission"
                     type="number"
+                    step="0.01"
                     placeholder="金額を入力"
                     autoComplete="off"
                     {...field}
@@ -391,6 +397,7 @@ export default function BasicInfoTab({
                   <Input
                     id="bcDeposit"
                     type="number"
+                    step="0.01"
                     placeholder="金額を入力"
                     autoComplete="off"
                     {...field}

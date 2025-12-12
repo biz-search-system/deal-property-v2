@@ -9,7 +9,7 @@ import { documentStatus, documentItemStatus } from "@workspace/drizzle/schemas";
 import BadgeSelectForm from "../form/badge-select-form";
 import SelectForm from "../form/select-form";
 import { usePropertyForm } from "../property-form-provider";
-import { useProperty } from "../property-provider";
+import { usePropertyOptional } from "../property-provider";
 import SectionCard from "../section-card";
 
 /** 書類項目ステータスの選択肢 */
@@ -20,7 +20,7 @@ const DOCUMENT_ITEM_STATUS_OPTIONS = documentItemStatus.map((status) => ({
 
 export default function DocumentProgressTab() {
   const form = usePropertyForm();
-  const property = useProperty();
+  const property = usePropertyOptional();
 
   return (
     <div className="space-y-3">
@@ -37,8 +37,8 @@ export default function DocumentProgressTab() {
                 label: DOCUMENT_STATUS_LABELS[type],
                 color: DOCUMENT_STATUS_COLORS[type],
               }))}
-              updatedAt={property.documentStatusUpdatedAt}
-              updatedByUser={property.documentStatusUpdatedByUser}
+              updatedAt={property?.documentStatusUpdatedAt}
+              updatedByUser={property?.documentStatusUpdatedByUser}
             />
           </div>
         </SectionCard>
@@ -52,12 +52,12 @@ export default function DocumentProgressTab() {
               label="ローン計算書"
               options={DOCUMENT_ITEM_STATUS_OPTIONS}
               updatedAt={
-                property.documentItems?.find(
+                property?.documentItems?.find(
                   (item) => item.itemType === "loan_calculation"
                 )?.updatedAt
               }
               updatedByUser={
-                property.documentItems?.find(
+                property?.documentItems?.find(
                   (item) => item.itemType === "loan_calculation"
                 )?.updatedByUser
               }
@@ -76,12 +76,12 @@ export default function DocumentProgressTab() {
               label="賃貸借契約書"
               options={DOCUMENT_ITEM_STATUS_OPTIONS}
               updatedAt={
-                property.documentItems?.find(
+                property?.documentItems?.find(
                   (item) => item.itemType === "rental_contract"
                 )?.updatedAt
               }
               updatedByUser={
-                property.documentItems?.find(
+                property?.documentItems?.find(
                   (item) => item.itemType === "rental_contract"
                 )?.updatedByUser
               }
@@ -92,12 +92,12 @@ export default function DocumentProgressTab() {
               label="管理委託契約書"
               options={DOCUMENT_ITEM_STATUS_OPTIONS}
               updatedAt={
-                property.documentItems?.find(
+                property?.documentItems?.find(
                   (item) => item.itemType === "management_contract"
                 )?.updatedAt
               }
               updatedByUser={
-                property.documentItems?.find(
+                property?.documentItems?.find(
                   (item) => item.itemType === "management_contract"
                 )?.updatedByUser
               }
@@ -108,12 +108,12 @@ export default function DocumentProgressTab() {
               label="入居申込書"
               options={DOCUMENT_ITEM_STATUS_OPTIONS}
               updatedAt={
-                property.documentItems?.find(
+                property?.documentItems?.find(
                   (item) => item.itemType === "move_in_application"
                 )?.updatedAt
               }
               updatedByUser={
-                property.documentItems?.find(
+                property?.documentItems?.find(
                   (item) => item.itemType === "move_in_application"
                 )?.updatedByUser
               }
@@ -130,12 +130,12 @@ export default function DocumentProgressTab() {
               label="重要事項調査報告書"
               options={DOCUMENT_ITEM_STATUS_OPTIONS}
               updatedAt={
-                property.documentItems?.find(
+                property?.documentItems?.find(
                   (item) => item.itemType === "important_matters_report"
                 )?.updatedAt
               }
               updatedByUser={
-                property.documentItems?.find(
+                property?.documentItems?.find(
                   (item) => item.itemType === "important_matters_report"
                 )?.updatedByUser
               }
@@ -146,12 +146,12 @@ export default function DocumentProgressTab() {
               label="管理規約"
               options={DOCUMENT_ITEM_STATUS_OPTIONS}
               updatedAt={
-                property.documentItems?.find(
+                property?.documentItems?.find(
                   (item) => item.itemType === "management_rules"
                 )?.updatedAt
               }
               updatedByUser={
-                property.documentItems?.find(
+                property?.documentItems?.find(
                   (item) => item.itemType === "management_rules"
                 )?.updatedByUser
               }
@@ -162,12 +162,12 @@ export default function DocumentProgressTab() {
               label="長期修繕計画書"
               options={DOCUMENT_ITEM_STATUS_OPTIONS}
               updatedAt={
-                property.documentItems?.find(
+                property?.documentItems?.find(
                   (item) => item.itemType === "long_term_repair_plan"
                 )?.updatedAt
               }
               updatedByUser={
-                property.documentItems?.find(
+                property?.documentItems?.find(
                   (item) => item.itemType === "long_term_repair_plan"
                 )?.updatedByUser
               }
@@ -178,12 +178,12 @@ export default function DocumentProgressTab() {
               label="総会議事録"
               options={DOCUMENT_ITEM_STATUS_OPTIONS}
               updatedAt={
-                property.documentItems?.find(
+                property?.documentItems?.find(
                   (item) => item.itemType === "general_meeting_minutes"
                 )?.updatedAt
               }
               updatedByUser={
-                property.documentItems?.find(
+                property?.documentItems?.find(
                   (item) => item.itemType === "general_meeting_minutes"
                 )?.updatedByUser
               }
@@ -194,12 +194,12 @@ export default function DocumentProgressTab() {
               label="パンフレット"
               options={DOCUMENT_ITEM_STATUS_OPTIONS}
               updatedAt={
-                property.documentItems?.find(
+                property?.documentItems?.find(
                   (item) => item.itemType === "pamphlet"
                 )?.updatedAt
               }
               updatedByUser={
-                property.documentItems?.find(
+                property?.documentItems?.find(
                   (item) => item.itemType === "pamphlet"
                 )?.updatedByUser
               }
@@ -210,12 +210,12 @@ export default function DocumentProgressTab() {
               label="口座振替用紙"
               options={DOCUMENT_ITEM_STATUS_OPTIONS}
               updatedAt={
-                property.documentItems?.find(
+                property?.documentItems?.find(
                   (item) => item.itemType === "bank_transfer_form"
                 )?.updatedAt
               }
               updatedByUser={
-                property.documentItems?.find(
+                property?.documentItems?.find(
                   (item) => item.itemType === "bank_transfer_form"
                 )?.updatedByUser
               }
@@ -226,12 +226,12 @@ export default function DocumentProgressTab() {
               label="所有者変更届"
               options={DOCUMENT_ITEM_STATUS_OPTIONS}
               updatedAt={
-                property.documentItems?.find(
+                property?.documentItems?.find(
                   (item) => item.itemType === "owner_change_notification"
                 )?.updatedAt
               }
               updatedByUser={
-                property.documentItems?.find(
+                property?.documentItems?.find(
                   (item) => item.itemType === "owner_change_notification"
                 )?.updatedByUser
               }
@@ -248,12 +248,12 @@ export default function DocumentProgressTab() {
               label="公課証明"
               options={DOCUMENT_ITEM_STATUS_OPTIONS}
               updatedAt={
-                property.documentItems?.find(
+                property?.documentItems?.find(
                   (item) => item.itemType === "tax_certificate"
                 )?.updatedAt
               }
               updatedByUser={
-                property.documentItems?.find(
+                property?.documentItems?.find(
                   (item) => item.itemType === "tax_certificate"
                 )?.updatedByUser
               }
@@ -264,12 +264,12 @@ export default function DocumentProgressTab() {
               label="建築計画概要書"
               options={DOCUMENT_ITEM_STATUS_OPTIONS}
               updatedAt={
-                property.documentItems?.find(
+                property?.documentItems?.find(
                   (item) => item.itemType === "building_plan_overview"
                 )?.updatedAt
               }
               updatedByUser={
-                property.documentItems?.find(
+                property?.documentItems?.find(
                   (item) => item.itemType === "building_plan_overview"
                 )?.updatedByUser
               }
@@ -280,12 +280,12 @@ export default function DocumentProgressTab() {
               label="台帳記載事項証明書"
               options={DOCUMENT_ITEM_STATUS_OPTIONS}
               updatedAt={
-                property.documentItems?.find(
+                property?.documentItems?.find(
                   (item) => item.itemType === "ledger_certificate"
                 )?.updatedAt
               }
               updatedByUser={
-                property.documentItems?.find(
+                property?.documentItems?.find(
                   (item) => item.itemType === "ledger_certificate"
                 )?.updatedByUser
               }
@@ -296,12 +296,12 @@ export default function DocumentProgressTab() {
               label="用途地域"
               options={DOCUMENT_ITEM_STATUS_OPTIONS}
               updatedAt={
-                property.documentItems?.find(
+                property?.documentItems?.find(
                   (item) => item.itemType === "zoning_district"
                 )?.updatedAt
               }
               updatedByUser={
-                property.documentItems?.find(
+                property?.documentItems?.find(
                   (item) => item.itemType === "zoning_district"
                 )?.updatedByUser
               }
@@ -312,12 +312,12 @@ export default function DocumentProgressTab() {
               label="道路台帳"
               options={DOCUMENT_ITEM_STATUS_OPTIONS}
               updatedAt={
-                property.documentItems?.find(
+                property?.documentItems?.find(
                   (item) => item.itemType === "road_ledger"
                 )?.updatedAt
               }
               updatedByUser={
-                property.documentItems?.find(
+                property?.documentItems?.find(
                   (item) => item.itemType === "road_ledger"
                 )?.updatedByUser
               }

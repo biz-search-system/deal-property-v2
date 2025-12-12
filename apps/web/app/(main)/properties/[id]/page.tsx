@@ -129,7 +129,6 @@ export default async function PropertyDetailPage({
       legit: "レイジット",
       esc: "エスク",
       trader: "取引業者",
-      shine: "シャイン",
       second: "セカンド",
     };
     return company ? labels[company] || company : "-";
