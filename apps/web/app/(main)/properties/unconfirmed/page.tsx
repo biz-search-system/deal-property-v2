@@ -1,13 +1,10 @@
-import { getProperties } from "@/lib/data/property";
+import { getAllUnconfirmedPropertiesBySettlementDate } from "@/lib/data/property";
 import { UnconfirmedProperties } from "@/components/property/unconfirmed/unconfirmed-properties";
 import { BreadcrumbConfig } from "@/components/breadcrumb-provider";
 
 export default async function UnconfirmedPropertiesPage() {
-  // BC確定前の案件のみフィルター
-  const allProperties = await getProperties();
-  const unconfirmedProperties = allProperties.filter(
-    (p) => p.progressStatus === "bc_before_confirmed"
-  );
+  // ユーザーの所属組織のBC確定前案件を組織順・決済日順で取得
+  const unconfirmedProperties = await getAllUnconfirmedPropertiesBySettlementDate();
 
   // 集計計算（利益はprofitフィールドから直接取得）
   const totals = {

@@ -897,9 +897,9 @@ export async function updatePropertyName(data: {
     })
     .where(eq(properties.id, data.id));
 
-  // revalidatePath("/properties");
-  // revalidatePath("/properties/unconfirmed");
-  // revalidatePath("/properties/search");
+  revalidatePath("/properties");
+  revalidatePath("/properties/unconfirmed");
+  revalidatePath("/properties/search");
 }
 
 /**
