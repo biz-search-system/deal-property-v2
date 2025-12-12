@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import {
   Table,
   TableBody,
@@ -9,9 +10,24 @@ import {
   TableRow,
 } from "@workspace/ui/components/table";
 import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@workspace/ui/components/tooltip";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@workspace/ui/components/select";
+import {
   ACCOUNT_COMPANY_LABELS,
-  BANK_ACCOUNT_LIMITS,
+  BANK_ACCOUNT_BY_COMPANY,
+  BANK_ACCOUNT_LABELS,
   formatAmountInYen,
+  getBankAccountLimit,
 } from "@workspace/utils";
 import type { AccountCompany } from "@workspace/drizzle/types";
 import type { PropertyWithRelations } from "@/lib/types/property";
@@ -22,99 +38,161 @@ interface AccountSettlementSummaryProps {
 
 const accountCompanies: AccountCompany[] = ["legit", "life", "ms"];
 
+/** 最初に表示する行数 */
+const INITIAL_VISIBLE_ROWS = 3;
+
+/** 日付をYYYY-MM-DD形式の文字列に変換 */
+function formatDateKey(date: Date): string {
+  return date.toISOString().split("T")[0] ?? "";
+}
+
+/** 日付文字列をM/D形式に変換 */
+function formatShortDate(dateKey: string): string {
+  const [, month, day] = dateKey.split("-");
+  return `${Number(month)}/${Number(day)}`;
+}
+
 export function AccountSettlementSummary({
   properties,
 }: AccountSettlementSummaryProps) {
-  // 口座会社ごとの集計を計算
-  const summaryByAccount = accountCompanies.map((account) => {
-    const filtered = properties.filter((p) => p.accountCompany === account);
-    const total = filtered.reduce((sum, p) => sum + (p.amountExit || 0), 0);
-    const count = filtered.length;
+  const [selectedCompany, setSelectedCompany] =
+    useState<AccountCompany>("legit");
 
-    // 口座の上限金額を取得（万円単位）
-    const limits = BANK_ACCOUNT_LIMITS[account];
-    const totalLimit = limits
-      ? Object.values(limits).reduce((sum, limit) => sum + (limit || 0), 0)
-      : 0;
+  // 選択した会社の物件をフィルタ
+  const filteredProperties = properties.filter(
+    (p) => p.accountCompany === selectedCompany
+  );
 
-    // 万円に変換して比率計算
-    const totalInMan = total / 10000;
-    const percentage = totalLimit > 0 ? (totalInMan / totalLimit) * 100 : 0;
+  // 選択した会社の銀行口座リスト
+  const bankAccounts = BANK_ACCOUNT_BY_COMPANY[selectedCompany];
+
+  // 決済日の一覧を取得（ソート済み）
+  const settlementDates = [
+    ...new Set(
+      filteredProperties
+        .filter((p) => p.settlementDate)
+        .map((p) => formatDateKey(new Date(p.settlementDate!)))
+    ),
+  ].sort();
+
+  // 銀行口座 × 日付 のデータを集計
+  const dataByBankAccount = bankAccounts.map((bankAccount) => {
+    const accountProperties = filteredProperties.filter(
+      (p) => p.bankAccount === bankAccount
+    );
+
+    // 日別集計
+    const dailyTotals = new Map<string, number>();
+    for (const p of accountProperties) {
+      if (p.settlementDate) {
+        const dateKey = formatDateKey(new Date(p.settlementDate));
+        const current = dailyTotals.get(dateKey) || 0;
+        dailyTotals.set(dateKey, current + (p.amountExit || 0));
+      }
+    }
+
+    // 日上限（万円単位）
+    const dailyLimit = getBankAccountLimit(selectedCompany, bankAccount);
+
+    // 日別使用率を計算
+    const dailyData = settlementDates.map((date) => {
+      const total = dailyTotals.get(date) || 0;
+      const totalInMan = total / 10000;
+      const percentage = dailyLimit > 0 ? (totalInMan / dailyLimit) * 100 : 0;
+      return { date, total, percentage };
+    });
 
     return {
-      account,
-      label: ACCOUNT_COMPANY_LABELS[account],
-      total,
-      count,
-      totalLimit: totalLimit * 10000, // 円に戻す
-      percentage,
+      bankAccount,
+      label: BANK_ACCOUNT_LABELS[bankAccount],
+      dailyLimit: dailyLimit * 10000, // 円に戻す
+      dailyData,
     };
   });
 
+  const hasMoreRows = dataByBankAccount.length > INITIAL_VISIBLE_ROWS;
+
   return (
-    <div className="rounded-lg border">
-      <Table>
-        <TableHeader>
-          <TableRow className="hover:bg-transparent">
-            <TableHead className="h-8 text-xs font-medium">口座</TableHead>
-            <TableHead className="h-8 text-xs font-medium text-right">
-              出口合計
-            </TableHead>
-            <TableHead className="h-8 text-xs font-medium text-right">
-              件数
-            </TableHead>
-            <TableHead className="h-8 text-xs font-medium text-right">
-              上限
-            </TableHead>
-            <TableHead className="h-8 text-xs font-medium w-[140px]">
-              使用率
-            </TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {summaryByAccount.map((item) => (
-            <TableRow key={item.account} className="hover:bg-muted/50">
-              <TableCell className="py-2 text-xs font-medium">
-                {item.label}
-              </TableCell>
-              <TableCell className="py-2 text-xs text-right tabular-nums">
-                {formatAmountInYen(item.total / 10000)}
-              </TableCell>
-              <TableCell className="py-2 text-xs text-right tabular-nums">
-                {item.count}件
-              </TableCell>
-              <TableCell className="py-2 text-xs text-right tabular-nums text-muted-foreground">
-                {formatAmountInYen(item.totalLimit / 10000)}
-              </TableCell>
-              <TableCell className="py-2">
-                <div className="flex items-center gap-2">
-                  <div className="h-1.5 flex-1 rounded-full bg-muted overflow-hidden">
-                    <div
-                      className={`h-full transition-all ${
-                        item.percentage >= 80
-                          ? "bg-destructive"
-                          : item.percentage >= 50
-                            ? "bg-amber-500"
-                            : "bg-primary"
-                      }`}
-                      style={{ width: `${Math.min(item.percentage, 100)}%` }}
-                    />
-                  </div>
-                  <span
-                    className={`text-xs tabular-nums w-10 text-right ${
-                      item.percentage >= 80
-                        ? "text-destructive font-medium"
-                        : "text-muted-foreground"
-                    }`}
+    <TooltipProvider>
+      <div className="rounded-lg border overflow-hidden">
+        <div className={hasMoreRows ? "h-[135px] overflow-y-auto" : undefined}>
+          <Table>
+            <TableHeader className="sticky top-0 bg-background z-10">
+              <TableRow className="hover:bg-transparent">
+                <TableHead className="h-8 text-xs font-medium w-[100px]">
+                  <Select
+                    value={selectedCompany}
+                    onValueChange={(v) =>
+                      setSelectedCompany(v as AccountCompany)
+                    }
                   >
-                    {item.percentage.toFixed(0)}%
-                  </span>
-                </div>
-              </TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-    </div>
+                    <SelectTrigger className="h-6 text-xs border-0 bg-transparent p-0 focus:ring-0">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {accountCompanies.map((company) => (
+                        <SelectItem key={company} value={company}>
+                          {ACCOUNT_COMPANY_LABELS[company]}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </TableHead>
+                {settlementDates.map((date) => (
+                  <TableHead
+                    key={date}
+                    className="h-8 text-xs font-medium text-right w-[70px]"
+                  >
+                    {formatShortDate(date)}
+                  </TableHead>
+                ))}
+                <TableHead className="h-8 text-xs font-medium text-right w-[70px]">
+                  日上限
+                </TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {dataByBankAccount.map((item) => (
+                <TableRow key={item.bankAccount} className="hover:bg-muted/50">
+                  <TableCell className="py-2 text-xs font-medium">
+                    {item.label}
+                  </TableCell>
+                  {item.dailyData.map((day) => (
+                    <TableCell
+                      key={day.date}
+                      className={`py-2 text-xs text-right tabular-nums ${
+                        day.percentage >= 100
+                          ? "bg-destructive/10 text-destructive font-medium"
+                          : day.percentage >= 80
+                            ? "bg-amber-500/10 text-amber-600 dark:text-amber-400"
+                            : ""
+                      }`}
+                    >
+                      {day.total > 0 ? (
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <span className="cursor-help">
+                              {formatAmountInYen(day.total / 10000)}
+                            </span>
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p>{day.percentage.toFixed(0)}%使用</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      ) : (
+                        <span className="text-muted-foreground">-</span>
+                      )}
+                    </TableCell>
+                  ))}
+                  <TableCell className="py-2 text-xs text-right tabular-nums text-muted-foreground">
+                    {formatAmountInYen(item.dailyLimit / 10000)}
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
+      </div>
+    </TooltipProvider>
   );
 }
