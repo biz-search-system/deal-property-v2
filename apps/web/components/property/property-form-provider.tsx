@@ -10,7 +10,7 @@ import { Form } from "@workspace/ui/components/form";
 import { createProperty, updateProperty } from "@/lib/actions/property";
 import { useNavigationGuard } from "@/hooks/use-navigation-guard";
 import { toast } from "sonner";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import type {
   Property,
   ContractProgress,
@@ -211,6 +211,8 @@ export default function PropertyFormProvider({
     resolver: zodResolver(propertyCreateSchema),
     defaultValues: transformToFormValues(defaultValues),
   });
+  const pathname = usePathname();
+  const isUnconfirmed = pathname.includes("/properties/unconfirmed");
 
   // 未保存変更がある場合の離脱防止
   useNavigationGuard(form.formState.isDirty);
@@ -228,6 +230,9 @@ export default function PropertyFormProvider({
         }
         await updateProperty({ ...data, id: defaultValues.id });
         toast.success("案件を更新しました");
+        if (isUnconfirmed) {
+          router.push("/properties/unconfirmed");
+        }
         onSuccess?.();
         router.refresh();
       }
