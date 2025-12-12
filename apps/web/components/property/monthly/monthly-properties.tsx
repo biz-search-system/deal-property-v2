@@ -10,7 +10,7 @@ import {
   TabsTrigger,
 } from "@workspace/ui/components/tabs";
 import { useQueryState } from "nuqs";
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import { MonthlyPropertiesTable } from "./monthly-properties-table";
 
 interface MonthlyPropertiesProps {
@@ -27,7 +27,6 @@ export function MonthlyProperties({
   const [activeTab, setActiveTab] = useQueryState("tab", {
     defaultValue: "confirmed",
   });
-  const [selectedAccount, setSelectedAccount] = useState<string>("legit");
 
   // 業者確定後と決済完了で分類
   const categorizedProperties = useMemo(() => {
@@ -42,49 +41,13 @@ export function MonthlyProperties({
   }, [properties]);
 
   // 集計計算
-  const calculateTotals = (properties: PropertyWithRelations[]) => {
+  const calculateTotals = (props: PropertyWithRelations[]) => {
     return {
-      profit: properties.reduce((sum, p) => sum + (p.profit || 0), 0),
-      bcDeposit: properties.reduce((sum, p) => sum + (p.bcDeposit || 0), 0),
-      count: properties.length,
+      profit: props.reduce((sum, p) => sum + (p.profit || 0), 0),
+      bcDeposit: props.reduce((sum, p) => sum + (p.bcDeposit || 0), 0),
+      count: props.length,
     };
   };
-
-  // 口座別決済日集計
-  const accountSettlementSummary = useMemo(() => {
-    const filteredProperties = categorizedProperties.confirmed.filter(
-      (p) => p.accountCompany === selectedAccount
-    );
-
-    // 決済日ごとにグループ化
-    const grouped: { [key: string]: { total: number; count: number } } = {};
-
-    filteredProperties.forEach((p) => {
-      // DateをISO文字列に変換、nullの場合は空文字列
-      const dateKey = p.settlementDate
-        ? p.settlementDate instanceof Date
-          ? p.settlementDate.toISOString()
-          : new Date(p.settlementDate).toISOString()
-        : "";
-
-      if (!grouped[dateKey]) {
-        grouped[dateKey] = { total: 0, count: 0 };
-      }
-      grouped[dateKey].total += p.amountExit || 0;
-      grouped[dateKey].count += 1;
-    });
-
-    // ソートして配列に変換
-    return Object.entries(grouped)
-      .filter(([date]) => date !== "") // 空の日付を除外
-      .map(([date, data]) => ({
-        date,
-        total: data.total,
-        count: data.count,
-        percentage: (data.total / 100000000) * 100, // 1億円に対する割合
-      }))
-      .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
-  }, [categorizedProperties.confirmed, selectedAccount]);
 
   const formatCurrency = (value: number | null | undefined) => {
     if (value === null || value === undefined) return "-";
@@ -155,9 +118,7 @@ export function MonthlyProperties({
             </div>
             <div className="shrink-0">
               <AccountSettlementSummary
-                selectedAccount={selectedAccount}
-                setSelectedAccount={setSelectedAccount}
-                accountSettlementSummary={accountSettlementSummary}
+                properties={categorizedProperties.confirmed}
               />
             </div>
             <Card className="flex flex-1 flex-col overflow-hidden px-3 py-2">
