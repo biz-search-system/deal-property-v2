@@ -265,7 +265,7 @@ export async function createProperty(data: PropertyCreate) {
     return property;
   });
 
-  // revalidatePath("/properties");
+  revalidatePath("/properties/unconfirmed");
   return result;
 }
 

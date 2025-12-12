@@ -227,7 +227,7 @@ export default function PropertyFormProvider({
           return;
         }
         await updateProperty({ ...data, id: defaultValues.id });
-        toast.success("案件を更新しました123");
+        toast.success("案件を更新しました");
         onSuccess?.();
         router.refresh();
       }
