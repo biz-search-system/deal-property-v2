@@ -1,13 +1,6 @@
 "use client";
 
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@workspace/ui/components/select";
-import {
   Table,
   TableBody,
   TableCell,
@@ -15,127 +8,113 @@ import {
   TableHeader,
   TableRow,
 } from "@workspace/ui/components/table";
-import { ACCOUNT_COMPANY_LABELS } from "@workspace/utils";
-
-interface AccountSettlementSummaryItem {
-  date: string;
-  total: number;
-  count: number;
-  percentage: number;
-}
+import {
+  ACCOUNT_COMPANY_LABELS,
+  BANK_ACCOUNT_LIMITS,
+  formatAmountInYen,
+} from "@workspace/utils";
+import type { AccountCompany } from "@workspace/drizzle/types";
+import type { PropertyWithRelations } from "@/lib/types/property";
 
 interface AccountSettlementSummaryProps {
-  selectedAccount: string;
-  setSelectedAccount: (value: string) => void;
-  accountSettlementSummary: AccountSettlementSummaryItem[];
+  properties: PropertyWithRelations[];
 }
 
-const formatCurrency = (value: number | null | undefined) => {
-  if (value === null || value === undefined) return "-";
-  // 1万円未満の場合は円単位で表示
-  if (value < 10000) {
-    return `${value.toLocaleString()}円`;
-  }
-  // 1万円以上の場合は万円単位で表示
-  return `${(value / 10000).toFixed(0)}万`;
-};
-
-const formatDateWithDay = (dateString: string | Date | null): string => {
-  if (!dateString) return "-";
-  const date: Date =
-    typeof dateString === "string" ? new Date(dateString) : dateString;
-  const days = ["日", "月", "火", "水", "木", "金", "土"];
-  return `${date.getMonth() + 1}/${date.getDate()}(${days[date.getDay()]})`;
-};
+const accountCompanies: AccountCompany[] = ["legit", "life", "ms"];
 
 export function AccountSettlementSummary({
-  selectedAccount,
-  setSelectedAccount,
-  accountSettlementSummary,
+  properties,
 }: AccountSettlementSummaryProps) {
+  // 口座会社ごとの集計を計算
+  const summaryByAccount = accountCompanies.map((account) => {
+    const filtered = properties.filter((p) => p.accountCompany === account);
+    const total = filtered.reduce((sum, p) => sum + (p.amountExit || 0), 0);
+    const count = filtered.length;
+
+    // 口座の上限金額を取得（万円単位）
+    const limits = BANK_ACCOUNT_LIMITS[account];
+    const totalLimit = limits
+      ? Object.values(limits).reduce((sum, limit) => sum + (limit || 0), 0)
+      : 0;
+
+    // 万円に変換して比率計算
+    const totalInMan = total / 10000;
+    const percentage = totalLimit > 0 ? (totalInMan / totalLimit) * 100 : 0;
+
+    return {
+      account,
+      label: ACCOUNT_COMPANY_LABELS[account],
+      total,
+      count,
+      totalLimit: totalLimit * 10000, // 円に戻す
+      percentage,
+    };
+  });
+
   return (
-    <>
-      <div className="flex items-center gap-2 mb-2">
-        <span className="text-sm font-semibold">口座別集計</span>
-        <Select value={selectedAccount} onValueChange={setSelectedAccount}>
-          <SelectTrigger className="w-[150px]">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="legit">
-              {ACCOUNT_COMPANY_LABELS.legit}
-            </SelectItem>
-            <SelectItem value="life">{ACCOUNT_COMPANY_LABELS.life}</SelectItem>
-            <SelectItem value="ms">{ACCOUNT_COMPANY_LABELS.ms}</SelectItem>
-          </SelectContent>
-        </Select>
-      </div>
-      {/* 口座別決済日集計 */}
-      <div className="mb-4">
-        <div className="rounded-lg border p-4 bg-muted/30">
-          <Table className="text-xs">
-            <TableHeader>
-              <TableRow>
-                <TableHead className="text-xs">決済日</TableHead>
-                <TableHead className="text-xs text-right">
-                  出口金額合計
-                </TableHead>
-                <TableHead className="text-xs text-right">件数</TableHead>
-                <TableHead className="text-xs text-right">上限比率</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {accountSettlementSummary.length === 0 ? (
-                <TableRow>
-                  <TableCell colSpan={4} className="text-center">
-                    該当する案件がありません
-                  </TableCell>
-                </TableRow>
-              ) : (
-                accountSettlementSummary.map((item) => (
-                  <TableRow key={item.date}>
-                    <TableCell className="font-medium">
-                      {formatDateWithDay(item.date)}
-                    </TableCell>
-                    <TableCell className="text-right">
-                      {formatCurrency(item.total)}
-                    </TableCell>
-                    <TableCell className="text-right">{item.count}件</TableCell>
-                    <TableCell className="text-right">
-                      <div className="flex items-center justify-end gap-2">
-                        <div className="w-20 h-4 bg-muted rounded-full overflow-hidden">
-                          <div
-                            className={`h-full ${
-                              item.percentage >= 80
-                                ? "bg-destructive"
-                                : item.percentage >= 50
-                                  ? "bg-yellow-500"
-                                  : "bg-primary"
-                            }`}
-                            style={{
-                              width: `${Math.min(item.percentage, 100)}%`,
-                            }}
-                          />
-                        </div>
-                        <span
-                          className={`font-semibold ${
-                            item.percentage >= 80 ? "text-destructive" : ""
-                          }`}
-                        >
-                          {item.percentage.toFixed(0)}%
-                        </span>
-                        {item.percentage >= 80 && (
-                          <span className="text-destructive">⚠️</span>
-                        )}
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                ))
-              )}
-            </TableBody>
-          </Table>
-        </div>
-      </div>
-    </>
+    <div className="rounded-lg border">
+      <Table>
+        <TableHeader>
+          <TableRow className="hover:bg-transparent">
+            <TableHead className="h-8 text-xs font-medium">口座</TableHead>
+            <TableHead className="h-8 text-xs font-medium text-right">
+              出口合計
+            </TableHead>
+            <TableHead className="h-8 text-xs font-medium text-right">
+              件数
+            </TableHead>
+            <TableHead className="h-8 text-xs font-medium text-right">
+              上限
+            </TableHead>
+            <TableHead className="h-8 text-xs font-medium w-[140px]">
+              使用率
+            </TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {summaryByAccount.map((item) => (
+            <TableRow key={item.account} className="hover:bg-muted/50">
+              <TableCell className="py-2 text-xs font-medium">
+                {item.label}
+              </TableCell>
+              <TableCell className="py-2 text-xs text-right tabular-nums">
+                {formatAmountInYen(item.total / 10000)}
+              </TableCell>
+              <TableCell className="py-2 text-xs text-right tabular-nums">
+                {item.count}件
+              </TableCell>
+              <TableCell className="py-2 text-xs text-right tabular-nums text-muted-foreground">
+                {formatAmountInYen(item.totalLimit / 10000)}
+              </TableCell>
+              <TableCell className="py-2">
+                <div className="flex items-center gap-2">
+                  <div className="h-1.5 flex-1 rounded-full bg-muted overflow-hidden">
+                    <div
+                      className={`h-full transition-all ${
+                        item.percentage >= 80
+                          ? "bg-destructive"
+                          : item.percentage >= 50
+                            ? "bg-amber-500"
+                            : "bg-primary"
+                      }`}
+                      style={{ width: `${Math.min(item.percentage, 100)}%` }}
+                    />
+                  </div>
+                  <span
+                    className={`text-xs tabular-nums w-10 text-right ${
+                      item.percentage >= 80
+                        ? "text-destructive font-medium"
+                        : "text-muted-foreground"
+                    }`}
+                  >
+                    {item.percentage.toFixed(0)}%
+                  </span>
+                </div>
+              </TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    </div>
   );
 }
