@@ -120,7 +120,7 @@ export function DataTable<TData, TValue>({
       <div className="shrink-0">
         <DataTableToolbar table={table} />
       </div>
-      <Card className="overflow-hidden p-2">
+      <Card className="overflow-hidden px-3 py-2">
         <ScrollArea className="min-h-0 flex-1 overflow-auto">
           <Table className="text-[10px]">
             <TableHeader className="sticky top-0 bg-background z-10 [&_tr]:border-b-0">
