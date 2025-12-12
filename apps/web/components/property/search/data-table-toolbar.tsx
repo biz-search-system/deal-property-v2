@@ -1,7 +1,7 @@
 "use client";
 
 import { Table } from "@tanstack/react-table";
-import { X, SlidersHorizontal, Download, Search } from "lucide-react";
+import { X, SlidersHorizontal, Search } from "lucide-react";
 
 import { Button } from "@workspace/ui/components/button";
 import { Input } from "@workspace/ui/components/input";
@@ -20,12 +20,21 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@workspace/ui/components/select";
+import { organization, OrganizationNameType } from "@workspace/utils";
 import {
-  PROGRESS_STATUS_LABELS,
-  DOCUMENT_STATUS_LABELS,
-  CONTRACT_TYPE_LABELS,
-  ORGANIZATION_LABELS,
-} from "@workspace/utils";
+  ContractType,
+  DocumentStatus,
+  ProgressStatus,
+} from "@workspace/drizzle/types";
+import ProgressStatusBadge from "../badge/progress-status-badge";
+import {
+  contractType,
+  documentStatus,
+  progressStatus,
+} from "@workspace/drizzle/schemas";
+import OrganizationBadge from "../badge/organization-badge";
+import DocumentStatusBadge from "../badge/document-status-badge";
+import ContractTypeBadge from "../badge/contract-type-badge";
 
 /** カラムIDから日本語表示名へのマッピング */
 const COLUMN_LABELS: Record<string, string> = {
@@ -56,21 +65,55 @@ interface DataTableToolbarProps<TData> {
 export function DataTableToolbar<TData>({
   table,
 }: DataTableToolbarProps<TData>) {
-  const isFiltered = table.getState().columnFilters.length > 0;
+  // metaから検索値とフィルター値を取得
+  const meta = table.options.meta as
+    | {
+        search?: string;
+        onSearchChange?: (value: string) => void;
+        organizationFilter?: OrganizationNameType;
+        onOrganizationFilterChange?: (value: string) => void;
+        progressStatusFilter?: ProgressStatus;
+        onProgressStatusFilterChange?: (value: string) => void;
+        documentStatusFilter?: DocumentStatus;
+        onDocumentStatusFilterChange?: (value: string) => void;
+        contractTypeFilter?: ContractType;
+        onContractTypeFilterChange?: (value: string) => void;
+      }
+    | undefined;
+  const search = meta?.search ?? "";
+  const onSearchChange = meta?.onSearchChange;
+  const organizationFilter = meta?.organizationFilter;
+  const onOrganizationFilterChange = meta?.onOrganizationFilterChange;
+  const progressStatusFilter = meta?.progressStatusFilter;
+  const onProgressStatusFilterChange = meta?.onProgressStatusFilterChange;
+  const documentStatusFilter = meta?.documentStatusFilter;
+  const onDocumentStatusFilterChange = meta?.onDocumentStatusFilterChange;
+  const contractTypeFilter = meta?.contractTypeFilter;
+  const onContractTypeFilterChange = meta?.onContractTypeFilterChange;
 
   return (
     <div className="flex flex-col gap-3">
       {/* 検索バー */}
       <div className="flex items-center gap-2">
-        <div className="relative flex-1 max-w-sm">
-          <Search className="absolute left-2 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+        <div className="relative">
+          <Search className="absolute left-2 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
           <Input
-            placeholder="物件名、オーナー名で検索..."
-            value={table.getState().globalFilter ?? ""}
-            onChange={(event) => table.setGlobalFilter(event.target.value)}
-            className="pl-8 h-8"
+            placeholder="物件名、オーナー名、号室、備考をあいまい検索できます"
+            value={search}
+            onChange={(event) => onSearchChange?.(event.target.value)}
+            className="pl-8 h-9 w-[664px]"
           />
         </div>
+        {search && (
+          <Button
+            variant="ghost"
+            onClick={() => onSearchChange?.("")}
+            className="px-2 lg:px-3"
+          >
+            リセット
+            <X className="ml-2 size-4" />
+          </Button>
+        )}
       </div>
 
       {/* フィルターとアクション */}
@@ -78,24 +121,28 @@ export function DataTableToolbar<TData>({
         <div className="flex flex-1 items-center gap-2">
           {/* 組織フィルター */}
           <Select
-            value={
-              (table.getColumn("organization")?.getFilterValue() as string) ??
-              "all"
-            }
+            value={organizationFilter ?? "all"}
             onValueChange={(value) =>
-              table
-                .getColumn("organization")
-                ?.setFilterValue(value === "all" ? undefined : value)
+              onOrganizationFilterChange?.(value === "all" ? "" : value)
             }
           >
-            <SelectTrigger className="h-8 w-[150px]">
-              <SelectValue placeholder="組織" />
+            <SelectTrigger className="h-8 w-[160px]">
+              <SelectValue placeholder="組織">
+                {organizationFilter ? (
+                  <OrganizationBadge
+                    organization={organizationFilter}
+                    size="medium"
+                  />
+                ) : (
+                  "管理組織"
+                )}
+              </SelectValue>
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">すべて</SelectItem>
-              {Object.values(ORGANIZATION_LABELS).map((org) => (
+              {organization.map((org) => (
                 <SelectItem key={org} value={org}>
-                  {org}
+                  <OrganizationBadge organization={org} size="medium" />
                 </SelectItem>
               ))}
             </SelectContent>
@@ -103,24 +150,28 @@ export function DataTableToolbar<TData>({
 
           {/* 進捗フィルター */}
           <Select
-            value={
-              (table.getColumn("progressStatus")?.getFilterValue() as string) ??
-              "all"
-            }
+            value={progressStatusFilter ?? "all"}
             onValueChange={(value) =>
-              table
-                .getColumn("progressStatus")
-                ?.setFilterValue(value === "all" ? undefined : value)
+              onProgressStatusFilterChange?.(value === "all" ? "" : value)
             }
           >
-            <SelectTrigger className="h-8 w-[150px]">
-              <SelectValue placeholder="進捗" />
+            <SelectTrigger className="h-8 w-[160px]">
+              <SelectValue placeholder="進捗">
+                {progressStatusFilter ? (
+                  <ProgressStatusBadge
+                    progressStatus={progressStatusFilter}
+                    size="medium"
+                  />
+                ) : (
+                  "契約ステータス"
+                )}
+              </SelectValue>
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">すべて</SelectItem>
-              {Object.entries(PROGRESS_STATUS_LABELS).map(([key, label]) => (
-                <SelectItem key={key} value={key}>
-                  {label}
+              {progressStatus.map((status) => (
+                <SelectItem key={status} value={status}>
+                  <ProgressStatusBadge progressStatus={status} size="medium" />
                 </SelectItem>
               ))}
             </SelectContent>
@@ -128,24 +179,28 @@ export function DataTableToolbar<TData>({
 
           {/* 書類フィルター */}
           <Select
-            value={
-              (table.getColumn("documentStatus")?.getFilterValue() as string) ??
-              "all"
-            }
+            value={documentStatusFilter ?? "all"}
             onValueChange={(value) =>
-              table
-                .getColumn("documentStatus")
-                ?.setFilterValue(value === "all" ? undefined : value)
+              onDocumentStatusFilterChange?.(value === "all" ? "" : value)
             }
           >
-            <SelectTrigger className="h-8 w-[150px]">
-              <SelectValue placeholder="書類" />
+            <SelectTrigger className="h-8 w-[160px]">
+              <SelectValue placeholder="書類">
+                {documentStatusFilter ? (
+                  <DocumentStatusBadge
+                    documentStatus={documentStatusFilter}
+                    size="medium"
+                  />
+                ) : (
+                  "書類ステータス"
+                )}
+              </SelectValue>
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">すべて</SelectItem>
-              {Object.entries(DOCUMENT_STATUS_LABELS).map(([key, label]) => (
-                <SelectItem key={key} value={key}>
-                  {label}
+              {documentStatus.map((status) => (
+                <SelectItem key={status} value={status}>
+                  <DocumentStatusBadge documentStatus={status} size="medium" />
                 </SelectItem>
               ))}
             </SelectContent>
@@ -153,38 +208,50 @@ export function DataTableToolbar<TData>({
 
           {/* 契約形態フィルター */}
           <Select
-            value={
-              (table.getColumn("contractType")?.getFilterValue() as string) ??
-              "all"
-            }
+            value={contractTypeFilter ?? "all"}
             onValueChange={(value) =>
-              table
-                .getColumn("contractType")
-                ?.setFilterValue(value === "all" ? undefined : value)
+              onContractTypeFilterChange?.(value === "all" ? "" : value)
             }
           >
-            <SelectTrigger className="h-8 w-[150px]">
-              <SelectValue placeholder="契約形態" />
+            <SelectTrigger className="h-8 w-[160px]">
+              <SelectValue placeholder="契約形態">
+                {contractTypeFilter ? (
+                  <ContractTypeBadge
+                    contractType={contractTypeFilter}
+                    size="medium"
+                  />
+                ) : (
+                  "契約形態"
+                )}
+              </SelectValue>
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">すべて</SelectItem>
-              {Object.entries(CONTRACT_TYPE_LABELS).map(([key, label]) => (
-                <SelectItem key={key} value={key}>
-                  {label}
+              {contractType.map((type) => (
+                <SelectItem key={type} value={type}>
+                  <ContractTypeBadge contractType={type} size="medium" />
                 </SelectItem>
               ))}
             </SelectContent>
           </Select>
 
           {/* フィルターをクリア */}
-          {isFiltered && (
+          {(organizationFilter ||
+            progressStatusFilter ||
+            documentStatusFilter ||
+            contractTypeFilter) && (
             <Button
               variant="ghost"
-              onClick={() => table.resetColumnFilters()}
-              className="h-8 px-2 lg:px-3"
+              onClick={() => {
+                onOrganizationFilterChange?.("");
+                onProgressStatusFilterChange?.("");
+                onDocumentStatusFilterChange?.("");
+                onContractTypeFilterChange?.("");
+              }}
+              className="px-2 lg:px-3"
             >
               リセット
-              <X className="ml-2 h-4 w-4" />
+              <X className="ml-2 size-4" />
             </Button>
           )}
         </div>
@@ -194,8 +261,8 @@ export function DataTableToolbar<TData>({
           {/* カラム表示制御 */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="outline" size="sm" className="h-8">
-                <SlidersHorizontal className="mr-2 h-4 w-4" />
+              <Button variant="outline">
+                <SlidersHorizontal className="mr-2 size-4" />
                 表示項目
               </Button>
             </DropdownMenuTrigger>
@@ -210,8 +277,7 @@ export function DataTableToolbar<TData>({
                     column.getCanHide()
                 )
                 .map((column) => {
-                  const displayName =
-                    COLUMN_LABELS[column.id] || column.id;
+                  const displayName = COLUMN_LABELS[column.id] || column.id;
                   return (
                     <DropdownMenuCheckboxItem
                       key={column.id}

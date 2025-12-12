@@ -1,73 +1,121 @@
 "use client";
 
-import { usePropertyForm } from "../property-form-provider";
-import { useEffect } from "react";
-
 import {
-  ACCOUNT_COMPANY_COLORS,
-  ACCOUNT_COMPANY_LABELS,
-  BANK_ACCOUNT_COLORS,
-  BANK_ACCOUNT_LABELS,
-  getBankAccountsByCompany,
+  bcSettlementStatus,
+  abSettlementStatus,
+} from "@workspace/drizzle/types";
+import {
+  BC_SETTLEMENT_STATUS_LABELS,
+  BC_SETTLEMENT_STATUS_COLORS,
+  AB_SETTLEMENT_STATUS_LABELS,
+  AB_SETTLEMENT_STATUS_COLORS,
 } from "@workspace/utils";
-import BadgeSelectForm from "../form/badge-select-form";
-import { accountCompany } from "@workspace/drizzle/schemas";
-import type { AccountCompany } from "@workspace/drizzle/types";
+import BadgeToggleForm from "../form/badge-toggle-form";
+import CheckboxForm from "../form/checkbox-form";
+import SectionCard from "../section-card";
+import { usePropertyOptional } from "../property-provider";
+import { usePropertyForm } from "../property-form-provider";
+import { BankAccountFormCard } from "../bank-account-form-card";
+import DatePickerForm from "../form/date-picker-form";
 
 export default function SettlementProgressTab() {
+  const property = usePropertyOptional();
+  const settlementProgress = property?.settlementProgress;
   const form = usePropertyForm();
-  const selectedCompany = form.watch("accountCompany");
-
-  // 口座会社が変更されたら、銀行口座を必ずリセット
-  useEffect(() => {
-    // 銀行口座を無条件でリセット（口座会社が変更された場合）
-    form.setValue("bankAccount", undefined);
-  }, [selectedCompany, form]);
-
-  // 選択された口座会社に基づいて銀行口座の選択肢を取得
-  const availableBankAccounts = getBankAccountsByCompany(
-    selectedCompany as AccountCompany,
-  );
 
   return (
-    <div className="space-y-6">
-      {/* 口座情報 */}
-      <div className="space-y-4">
-        <h3 className="text-lg font-semibold">口座情報</h3>
+    <div className="space-y-3">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+        {/* 左側: 決済進捗 */}
+        <div className="space-y-3">
+          {/* 精算書関係 */}
+          <SectionCard title="精算書関係">
+            <div className="space-y-1 w-full">
+              <BadgeToggleForm
+                form={form}
+                name="bcSettlementStatus"
+                label="BC精算書"
+                options={bcSettlementStatus.map((status) => ({
+                  value: status,
+                  label: BC_SETTLEMENT_STATUS_LABELS[status],
+                  color: BC_SETTLEMENT_STATUS_COLORS[status],
+                }))}
+                updatedAt={settlementProgress?.bcSettlementStatusAt}
+                updatedByUser={settlementProgress?.bcSettlementStatusByUser}
+              />
+              <BadgeToggleForm
+                form={form}
+                name="abSettlementStatus"
+                label="AB精算書"
+                options={abSettlementStatus.map((status) => ({
+                  value: status,
+                  label: AB_SETTLEMENT_STATUS_LABELS[status],
+                  color: AB_SETTLEMENT_STATUS_COLORS[status],
+                }))}
+                updatedAt={settlementProgress?.abSettlementStatusAt}
+                updatedByUser={settlementProgress?.abSettlementStatusByUser}
+              />
+            </div>
+          </SectionCard>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <BadgeSelectForm
-            form={form}
-            name="accountCompany"
-            label="使用口座会社"
-            placeholder="使用口座会社を選択"
-            options={accountCompany.map((type) => ({
-              value: type,
-              label: ACCOUNT_COMPANY_LABELS[type],
-              color: ACCOUNT_COMPANY_COLORS[type],
-            }))}
-          />
-          <BadgeSelectForm
-            form={form}
-            name="bankAccount"
-            label="使用銀行口座"
-            placeholder={
-              selectedCompany
-                ? "使用銀行口座を選択"
-                : "先に使用口座会社を選択してください"
-            }
-            disabled={!selectedCompany}
-            options={availableBankAccounts.map((type) => ({
-              value: type,
-              label: BANK_ACCOUNT_LABELS[type],
-              color: BANK_ACCOUNT_COLORS[type],
-            }))}
-          />
+          {/* 司法書士関係 */}
+          <SectionCard title="司法書士関係">
+            <div className="space-y-1 w-full">
+              <CheckboxForm
+                form={form}
+                name="lawyerRequested"
+                label="司法書士依頼"
+                updatedAt={settlementProgress?.lawyerRequestedAt}
+                updatedByUser={settlementProgress?.lawyerRequestedByUser}
+              />
+              <CheckboxForm
+                form={form}
+                name="documentsShared"
+                label="必要書類共有"
+                updatedAt={settlementProgress?.documentsSharedAt}
+                updatedByUser={settlementProgress?.documentsSharedByUser}
+              />
+            </div>
+          </SectionCard>
+
+          {/* 賃貸管理関係 */}
+          <SectionCard title="賃貸管理関係">
+            <div className="space-y-2 w-full">
+              <DatePickerForm
+                form={form}
+                name="managementCancelScheduledMonth"
+                label="管理解約予定月"
+                updatedAt={settlementProgress?.managementCancelScheduledMonthAt}
+                updatedByUser={
+                  settlementProgress?.managementCancelScheduledMonthByUser
+                }
+              />
+              <DatePickerForm
+                form={form}
+                name="managementCancelRequestedDate"
+                label="管理解約依頼日"
+                updatedAt={settlementProgress?.managementCancelRequestedDateAt}
+                updatedByUser={
+                  settlementProgress?.managementCancelRequestedDateByUser
+                }
+              />
+              <DatePickerForm
+                form={form}
+                name="managementCancelCompletedDate"
+                label="管理解約完了日"
+                updatedAt={settlementProgress?.managementCancelCompletedDateAt}
+                updatedByUser={
+                  settlementProgress?.managementCancelCompletedDateByUser
+                }
+              />
+            </div>
+          </SectionCard>
         </div>
-      </div>
 
-      <div className="text-sm text-muted-foreground">
-        決済の詳細ステータスは別途、決済進捗テーブルで管理されます。
+        {/* 右側: 口座関係 */}
+        <div className="space-y-3">
+          <BankAccountFormCard propertyId={property?.id} />
+        </div>
       </div>
     </div>
   );

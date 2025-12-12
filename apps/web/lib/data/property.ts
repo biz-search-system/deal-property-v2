@@ -5,6 +5,7 @@ import { properties } from "@workspace/drizzle/schemas";
 import { and, eq, gte, lte, not, isNull } from "drizzle-orm";
 import type { DocumentStatus, ProgressStatus } from "@workspace/drizzle/types";
 import { getOrganizations } from "@/lib/data/organization";
+import { cache } from "react";
 
 /**
  * 全案件を取得
@@ -29,7 +30,7 @@ export async function getProperties() {
 /**
  * IDで案件を取得
  */
-export async function getPropertyById(id: string) {
+export const getPropertyById = cache(async (id: string) => {
   return db.query.properties.findFirst({
     where: eq(properties.id, id),
     with: {
@@ -39,8 +40,30 @@ export async function getPropertyById(id: string) {
           user: true,
         },
       },
+      // 進捗ステータス更新者ユーザー情報
+      progressStatusUpdatedByUser: {
+        columns: { id: true, name: true, email: true, image: true },
+      },
+      // 書類ステータス更新者ユーザー情報
+      documentStatusUpdatedByUser: {
+        columns: { id: true, name: true, email: true, image: true },
+      },
+      // スケジュール更新者ユーザー情報
+      contractDateAUpdatedByUser: {
+        columns: { id: true, name: true, email: true, image: true },
+      },
+      contractDateBcUpdatedByUser: {
+        columns: { id: true, name: true, email: true, image: true },
+      },
+      settlementDateUpdatedByUser: {
+        columns: { id: true, name: true, email: true, image: true },
+      },
       contractProgress: {
         with: {
+          // マイソク配布の更新者ユーザー情報
+          maisokuDistributionByUser: {
+            columns: { id: true, name: true, email: true, image: true },
+          },
           // AB関係の更新者ユーザー情報（必要なカラムのみ）
           abContractSavedByUser: {
             columns: { id: true, name: true, email: true, image: true },
@@ -73,10 +96,45 @@ export async function getPropertyById(id: string) {
         },
       },
       documentProgress: true,
-      settlementProgress: true,
+      // 書類項目（更新者ユーザー情報付き）
+      documentItems: {
+        with: {
+          updatedByUser: {
+            columns: { id: true, name: true, email: true, image: true },
+          },
+        },
+      },
+      settlementProgress: {
+        with: {
+          // 精算書関係の更新者ユーザー情報
+          bcSettlementStatusByUser: {
+            columns: { id: true, name: true, email: true, image: true },
+          },
+          abSettlementStatusByUser: {
+            columns: { id: true, name: true, email: true, image: true },
+          },
+          // 司法書士関係の更新者ユーザー情報
+          lawyerRequestedByUser: {
+            columns: { id: true, name: true, email: true, image: true },
+          },
+          documentsSharedByUser: {
+            columns: { id: true, name: true, email: true, image: true },
+          },
+          // 賃貸管理関係の更新者ユーザー情報
+          managementCancelScheduledMonthByUser: {
+            columns: { id: true, name: true, email: true, image: true },
+          },
+          managementCancelRequestedDateByUser: {
+            columns: { id: true, name: true, email: true, image: true },
+          },
+          managementCancelCompletedDateByUser: {
+            columns: { id: true, name: true, email: true, image: true },
+          },
+        },
+      },
     },
   });
-}
+});
 
 /**
  * 月次案件一覧用のデータ取得
@@ -212,7 +270,7 @@ export async function getPropertiesBySettlementDate(organizationId: string) {
     },
     orderBy: (props, { asc }) => [
       asc(props.settlementDate),
-      asc(props.updatedAt),
+      // asc(props.updatedAt),
     ],
   });
 }

@@ -24,10 +24,18 @@ import { ChevronDown } from "lucide-react";
 import CompanyBSelectForm from "../form/company-b-select-form";
 import BrokerCompanySelectForm from "../form/broker-company-select-form";
 import BadgeSelectForm from "../form/badge-select-form";
+import ComboboxForm from "../form/combobox-form";
 import OrganizationSelectForm from "../form/organization-select-form";
 import { Organization } from "@/lib/types/organization";
 import { contractType } from "@workspace/drizzle/schemas";
 import { CONTRACT_TYPE_COLORS, CONTRACT_TYPE_LABELS } from "@workspace/utils";
+import { Badge } from "@workspace/ui/components/badge";
+import SectionCard from "../section-card";
+import { useMasterOptions } from "@/lib/swr/master-option";
+import {
+  createMasterOption,
+  deleteMasterOption,
+} from "@/lib/actions/master-option";
 
 interface BasicInfoTabProps {
   availableStaff: { id: string; name: string; email: string; role: string }[];
@@ -42,6 +50,51 @@ export default function BasicInfoTab({
   const { control, watch, setValue } = form;
   const selectedStaffIds = watch("staffIds") || [];
   const [availableStaff, setAvailableStaff] = useState(initialStaff);
+  const organizationId = watch("organizationId");
+
+  // マスタオプションの取得
+  const {
+    options: buyerCompanyOptions,
+    mutate: mutateBuyerCompany,
+    isLoading: isLoadingBuyerCompany,
+  } = useMasterOptions("buyer_company", organizationId);
+  const {
+    options: mortgageBankOptions,
+    mutate: mutateMortgageBank,
+    isLoading: isLoadingMortgageBank,
+  } = useMasterOptions("mortgage_bank", organizationId);
+
+  // 買取業者の追加
+  const handleAddBuyerCompany = async (value: string) => {
+    await createMasterOption({
+      category: "buyer_company",
+      value,
+      organizationId: organizationId || undefined,
+    });
+    mutateBuyerCompany();
+  };
+
+  // 買取業者の削除
+  const handleDeleteBuyerCompany = async (id: string) => {
+    await deleteMasterOption(id);
+    mutateBuyerCompany();
+  };
+
+  // 抵当銀行の追加
+  const handleAddMortgageBank = async (value: string) => {
+    await createMasterOption({
+      category: "mortgage_bank",
+      value,
+      organizationId: organizationId || undefined,
+    });
+    mutateMortgageBank();
+  };
+
+  // 抵当銀行の削除
+  const handleDeleteMortgageBank = async (id: string) => {
+    await deleteMasterOption(id);
+    mutateMortgageBank();
+  };
 
   // 組織変更時の処理
   const handleOrganizationChange = async (organizationId: string) => {
@@ -50,7 +103,7 @@ export default function BasicInfoTab({
     // 営業チームメンバーを再取得
     try {
       const response = await fetch(
-        `/api/organization/${organizationId}/sales-team`,
+        `/api/organization/${organizationId}/sales-team`
       );
       if (response.ok) {
         const data = await response.json();
@@ -70,7 +123,7 @@ export default function BasicInfoTab({
     } else {
       setValue(
         "staffIds",
-        selectedStaffIds.filter((id) => id !== staffId),
+        selectedStaffIds.filter((id) => id !== staffId)
       );
     }
   };
@@ -79,9 +132,8 @@ export default function BasicInfoTab({
     <div className="space-y-6">
       {/* 組織情報 */}
       {organizations.length > 0 && (
-        <div className="space-y-4">
-          <h3 className="text-lg font-semibold">組織情報</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <SectionCard title="組織情報">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4 w-full">
             {/* 管理組織 */}
             <OrganizationSelectForm
               form={form}
@@ -103,10 +155,26 @@ export default function BasicInfoTab({
                         variant="outline"
                         className="w-full justify-between"
                       >
-                        {selectedStaffIds.length > 0
-                          ? `${selectedStaffIds.length}名選択中`
-                          : "選択"}
-                        <ChevronDown className="ml-2 h-4 w-4" />
+                        {selectedStaffIds.length > 0 ? (
+                          <div className="flex flex-wrap gap-1">
+                            {availableStaff
+                              .filter((staff) =>
+                                selectedStaffIds.includes(staff.id)
+                              )
+                              .map((staff) => (
+                                <Badge
+                                  key={staff.id}
+                                  variant="outline"
+                                  className=""
+                                >
+                                  {staff.name || "名前なし"}
+                                </Badge>
+                              ))}
+                          </div>
+                        ) : (
+                          "選択"
+                        )}
+                        <ChevronDown className="shrink-0" />
                       </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent className="w-72">
@@ -138,27 +206,17 @@ export default function BasicInfoTab({
                       )}
                     </DropdownMenuContent>
                   </DropdownMenu>
-                  {selectedStaffIds.length > 0 && (
-                    <div className="mt-2 text-sm text-muted-foreground">
-                      {availableStaff
-                        .filter((staff) => selectedStaffIds.includes(staff.id))
-                        .map((staff) => staff.name || "名前なし")
-                        .join(", ")}
-                    </div>
-                  )}
                   <FormMessage />
                 </FormItem>
               )}
             />
           </div>
-        </div>
+        </SectionCard>
       )}
 
       {/* 物件情報 */}
-      <div className="space-y-4">
-        <h3 className="text-lg font-semibold">物件情報</h3>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <SectionCard title="物件情報">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4 w-full">
           <FormField
             control={control}
             name="propertyName"
@@ -197,50 +255,52 @@ export default function BasicInfoTab({
               </FormItem>
             )}
           />
-        </div>
 
-        <FormField
-          control={control}
-          name="ownerName"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>オーナー名</FormLabel>
-              <FormControl>
-                <Input
-                  id="ownerName"
-                  placeholder="オーナー名を入力"
-                  autoComplete="name"
-                  {...field}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-      </div>
+          <FormField
+            control={control}
+            name="ownerName"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>オーナー名</FormLabel>
+                <FormControl>
+                  <Input
+                    id="ownerName"
+                    placeholder="オーナー名を入力"
+                    autoComplete="off"
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
+      </SectionCard>
 
       {/* 金額情報 */}
-      <div className="space-y-4">
-        <h3 className="text-lg font-semibold">金額情報</h3>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <SectionCard title="金額情報">
+        <p className="text-xs text-muted-foreground mb-4">
+          ※ 入力は万円単位です。DBには円単位で保存されます。
+        </p>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4 w-full">
           <FormField
             control={control}
             name="amountA"
-            render={({ field }) => (
+            render={({ field: { value, onChange, ...field } }) => (
               <FormItem>
-                <FormLabel>A金額</FormLabel>
+                <FormLabel>A金額（万円）</FormLabel>
                 <FormControl>
                   <Input
                     id="amountA"
                     type="number"
+                    step="0.01"
                     placeholder="金額を入力"
                     autoComplete="off"
                     {...field}
-                    value={field.value ?? ""}
+                    value={value ?? ""}
                     onChange={(e) =>
-                      field.onChange(
-                        e.target.value ? Number(e.target.value) : undefined,
+                      onChange(
+                        e.target.value === "" ? null : Number(e.target.value)
                       )
                     }
                   />
@@ -253,20 +313,21 @@ export default function BasicInfoTab({
           <FormField
             control={control}
             name="amountExit"
-            render={({ field }) => (
+            render={({ field: { value, onChange, ...field } }) => (
               <FormItem>
-                <FormLabel>出口金額</FormLabel>
+                <FormLabel>出口金額（万円）</FormLabel>
                 <FormControl>
                   <Input
                     id="amountExit"
                     type="number"
+                    step="0.01"
                     placeholder="金額を入力"
                     autoComplete="off"
                     {...field}
-                    value={field.value ?? ""}
+                    value={value ?? ""}
                     onChange={(e) =>
-                      field.onChange(
-                        e.target.value ? Number(e.target.value) : undefined,
+                      onChange(
+                        e.target.value === "" ? null : Number(e.target.value)
                       )
                     }
                   />
@@ -279,20 +340,21 @@ export default function BasicInfoTab({
           <FormField
             control={control}
             name="commission"
-            render={({ field }) => (
+            render={({ field: { value, onChange, ...field } }) => (
               <FormItem>
-                <FormLabel>仲手等</FormLabel>
+                <FormLabel>仲手等（万円）</FormLabel>
                 <FormControl>
                   <Input
                     id="commission"
                     type="number"
+                    step="0.01"
                     placeholder="金額を入力"
                     autoComplete="off"
                     {...field}
-                    value={field.value ?? ""}
+                    value={value ?? ""}
                     onChange={(e) =>
-                      field.onChange(
-                        e.target.value ? Number(e.target.value) : undefined,
+                      onChange(
+                        e.target.value === "" ? null : Number(e.target.value)
                       )
                     }
                   />
@@ -302,23 +364,47 @@ export default function BasicInfoTab({
             )}
           />
 
+          {/* 利益（自動計算） */}
+          <FormItem>
+            <div className="flex flex-row justify-between gap-2">
+              <FormLabel>利益（自動計算）</FormLabel>
+              <p className="text-xs text-muted-foreground">
+                出口金額 - A金額 + 仲手等
+              </p>
+            </div>
+            <FormControl>
+              <Input
+                readOnly
+                className="bg-muted font-semibold text-green-600"
+                value={(() => {
+                  const amountA = watch("amountA") || 0;
+                  const amountExit = watch("amountExit") || 0;
+                  const commission = watch("commission") || 0;
+                  const profit = amountExit - amountA + commission;
+                  return profit !== 0 ? `${profit.toLocaleString()}万円` : "-";
+                })()}
+              />
+            </FormControl>
+          </FormItem>
+
           <FormField
             control={control}
             name="bcDeposit"
-            render={({ field }) => (
+            render={({ field: { value, onChange, ...field } }) => (
               <FormItem>
-                <FormLabel>BC手付</FormLabel>
+                <FormLabel>BC手付（万円）</FormLabel>
                 <FormControl>
                   <Input
                     id="bcDeposit"
                     type="number"
+                    step="0.01"
                     placeholder="金額を入力"
                     autoComplete="off"
                     {...field}
-                    value={field.value ?? ""}
+                    value={value ?? ""}
                     onChange={(e) =>
-                      field.onChange(
-                        e.target.value ? Number(e.target.value) : undefined,
+                      onChange(
+                        e.target.value === "" ? null : Number(e.target.value)
                       )
                     }
                   />
@@ -328,13 +414,28 @@ export default function BasicInfoTab({
             )}
           />
         </div>
-      </div>
+      </SectionCard>
 
       {/* 契約情報 */}
-      <div className="space-y-4">
-        <h3 className="text-lg font-semibold">契約情報</h3>
+      <SectionCard title="契約情報">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4 w-full">
+          <ComboboxForm
+            form={form}
+            name="buyerCompany"
+            label="買取業者"
+            placeholder="選択または入力"
+            searchPlaceholder="業者名を検索..."
+            emptyMessage="該当する業者がありません"
+            options={buyerCompanyOptions.map((opt) => ({
+              id: opt.id,
+              value: opt.value,
+              label: opt.value,
+            }))}
+            isLoading={isLoadingBuyerCompany}
+            onAddOption={handleAddBuyerCompany}
+            onDeleteOption={handleDeleteBuyerCompany}
+          />
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <BadgeSelectForm
             form={form}
             name="contractType"
@@ -354,44 +455,21 @@ export default function BasicInfoTab({
             label="仲介会社"
           />
 
-          <FormField
-            control={control}
-            name="buyerCompany"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>買取業者</FormLabel>
-                <FormControl>
-                  <Input
-                    id="buyerCompany"
-                    placeholder="買取業者を入力"
-                    autoComplete="off"
-                    {...field}
-                    value={field.value || ""}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            control={control}
+          <ComboboxForm
+            form={form}
             name="mortgageBank"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>抵当銀行</FormLabel>
-                <FormControl>
-                  <Input
-                    id="mortgageBank"
-                    placeholder="抵当銀行を入力"
-                    autoComplete="off"
-                    {...field}
-                    value={field.value || ""}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
+            label="抵当銀行"
+            placeholder="選択または入力"
+            searchPlaceholder="銀行名を検索..."
+            emptyMessage="該当する銀行がありません"
+            options={mortgageBankOptions.map((opt) => ({
+              id: opt.id,
+              value: opt.value,
+              label: opt.value,
+            }))}
+            isLoading={isLoadingMortgageBank}
+            onAddOption={handleAddMortgageBank}
+            onDeleteOption={handleDeleteMortgageBank}
           />
 
           <FormField
@@ -414,22 +492,20 @@ export default function BasicInfoTab({
             )}
           />
         </div>
-      </div>
+      </SectionCard>
 
       {/* 備考 */}
-      <div className="space-y-4">
-        <h3 className="text-lg font-semibold">備考</h3>
+      <SectionCard title="備考">
         <FormField
           control={control}
           name="notes"
           render={({ field }) => (
-            <FormItem>
-              <FormLabel>備考</FormLabel>
+            <FormItem className="w-full">
               <FormControl>
                 <Textarea
                   id="notes"
                   placeholder="備考を入力"
-                  rows={4}
+                  rows={3}
                   {...field}
                   value={field.value || ""}
                 />
@@ -438,7 +514,7 @@ export default function BasicInfoTab({
             </FormItem>
           )}
         />
-      </div>
+      </SectionCard>
     </div>
   );
 }

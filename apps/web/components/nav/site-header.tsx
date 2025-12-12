@@ -5,7 +5,7 @@ import { SidebarTrigger } from "@workspace/ui/components/sidebar";
 import { Button } from "@workspace/ui/components/button";
 import { useParams, usePathname } from "next/navigation";
 import Link from "next/link";
-import { ArrowLeft, Edit, Plus } from "lucide-react";
+import { ArrowLeft, Edit, Eye, Plus } from "lucide-react";
 import { useSession } from "@/lib/swr/session";
 import { AppConfig } from "@/app.config";
 import { BreadcrumbMain } from "../breadcrumb-provider";
@@ -41,16 +41,20 @@ export function SiteHeader() {
         )}
         {pathname === `/properties/unconfirmed/${propertyId}` && (
           <div className="ml-auto flex items-center gap-2">
-            <Button variant="outline" size="sm" asChild className="gap-2">
-              <Link href="/properties/unconfirmed">
-                <ArrowLeft />
-                戻る
-              </Link>
-            </Button>
             <Button size="sm" asChild>
-              <Link href={`/properties/${propertyId}/edit`}>
+              <Link href={`/properties/unconfirmed/${propertyId}/edit`}>
                 <Edit />
                 編集
+              </Link>
+            </Button>
+          </div>
+        )}
+        {pathname === `/properties/unconfirmed/${propertyId}/edit` && (
+          <div className="ml-auto flex items-center gap-2">
+            <Button variant="outline" size="sm" asChild className="gap-2">
+              <Link href={`/properties/unconfirmed/${propertyId}`}>
+                <Eye />
+                詳細
               </Link>
             </Button>
           </div>

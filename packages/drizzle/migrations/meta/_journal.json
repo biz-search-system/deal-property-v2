@@ -50,6 +50,62 @@
       "when": 1764472817403,
       "tag": "0006_flimsy_rocket_raccoon",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "6",
+      "when": 1765465398866,
+      "tag": "0007_good_deathbird",
+      "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "6",
+      "when": 1765468278391,
+      "tag": "0008_wise_ikaris",
+      "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "6",
+      "when": 1765468762413,
+      "tag": "0009_fixed_iron_fist",
+      "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "6",
+      "when": 1765472080928,
+      "tag": "0010_narrow_shaman",
+      "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "6",
+      "when": 1765474229072,
+      "tag": "0011_light_machine_man",
+      "breakpoints": true
+    },
+    {
+      "idx": 12,
+      "version": "6",
+      "when": 1765481267787,
+      "tag": "0012_wealthy_argent",
+      "breakpoints": true
+    },
+    {
+      "idx": 13,
+      "version": "6",
+      "when": 1765482777050,
+      "tag": "0013_magenta_joseph",
+      "breakpoints": true
+    },
+    {
+      "idx": 14,
+      "version": "6",
+      "when": 1765486021087,
+      "tag": "0014_silent_maverick",
+      "breakpoints": true
     }
   ]
 }

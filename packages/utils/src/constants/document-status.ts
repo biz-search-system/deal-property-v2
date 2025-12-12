@@ -4,7 +4,7 @@ import { DocumentStatus } from "../../../drizzle/types/property";
  * 書類ステータスの表示名マッピング
  */
 export const DOCUMENT_STATUS_LABELS: Record<DocumentStatus, string> = {
-  waiting_request: "書類依頼待ち",
+  waiting_request: "営業依頼待ち",
   in_progress: "書類取得中",
   completed: "全書類取得完了",
 } as const;
@@ -12,7 +12,7 @@ export const DOCUMENT_STATUS_LABELS: Record<DocumentStatus, string> = {
 /** 書類ステータスのカラーマッピング */
 export const DOCUMENT_STATUS_COLORS: Record<DocumentStatus, string> = {
   waiting_request:
-    "border-amber-400 bg-amber-50 text-amber-700 dark:bg-amber-950 dark:text-amber-300", // 書類依頼待ち（準備段階）
+    "border-amber-400 bg-amber-50 text-amber-700 dark:bg-amber-950 dark:text-amber-300", // 営業依頼待ち（準備段階）
   in_progress:
     "border-blue-400 bg-blue-50 text-blue-700 dark:bg-blue-950 dark:text-blue-300", // 書類取得中（進行中）
   completed:

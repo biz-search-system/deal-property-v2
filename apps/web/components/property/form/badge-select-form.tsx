@@ -18,6 +18,13 @@ import {
 } from "@workspace/ui/components/select";
 import { cn } from "@workspace/utils";
 import { FieldPath, FieldValues, UseFormReturn } from "react-hook-form";
+import { UserActionBadge } from "../user-action-badge";
+
+interface UserInfo {
+  name: string | null;
+  email: string;
+  image: string | null;
+}
 
 export type BadgeSelectOption<T extends string = string> = {
   value: T;
@@ -39,6 +46,8 @@ export default function BadgeSelectForm<
   description,
   className,
   options,
+  updatedAt,
+  updatedByUser,
 }: {
   form: UseFormReturn<TFieldValues>;
   name: TName;
@@ -49,6 +58,8 @@ export default function BadgeSelectForm<
   description?: string;
   className?: string;
   options: BadgeSelectOption<TValue>[];
+  updatedAt?: Date | null;
+  updatedByUser?: UserInfo | null;
 }) {
   return (
     <FormField
@@ -56,7 +67,7 @@ export default function BadgeSelectForm<
       name={name}
       render={({ field }) => {
         const selectedOption = options.find(
-          (option) => option.value === field.value,
+          (option) => option.value === field.value
         );
 
         return (
@@ -67,40 +78,50 @@ export default function BadgeSelectForm<
                 {required && <span className="text-destructive ml-1">*</span>}
               </FormLabel>
             )}
-            <Select
-              onValueChange={field.onChange}
-              defaultValue={field.value}
-              disabled={disabled}
-            >
-              <FormControl>
-                <SelectTrigger>
-                  <SelectValue placeholder={placeholder}>
-                    {selectedOption && (
-                      <Badge
-                        variant="outline"
-                        className={cn("text-xs", selectedOption.color)}
-                      >
-                        {selectedOption.label}
-                      </Badge>
-                    )}
-                  </SelectValue>
-                </SelectTrigger>
-              </FormControl>
-              <SelectContent>
-                {options.map((option) => (
-                  <SelectItem key={option.value} value={option.value}>
-                    <div className="flex items-center">
-                      <Badge
-                        variant="outline"
-                        className={cn("text-xs", option.color)}
-                      >
-                        {option.label}
-                      </Badge>
-                    </div>
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <FormControl>
+              <div className="grid grid-cols-2">
+                <Select
+                  onValueChange={field.onChange}
+                  defaultValue={field.value}
+                  disabled={disabled}
+                >
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder={placeholder}>
+                      {selectedOption && (
+                        <Badge
+                          variant="outline"
+                          className={cn("text-xs", selectedOption.color)}
+                        >
+                          {selectedOption.label}
+                        </Badge>
+                      )}
+                    </SelectValue>
+                  </SelectTrigger>
+                  <SelectContent>
+                    {options.map((option) => (
+                      <SelectItem key={option.value} value={option.value}>
+                        <div className="flex items-center">
+                          <Badge
+                            variant="outline"
+                            className={cn("text-xs", option.color)}
+                          >
+                            {option.label}
+                          </Badge>
+                        </div>
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                {updatedAt && (
+                  <div className="flex justify-end">
+                    <UserActionBadge
+                      timestamp={updatedAt}
+                      user={updatedByUser}
+                    />
+                  </div>
+                )}
+              </div>
+            </FormControl>
             {description && <FormDescription>{description}</FormDescription>}
             <FormMessage />
           </FormItem>

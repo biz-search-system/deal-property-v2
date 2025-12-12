@@ -47,6 +47,7 @@ import {
 import { TextPopoverEdit } from "../inline-edit/text-popover-edit";
 import { CurrencyPopoverEdit } from "../inline-edit/currency-popover-edit";
 import { BadgeDropdownEdit } from "../inline-edit/badge-dropdown-edit";
+import { RoomNumberPopoverEdit } from "../inline-edit/room-number-popover-edit";
 import type {
   ContractType,
   CompanyB,
@@ -155,7 +156,15 @@ export const columns: ColumnDef<PropertyWithRelations>[] = [
     header: ({ column }) => {
       return <DataTableColumnHeader column={column} title="号室" />;
     },
-    cell: ({ row }) => row.original.roomNumber || "-",
+    cell: ({ row }) => {
+      return (
+        <RoomNumberPopoverEdit
+          key={`${row.original.id}-${row.original.roomNumber}`}
+          propertyId={row.original.id}
+          currentValue={row.original.roomNumber}
+        />
+      );
+    },
   },
   {
     accessorKey: "ownerName",

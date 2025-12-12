@@ -24,6 +24,7 @@ import {
 } from "@workspace/ui/components/select";
 import { cn } from "@workspace/utils";
 import { FieldPath, FieldValues, UseFormReturn } from "react-hook-form";
+import OrganizationBadge from "../badge/organization-badge";
 
 export default function OrganizationSelectForm<
   TFieldValues extends FieldValues = FieldValues,
@@ -54,7 +55,7 @@ export default function OrganizationSelectForm<
   // 選択された組織を取得
   const selectedOrganizationId = form.watch(name);
   const selectedOrganization = organizations.find(
-    (org) => org.id === selectedOrganizationId,
+    (org) => org.id === selectedOrganizationId
   );
 
   return (
@@ -78,11 +79,11 @@ export default function OrganizationSelectForm<
             disabled={disabled}
           >
             <FormControl>
-              <SelectTrigger>
+              <SelectTrigger className="w-1/2">
                 <SelectValue placeholder={placeholder}>
                   {selectedOrganization && (
                     <OrganizationBadge
-                      organizationName={
+                      organization={
                         selectedOrganization.name as OrganizationNameType
                       }
                     />
@@ -95,7 +96,7 @@ export default function OrganizationSelectForm<
                 const organizationName = org.name as OrganizationNameType;
                 return (
                   <SelectItem key={org.id} value={org.id}>
-                    <OrganizationBadge organizationName={organizationName} />
+                    <OrganizationBadge organization={organizationName} />
                   </SelectItem>
                 );
               })}
@@ -109,18 +110,18 @@ export default function OrganizationSelectForm<
   );
 }
 
-// バッジコンポーネントを分離して再利用可能にする
-export function OrganizationBadge({
-  organizationName,
-}: {
-  organizationName: OrganizationNameType;
-}) {
-  return (
-    <Badge
-      variant="outline"
-      className={cn("text-xs", ORGANIZATION_COLORS[organizationName])}
-    >
-      {ORGANIZATION_LABELS[organizationName]}
-    </Badge>
-  );
-}
+// // バッジコンポーネントを分離して再利用可能にする
+// export function OrganizationBadge({
+//   organizationName,
+// }: {
+//   organizationName: OrganizationNameType;
+// }) {
+//   return (
+//     <Badge
+//       variant="outline"
+//       className={cn("text-xs", ORGANIZATION_COLORS[organizationName])}
+//     >
+//       {ORGANIZATION_LABELS[organizationName]}
+//     </Badge>
+//   );
+// }

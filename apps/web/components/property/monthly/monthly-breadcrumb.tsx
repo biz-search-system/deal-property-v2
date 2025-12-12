@@ -10,11 +10,15 @@ import {
   DropdownMenuRadioItem,
   DropdownMenuTrigger,
 } from "@workspace/ui/components/dropdown-menu";
-import { BreadcrumbConfig, type BreadCrumbItem } from "@/components/breadcrumb-provider";
+import {
+  BreadcrumbConfig,
+  type BreadCrumbItem,
+} from "@/components/breadcrumb-provider";
 
 interface MonthlyBreadcrumbProps {
   year: string;
   month: string;
+  propertyId?: string;
 }
 
 /** 年の選択肢を生成（現在年の前後2年） */
@@ -88,10 +92,7 @@ function MonthSelector({ year, month }: { year: string; month: string }) {
             }}
           >
             {months.map((m) => (
-              <DropdownMenuRadioItem
-                key={m}
-                value={String(m).padStart(2, "0")}
-              >
+              <DropdownMenuRadioItem key={m} value={String(m).padStart(2, "0")}>
                 {m}月
               </DropdownMenuRadioItem>
             ))}
@@ -102,7 +103,11 @@ function MonthSelector({ year, month }: { year: string; month: string }) {
   );
 }
 
-export function MonthlyBreadcrumb({ year, month }: MonthlyBreadcrumbProps) {
+export function MonthlyBreadcrumb({
+  year,
+  month,
+  propertyId,
+}: MonthlyBreadcrumbProps) {
   const breadcrumbItems: BreadCrumbItem[] = [
     { label: "案件管理" },
     { label: "月別案件" },
@@ -115,6 +120,12 @@ export function MonthlyBreadcrumb({ year, month }: MonthlyBreadcrumbProps) {
       render: () => <MonthSelector year={year} month={month} />,
     },
   ];
+
+  if (propertyId) {
+    breadcrumbItems.push({
+      label: "案件詳細",
+    });
+  }
 
   return <BreadcrumbConfig items={breadcrumbItems} />;
 }

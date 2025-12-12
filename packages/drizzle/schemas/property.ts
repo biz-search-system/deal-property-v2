@@ -91,6 +91,57 @@ export const contractType = [
   "kaichu",
   "iyaku_yotei",
 ] as const;
+/** マイソク配布ステータス */
+export const maisokuDistributionStatus = [
+  "not_distributed",
+  "distributed",
+] as const;
+
+/** 書類項目ステータス */
+export const documentItemStatus = [
+  "not_requested",
+  "requesting",
+  "acquired",
+  "not_required",
+] as const;
+
+/** 書類項目種別（銀行関係） */
+export const documentItemTypeBank = ["loan_calculation"] as const;
+
+/** 書類項目種別（賃貸管理関係） */
+export const documentItemTypeRentalManagement = [
+  "rental_contract",
+  "management_contract",
+  "move_in_application",
+] as const;
+
+/** 書類項目種別（建物管理関係） */
+export const documentItemTypeBuildingManagement = [
+  "important_matters_report",
+  "management_rules",
+  "long_term_repair_plan",
+  "general_meeting_minutes",
+  "pamphlet",
+  "bank_transfer_form",
+  "owner_change_notification",
+] as const;
+
+/** 書類項目種別（役所関係） */
+export const documentItemTypeGovernment = [
+  "tax_certificate",
+  "building_plan_overview",
+  "ledger_certificate",
+  "zoning_district",
+  "road_ledger",
+] as const;
+
+/** 書類項目種別（全体） */
+export const documentItemType = [
+  ...documentItemTypeBank,
+  ...documentItemTypeRentalManagement,
+  ...documentItemTypeBuildingManagement,
+  ...documentItemTypeGovernment,
+] as const;
 
 // ==================== テーブル定義 ====================
 
@@ -116,8 +167,26 @@ export const properties = sqliteTable(
     profit: real("profit"), // 利益（出口金額 - A金額 + 仲手等）※アプリケーション側で自動計算
     bcDeposit: real("bc_deposit"), // BC手付金額
     contractDateA: integer("contract_date_a", { mode: "timestamp_ms" }),
+    contractDateAUpdatedAt: integer("contract_date_a_updated_at", {
+      mode: "timestamp_ms",
+    }),
+    contractDateAUpdatedBy: text("contract_date_a_updated_by").references(
+      () => users.id
+    ),
     contractDateBc: integer("contract_date_bc", { mode: "timestamp_ms" }),
+    contractDateBcUpdatedAt: integer("contract_date_bc_updated_at", {
+      mode: "timestamp_ms",
+    }),
+    contractDateBcUpdatedBy: text("contract_date_bc_updated_by").references(
+      () => users.id
+    ),
     settlementDate: integer("settlement_date", { mode: "timestamp_ms" }), // 決済日
+    settlementDateUpdatedAt: integer("settlement_date_updated_at", {
+      mode: "timestamp_ms",
+    }),
+    settlementDateUpdatedBy: text("settlement_date_updated_by").references(
+      () => users.id
+    ),
     contractType: text("contract_type", { enum: contractType }),
     companyB: text("company_b", { enum: companyB }),
     brokerCompany: text("broker_company", { enum: brokerCompany }),
@@ -127,9 +196,21 @@ export const properties = sqliteTable(
     progressStatus: text("progress_status", { enum: progressStatus })
       .notNull()
       .default("bc_before_confirmed"),
+    progressStatusUpdatedAt: integer("progress_status_updated_at", {
+      mode: "timestamp_ms",
+    }),
+    progressStatusUpdatedBy: text("progress_status_updated_by").references(
+      () => users.id
+    ),
     documentStatus: text("document_status", { enum: documentStatus })
       .notNull()
       .default("waiting_request"),
+    documentStatusUpdatedAt: integer("document_status_updated_at", {
+      mode: "timestamp_ms",
+    }),
+    documentStatusUpdatedBy: text("document_status_updated_by").references(
+      () => users.id
+    ),
     notes: text("notes"),
     accountCompany: text("account_company", { enum: accountCompany }),
     bankAccount: text("bank_account", { enum: bankAccount }),
@@ -147,7 +228,7 @@ export const properties = sqliteTable(
     index("idx_properties_document_status").on(table.documentStatus),
     index("idx_properties_settlement_date").on(table.settlementDate),
     index("idx_properties_created_at").on(table.createdAt),
-  ],
+  ]
 );
 
 /**
@@ -172,9 +253,9 @@ export const propertyStaff = sqliteTable(
     index("idx_property_staff_user_id").on(table.userId),
     unique("uk_property_staff_property_user").on(
       table.propertyId,
-      table.userId,
+      table.userId
     ),
-  ],
+  ]
 );
 
 /**
@@ -189,6 +270,18 @@ export const contractProgress = sqliteTable("contract_progress", {
     .notNull()
     .unique("uk_contract_progress_property_id")
     .references(() => properties.id, { onDelete: "cascade" }),
+  // マイソク配布
+  maisokuDistribution: text("maisoku_distribution", {
+    enum: maisokuDistributionStatus,
+  })
+    .notNull()
+    .default("not_distributed"),
+  maisokuDistributionAt: integer("maisoku_distribution_at", {
+    mode: "timestamp_ms",
+  }),
+  maisokuDistributionBy: text("maisoku_distribution_by").references(
+    () => users.id
+  ),
   abContractSaved: integer("ab_contract_saved", { mode: "boolean" })
     .notNull()
     .default(false),
@@ -201,7 +294,7 @@ export const contractProgress = sqliteTable("contract_progress", {
     mode: "timestamp_ms",
   }),
   abAuthorizationSavedBy: text("ab_authorization_saved_by").references(
-    () => users.id,
+    () => users.id
   ),
   abSellerIdSaved: integer("ab_seller_id_saved", { mode: "boolean" })
     .notNull()
@@ -215,7 +308,7 @@ export const contractProgress = sqliteTable("contract_progress", {
     mode: "timestamp_ms",
   }),
   bcContractCreatedBy: text("bc_contract_created_by").references(
-    () => users.id,
+    () => users.id
   ),
   bcDescriptionCreated: integer("bc_description_created", { mode: "boolean" })
     .notNull()
@@ -224,7 +317,7 @@ export const contractProgress = sqliteTable("contract_progress", {
     mode: "timestamp_ms",
   }),
   bcDescriptionCreatedBy: text("bc_description_created_by").references(
-    () => users.id,
+    () => users.id
   ),
   bcContractSent: integer("bc_contract_sent", { mode: "boolean" })
     .notNull()
@@ -238,7 +331,7 @@ export const contractProgress = sqliteTable("contract_progress", {
     mode: "timestamp_ms",
   }),
   bcDescriptionSentBy: text("bc_description_sent_by").references(
-    () => users.id,
+    () => users.id
   ),
   bcContractCbDone: integer("bc_contract_cb_done", { mode: "boolean" })
     .notNull()
@@ -254,7 +347,7 @@ export const contractProgress = sqliteTable("contract_progress", {
     mode: "timestamp_ms",
   }),
   bcDescriptionCbDoneBy: text("bc_description_cb_done_by").references(
-    () => users.id,
+    () => users.id
   ),
   ...timestamps,
 });
@@ -295,9 +388,21 @@ export const settlementProgress = sqliteTable("settlement_progress", {
   bcSettlementStatus: text("bc_settlement_status", { enum: bcSettlementStatus })
     .notNull()
     .default("not_created"),
+  bcSettlementStatusAt: integer("bc_settlement_status_at", {
+    mode: "timestamp_ms",
+  }),
+  bcSettlementStatusBy: text("bc_settlement_status_by").references(
+    () => users.id
+  ),
   abSettlementStatus: text("ab_settlement_status", { enum: abSettlementStatus })
     .notNull()
     .default("not_created"),
+  abSettlementStatusAt: integer("ab_settlement_status_at", {
+    mode: "timestamp_ms",
+  }),
+  abSettlementStatusBy: text("ab_settlement_status_by").references(
+    () => users.id
+  ),
   loanCalculationSaved: integer("loan_calculation_saved", { mode: "boolean" })
     .notNull()
     .default(false),
@@ -305,7 +410,7 @@ export const settlementProgress = sqliteTable("settlement_progress", {
     mode: "timestamp_ms",
   }),
   loanCalculationSavedBy: text("loan_calculation_saved_by").references(
-    () => users.id,
+    () => users.id
   ),
   lawyerRequested: integer("lawyer_requested", { mode: "boolean" })
     .notNull()
@@ -317,6 +422,33 @@ export const settlementProgress = sqliteTable("settlement_progress", {
     .default(false),
   documentsSharedAt: integer("documents_shared_at", { mode: "timestamp_ms" }),
   documentsSharedBy: text("documents_shared_by").references(() => users.id),
+  // 賃貸管理関係 - 管理解約予定月
+  managementCancelScheduledMonth: text("management_cancel_scheduled_month"),
+  managementCancelScheduledMonthAt: integer(
+    "management_cancel_scheduled_month_at",
+    { mode: "timestamp_ms" }
+  ),
+  managementCancelScheduledMonthBy: text(
+    "management_cancel_scheduled_month_by"
+  ).references(() => users.id),
+  // 賃貸管理関係 - 管理解約依頼日
+  managementCancelRequestedDate: text("management_cancel_requested_date"),
+  managementCancelRequestedDateAt: integer(
+    "management_cancel_requested_date_at",
+    { mode: "timestamp_ms" }
+  ),
+  managementCancelRequestedDateBy: text(
+    "management_cancel_requested_date_by"
+  ).references(() => users.id),
+  // 賃貸管理関係 - 管理解約完了日
+  managementCancelCompletedDate: text("management_cancel_completed_date"),
+  managementCancelCompletedDateAt: integer(
+    "management_cancel_completed_date_at",
+    { mode: "timestamp_ms" }
+  ),
+  managementCancelCompletedDateBy: text(
+    "management_cancel_completed_date_by"
+  ).references(() => users.id),
   identityVerification: text("identity_verification", {
     enum: identityVerification,
   })
@@ -341,7 +473,7 @@ export const settlementProgress = sqliteTable("settlement_progress", {
     mode: "timestamp_ms",
   }),
   bankDocumentsCompleteBy: text("bank_documents_complete_by").references(
-    () => users.id,
+    () => users.id
   ),
   loanSaved: integer("loan_saved", { mode: "boolean" })
     .notNull()
@@ -355,7 +487,7 @@ export const settlementProgress = sqliteTable("settlement_progress", {
     mode: "timestamp_ms",
   }),
   sellerPaymentDoneBy: text("seller_payment_done_by").references(
-    () => users.id,
+    () => users.id
   ),
   managementCancel: text("management_cancel", { enum: managementCancel })
     .notNull()
@@ -374,6 +506,34 @@ export const settlementProgress = sqliteTable("settlement_progress", {
   ledgerEntryBy: text("ledger_entry_by").references(() => users.id),
   ...timestamps,
 });
+
+/**
+ * 書類項目テーブル
+ * 案件ごとの各書類項目のステータスを管理するテーブル。
+ * 銀行関係、賃貸管理関係、建物管理関係、役所関係の4カテゴリの書類項目を管理します。
+ */
+export const propertyDocumentItems = sqliteTable(
+  "property_document_items",
+  {
+    id,
+    propertyId: text("property_id")
+      .notNull()
+      .references(() => properties.id, { onDelete: "cascade" }),
+    itemType: text("item_type", { enum: documentItemType }).notNull(),
+    status: text("status", { enum: documentItemStatus })
+      .notNull()
+      .default("not_requested"),
+    updatedAt: integer("updated_at", { mode: "timestamp_ms" }),
+    updatedBy: text("updated_by").references(() => users.id),
+  },
+  (table) => [
+    index("idx_property_document_items_property_id").on(table.propertyId),
+    unique("uk_property_document_items_property_item").on(
+      table.propertyId,
+      table.itemType
+    ),
+  ]
+);
 
 /**
  * 案件進捗履歴テーブル
@@ -400,7 +560,7 @@ export const propertyProgressHistory = sqliteTable(
   (table) => [
     index("idx_property_progress_history_property_id").on(table.propertyId),
     index("idx_property_progress_history_changed_at").on(table.changedAt),
-  ],
+  ]
 );
 
 // リレーション定義
@@ -419,6 +579,7 @@ export const propertiesRelations = relations(properties, ({ many, one }) => ({
     fields: [properties.id],
     references: [documentProgress.propertyId],
   }),
+  documentItems: many(propertyDocumentItems),
   settlementProgress: one(settlementProgress, {
     fields: [properties.id],
     references: [settlementProgress.propertyId],
@@ -433,6 +594,34 @@ export const propertiesRelations = relations(properties, ({ many, one }) => ({
     fields: [properties.updatedBy],
     references: [users.id],
     relationName: "propertyUpdatedBy",
+  }),
+  // 進捗ステータス更新者
+  progressStatusUpdatedByUser: one(users, {
+    fields: [properties.progressStatusUpdatedBy],
+    references: [users.id],
+    relationName: "progressStatusUpdatedBy",
+  }),
+  // 書類ステータス更新者
+  documentStatusUpdatedByUser: one(users, {
+    fields: [properties.documentStatusUpdatedBy],
+    references: [users.id],
+    relationName: "documentStatusUpdatedBy",
+  }),
+  // スケジュール更新者
+  contractDateAUpdatedByUser: one(users, {
+    fields: [properties.contractDateAUpdatedBy],
+    references: [users.id],
+    relationName: "contractDateAUpdatedBy",
+  }),
+  contractDateBcUpdatedByUser: one(users, {
+    fields: [properties.contractDateBcUpdatedBy],
+    references: [users.id],
+    relationName: "contractDateBcUpdatedBy",
+  }),
+  settlementDateUpdatedByUser: one(users, {
+    fields: [properties.settlementDateUpdatedBy],
+    references: [users.id],
+    relationName: "settlementDateUpdatedBy",
   }),
 }));
 
@@ -453,6 +642,12 @@ export const contractProgressRelations = relations(
     property: one(properties, {
       fields: [contractProgress.propertyId],
       references: [properties.id],
+    }),
+    // マイソク配布の更新者ユーザー
+    maisokuDistributionByUser: one(users, {
+      fields: [contractProgress.maisokuDistributionBy],
+      references: [users.id],
+      relationName: "maisokuDistributionBy",
     }),
     // AB関係の更新者ユーザー
     abContractSavedByUser: one(users, {
@@ -501,7 +696,7 @@ export const contractProgressRelations = relations(
       references: [users.id],
       relationName: "bcDescriptionCbDoneBy",
     }),
-  }),
+  })
 );
 
 export const documentProgressRelations = relations(
@@ -515,7 +710,22 @@ export const documentProgressRelations = relations(
       fields: [documentProgress.updatedBy],
       references: [users.id],
     }),
-  }),
+  })
+);
+
+export const propertyDocumentItemsRelations = relations(
+  propertyDocumentItems,
+  ({ one }) => ({
+    property: one(properties, {
+      fields: [propertyDocumentItems.propertyId],
+      references: [properties.id],
+    }),
+    updatedByUser: one(users, {
+      fields: [propertyDocumentItems.updatedBy],
+      references: [users.id],
+      relationName: "documentItemUpdatedBy",
+    }),
+  })
 );
 
 export const settlementProgressRelations = relations(
@@ -525,7 +735,45 @@ export const settlementProgressRelations = relations(
       fields: [settlementProgress.propertyId],
       references: [properties.id],
     }),
-  }),
+    // 精算書関係の更新者ユーザー
+    bcSettlementStatusByUser: one(users, {
+      fields: [settlementProgress.bcSettlementStatusBy],
+      references: [users.id],
+      relationName: "bcSettlementStatusBy",
+    }),
+    abSettlementStatusByUser: one(users, {
+      fields: [settlementProgress.abSettlementStatusBy],
+      references: [users.id],
+      relationName: "abSettlementStatusBy",
+    }),
+    // 司法書士関係の更新者ユーザー
+    lawyerRequestedByUser: one(users, {
+      fields: [settlementProgress.lawyerRequestedBy],
+      references: [users.id],
+      relationName: "lawyerRequestedBy",
+    }),
+    documentsSharedByUser: one(users, {
+      fields: [settlementProgress.documentsSharedBy],
+      references: [users.id],
+      relationName: "documentsSharedBy",
+    }),
+    // 賃貸管理関係の更新者ユーザー
+    managementCancelScheduledMonthByUser: one(users, {
+      fields: [settlementProgress.managementCancelScheduledMonthBy],
+      references: [users.id],
+      relationName: "managementCancelScheduledMonthBy",
+    }),
+    managementCancelRequestedDateByUser: one(users, {
+      fields: [settlementProgress.managementCancelRequestedDateBy],
+      references: [users.id],
+      relationName: "managementCancelRequestedDateBy",
+    }),
+    managementCancelCompletedDateByUser: one(users, {
+      fields: [settlementProgress.managementCancelCompletedDateBy],
+      references: [users.id],
+      relationName: "managementCancelCompletedDateBy",
+    }),
+  })
 );
 
 export const propertyProgressHistoryRelations = relations(
@@ -539,5 +787,5 @@ export const propertyProgressHistoryRelations = relations(
       fields: [propertyProgressHistory.changedBy],
       references: [users.id],
     }),
-  }),
+  })
 );

@@ -22,6 +22,12 @@ import {
   TableHeader,
   TableRow,
 } from "@workspace/ui/components/table";
+import {
+  ContractType,
+  DocumentStatus,
+  ProgressStatus,
+} from "@workspace/drizzle/types";
+import { OrganizationNameType } from "@workspace/utils";
 import { useState } from "react";
 import { DataTablePagination } from "./data-table-pagination";
 import { DataTableToolbar } from "./data-table-toolbar";
@@ -31,6 +37,26 @@ interface DataTableProps<TData, TValue> {
   data: TData[];
   onView?: (data: TData) => void;
   onEdit?: (data: TData) => void;
+  /** 検索文字列 */
+  search?: string;
+  /** 検索文字列変更時のコールバック */
+  onSearchChange?: (value: string) => void;
+  /** 組織フィルター */
+  organizationFilter?: OrganizationNameType;
+  /** 組織フィルター変更時のコールバック */
+  onOrganizationFilterChange?: (value: string) => void;
+  /** 進捗ステータスフィルター */
+  progressStatusFilter?: ProgressStatus;
+  /** 進捗ステータスフィルター変更時のコールバック */
+  onProgressStatusFilterChange?: (value: string) => void;
+  /** 書類ステータスフィルター */
+  documentStatusFilter?: DocumentStatus;
+  /** 書類ステータスフィルター変更時のコールバック */
+  onDocumentStatusFilterChange?: (value: string) => void;
+  /** 契約形態フィルター */
+  contractTypeFilter?: ContractType;
+  /** 契約形態フィルター変更時のコールバック */
+  onContractTypeFilterChange?: (value: string) => void;
 }
 
 export function DataTable<TData, TValue>({
@@ -38,11 +64,20 @@ export function DataTable<TData, TValue>({
   data,
   onView,
   onEdit,
+  search = "",
+  onSearchChange,
+  organizationFilter,
+  onOrganizationFilterChange,
+  progressStatusFilter,
+  onProgressStatusFilterChange,
+  documentStatusFilter,
+  onDocumentStatusFilterChange,
+  contractTypeFilter,
+  onContractTypeFilterChange,
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
-  const [globalFilter, setGlobalFilter] = useState("");
 
   const table = useReactTable({
     data,
@@ -54,16 +89,24 @@ export function DataTable<TData, TValue>({
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
     onColumnVisibilityChange: setColumnVisibility,
-    onGlobalFilterChange: setGlobalFilter,
     state: {
       sorting,
       columnFilters,
       columnVisibility,
-      globalFilter,
     },
     meta: {
       onView,
       onEdit,
+      search,
+      onSearchChange,
+      organizationFilter,
+      onOrganizationFilterChange,
+      progressStatusFilter,
+      onProgressStatusFilterChange,
+      documentStatusFilter,
+      onDocumentStatusFilterChange,
+      contractTypeFilter,
+      onContractTypeFilterChange,
     },
     initialState: {
       pagination: {
@@ -73,11 +116,11 @@ export function DataTable<TData, TValue>({
   });
 
   return (
-    <div className="flex h-full flex-col gap-3 overflow-hidden">
+    <div className="flex h-full flex-col gap-3">
       <div className="shrink-0">
         <DataTableToolbar table={table} />
       </div>
-      <Card className="overflow-hidden p-2">
+      <Card className="overflow-hidden px-3 py-2">
         <ScrollArea className="min-h-0 flex-1 overflow-auto">
           <Table className="text-[10px]">
             <TableHeader className="sticky top-0 bg-background z-10 [&_tr]:border-b-0">
@@ -162,9 +205,9 @@ export function DataTable<TData, TValue>({
                         const base = "text-[10px] p-1";
                         switch (id) {
                           case "organization":
-                            return `${base} bg-background`;
+                            return `${base}`;
                           case "staff":
-                            return `${base} bg-background w-[50px]`;
+                            return `${base} w-[50px]`;
                           case "propertyName":
                             return `${base} max-w-[120px]`;
                           case "roomNumber":

@@ -2,24 +2,33 @@
 
 import { db } from "@workspace/drizzle/db";
 import {
-  properties,
-  propertyStaff,
   contractProgress,
   documentProgress,
+  properties,
+  propertyDocumentItems,
+  propertyStaff,
   settlementProgress,
 } from "@workspace/drizzle/schemas";
+import type {
+  DocumentItemStatus,
+  DocumentItemType,
+  InsertProperty,
+} from "@workspace/drizzle/types";
 import {
   propertyCreateSchema,
   propertyUpdateSchema,
   type PropertyCreate,
   type PropertyUpdate,
 } from "@workspace/drizzle/zod-schemas";
-import type { InsertProperty } from "@workspace/drizzle/types";
-import { auth } from "@workspace/auth";
-import { headers } from "next/headers";
+import { and, eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
-import { eq } from "drizzle-orm";
 import { verifySession } from "../data/sesstion";
+
+/** 万円から円に変換（フォーム → DB） */
+function manyenToYen(manyen: number | null | undefined): number | undefined {
+  if (manyen == null) return undefined;
+  return manyen * 10000;
+}
 
 /**
  * 案件を新規作成する
@@ -33,15 +42,18 @@ export async function createProperty(data: PropertyCreate) {
 
   // トランザクションで案件と関連データを作成
   const result = await db.transaction(async (tx) => {
-    // 利益を自動計算（出口金額 - A金額 + 仲手等）
+    // 万円 → 円に変換
+    const amountAYen = manyenToYen(validatedData.amountA);
+    const amountExitYen = manyenToYen(validatedData.amountExit);
+    const commissionYen = manyenToYen(validatedData.commission);
+    const bcDepositYen = manyenToYen(validatedData.bcDeposit);
+
+    // 利益を自動計算（出口金額 - A金額 + 仲手等）※円単位
     let profit: number | undefined = undefined;
-    if (
-      validatedData.amountExit !== undefined &&
-      validatedData.amountA !== undefined
-    ) {
-      profit = validatedData.amountExit - validatedData.amountA;
-      if (validatedData.commission !== undefined) {
-        profit += validatedData.commission;
+    if (amountExitYen != null && amountAYen != null) {
+      profit = amountExitYen - amountAYen;
+      if (commissionYen != null) {
+        profit += commissionYen;
       }
     }
 
@@ -51,19 +63,37 @@ export async function createProperty(data: PropertyCreate) {
       propertyName: validatedData.propertyName,
       roomNumber: validatedData.roomNumber || undefined,
       ownerName: validatedData.ownerName,
-      amountA: validatedData.amountA || undefined,
-      amountExit: validatedData.amountExit || undefined,
-      commission: validatedData.commission || undefined,
-      profit: profit || undefined,
-      bcDeposit: validatedData.bcDeposit || undefined,
+      amountA: amountAYen,
+      amountExit: amountExitYen,
+      commission: commissionYen,
+      profit: profit,
+      bcDeposit: bcDepositYen,
       contractDateA: validatedData.contractDateA
         ? new Date(validatedData.contractDateA)
+        : undefined,
+      contractDateAUpdatedAt: validatedData.contractDateA
+        ? new Date()
+        : undefined,
+      contractDateAUpdatedBy: validatedData.contractDateA
+        ? session.user.id
         : undefined,
       contractDateBc: validatedData.contractDateBc
         ? new Date(validatedData.contractDateBc)
         : undefined,
+      contractDateBcUpdatedAt: validatedData.contractDateBc
+        ? new Date()
+        : undefined,
+      contractDateBcUpdatedBy: validatedData.contractDateBc
+        ? session.user.id
+        : undefined,
       settlementDate: validatedData.settlementDate
         ? new Date(validatedData.settlementDate)
+        : undefined,
+      settlementDateUpdatedAt: validatedData.settlementDate
+        ? new Date()
+        : undefined,
+      settlementDateUpdatedBy: validatedData.settlementDate
+        ? session.user.id
         : undefined,
       contractType:
         (validatedData.contractType as InsertProperty["contractType"]) ||
@@ -80,9 +110,13 @@ export async function createProperty(data: PropertyCreate) {
       progressStatus:
         (validatedData.progressStatus as InsertProperty["progressStatus"]) ||
         "bc_before_confirmed",
+      progressStatusUpdatedAt: new Date(),
+      progressStatusUpdatedBy: session.user.id,
       documentStatus:
         (validatedData.documentStatus as InsertProperty["documentStatus"]) ||
         "waiting_request",
+      documentStatusUpdatedAt: new Date(),
+      documentStatusUpdatedBy: session.user.id,
       accountCompany:
         (validatedData.accountCompany as InsertProperty["accountCompany"]) ||
         undefined,
@@ -112,9 +146,61 @@ export async function createProperty(data: PropertyCreate) {
       );
     }
 
-    // 3. 契約進捗を初期化
+    // 3. 契約進捗を初期化（フォームの値があれば設定）
+    const now = new Date();
+    const maisokuValue =
+      validatedData.maisokuDistribution &&
+      validatedData.maisokuDistribution !== "not_distributed";
     await tx.insert(contractProgress).values({
       propertyId: property.id,
+      // マイソク配布
+      maisokuDistribution:
+        (validatedData.maisokuDistribution as
+          | "not_distributed"
+          | "distributed") ?? "not_distributed",
+      maisokuDistributionAt: maisokuValue ? now : null,
+      maisokuDistributionBy: maisokuValue ? session.user.id : null,
+      // AB関係
+      abContractSaved: validatedData.abContractSaved ?? false,
+      abContractSavedAt: validatedData.abContractSaved ? now : null,
+      abContractSavedBy: validatedData.abContractSaved ? session.user.id : null,
+      abAuthorizationSaved: validatedData.abAuthorizationSaved ?? false,
+      abAuthorizationSavedAt: validatedData.abAuthorizationSaved ? now : null,
+      abAuthorizationSavedBy: validatedData.abAuthorizationSaved
+        ? session.user.id
+        : null,
+      abSellerIdSaved: validatedData.abSellerIdSaved ?? false,
+      abSellerIdSavedAt: validatedData.abSellerIdSaved ? now : null,
+      abSellerIdSavedBy: validatedData.abSellerIdSaved ? session.user.id : null,
+      // BC関係
+      bcContractCreated: validatedData.bcContractCreated ?? false,
+      bcContractCreatedAt: validatedData.bcContractCreated ? now : null,
+      bcContractCreatedBy: validatedData.bcContractCreated
+        ? session.user.id
+        : null,
+      bcDescriptionCreated: validatedData.bcDescriptionCreated ?? false,
+      bcDescriptionCreatedAt: validatedData.bcDescriptionCreated ? now : null,
+      bcDescriptionCreatedBy: validatedData.bcDescriptionCreated
+        ? session.user.id
+        : null,
+      bcContractSent: validatedData.bcContractSent ?? false,
+      bcContractSentAt: validatedData.bcContractSent ? now : null,
+      bcContractSentBy: validatedData.bcContractSent ? session.user.id : null,
+      bcDescriptionSent: validatedData.bcDescriptionSent ?? false,
+      bcDescriptionSentAt: validatedData.bcDescriptionSent ? now : null,
+      bcDescriptionSentBy: validatedData.bcDescriptionSent
+        ? session.user.id
+        : null,
+      bcContractCbDone: validatedData.bcContractCbDone ?? false,
+      bcContractCbDoneAt: validatedData.bcContractCbDone ? now : null,
+      bcContractCbDoneBy: validatedData.bcContractCbDone
+        ? session.user.id
+        : null,
+      bcDescriptionCbDone: validatedData.bcDescriptionCbDone ?? false,
+      bcDescriptionCbDoneAt: validatedData.bcDescriptionCbDone ? now : null,
+      bcDescriptionCbDoneBy: validatedData.bcDescriptionCbDone
+        ? session.user.id
+        : null,
     });
 
     // 4. 書類進捗を初期化
@@ -123,15 +209,63 @@ export async function createProperty(data: PropertyCreate) {
       updatedBy: session.user.id,
     });
 
-    // 5. 決済進捗を初期化
+    // 5. 決済進捗を初期化（フォームの値があれば設定）
+    const bcSettlementStatusValue =
+      validatedData.bcSettlementStatus ?? "not_created";
+    const abSettlementStatusValue =
+      validatedData.abSettlementStatus ?? "not_created";
+    const lawyerRequestedValue = validatedData.lawyerRequested ?? false;
+    const documentsSharedValue = validatedData.documentsShared ?? false;
     await tx.insert(settlementProgress).values({
       propertyId: property.id,
+      // 精算書関係 - BC精算書
+      bcSettlementStatus: bcSettlementStatusValue as
+        | "not_created"
+        | "created"
+        | "sent"
+        | "cb_done",
+      bcSettlementStatusAt:
+        bcSettlementStatusValue !== "not_created" ? now : null,
+      bcSettlementStatusBy:
+        bcSettlementStatusValue !== "not_created" ? session.user.id : null,
+      // 精算書関係 - AB精算書
+      abSettlementStatus: abSettlementStatusValue,
+      abSettlementStatusAt:
+        abSettlementStatusValue !== "not_created" ? now : null,
+      abSettlementStatusBy:
+        abSettlementStatusValue !== "not_created" ? session.user.id : null,
+      // 司法書士関係
+      lawyerRequested: lawyerRequestedValue,
+      lawyerRequestedAt: lawyerRequestedValue ? now : null,
+      lawyerRequestedBy: lawyerRequestedValue ? session.user.id : null,
+      documentsShared: documentsSharedValue,
+      documentsSharedAt: documentsSharedValue ? now : null,
+      documentsSharedBy: documentsSharedValue ? session.user.id : null,
+      // 賃貸管理関係
+      managementCancelScheduledMonth:
+        validatedData.managementCancelScheduledMonth || null,
+      managementCancelScheduledMonthAt:
+        validatedData.managementCancelScheduledMonth ? now : null,
+      managementCancelScheduledMonthBy:
+        validatedData.managementCancelScheduledMonth ? session.user.id : null,
+      managementCancelRequestedDate:
+        validatedData.managementCancelRequestedDate || null,
+      managementCancelRequestedDateAt:
+        validatedData.managementCancelRequestedDate ? now : null,
+      managementCancelRequestedDateBy:
+        validatedData.managementCancelRequestedDate ? session.user.id : null,
+      managementCancelCompletedDate:
+        validatedData.managementCancelCompletedDate || null,
+      managementCancelCompletedDateAt:
+        validatedData.managementCancelCompletedDate ? now : null,
+      managementCancelCompletedDateBy:
+        validatedData.managementCancelCompletedDate ? session.user.id : null,
     });
 
     return property;
   });
 
-  revalidatePath("/properties");
+  // revalidatePath("/properties");
   return result;
 }
 
@@ -147,17 +281,56 @@ export async function updateProperty(data: PropertyUpdate) {
 
   // トランザクションで案件と関連データを更新
   const result = await db.transaction(async (tx) => {
-    // 利益を自動計算（出口金額 - A金額 + 仲手等）
+    // 現在の案件データを取得（日付変更検出用）
+    const currentProperty = await tx.query.properties.findFirst({
+      where: eq(properties.id, validatedData.id),
+    });
+
+    // 万円 → 円に変換
+    const amountAYen = manyenToYen(validatedData.amountA);
+    const amountExitYen = manyenToYen(validatedData.amountExit);
+    const commissionYen = manyenToYen(validatedData.commission);
+    const bcDepositYen = manyenToYen(validatedData.bcDeposit);
+
+    // 利益を自動計算（出口金額 - A金額 + 仲手等）※円単位
     let profit: number | undefined = undefined;
-    if (
-      validatedData.amountExit !== undefined &&
-      validatedData.amountA !== undefined
-    ) {
-      profit = validatedData.amountExit - validatedData.amountA;
-      if (validatedData.commission !== undefined) {
-        profit += validatedData.commission;
+    if (amountExitYen != null && amountAYen != null) {
+      profit = amountExitYen - amountAYen;
+      if (commissionYen != null) {
+        profit += commissionYen;
       }
     }
+
+    const now = new Date();
+
+    // 日付変更の検出（文字列比較で差分を確認）
+    const currentContractDateA = currentProperty?.contractDateA?.toISOString();
+    const newContractDateA = validatedData.contractDateA
+      ? new Date(validatedData.contractDateA).toISOString()
+      : undefined;
+    const contractDateAChanged = currentContractDateA !== newContractDateA;
+
+    const currentContractDateBc =
+      currentProperty?.contractDateBc?.toISOString();
+    const newContractDateBc = validatedData.contractDateBc
+      ? new Date(validatedData.contractDateBc).toISOString()
+      : undefined;
+    const contractDateBcChanged = currentContractDateBc !== newContractDateBc;
+
+    const currentSettlementDate =
+      currentProperty?.settlementDate?.toISOString();
+    const newSettlementDate = validatedData.settlementDate
+      ? new Date(validatedData.settlementDate).toISOString()
+      : undefined;
+    const settlementDateChanged = currentSettlementDate !== newSettlementDate;
+
+    // 進捗ステータス変更の検出
+    const progressStatusChanged =
+      currentProperty?.progressStatus !== validatedData.progressStatus;
+
+    // 書類ステータス変更の検出
+    const documentStatusChanged =
+      currentProperty?.documentStatus !== validatedData.documentStatus;
 
     // 1. 案件本体を更新
     const [property] = await tx
@@ -167,20 +340,38 @@ export async function updateProperty(data: PropertyUpdate) {
         propertyName: validatedData.propertyName,
         roomNumber: validatedData.roomNumber || undefined,
         ownerName: validatedData.ownerName,
-        amountA: validatedData.amountA || undefined,
-        amountExit: validatedData.amountExit || undefined,
-        commission: validatedData.commission || undefined,
-        profit: profit || undefined,
-        bcDeposit: validatedData.bcDeposit || undefined,
+        amountA: amountAYen,
+        amountExit: amountExitYen,
+        commission: commissionYen,
+        profit: profit,
+        bcDeposit: bcDepositYen,
         contractDateA: validatedData.contractDateA
           ? new Date(validatedData.contractDateA)
           : undefined,
+        contractDateAUpdatedAt: contractDateAChanged
+          ? now
+          : currentProperty?.contractDateAUpdatedAt,
+        contractDateAUpdatedBy: contractDateAChanged
+          ? session.user.id
+          : currentProperty?.contractDateAUpdatedBy,
         contractDateBc: validatedData.contractDateBc
           ? new Date(validatedData.contractDateBc)
           : undefined,
+        contractDateBcUpdatedAt: contractDateBcChanged
+          ? now
+          : currentProperty?.contractDateBcUpdatedAt,
+        contractDateBcUpdatedBy: contractDateBcChanged
+          ? session.user.id
+          : currentProperty?.contractDateBcUpdatedBy,
         settlementDate: validatedData.settlementDate
           ? new Date(validatedData.settlementDate)
           : undefined,
+        settlementDateUpdatedAt: settlementDateChanged
+          ? now
+          : currentProperty?.settlementDateUpdatedAt,
+        settlementDateUpdatedBy: settlementDateChanged
+          ? session.user.id
+          : currentProperty?.settlementDateUpdatedBy,
         contractType:
           (validatedData.contractType as InsertProperty["contractType"]) ||
           undefined,
@@ -196,9 +387,21 @@ export async function updateProperty(data: PropertyUpdate) {
         progressStatus:
           (validatedData.progressStatus as InsertProperty["progressStatus"]) ||
           undefined,
+        progressStatusUpdatedAt: progressStatusChanged
+          ? now
+          : currentProperty?.progressStatusUpdatedAt,
+        progressStatusUpdatedBy: progressStatusChanged
+          ? session.user.id
+          : currentProperty?.progressStatusUpdatedBy,
         documentStatus:
           (validatedData.documentStatus as InsertProperty["documentStatus"]) ||
           undefined,
+        documentStatusUpdatedAt: documentStatusChanged
+          ? now
+          : currentProperty?.documentStatusUpdatedAt,
+        documentStatusUpdatedBy: documentStatusChanged
+          ? session.user.id
+          : currentProperty?.documentStatusUpdatedBy,
         accountCompany:
           (validatedData.accountCompany as InsertProperty["accountCompany"]) ||
           undefined,
@@ -231,7 +434,10 @@ export async function updateProperty(data: PropertyUpdate) {
       where: eq(contractProgress.propertyId, validatedData.id),
     });
 
-    const now = new Date();
+    // マイソク配布 - 状態が変更されたかどうかを判定
+    const maisokuDistributionChanged =
+      (validatedData.maisokuDistribution ?? "not_distributed") !==
+      (currentProgress?.maisokuDistribution ?? "not_distributed");
 
     // AB関係 - 状態が変更されたかどうかを判定
     const abContractChanged =
@@ -267,6 +473,17 @@ export async function updateProperty(data: PropertyUpdate) {
     await tx
       .update(contractProgress)
       .set({
+        // マイソク配布
+        maisokuDistribution:
+          (validatedData.maisokuDistribution as
+            | "not_distributed"
+            | "distributed") ?? "not_distributed",
+        maisokuDistributionAt: maisokuDistributionChanged
+          ? now
+          : currentProgress?.maisokuDistributionAt,
+        maisokuDistributionBy: maisokuDistributionChanged
+          ? session.user.id
+          : currentProgress?.maisokuDistributionBy,
         // AB関係 - 契約書保存
         abContractSaved: validatedData.abContractSaved ?? false,
         abContractSavedAt: abContractChanged
@@ -343,11 +560,179 @@ export async function updateProperty(data: PropertyUpdate) {
       })
       .where(eq(contractProgress.propertyId, validatedData.id));
 
+    // 5. 決済進捗を更新
+    const currentSettlement = await tx.query.settlementProgress.findFirst({
+      where: eq(settlementProgress.propertyId, validatedData.id),
+    });
+
+    // 精算書関係 - ステータス変更の検出
+    const bcSettlementStatusChanged =
+      (validatedData.bcSettlementStatus ?? "not_created") !==
+      (currentSettlement?.bcSettlementStatus ?? "not_created");
+    const abSettlementStatusChanged =
+      (validatedData.abSettlementStatus ?? "not_created") !==
+      (currentSettlement?.abSettlementStatus ?? "not_created");
+
+    // 司法書士関係 - 状態が変更されたかどうかを判定
+    const lawyerRequestedChanged =
+      (validatedData.lawyerRequested ?? false) !==
+      (currentSettlement?.lawyerRequested ?? false);
+    const documentsSharedChanged =
+      (validatedData.documentsShared ?? false) !==
+      (currentSettlement?.documentsShared ?? false);
+
+    // 賃貸管理関係 - 状態が変更されたかどうかを判定
+    const managementCancelScheduledMonthChanged =
+      (validatedData.managementCancelScheduledMonth || null) !==
+      (currentSettlement?.managementCancelScheduledMonth || null);
+    const managementCancelRequestedDateChanged =
+      (validatedData.managementCancelRequestedDate || null) !==
+      (currentSettlement?.managementCancelRequestedDate || null);
+    const managementCancelCompletedDateChanged =
+      (validatedData.managementCancelCompletedDate || null) !==
+      (currentSettlement?.managementCancelCompletedDate || null);
+
+    await tx
+      .update(settlementProgress)
+      .set({
+        // 精算書関係 - BC精算書
+        bcSettlementStatus:
+          (validatedData.bcSettlementStatus as
+            | "not_created"
+            | "created"
+            | "sent"
+            | "cb_done") ?? "not_created",
+        bcSettlementStatusAt: bcSettlementStatusChanged
+          ? now
+          : currentSettlement?.bcSettlementStatusAt,
+        bcSettlementStatusBy: bcSettlementStatusChanged
+          ? session.user.id
+          : currentSettlement?.bcSettlementStatusBy,
+        // 精算書関係 - AB精算書
+        abSettlementStatus:
+          (validatedData.abSettlementStatus as
+            | "not_created"
+            | "created"
+            | "sent"
+            | "cr_done") ?? "not_created",
+        abSettlementStatusAt: abSettlementStatusChanged
+          ? now
+          : currentSettlement?.abSettlementStatusAt,
+        abSettlementStatusBy: abSettlementStatusChanged
+          ? session.user.id
+          : currentSettlement?.abSettlementStatusBy,
+        // 司法書士関係 - 司法書士依頼
+        lawyerRequested: validatedData.lawyerRequested ?? false,
+        lawyerRequestedAt: lawyerRequestedChanged
+          ? now
+          : currentSettlement?.lawyerRequestedAt,
+        lawyerRequestedBy: lawyerRequestedChanged
+          ? session.user.id
+          : currentSettlement?.lawyerRequestedBy,
+        // 司法書士関係 - 必要書類共有
+        documentsShared: validatedData.documentsShared ?? false,
+        documentsSharedAt: documentsSharedChanged
+          ? now
+          : currentSettlement?.documentsSharedAt,
+        documentsSharedBy: documentsSharedChanged
+          ? session.user.id
+          : currentSettlement?.documentsSharedBy,
+        // 賃貸管理関係 - 管理解約予定月
+        managementCancelScheduledMonth:
+          validatedData.managementCancelScheduledMonth || null,
+        managementCancelScheduledMonthAt: managementCancelScheduledMonthChanged
+          ? now
+          : currentSettlement?.managementCancelScheduledMonthAt,
+        managementCancelScheduledMonthBy: managementCancelScheduledMonthChanged
+          ? session.user.id
+          : currentSettlement?.managementCancelScheduledMonthBy,
+        // 賃貸管理関係 - 管理解約依頼日
+        managementCancelRequestedDate:
+          validatedData.managementCancelRequestedDate || null,
+        managementCancelRequestedDateAt: managementCancelRequestedDateChanged
+          ? now
+          : currentSettlement?.managementCancelRequestedDateAt,
+        managementCancelRequestedDateBy: managementCancelRequestedDateChanged
+          ? session.user.id
+          : currentSettlement?.managementCancelRequestedDateBy,
+        // 賃貸管理関係 - 管理解約完了日
+        managementCancelCompletedDate:
+          validatedData.managementCancelCompletedDate || null,
+        managementCancelCompletedDateAt: managementCancelCompletedDateChanged
+          ? now
+          : currentSettlement?.managementCancelCompletedDateAt,
+        managementCancelCompletedDateBy: managementCancelCompletedDateChanged
+          ? session.user.id
+          : currentSettlement?.managementCancelCompletedDateBy,
+      })
+      .where(eq(settlementProgress.propertyId, validatedData.id));
+
+    // 6. 書類項目を更新（UPSERT）
+    const documentItemTypes = [
+      "loan_calculation",
+      "rental_contract",
+      "management_contract",
+      "move_in_application",
+      "important_matters_report",
+      "management_rules",
+      "long_term_repair_plan",
+      "general_meeting_minutes",
+      "pamphlet",
+      "bank_transfer_form",
+      "owner_change_notification",
+      "tax_certificate",
+      "building_plan_overview",
+      "ledger_certificate",
+      "zoning_district",
+      "road_ledger",
+    ] as const;
+
+    // 現在の書類項目を取得
+    const currentDocumentItems = await tx.query.propertyDocumentItems.findMany({
+      where: eq(propertyDocumentItems.propertyId, validatedData.id),
+    });
+
+    for (const itemType of documentItemTypes) {
+      const fieldName =
+        `documentItem_${itemType}` as keyof typeof validatedData;
+      const newStatus = validatedData[fieldName] as string | undefined;
+
+      if (!newStatus) continue;
+
+      const existingItem = currentDocumentItems.find(
+        (item) => item.itemType === itemType
+      );
+
+      if (existingItem) {
+        // 値が変更された場合のみ更新
+        if (existingItem.status !== newStatus) {
+          await tx
+            .update(propertyDocumentItems)
+            .set({
+              status: newStatus as DocumentItemStatus,
+              updatedAt: now,
+              updatedBy: session.user.id,
+            })
+            .where(eq(propertyDocumentItems.id, existingItem.id));
+        }
+      } else {
+        // 新規作成（デフォルト以外の値の場合のみ）
+        if (newStatus !== "not_requested") {
+          await tx.insert(propertyDocumentItems).values({
+            propertyId: validatedData.id,
+            itemType: itemType as DocumentItemType,
+            status: newStatus as DocumentItemStatus,
+            updatedAt: now,
+            updatedBy: session.user.id,
+          });
+        }
+      }
+    }
+
     return property;
   });
 
   revalidatePath("/properties");
-  revalidatePath(`/properties/${validatedData.id}`);
   return result;
 }
 
@@ -418,12 +803,16 @@ export async function updatePropertyDocumentStatus(data: {
   // セッション認証
   const session = await verifySession();
 
+  const now = new Date();
+
   await db
     .update(properties)
     .set({
       documentStatus: data.documentStatus as InsertProperty["documentStatus"],
+      documentStatusUpdatedAt: now,
+      documentStatusUpdatedBy: session.user.id,
       updatedBy: session.user.id,
-      updatedAt: new Date(),
+      updatedAt: now,
     })
     .where(eq(properties.id, data.id));
 
@@ -461,12 +850,16 @@ export async function updatePropertySettlementDate(data: {
   // セッション認証
   const session = await verifySession();
 
+  const now = new Date();
+
   await db
     .update(properties)
     .set({
       settlementDate: data.settlementDate,
+      settlementDateUpdatedAt: now,
+      settlementDateUpdatedBy: session.user.id,
       updatedBy: session.user.id,
-      updatedAt: new Date(),
+      updatedAt: now,
     })
     .where(eq(properties.id, data.id));
 
@@ -506,7 +899,7 @@ export async function updatePropertyName(data: {
 
   // revalidatePath("/properties");
   // revalidatePath("/properties/unconfirmed");
-  revalidatePath("/properties/search");
+  // revalidatePath("/properties/search");
 }
 
 /**
@@ -638,4 +1031,68 @@ export async function updatePropertyBuyerCompany(data: {
 
   revalidatePath("/properties");
   revalidatePath("/properties/unconfirmed");
+}
+
+/**
+ * 案件の書類項目ステータスを更新
+ * @param data.propertyId 案件ID
+ * @param data.itemType 書類項目種別
+ * @param data.status 更新後のステータス
+ */
+export async function updatePropertyDocumentItem(data: {
+  propertyId: string;
+  itemType: DocumentItemType;
+  status: DocumentItemStatus;
+}) {
+  const session = await verifySession();
+  const now = new Date();
+
+  // UPSERT: 存在すれば更新、なければ新規作成
+  const existing = await db.query.propertyDocumentItems.findFirst({
+    where: and(
+      eq(propertyDocumentItems.propertyId, data.propertyId),
+      eq(propertyDocumentItems.itemType, data.itemType)
+    ),
+  });
+
+  if (existing) {
+    await db
+      .update(propertyDocumentItems)
+      .set({
+        status: data.status,
+        updatedAt: now,
+        updatedBy: session.user.id,
+      })
+      .where(eq(propertyDocumentItems.id, existing.id));
+  } else {
+    await db.insert(propertyDocumentItems).values({
+      propertyId: data.propertyId,
+      itemType: data.itemType,
+      status: data.status,
+      updatedAt: now,
+      updatedBy: session.user.id,
+    });
+  }
+
+  revalidatePath("/properties");
+  revalidatePath("/properties/unconfirmed");
+}
+
+/**
+ * 案件の号室を更新（インライン編集用）
+ */
+export async function updatePropertyRoomNumber(data: {
+  id: string;
+  roomNumber: string | null;
+}) {
+  const session = await verifySession();
+
+  await db
+    .update(properties)
+    .set({
+      roomNumber: data.roomNumber?.trim() || null,
+      updatedBy: session.user.id,
+      updatedAt: new Date(),
+    })
+    .where(eq(properties.id, data.id));
 }

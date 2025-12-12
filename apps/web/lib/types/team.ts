@@ -54,6 +54,18 @@ export interface TeamMembersSuccessResponse {
   members: Member[];
 }
 
+// 営業チームメンバー型
+export interface SalesTeamMember {
+  id: string;
+  name: string;
+  email: string;
+  role: string;
+}
+
+export interface SalesTeamMembersSuccessResponse {
+  members: SalesTeamMember[];
+}
+
 // Union型で定義
 export type OrganizationTeamsResponse =
   | OrganizationTeamsSuccessResponse

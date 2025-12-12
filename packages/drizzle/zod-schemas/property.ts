@@ -7,6 +7,7 @@ import {
   settlementProgress,
 } from "../schemas/property";
 import z from "zod";
+import { abSettlementStatus } from "../types/property";
 
 // ==================== 案件テーブル ====================
 
@@ -126,18 +127,25 @@ export const propertyCreateSchema = z.object({
     .max(100, "オーナー名は100文字以内で入力してください"),
 
   // 金額情報
-  amountA: z.number().nonnegative("A金額は0以上で入力してください").optional(),
+  amountA: z
+    .number()
+    .nonnegative("A金額は0以上で入力してください")
+    .nullable()
+    .optional(),
   amountExit: z
     .number()
     .nonnegative("出口金額は0以上で入力してください")
+    .nullable()
     .optional(),
   commission: z
     .number()
     .nonnegative("仲手等は0以上で入力してください")
+    .nullable()
     .optional(),
   bcDeposit: z
     .number()
     .nonnegative("BC手付は0以上で入力してください")
+    .nullable()
     .optional(),
 
   // 日付情報
@@ -186,6 +194,9 @@ export const propertyCreateSchema = z.object({
   // 担当者（必須、最低1名）
   staffIds: z.array(z.string()).min(1, "担当者は最低1名選択してください"),
 
+  // 契約進捗 マイソク配布
+  maisokuDistribution: z.string().optional(),
+
   // 契約進捗 AB関係
   abContractSaved: z.boolean().optional(),
   abAuthorizationSaved: z.boolean().optional(),
@@ -198,6 +209,43 @@ export const propertyCreateSchema = z.object({
   bcDescriptionSent: z.boolean().optional(),
   bcContractCbDone: z.boolean().optional(),
   bcDescriptionCbDone: z.boolean().optional(),
+
+  // 書類項目（銀行関係）
+  documentItem_loan_calculation: z.string().optional(),
+
+  // 書類項目（賃貸管理関係）
+  documentItem_rental_contract: z.string().optional(),
+  documentItem_management_contract: z.string().optional(),
+  documentItem_move_in_application: z.string().optional(),
+
+  // 書類項目（建物管理関係）
+  documentItem_important_matters_report: z.string().optional(),
+  documentItem_management_rules: z.string().optional(),
+  documentItem_long_term_repair_plan: z.string().optional(),
+  documentItem_general_meeting_minutes: z.string().optional(),
+  documentItem_pamphlet: z.string().optional(),
+  documentItem_bank_transfer_form: z.string().optional(),
+  documentItem_owner_change_notification: z.string().optional(),
+
+  // 書類項目（役所関係）
+  documentItem_tax_certificate: z.string().optional(),
+  documentItem_building_plan_overview: z.string().optional(),
+  documentItem_ledger_certificate: z.string().optional(),
+  documentItem_zoning_district: z.string().optional(),
+  documentItem_road_ledger: z.string().optional(),
+
+  // 決済進捗 精算書関係
+  bcSettlementStatus: z.string().optional(),
+  abSettlementStatus: z.enum(abSettlementStatus).optional(),
+
+  // 決済進捗 司法書士関係
+  lawyerRequested: z.boolean().optional(),
+  documentsShared: z.boolean().optional(),
+
+  // 決済進捗 賃貸管理関係
+  managementCancelScheduledMonth: z.string().optional(),
+  managementCancelRequestedDate: z.string().optional(),
+  managementCancelCompletedDate: z.string().optional(),
 });
 
 /**

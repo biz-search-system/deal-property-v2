@@ -3,7 +3,8 @@
 ## バージョン情報
 
 - **作成日**: 2025-10-25
-- **バージョン**: 1.0
+- **更新日**: 2025-12-12
+- **バージョン**: 1.1
 - **対象フェーズ**: MVP（最小限の機能を実装した初期バージョン）
 
 ---
@@ -20,8 +21,12 @@ erDiagram
     properties ||--o{ property_staff : "assigned to"
     properties ||--|| contract_progress : "has"
     properties ||--|| document_progress : "has"
+    properties ||--o{ property_document_items : "has"
     properties ||--|| settlement_progress : "has"
     properties ||--o{ property_progress_history : "has"
+
+    %% 書類項目とユーザーの関係
+    users ||--o{ property_document_items : "updates"
 
     %% ユーザーテーブル (Better Auth)
     users {
@@ -61,7 +66,11 @@ erDiagram
         string mortgage_bank "抵当銀行"
         string list_type "名簿種別"
         string progress_status "進捗ステータス"
+        timestamp progress_status_updated_at "進捗更新日時"
+        string progress_status_updated_by FK "進捗更新者ID"
         string document_status "書類ステータス"
+        timestamp document_status_updated_at "書類ステータス更新日時"
+        string document_status_updated_by FK "書類ステータス更新者ID"
         text notes "備考"
         string account_company "使用口座会社"
         string bank_account "使用銀行口座"
@@ -83,6 +92,9 @@ erDiagram
     contract_progress {
         string id PK "ID"
         string property_id FK "案件ID(UK)"
+        string maisoku_distribution "マイソク配布"
+        timestamp maisoku_distribution_at "配布日時"
+        string maisoku_distribution_by FK "配布更新者ID"
         boolean ab_contract_saved "契約書保存完了"
         timestamp ab_contract_saved_at "保存日時"
         string ab_contract_saved_by "この項目を更新したユーザーID"
@@ -114,7 +126,7 @@ erDiagram
         timestamp updated_at "更新日時"
     }
 
-    %% 書類進捗テーブル(MVP簡易版)
+    %% 書類進捗テーブル(MVP簡易版) ※廃止予定
     document_progress {
         string id PK "ID"
         string property_id FK "案件ID(UK)"
@@ -122,6 +134,16 @@ erDiagram
         timestamp created_at "作成日時"
         timestamp updated_at "更新日時"
         string updated_by "最終更新者ID"
+    }
+
+    %% 書類項目テーブル(個別書類管理)
+    property_document_items {
+        string id PK "ID"
+        string property_id FK "案件ID"
+        string item_type "書類項目種別"
+        string status "ステータス"
+        timestamp updated_at "更新日時"
+        string updated_by FK "更新者ID"
     }
 
     %% 決済進捗テーブル
@@ -177,6 +199,57 @@ erDiagram
 
 ---
 
+## 書類項目種別 (item_type) の値
+
+### 銀行関係
+
+| 値               | 表示名       |
+| ---------------- | ------------ |
+| loan_calculation | ローン計算書 |
+
+### 賃貸管理関係
+
+| 値                  | 表示名       |
+| ------------------- | ------------ |
+| rental_contract     | 賃貸借契約書 |
+| management_contract | 管理委託契約書 |
+| move_in_application | 入居申込書   |
+
+### 建物管理関係
+
+| 値                        | 表示名           |
+| ------------------------- | ---------------- |
+| important_matters_report  | 重要事項調査報告書 |
+| management_rules          | 管理規約         |
+| long_term_repair_plan     | 長期修繕計画書   |
+| general_meeting_minutes   | 総会議事録       |
+| pamphlet                  | パンフレット     |
+| bank_transfer_form        | 口座振替用紙     |
+| owner_change_notification | 所有者変更届     |
+
+### 役所関係
+
+| 値                     | 表示名           |
+| ---------------------- | ---------------- |
+| tax_certificate        | 公課証明         |
+| building_plan_overview | 建築計画概要書   |
+| ledger_certificate     | 台帳記載事項証明書 |
+| zoning_district        | 用途地域         |
+| road_ledger            | 道路台帳         |
+
+---
+
+## 書類項目ステータス (status) の値
+
+| 値            | 表示名 |
+| ------------- | ------ |
+| not_requested | 未依頼 |
+| requesting    | 依頼中 |
+| acquired      | 取得済 |
+| not_required  | 不要   |
+
+---
+
 ## 参照ドキュメント
 
 - [テーブル定義詳細](./er-diagram.md)
@@ -184,4 +257,4 @@ erDiagram
 
 ---
 
-最終更新: 2025-10-25
+最終更新: 2025-12-12
