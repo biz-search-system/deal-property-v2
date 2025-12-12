@@ -22,6 +22,7 @@ import {
   TableHeader,
   TableRow,
 } from "@workspace/ui/components/table";
+import { OrganizationNameType } from "@workspace/utils";
 import { useState } from "react";
 import { DataTablePagination } from "./data-table-pagination";
 import { DataTableToolbar } from "./data-table-toolbar";
@@ -31,6 +32,14 @@ interface DataTableProps<TData, TValue> {
   data: TData[];
   onView?: (data: TData) => void;
   onEdit?: (data: TData) => void;
+  /** 検索文字列 */
+  search?: string;
+  /** 検索文字列変更時のコールバック */
+  onSearchChange?: (value: string) => void;
+  /** 組織フィルター */
+  organizationFilter?: OrganizationNameType;
+  /** 組織フィルター変更時のコールバック */
+  onOrganizationFilterChange?: (value: string) => void;
 }
 
 export function DataTable<TData, TValue>({
@@ -38,11 +47,14 @@ export function DataTable<TData, TValue>({
   data,
   onView,
   onEdit,
+  search = "",
+  onSearchChange,
+  organizationFilter,
+  onOrganizationFilterChange,
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
-  const [globalFilter, setGlobalFilter] = useState("");
 
   const table = useReactTable({
     data,
@@ -54,16 +66,18 @@ export function DataTable<TData, TValue>({
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
     onColumnVisibilityChange: setColumnVisibility,
-    onGlobalFilterChange: setGlobalFilter,
     state: {
       sorting,
       columnFilters,
       columnVisibility,
-      globalFilter,
     },
     meta: {
       onView,
       onEdit,
+      search,
+      onSearchChange,
+      organizationFilter,
+      onOrganizationFilterChange,
     },
     initialState: {
       pagination: {

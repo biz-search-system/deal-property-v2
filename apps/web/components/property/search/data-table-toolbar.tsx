@@ -76,9 +76,6 @@ export function DataTableToolbar<TData>({
   table,
 }: DataTableToolbarProps<TData>) {
   const isFiltered = table.getState().columnFilters.length > 0;
-  const filterOrganizationName = table
-    .getColumn("organization")
-    ?.getFilterValue() as OrganizationNameType | undefined;
   const filterProgressStatus = table
     .getColumn("progressStatus")
     ?.getFilterValue() as ProgressStatus | undefined;
@@ -89,19 +86,43 @@ export function DataTableToolbar<TData>({
     .getColumn("contractType")
     ?.getFilterValue() as ContractType | undefined;
 
+  // metaから検索値とフィルター値を取得
+  const meta = table.options.meta as
+    | {
+        search?: string;
+        onSearchChange?: (value: string) => void;
+        organizationFilter?: OrganizationNameType;
+        onOrganizationFilterChange?: (value: string) => void;
+      }
+    | undefined;
+  const search = meta?.search ?? "";
+  const onSearchChange = meta?.onSearchChange;
+  const organizationFilter = meta?.organizationFilter;
+  const onOrganizationFilterChange = meta?.onOrganizationFilterChange;
+
   return (
     <div className="flex flex-col gap-3">
       {/* 検索バー */}
       <div className="flex items-center gap-2">
-        <div className="relative flex-1 max-w-sm">
+        <div className="relative">
           <Search className="absolute left-2 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
           <Input
-            placeholder="物件名、オーナー名で検索..."
-            value={table.getState().globalFilter ?? ""}
-            onChange={(event) => table.setGlobalFilter(event.target.value)}
+            placeholder="物件名、オーナー名、号室、備考をあいまい検索できます"
+            value={search}
+            onChange={(event) => onSearchChange?.(event.target.value)}
             className="pl-8 h-9 w-[664px]"
           />
         </div>
+        {search && (
+          <Button
+            variant="ghost"
+            onClick={() => onSearchChange?.("")}
+            className="h-9 px-2"
+          >
+            リセット
+            <X className="size-4" />
+          </Button>
+        )}
       </div>
 
       {/* フィルターとアクション */}
@@ -109,18 +130,16 @@ export function DataTableToolbar<TData>({
         <div className="flex flex-1 items-center gap-2">
           {/* 組織フィルター */}
           <Select
-            value={filterOrganizationName ?? "all"}
+            value={organizationFilter ?? "all"}
             onValueChange={(value) =>
-              table
-                .getColumn("organization")
-                ?.setFilterValue(value === "all" ? undefined : value)
+              onOrganizationFilterChange?.(value === "all" ? "" : value)
             }
           >
             <SelectTrigger className="h-8 w-[160px]">
               <SelectValue placeholder="組織">
-                {filterOrganizationName ? (
+                {organizationFilter ? (
                   <OrganizationBadge
-                    organization={filterOrganizationName}
+                    organization={organizationFilter}
                     size="medium"
                   />
                 ) : (
