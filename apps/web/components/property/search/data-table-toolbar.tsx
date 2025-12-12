@@ -1,7 +1,7 @@
 "use client";
 
 import { Table } from "@tanstack/react-table";
-import { X, SlidersHorizontal, Download, Search } from "lucide-react";
+import { X, SlidersHorizontal, Search } from "lucide-react";
 
 import { Button } from "@workspace/ui/components/button";
 import { Input } from "@workspace/ui/components/input";
@@ -20,17 +20,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@workspace/ui/components/select";
-import {
-  PROGRESS_STATUS_LABELS,
-  DOCUMENT_STATUS_LABELS,
-  CONTRACT_TYPE_LABELS,
-  ORGANIZATION_LABELS,
-  ORGANIZATION_COLORS,
-  organization,
-  cn,
-} from "@workspace/utils";
-import { Badge } from "@workspace/ui/components/badge";
-import { OrganizationNameType } from "@workspace/utils";
+import { organization, OrganizationNameType } from "@workspace/utils";
 import {
   ContractType,
   DocumentStatus,
@@ -75,17 +65,6 @@ interface DataTableToolbarProps<TData> {
 export function DataTableToolbar<TData>({
   table,
 }: DataTableToolbarProps<TData>) {
-  const isFiltered = table.getState().columnFilters.length > 0;
-  const filterProgressStatus = table
-    .getColumn("progressStatus")
-    ?.getFilterValue() as ProgressStatus | undefined;
-  const filterDocumentStatus = table
-    .getColumn("documentStatus")
-    ?.getFilterValue() as DocumentStatus | undefined;
-  const filterContractType = table
-    .getColumn("contractType")
-    ?.getFilterValue() as ContractType | undefined;
-
   // metaから検索値とフィルター値を取得
   const meta = table.options.meta as
     | {
@@ -93,12 +72,24 @@ export function DataTableToolbar<TData>({
         onSearchChange?: (value: string) => void;
         organizationFilter?: OrganizationNameType;
         onOrganizationFilterChange?: (value: string) => void;
+        progressStatusFilter?: ProgressStatus;
+        onProgressStatusFilterChange?: (value: string) => void;
+        documentStatusFilter?: DocumentStatus;
+        onDocumentStatusFilterChange?: (value: string) => void;
+        contractTypeFilter?: ContractType;
+        onContractTypeFilterChange?: (value: string) => void;
       }
     | undefined;
   const search = meta?.search ?? "";
   const onSearchChange = meta?.onSearchChange;
   const organizationFilter = meta?.organizationFilter;
   const onOrganizationFilterChange = meta?.onOrganizationFilterChange;
+  const progressStatusFilter = meta?.progressStatusFilter;
+  const onProgressStatusFilterChange = meta?.onProgressStatusFilterChange;
+  const documentStatusFilter = meta?.documentStatusFilter;
+  const onDocumentStatusFilterChange = meta?.onDocumentStatusFilterChange;
+  const contractTypeFilter = meta?.contractTypeFilter;
+  const onContractTypeFilterChange = meta?.onContractTypeFilterChange;
 
   return (
     <div className="flex flex-col gap-3">
@@ -117,10 +108,10 @@ export function DataTableToolbar<TData>({
           <Button
             variant="ghost"
             onClick={() => onSearchChange?.("")}
-            className="h-9 px-2"
+            className="px-2 lg:px-3"
           >
             リセット
-            <X className="size-4" />
+            <X className="ml-2 size-4" />
           </Button>
         )}
       </div>
@@ -159,18 +150,16 @@ export function DataTableToolbar<TData>({
 
           {/* 進捗フィルター */}
           <Select
-            value={filterProgressStatus ?? "all"}
+            value={progressStatusFilter ?? "all"}
             onValueChange={(value) =>
-              table
-                .getColumn("progressStatus")
-                ?.setFilterValue(value === "all" ? undefined : value)
+              onProgressStatusFilterChange?.(value === "all" ? "" : value)
             }
           >
             <SelectTrigger className="h-8 w-[160px]">
               <SelectValue placeholder="進捗">
-                {filterProgressStatus ? (
+                {progressStatusFilter ? (
                   <ProgressStatusBadge
-                    progressStatus={filterProgressStatus}
+                    progressStatus={progressStatusFilter}
                     size="medium"
                   />
                 ) : (
@@ -190,18 +179,16 @@ export function DataTableToolbar<TData>({
 
           {/* 書類フィルター */}
           <Select
-            value={filterDocumentStatus ?? "all"}
+            value={documentStatusFilter ?? "all"}
             onValueChange={(value) =>
-              table
-                .getColumn("documentStatus")
-                ?.setFilterValue(value === "all" ? undefined : value)
+              onDocumentStatusFilterChange?.(value === "all" ? "" : value)
             }
           >
             <SelectTrigger className="h-8 w-[160px]">
               <SelectValue placeholder="書類">
-                {filterDocumentStatus ? (
+                {documentStatusFilter ? (
                   <DocumentStatusBadge
-                    documentStatus={filterDocumentStatus}
+                    documentStatus={documentStatusFilter}
                     size="medium"
                   />
                 ) : (
@@ -221,18 +208,16 @@ export function DataTableToolbar<TData>({
 
           {/* 契約形態フィルター */}
           <Select
-            value={filterContractType ?? "all"}
+            value={contractTypeFilter ?? "all"}
             onValueChange={(value) =>
-              table
-                .getColumn("contractType")
-                ?.setFilterValue(value === "all" ? undefined : value)
+              onContractTypeFilterChange?.(value === "all" ? "" : value)
             }
           >
             <SelectTrigger className="h-8 w-[160px]">
               <SelectValue placeholder="契約形態">
-                {filterContractType ? (
+                {contractTypeFilter ? (
                   <ContractTypeBadge
-                    contractType={filterContractType}
+                    contractType={contractTypeFilter}
                     size="medium"
                   />
                 ) : (
@@ -251,14 +236,22 @@ export function DataTableToolbar<TData>({
           </Select>
 
           {/* フィルターをクリア */}
-          {isFiltered && (
+          {(organizationFilter ||
+            progressStatusFilter ||
+            documentStatusFilter ||
+            contractTypeFilter) && (
             <Button
               variant="ghost"
-              onClick={() => table.resetColumnFilters()}
-              className="h-8 px-2 lg:px-3"
+              onClick={() => {
+                onOrganizationFilterChange?.("");
+                onProgressStatusFilterChange?.("");
+                onDocumentStatusFilterChange?.("");
+                onContractTypeFilterChange?.("");
+              }}
+              className="px-2 lg:px-3"
             >
               リセット
-              <X className="ml-2 h-4 w-4" />
+              <X className="ml-2 size-4" />
             </Button>
           )}
         </div>

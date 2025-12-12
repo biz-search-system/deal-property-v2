@@ -22,6 +22,11 @@ import {
   TableHeader,
   TableRow,
 } from "@workspace/ui/components/table";
+import {
+  ContractType,
+  DocumentStatus,
+  ProgressStatus,
+} from "@workspace/drizzle/types";
 import { OrganizationNameType } from "@workspace/utils";
 import { useState } from "react";
 import { DataTablePagination } from "./data-table-pagination";
@@ -40,6 +45,18 @@ interface DataTableProps<TData, TValue> {
   organizationFilter?: OrganizationNameType;
   /** 組織フィルター変更時のコールバック */
   onOrganizationFilterChange?: (value: string) => void;
+  /** 進捗ステータスフィルター */
+  progressStatusFilter?: ProgressStatus;
+  /** 進捗ステータスフィルター変更時のコールバック */
+  onProgressStatusFilterChange?: (value: string) => void;
+  /** 書類ステータスフィルター */
+  documentStatusFilter?: DocumentStatus;
+  /** 書類ステータスフィルター変更時のコールバック */
+  onDocumentStatusFilterChange?: (value: string) => void;
+  /** 契約形態フィルター */
+  contractTypeFilter?: ContractType;
+  /** 契約形態フィルター変更時のコールバック */
+  onContractTypeFilterChange?: (value: string) => void;
 }
 
 export function DataTable<TData, TValue>({
@@ -51,6 +68,12 @@ export function DataTable<TData, TValue>({
   onSearchChange,
   organizationFilter,
   onOrganizationFilterChange,
+  progressStatusFilter,
+  onProgressStatusFilterChange,
+  documentStatusFilter,
+  onDocumentStatusFilterChange,
+  contractTypeFilter,
+  onContractTypeFilterChange,
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
@@ -78,6 +101,12 @@ export function DataTable<TData, TValue>({
       onSearchChange,
       organizationFilter,
       onOrganizationFilterChange,
+      progressStatusFilter,
+      onProgressStatusFilterChange,
+      documentStatusFilter,
+      onDocumentStatusFilterChange,
+      contractTypeFilter,
+      onContractTypeFilterChange,
     },
     initialState: {
       pagination: {

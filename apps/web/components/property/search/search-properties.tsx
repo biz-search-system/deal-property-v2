@@ -4,6 +4,11 @@ import { PropertyDetailModal } from "@/components/property/property-detail-modal
 import { columns } from "@/components/property/search/columns";
 import { DataTable } from "@/components/property/search/data-table";
 import type { PropertyWithRelations } from "@/lib/types/property";
+import {
+  ContractType,
+  DocumentStatus,
+  ProgressStatus,
+} from "@workspace/drizzle/types";
 import { OrganizationNameType } from "@workspace/utils";
 import Fuse from "fuse.js";
 import { useRouter } from "next/navigation";
@@ -22,6 +27,18 @@ export function SearchProperties({ properties }: SearchPropertiesProps) {
     "organization",
     { defaultValue: "" }
   );
+  const [progressStatusFilter, setProgressStatusFilter] = useQueryState(
+    "progressStatus",
+    { defaultValue: "" }
+  );
+  const [documentStatusFilter, setDocumentStatusFilter] = useQueryState(
+    "documentStatus",
+    { defaultValue: "" }
+  );
+  const [contractTypeFilter, setContractTypeFilter] = useQueryState(
+    "contractType",
+    { defaultValue: "" }
+  );
 
   // フィルタリング処理
   const filteredProperties = useMemo(() => {
@@ -32,6 +49,21 @@ export function SearchProperties({ properties }: SearchPropertiesProps) {
       result = result.filter(
         (p) => p.organization?.name === organizationFilter
       );
+    }
+
+    // 進捗ステータスフィルター
+    if (progressStatusFilter) {
+      result = result.filter((p) => p.progressStatus === progressStatusFilter);
+    }
+
+    // 書類ステータスフィルター
+    if (documentStatusFilter) {
+      result = result.filter((p) => p.documentStatus === documentStatusFilter);
+    }
+
+    // 契約形態フィルター
+    if (contractTypeFilter) {
+      result = result.filter((p) => p.contractType === contractTypeFilter);
     }
 
     // fuse.jsでファジー検索
@@ -45,7 +77,14 @@ export function SearchProperties({ properties }: SearchPropertiesProps) {
     }
 
     return result;
-  }, [properties, search, organizationFilter]);
+  }, [
+    properties,
+    search,
+    organizationFilter,
+    progressStatusFilter,
+    documentStatusFilter,
+    contractTypeFilter,
+  ]);
 
   const handlePropertyClick = (property: PropertyWithRelations) => {
     setPropertyId(property.id);
@@ -69,6 +108,16 @@ export function SearchProperties({ properties }: SearchPropertiesProps) {
             (organizationFilter as OrganizationNameType) || undefined
           }
           onOrganizationFilterChange={setOrganizationFilter}
+          progressStatusFilter={
+            (progressStatusFilter as ProgressStatus) || undefined
+          }
+          onProgressStatusFilterChange={setProgressStatusFilter}
+          documentStatusFilter={
+            (documentStatusFilter as DocumentStatus) || undefined
+          }
+          onDocumentStatusFilterChange={setDocumentStatusFilter}
+          contractTypeFilter={(contractTypeFilter as ContractType) || undefined}
+          onContractTypeFilterChange={setContractTypeFilter}
         />
       </div>
 
