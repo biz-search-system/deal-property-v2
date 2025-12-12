@@ -6,7 +6,7 @@ import { notFound } from "next/navigation";
 
 export async function generateMetadata({
   params,
-}: PageProps<"/properties/monthly/[year]/[month]/[id]">): Promise<Metadata> {
+}: PageProps<"/properties/search/[id]">): Promise<Metadata> {
   const { id } = await params;
   const property = await getPropertyById(id);
 
@@ -23,8 +23,8 @@ export async function generateMetadata({
 
 export default async function PropertyDetailPage({
   params,
-}: PageProps<"/properties/monthly/[year]/[month]/[id]">) {
-  const { id, year, month } = await params;
+}: PageProps<"/properties/search/[id]">) {
+  const { id } = await params;
   const property = await getPropertyById(id);
 
   if (!property) {
@@ -35,10 +35,7 @@ export default async function PropertyDetailPage({
     <div className="flex h-full min-h-0 flex-col overflow-hidden">
       <BreadcrumbConfig
         items={[
-          {
-            label: "月次案件一覧",
-            href: `/properties/monthly/${year}/${month}`,
-          },
+          { label: "案件検索", href: "/properties/search" },
           { label: "案件詳細" },
         ]}
       />

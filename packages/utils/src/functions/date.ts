@@ -43,25 +43,12 @@ export const formatToJapaneseDateTime = (
 export const formatDateWithDay = (date: DateInput): string => {
   if (!date) return "-";
   try {
-    const dateObj = typeof date === "string" || typeof date === "number" ? new Date(date) : date;
+    const dateObj =
+      typeof date === "string" || typeof date === "number"
+        ? new Date(date)
+        : date;
     if (isNaN(dateObj.getTime())) return "-";
     return format(dateObj, "yyyy年M月d日(E)", { locale: ja });
-  } catch {
-    return "-";
-  }
-};
-
-/**
- * 日時を「yyyy/MM/dd HH:mm」形式でフォーマット（nullの場合は"-"を返す）
- * @param date 日付
- * @returns フォーマットされた日時文字列（例: "2024/01/15 14:30"）
- */
-export const formatDateTimeShort = (date: DateInput): string => {
-  if (!date) return "-";
-  try {
-    const dateObj = typeof date === "string" || typeof date === "number" ? new Date(date) : date;
-    if (isNaN(dateObj.getTime())) return "-";
-    return format(dateObj, "yyyy/MM/dd HH:mm", { locale: ja });
   } catch {
     return "-";
   }

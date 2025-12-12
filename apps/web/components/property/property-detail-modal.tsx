@@ -473,198 +473,167 @@ export function PropertyDetailModal({
 
           {/* 契約進捗タブ */}
           <TabsContent value="contract" className="space-y-6 mt-6">
-            {/* 業務進捗 */}
-            <SectionCard title="業務進捗">
-              <div className="grid grid-cols-2 gap-4 w-full">
-                <div className="space-y-2">
-                  <Label>マイソク配布</Label>
-                  <Select defaultValue="未配布">
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="未配布">未配布</SelectItem>
-                      <SelectItem value="配布済">配布済</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="space-y-2">
-                  <Label>進捗</Label>
-                  <Select defaultValue={property.progressStatus || "A契約前"}>
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="A契約前">A契約前</SelectItem>
-                      <SelectItem value="A契約済">A契約済</SelectItem>
-                      <SelectItem value="BC契約前">BC契約前</SelectItem>
-                      <SelectItem value="BC契約済">BC契約済</SelectItem>
-                      <SelectItem value="決済準備中">決済準備中</SelectItem>
-                      <SelectItem value="決済待ち">決済待ち</SelectItem>
-                      <SelectItem value="決済完了">決済完了</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
-            </SectionCard>
-
             {/* スケジュール */}
-            <SectionCard title="スケジュール">
-              <div className="grid grid-cols-3 gap-4 w-full">
-                <SettlementDatePicker
-                  value={aContractDate}
-                  onChange={(value) => setAContractDate(value)}
-                  label="A契約日"
-                  placeholder="例: 2025年1月20日"
+            <div className="rounded-lg border bg-card">
+              <div className="p-4 border-b bg-muted/30">
+                <h3 className="font-semibold">スケジュール</h3>
+              </div>
+              <div className="p-4">
+                <div className="grid grid-cols-3 gap-4">
+                  <SettlementDatePicker
+                    value={aContractDate}
+                    onChange={(value) => setAContractDate(value)}
+                    label="A契約日"
+                    placeholder="例: 2025年1月20日"
+                  />
+                  <SettlementDatePicker
+                    value={bcContractDate}
+                    onChange={(value) => setBcContractDate(value)}
+                    label="BC契約日"
+                    placeholder="例: 2025年2月15日"
+                  />
+                  <SettlementDatePicker
+                    value={settlementDate || ""}
+                    onChange={(value) => setSettlementDate(value)}
+                    label="決済日"
+                    placeholder="例: 2025年3月15日"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div className="rounded-lg border bg-card">
+              <div className="p-4 border-b bg-muted/30">
+                <h3 className="font-semibold">AB関係</h3>
+              </div>
+              <div className="p-4 space-y-1">
+                <CheckItemRow
+                  label="契約書 保存完了"
+                  checked={contractChecks.contractSaved}
+                  date={
+                    contractChecks.contractSaved
+                      ? "2025/01/10 14:30"
+                      : undefined
+                  }
+                  user={contractChecks.contractSaved ? "田中" : undefined}
+                  onChange={(checked) =>
+                    setContractChecks({
+                      ...contractChecks,
+                      contractSaved: checked,
+                    })
+                  }
                 />
-                <SettlementDatePicker
-                  value={bcContractDate}
-                  onChange={(value) => setBcContractDate(value)}
-                  label="BC契約日"
-                  placeholder="例: 2025年2月15日"
+                <CheckItemRow
+                  label="委任状関係 保存完了"
+                  checked={contractChecks.powerOfAttorneySaved}
+                  date={
+                    contractChecks.powerOfAttorneySaved
+                      ? "2025/01/11 10:15"
+                      : undefined
+                  }
+                  user={
+                    contractChecks.powerOfAttorneySaved ? "山田" : undefined
+                  }
+                  onChange={(checked) =>
+                    setContractChecks({
+                      ...contractChecks,
+                      powerOfAttorneySaved: checked,
+                    })
+                  }
                 />
-                <SettlementDatePicker
-                  value={settlementDate || ""}
-                  onChange={(value) => setSettlementDate(value)}
-                  label="決済日"
-                  placeholder="例: 2025年3月15日"
+                <CheckItemRow
+                  label="売主身分証 保存完了"
+                  checked={contractChecks.sellerIdSaved}
+                  onChange={(checked) =>
+                    setContractChecks({
+                      ...contractChecks,
+                      sellerIdSaved: checked,
+                    })
+                  }
                 />
               </div>
-            </SectionCard>
+            </div>
 
-            {/* AB関係・BC関係（2列） */}
-            <div className="grid grid-cols-2 gap-6">
-              {/* AB関係 */}
-              <SectionCard title="AB関係">
-                <div className="space-y-1 w-full">
-                  <CheckItemRow
-                    label="契約書 保存完了"
-                    checked={contractChecks.contractSaved}
-                    date={
-                      contractChecks.contractSaved
-                        ? "2025/01/10 14:30"
-                        : undefined
-                    }
-                    user={contractChecks.contractSaved ? "田中" : undefined}
-                    onChange={(checked) =>
-                      setContractChecks({
-                        ...contractChecks,
-                        contractSaved: checked,
-                      })
-                    }
-                  />
-                  <CheckItemRow
-                    label="委任状関係 保存完了"
-                    checked={contractChecks.powerOfAttorneySaved}
-                    date={
-                      contractChecks.powerOfAttorneySaved
-                        ? "2025/01/11 10:15"
-                        : undefined
-                    }
-                    user={
-                      contractChecks.powerOfAttorneySaved ? "山田" : undefined
-                    }
-                    onChange={(checked) =>
-                      setContractChecks({
-                        ...contractChecks,
-                        powerOfAttorneySaved: checked,
-                      })
-                    }
-                  />
-                  <CheckItemRow
-                    label="売主身分証 保存完了"
-                    checked={contractChecks.sellerIdSaved}
-                    onChange={(checked) =>
-                      setContractChecks({
-                        ...contractChecks,
-                        sellerIdSaved: checked,
-                      })
-                    }
-                  />
-                </div>
-              </SectionCard>
-
-              {/* BC関係 */}
-              <SectionCard title="BC関係">
-                <div className="space-y-1 w-full">
-                  <CheckItemRow
-                    label="BC売契作成"
-                    checked={contractChecks.bcContractCreated}
-                    date={
-                      contractChecks.bcContractCreated
-                        ? "2025/01/15 09:00"
-                        : undefined
-                    }
-                    user={contractChecks.bcContractCreated ? "鈴木" : undefined}
-                    onChange={(checked) =>
-                      setContractChecks({
-                        ...contractChecks,
-                        bcContractCreated: checked,
-                      })
-                    }
-                  />
-                  <CheckItemRow
-                    label="重説作成"
-                    checked={contractChecks.importantMattersCreated}
-                    date={
-                      contractChecks.importantMattersCreated
-                        ? "2025/01/15 11:30"
-                        : undefined
-                    }
-                    user={
-                      contractChecks.importantMattersCreated
-                        ? "鈴木"
-                        : undefined
-                    }
-                    onChange={(checked) =>
-                      setContractChecks({
-                        ...contractChecks,
-                        importantMattersCreated: checked,
-                      })
-                    }
-                  />
-                  <CheckItemRow
-                    label="BC売契送付"
-                    checked={contractChecks.bcContractSent}
-                    onChange={(checked) =>
-                      setContractChecks({
-                        ...contractChecks,
-                        bcContractSent: checked,
-                      })
-                    }
-                  />
-                  <CheckItemRow
-                    label="重説送付"
-                    checked={contractChecks.importantMattersSent}
-                    onChange={(checked) =>
-                      setContractChecks({
-                        ...contractChecks,
-                        importantMattersSent: checked,
-                      })
-                    }
-                  />
-                  <CheckItemRow
-                    label="BC売契CB完了"
-                    checked={contractChecks.bcContractCBCompleted}
-                    onChange={(checked) =>
-                      setContractChecks({
-                        ...contractChecks,
-                        bcContractCBCompleted: checked,
-                      })
-                    }
-                  />
-                  <CheckItemRow
-                    label="重説CB完了"
-                    checked={contractChecks.importantMattersCBCompleted}
-                    onChange={(checked) =>
-                      setContractChecks({
-                        ...contractChecks,
-                        importantMattersCBCompleted: checked,
-                      })
-                    }
-                  />
-                </div>
-              </SectionCard>
+            <div className="rounded-lg border bg-card">
+              <div className="p-4 border-b bg-muted/30">
+                <h3 className="font-semibold">BC関係</h3>
+              </div>
+              <div className="p-4 space-y-1">
+                <CheckItemRow
+                  label="BC売契作成"
+                  checked={contractChecks.bcContractCreated}
+                  date={
+                    contractChecks.bcContractCreated
+                      ? "2025/01/15 09:00"
+                      : undefined
+                  }
+                  user={contractChecks.bcContractCreated ? "鈴木" : undefined}
+                  onChange={(checked) =>
+                    setContractChecks({
+                      ...contractChecks,
+                      bcContractCreated: checked,
+                    })
+                  }
+                />
+                <CheckItemRow
+                  label="重説作成"
+                  checked={contractChecks.importantMattersCreated}
+                  date={
+                    contractChecks.importantMattersCreated
+                      ? "2025/01/15 11:30"
+                      : undefined
+                  }
+                  user={
+                    contractChecks.importantMattersCreated ? "鈴木" : undefined
+                  }
+                  onChange={(checked) =>
+                    setContractChecks({
+                      ...contractChecks,
+                      importantMattersCreated: checked,
+                    })
+                  }
+                />
+                <CheckItemRow
+                  label="BC売契送付"
+                  checked={contractChecks.bcContractSent}
+                  onChange={(checked) =>
+                    setContractChecks({
+                      ...contractChecks,
+                      bcContractSent: checked,
+                    })
+                  }
+                />
+                <CheckItemRow
+                  label="重説送付"
+                  checked={contractChecks.importantMattersSent}
+                  onChange={(checked) =>
+                    setContractChecks({
+                      ...contractChecks,
+                      importantMattersSent: checked,
+                    })
+                  }
+                />
+                <CheckItemRow
+                  label="BC売契CB完了"
+                  checked={contractChecks.bcContractCBCompleted}
+                  onChange={(checked) =>
+                    setContractChecks({
+                      ...contractChecks,
+                      bcContractCBCompleted: checked,
+                    })
+                  }
+                />
+                <CheckItemRow
+                  label="重説CB完了"
+                  checked={contractChecks.importantMattersCBCompleted}
+                  onChange={(checked) =>
+                    setContractChecks({
+                      ...contractChecks,
+                      importantMattersCBCompleted: checked,
+                    })
+                  }
+                />
+              </div>
             </div>
           </TabsContent>
 
@@ -689,8 +658,18 @@ export function PropertyDetailModal({
             {/* 賃貸管理関係 */}
             <SectionCard title="賃貸管理関係">
               <div className="space-y-3 w-full">
-                <DocumentRow label="賃貸借契約書" status="取得済" date="2025/01/12" user="佐藤" />
-                <DocumentRow label="管理委託契約書" status="依頼中" date="2025/01/13" user="田中" />
+                <DocumentRow
+                  label="賃貸借契約書"
+                  status="取得済"
+                  date="2025/01/12"
+                  user="佐藤"
+                />
+                <DocumentRow
+                  label="管理委託契約書"
+                  status="依頼中"
+                  date="2025/01/13"
+                  user="田中"
+                />
                 <DocumentRow label="入居申込書" status="未依頼" />
               </div>
             </SectionCard>
@@ -699,9 +678,24 @@ export function PropertyDetailModal({
             <SectionCard title="建物管理関係">
               <div className="space-y-3 w-full">
                 <DocumentRow label="重要事項調査報告書" status="未依頼" />
-                <DocumentRow label="管理規約" status="依頼中" date="2025/01/14" user="山田" />
-                <DocumentRow label="長期修繕計画書" status="取得済" date="2025/01/15" user="鈴木" />
-                <DocumentRow label="総会議事録" status="不要" date="2025/01/16" user="伊藤" />
+                <DocumentRow
+                  label="管理規約"
+                  status="依頼中"
+                  date="2025/01/14"
+                  user="山田"
+                />
+                <DocumentRow
+                  label="長期修繕計画書"
+                  status="取得済"
+                  date="2025/01/15"
+                  user="鈴木"
+                />
+                <DocumentRow
+                  label="総会議事録"
+                  status="不要"
+                  date="2025/01/16"
+                  user="伊藤"
+                />
                 <DocumentRow label="パンフレット" status="未依頼" />
                 <DocumentRow label="口座振替用紙" status="未依頼" />
                 <DocumentRow label="所有者変更届" status="未依頼" />
@@ -711,9 +705,19 @@ export function PropertyDetailModal({
             {/* 役所関係 */}
             <SectionCard title="役所関係">
               <div className="space-y-3 w-full">
-                <DocumentRow label="公課証明" status="取得済" date="2025/01/17" user="小林" />
+                <DocumentRow
+                  label="公課証明"
+                  status="取得済"
+                  date="2025/01/17"
+                  user="小林"
+                />
                 <DocumentRow label="建築計画概要書" status="未依頼" />
-                <DocumentRow label="台帳記載事項証明書" status="依頼中" date="2025/01/18" user="渡辺" />
+                <DocumentRow
+                  label="台帳記載事項証明書"
+                  status="依頼中"
+                  date="2025/01/18"
+                  user="渡辺"
+                />
                 <DocumentRow label="用途地域" status="未依頼" />
                 <DocumentRow label="道路台帳" status="未依頼" />
               </div>
@@ -722,7 +726,12 @@ export function PropertyDetailModal({
             {/* 銀行関係 */}
             <SectionCard title="銀行関係">
               <div className="space-y-3 w-full">
-                <DocumentRow label="ローン計算書" status="依頼中" date="2025/01/19" user="高橋" />
+                <DocumentRow
+                  label="ローン計算書"
+                  status="依頼中"
+                  date="2025/01/19"
+                  user="高橋"
+                />
               </div>
             </SectionCard>
           </TabsContent>

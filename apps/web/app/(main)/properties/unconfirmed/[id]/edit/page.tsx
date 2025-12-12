@@ -43,7 +43,7 @@ export async function generateMetadata({
 
 export default async function PropertyEditPage({
   params,
-}: PageProps<"/properties/[id]/edit">) {
+}: PageProps<"/properties/unconfirmed/[id]/edit">) {
   const { id } = await params;
 
   // セッション取得
@@ -70,7 +70,6 @@ export default async function PropertyEditPage({
     <div className="flex h-full min-h-0 flex-col overflow-hidden p-3 lg:p-2">
       <BreadcrumbConfig
         items={[
-          { label: "案件管理" },
           { label: "業者確定前", href: "/properties/unconfirmed" },
           { label: "案件編集" },
         ]}
