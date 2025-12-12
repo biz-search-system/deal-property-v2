@@ -1095,4 +1095,7 @@ export async function updatePropertyRoomNumber(data: {
       updatedAt: new Date(),
     })
     .where(eq(properties.id, data.id));
+
+  revalidatePath("/properties");
+  revalidatePath("/properties/unconfirmed");
 }
