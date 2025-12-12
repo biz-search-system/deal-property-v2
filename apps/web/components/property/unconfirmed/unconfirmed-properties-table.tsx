@@ -1,16 +1,13 @@
 "use client";
 
-import type { PropertyWithRelations } from "@/lib/types/property";
-import { format } from "date-fns";
-import { ja } from "date-fns/locale";
-import { Badge } from "@workspace/ui/components/badge";
-import { Button } from "@workspace/ui/components/button";
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@workspace/ui/components/dropdown-menu";
+  flexRender,
+  getCoreRowModel,
+  getSortedRowModel,
+  SortingState,
+  useReactTable,
+} from "@tanstack/react-table";
+import { ScrollArea } from "@workspace/ui/components/scroll-area";
 import {
   Table,
   TableBody,
@@ -19,18 +16,11 @@ import {
   TableHeader,
   TableRow,
 } from "@workspace/ui/components/table";
-import { OrganizationNameType } from "@workspace/utils";
-import { Edit, Eye, MoreVertical } from "lucide-react";
+import type { PropertyWithRelations } from "@/lib/types/property";
 import { useRouter } from "next/navigation";
-import BrokerCompanyBadge from "../badge/broker-company-badge";
-import CompanyBBadge from "../badge/company-b-badge";
-import ContractTypeBadge from "../badge/contract-type-badge";
-import OrganizationBadge from "../badge/organization-badge";
-import { DocumentStatusInlineEdit } from "../inline-edit/document-status-inline-edit";
-import { NotesPopoverEdit } from "../inline-edit/notes-popover-edit";
-import { ProgressStatusInlineEdit } from "../inline-edit/progress-status-inline-edit";
-import { SettlementDatePopoverEdit } from "../inline-edit/settlement-date-popover-edit";
-import { PropertyNameCell } from "../property-name-cell";
+import { useState } from "react";
+import { unconfirmedColumns } from "./unconfirmed-columns";
+
 interface UnconfirmedPropertiesTableProps {
   properties: PropertyWithRelations[];
 }
@@ -39,206 +29,151 @@ export function UnconfirmedPropertiesTable({
   properties,
 }: UnconfirmedPropertiesTableProps) {
   const router = useRouter();
+  const [sorting, setSorting] = useState<SortingState>([]);
 
-  const formatCurrency = (value: number | null) => {
-    if (value === null || value === undefined) return "-";
-    // 1万円未満の場合は円単位で表示
-    if (value < 10000) {
-      return `${value.toLocaleString()}円`;
-    }
-    // 1万円以上の場合は万円単位で表示
-    return `${(value / 10000).toFixed(0)}万`;
+  const handleViewDetails = (property: PropertyWithRelations) => {
+    router.push(`/properties/unconfirmed/${property.id}`);
   };
-  const formatDateWithDay = (dateValue: Date | string | null): string => {
-    if (!dateValue) return "-";
-    const date =
-      typeof dateValue === "string" ? new Date(dateValue) : dateValue;
 
-    // 無効な日付チェック
-    if (isNaN(date.getTime())) return "-";
+  const handleEdit = (property: PropertyWithRelations) => {
+    router.push(`/properties/unconfirmed/${property.id}/edit`);
+  };
 
-    // date-fnsを使用してフォーマット（M/d(E) 形式）
-    return format(date, "M/d(E)", { locale: ja });
+  const table = useReactTable({
+    data: properties,
+    columns: unconfirmedColumns,
+    getCoreRowModel: getCoreRowModel(),
+    getSortedRowModel: getSortedRowModel(),
+    onSortingChange: setSorting,
+    state: {
+      sorting,
+    },
+    meta: {
+      onView: handleViewDetails,
+      onEdit: handleEdit,
+    },
+  });
+
+  const getHeaderColumnClass = (columnId: string) => {
+    switch (columnId) {
+      case "organization":
+        return "";
+      case "staff":
+        return "w-[50px]";
+      case "propertyName":
+        return "";
+      case "roomNumber":
+        return "w-[40px]";
+      case "ownerName":
+        return "min-w-[55px]";
+      case "amountA":
+      case "amountExit":
+      case "profit":
+      case "bcDeposit":
+        return "w-[50px]";
+      case "commission":
+        return "w-[100px]";
+      case "settlementDate":
+        return "w-[60px]";
+      case "buyerCompany":
+        return "min-w-[50px]";
+      case "contractType":
+      case "companyB":
+      case "brokerCompany":
+      case "progressStatus":
+      case "documentStatus":
+        return "w-[70px]";
+      case "notes":
+        return "min-w-[65px] max-w-[120px]";
+      case "actions":
+        return "sticky right-0 bg-background w-[50px]";
+      default:
+        return "";
+    }
+  };
+
+  const getCellColumnClass = (columnId: string) => {
+    const base = "text-[10px] p-1";
+    switch (columnId) {
+      case "organization":
+        return base;
+      case "staff":
+        return `${base} w-[50px]`;
+      case "propertyName":
+        return `${base} max-w-[120px]`;
+      case "roomNumber":
+        return base;
+      case "ownerName":
+        return `${base} max-w-[120px]`;
+      case "notes":
+        return `${base} max-w-[80px]`;
+      case "actions":
+        return `${base} sticky right-2`;
+      default:
+        return base;
+    }
   };
 
   return (
-    <div className="overflow-auto max-h-[calc(100vh-400px)]">
-      <Table className="text-[10px]">
-        <TableHeader className="sticky top-0 bg-background z-10">
-          <TableRow>
-            <TableHead className="text-[10px] p-1 sticky left-0 bg-background z-20 w-[70px]">
-              管理組織
-            </TableHead>
-            <TableHead className="text-[10px] p-1 min-w-[45px] w-[70px]">
-              担当
-            </TableHead>
-            <TableHead className="text-[10px] p-1 min-w-[65px]">
-              物件名
-            </TableHead>
-            <TableHead className="text-[10px] p-1 w-[40px]">号室</TableHead>
-            <TableHead className="text-[10px] p-1 min-w-[55px]">
-              オーナー
-            </TableHead>
-            <TableHead className="text-[10px] p-1 w-[50px]">A金額</TableHead>
-            <TableHead className="text-[10px] p-1 w-[50px]">出口</TableHead>
-            <TableHead className="text-[10px] p-1 w-[50px]">仲手等</TableHead>
-            <TableHead className="text-[10px] p-1 w-[50px]">利益</TableHead>
-            <TableHead className="text-[10px] p-1 w-[60px]">決済日</TableHead>
-            <TableHead className="text-[10px] p-1 w-[70px]">契約形態</TableHead>
-            <TableHead className="text-[10px] p-1 w-[70px]">B会社</TableHead>
-            <TableHead className="text-[10px] p-1 w-[70px]">仲介</TableHead>
-            <TableHead className="text-[10px] p-1 w-[70px]">進捗</TableHead>
-            <TableHead className="text-[10px] p-1 w-[70px]">書類</TableHead>
-            <TableHead className="text-[10px] p-1 min-w-[65px] w-[120px]">
-              備考
-            </TableHead>
-            <TableHead className="text-[10px] p-1 sticky right-0 bg-background z-20 w-[50px]">
-              操作
-            </TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {properties.map((property) => (
-            <TableRow key={property.id} className="hover:bg-muted/50">
-              {/* 管理組織 */}
-              <TableCell className="text-[10px] p-1">
-                <OrganizationBadge
-                  organization={
-                    property.organization.name as OrganizationNameType
-                  }
-                />
-              </TableCell>
-              {/* 担当 */}
-              <TableCell className="text-[10px] p-1 sticky left-0 ">
-                <div className="flex gap-1 flex-wrap">
-                  {property.staff.map((staff) => (
-                    <Badge
-                      key={staff.user.id}
-                      variant="outline"
-                      className="text-[9px] px-1 py-0"
+    <>
+      <ScrollArea className="min-h-0 flex-1 overflow-auto">
+        <Table className="text-[10px]">
+          <TableHeader className="sticky top-0 bg-background z-10 [&_tr]:border-b-0">
+            {table.getHeaderGroups().map((headerGroup) => (
+              <TableRow
+                key={headerGroup.id}
+                className="hover:bg-transparent relative after:absolute after:bottom-0 after:left-0 after:right-0 after:h-px after:bg-border"
+              >
+                {headerGroup.headers.map((header) => (
+                  <TableHead
+                    key={header.id}
+                    className={`text-[10px] p-1 ${getHeaderColumnClass(header.column.id)}`}
+                  >
+                    {header.isPlaceholder
+                      ? null
+                      : flexRender(
+                          header.column.columnDef.header,
+                          header.getContext()
+                        )}
+                  </TableHead>
+                ))}
+              </TableRow>
+            ))}
+          </TableHeader>
+          <TableBody>
+            {table.getRowModel().rows?.length ? (
+              table.getRowModel().rows.map((row) => (
+                <TableRow
+                  key={row.id}
+                  data-state={row.getIsSelected() && "selected"}
+                  className="hover:bg-muted/50"
+                >
+                  {row.getVisibleCells().map((cell) => (
+                    <TableCell
+                      key={cell.id}
+                      className={getCellColumnClass(cell.column.id)}
                     >
-                      {staff.user.name}
-                    </Badge>
+                      {flexRender(
+                        cell.column.columnDef.cell,
+                        cell.getContext()
+                      )}
+                    </TableCell>
                   ))}
-                </div>
-              </TableCell>
-              {/* 物件名 */}
-              <TableCell className="text-[10px] p-1 max-w-[100px]">
-                <PropertyNameCell propertyName={property.propertyName} />
-              </TableCell>
-
-              {/* 号室 */}
-              <TableCell className="text-[10px] p-1 max-w-[100px]">
-                {property.roomNumber || "-"}
-              </TableCell>
-
-              {/* オーナー */}
-              <TableCell className="text-[10px] p-1">
-                {property.ownerName}
-              </TableCell>
-
-              {/* A金額 */}
-              <TableCell className="text-[10px] p-1 text-right">
-                {formatCurrency(property.amountA)}
-              </TableCell>
-
-              {/* 出口 */}
-              <TableCell className="text-[10px] p-1 text-right">
-                {formatCurrency(property.amountExit)}
-              </TableCell>
-
-              {/* 仲手等 */}
-              <TableCell className="text-[10px] p-1 text-right">
-                {formatCurrency(property.commission)}
-              </TableCell>
-
-              {/* 利益 */}
-              <TableCell className="text-[10px] p-1 text-right font-semibold">
-                {formatCurrency(property.profit)}
-              </TableCell>
-              {/* 決済日 */}
-              <TableCell className="text-[10px] p-1">
-                <SettlementDatePopoverEdit
-                  propertyId={property.id}
-                  currentDate={property.settlementDate}
-                  formatDisplay={formatDateWithDay}
-                />
-              </TableCell>
-
-              {/* 契約形態 */}
-              <TableCell className="text-[10px] p-1">
-                <ContractTypeBadge contractType={property.contractType} />
-              </TableCell>
-
-              {/* B会社 */}
-              <TableCell className="text-[10px] p-1">
-                <CompanyBBadge companyB={property.companyB} />
-              </TableCell>
-
-              {/* 仲介 */}
-              <TableCell className="text-[10px] p-1">
-                <BrokerCompanyBadge brokerCompany={property.brokerCompany} />
-              </TableCell>
-
-              {/* 進捗（インライン編集） */}
-              <TableCell className="text-[10px] p-1">
-                <ProgressStatusInlineEdit
-                  propertyId={property.id}
-                  currentStatus={property.progressStatus}
-                />
-              </TableCell>
-
-              {/* 書類（インライン編集） */}
-              <TableCell className="text-[10px] p-1">
-                <DocumentStatusInlineEdit
-                  propertyId={property.id}
-                  currentStatus={property.documentStatus}
-                />
-              </TableCell>
-
-              {/* 備考（インライン編集） */}
-              <TableCell className="text-[10px] p-1 max-w-[100px]">
-                <NotesPopoverEdit
-                  propertyId={property.id}
-                  currentNotes={property.notes}
-                />
-              </TableCell>
-
-              {/* 操作 */}
-              <TableCell className="text-[10px] p-1 sticky right-0 bg-background">
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" size="sm" className="h-5 w-5 p-0">
-                      <MoreVertical className="h-3 w-3" />
-                      <span className="sr-only">操作メニュー</span>
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end">
-                    <DropdownMenuItem
-                      onClick={() => {
-                        router.push(`/properties/unconfirmed/${property.id}`);
-                      }}
-                    >
-                      <Eye className="h-3 w-3" />
-                      詳細
-                    </DropdownMenuItem>
-                    <DropdownMenuItem
-                      onClick={() => {
-                        router.push(
-                          `/properties/unconfirmed/${property.id}/edit`
-                        );
-                      }}
-                    >
-                      <Edit className="h-3 w-3" />
-                      編集
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              </TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-    </div>
+                </TableRow>
+              ))
+            ) : (
+              <TableRow>
+                <TableCell
+                  colSpan={unconfirmedColumns.length}
+                  className="h-24 text-center"
+                >
+                  データがありません
+                </TableCell>
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
+      </ScrollArea>
+    </>
   );
 }

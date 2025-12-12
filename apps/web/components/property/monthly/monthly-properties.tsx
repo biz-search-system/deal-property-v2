@@ -1,18 +1,17 @@
 "use client";
 
 import { AccountSettlementSummary } from "@/components/property/account-settlement-summary";
-import { PropertyDetailModal } from "@/components/property/property-detail-modal";
 import type { PropertyWithRelations } from "@/lib/types/property";
-import { Card, CardContent } from "@workspace/ui/components/card";
+import { Card } from "@workspace/ui/components/card";
 import {
   Tabs,
   TabsContent,
   TabsList,
   TabsTrigger,
 } from "@workspace/ui/components/tabs";
-import { useMemo, useState } from "react";
 import { useQueryState } from "nuqs";
-import { PropertiesTable } from "./monthly-properties-table";
+import { useMemo, useState } from "react";
+import { MonthlyPropertiesTable } from "./monthly-properties-table";
 
 interface MonthlyPropertiesProps {
   year: string;
@@ -25,8 +24,10 @@ export function MonthlyProperties({
   month,
   properties,
 }: MonthlyPropertiesProps) {
+  const [activeTab, setActiveTab] = useQueryState("tab", {
+    defaultValue: "confirmed",
+  });
   const [selectedAccount, setSelectedAccount] = useState<string>("legit");
-  const [, setPropertyId] = useQueryState("propertyId");
 
   // 業者確定後と決済完了で分類
   const categorizedProperties = useMemo(() => {
@@ -95,32 +96,16 @@ export function MonthlyProperties({
     return `${(value / 10000).toFixed(0)}万`;
   };
 
-  const formatDateWithDay = (dateString: string | Date | null): string => {
-    if (!dateString) return "-";
-    const date: Date =
-      typeof dateString === "string" ? new Date(dateString) : dateString;
-    const days = ["日", "月", "火", "水", "木", "金", "土"];
-    return `${date.getMonth() + 1}/${date.getDate()}(${days[date.getDay()]})`;
-  };
-
-  const truncateText = (
-    text: string | null | undefined,
-    maxLength: number = 5
-  ) => {
-    if (!text) return "-";
-    return text.length > maxLength ? text.substring(0, maxLength) : text;
-  };
-
-  const handlePropertyClick = (property: PropertyWithRelations) => {
-    setPropertyId(property.id);
-  };
-
   return (
-    <div className="flex flex-1 flex-col overflow-hidden">
-      <div className="flex flex-col gap-3 p-4 lg:p-3">
+    <div className="flex h-full flex-col overflow-hidden">
+      <div className="flex flex-1 flex-col gap-3 overflow-hidden p-4 lg:p-3">
         {/* タブ */}
-        <Tabs defaultValue="confirmed" className="flex-1">
-          <TabsList className="grid w-full grid-cols-2">
+        <Tabs
+          value={activeTab}
+          onValueChange={setActiveTab}
+          className="flex h-full flex-col"
+        >
+          <TabsList className="grid w-full shrink-0 grid-cols-2">
             <TabsTrigger value="confirmed">
               業者確定後 ({categorizedProperties.confirmed.length})
             </TabsTrigger>
@@ -129,9 +114,12 @@ export function MonthlyProperties({
             </TabsTrigger>
           </TabsList>
 
-          <TabsContent value="confirmed">
+          <TabsContent
+            value="confirmed"
+            className="flex flex-1 flex-col gap-3 overflow-hidden"
+          >
             {/* 集計表示 */}
-            <div className="grid grid-cols-3 gap-4 mb-4">
+            <div className="grid shrink-0 grid-cols-3 gap-4">
               <div className="rounded-lg bg-muted/50 p-3 border">
                 <div className="flex items-center justify-between">
                   <span className="text-xs text-muted-foreground">
@@ -165,87 +153,73 @@ export function MonthlyProperties({
                 </div>
               </div>
             </div>
-            <AccountSettlementSummary
-              selectedAccount={selectedAccount}
-              setSelectedAccount={setSelectedAccount}
-              accountSettlementSummary={accountSettlementSummary}
-            />
-            <Card>
-              <CardContent className="">
-                {/* 案件一覧テーブル */}
-                <PropertiesTable
-                  properties={categorizedProperties.confirmed}
-                  handlePropertyClick={handlePropertyClick}
-                  formatCurrency={formatCurrency}
-                  formatDateWithDay={formatDateWithDay}
-                  truncateText={truncateText}
-                  year={year}
-                  month={month}
-                />
-              </CardContent>
+            <div className="shrink-0">
+              <AccountSettlementSummary
+                selectedAccount={selectedAccount}
+                setSelectedAccount={setSelectedAccount}
+                accountSettlementSummary={accountSettlementSummary}
+              />
+            </div>
+            <Card className="flex flex-1 flex-col overflow-hidden px-3 py-2">
+              {/* 案件一覧テーブル */}
+              <MonthlyPropertiesTable
+                properties={categorizedProperties.confirmed}
+                year={year}
+                month={month}
+              />
             </Card>
           </TabsContent>
 
-          <TabsContent value="completed">
-            <Card>
-              <CardContent className="pt-6">
-                {/* 集計表示 */}
-                <div className="grid grid-cols-3 gap-4 mb-4">
-                  <div className="rounded-lg bg-muted/50 p-3 border">
-                    <div className="flex items-center justify-between">
-                      <span className="text-xs text-muted-foreground">
-                        利益合計
-                      </span>
-                      <p className="text-sm font-bold">
-                        {formatCurrency(
-                          calculateTotals(categorizedProperties.completed)
-                            .profit
-                        )}
-                      </p>
-                    </div>
-                  </div>
-                  <div className="rounded-lg bg-muted/50 p-3 border">
-                    <div className="flex items-center justify-between">
-                      <span className="text-xs text-muted-foreground">
-                        BC手付合計
-                      </span>
-                      <p className="text-sm font-bold">
-                        {formatCurrency(
-                          calculateTotals(categorizedProperties.completed)
-                            .bcDeposit
-                        )}
-                      </p>
-                    </div>
-                  </div>
-                  <div className="rounded-lg bg-muted/50 p-3 border">
-                    <div className="flex items-center justify-between">
-                      <span className="text-xs text-muted-foreground">
-                        件数
-                      </span>
-                      <p className="text-sm font-bold">
-                        {categorizedProperties.completed.length}件
-                      </p>
-                    </div>
-                  </div>
+          <TabsContent
+            value="completed"
+            className="flex flex-1 flex-col gap-3 overflow-hidden"
+          >
+            {/* 集計表示 */}
+            <div className="grid shrink-0 grid-cols-3 gap-4">
+              <div className="rounded-lg bg-muted/50 p-3 border">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs text-muted-foreground">
+                    利益合計
+                  </span>
+                  <p className="text-sm font-bold">
+                    {formatCurrency(
+                      calculateTotals(categorizedProperties.completed).profit
+                    )}
+                  </p>
                 </div>
+              </div>
+              <div className="rounded-lg bg-muted/50 p-3 border">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs text-muted-foreground">
+                    BC手付合計
+                  </span>
+                  <p className="text-sm font-bold">
+                    {formatCurrency(
+                      calculateTotals(categorizedProperties.completed).bcDeposit
+                    )}
+                  </p>
+                </div>
+              </div>
+              <div className="rounded-lg bg-muted/50 p-3 border">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs text-muted-foreground">件数</span>
+                  <p className="text-sm font-bold">
+                    {categorizedProperties.completed.length}件
+                  </p>
+                </div>
+              </div>
+            </div>
 
-                {/* 案件一覧テーブル */}
-                <PropertiesTable
-                  properties={categorizedProperties.completed}
-                  handlePropertyClick={handlePropertyClick}
-                  formatCurrency={formatCurrency}
-                  formatDateWithDay={formatDateWithDay}
-                  truncateText={truncateText}
-                  year={year}
-                  month={month}
-                />
-              </CardContent>
+            <Card className="flex flex-1 flex-col overflow-hidden px-3 py-2">
+              {/* 案件一覧テーブル */}
+              <MonthlyPropertiesTable
+                properties={categorizedProperties.completed}
+                year={year}
+                month={month}
+              />
             </Card>
           </TabsContent>
         </Tabs>
-
-        {/* 案件詳細モーダル */}
-        <PropertyDetailModal />
       </div>
     </div>
   );
