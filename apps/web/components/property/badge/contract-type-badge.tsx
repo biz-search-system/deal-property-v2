@@ -6,19 +6,22 @@ import { ContractType } from "@workspace/drizzle/types";
 
 export default function ContractTypeBadge({
   contractType,
+  size = "small",
 }: {
   contractType: ContractType | null;
+  size?: "small" | "medium";
 }) {
   return (
     <Badge
       variant="outline"
       className={cn(
-        "text-[9px] px-1 py-0",
-        contractType && CONTRACT_TYPE_COLORS[contractType],
+        size === "small" && "text-[9px] px-1 py-0",
+        size === "medium" && "text-xs",
+        contractType && CONTRACT_TYPE_COLORS[contractType]
       )}
     >
       {truncateText(
-        (contractType && CONTRACT_TYPE_LABELS[contractType]) || null,
+        (contractType && CONTRACT_TYPE_LABELS[contractType]) || null
       )}
     </Badge>
   );

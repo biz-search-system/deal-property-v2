@@ -244,34 +244,28 @@ export async function createProperty(data: PropertyCreate) {
       // 賃貸管理関係
       managementCancelScheduledMonth:
         validatedData.managementCancelScheduledMonth || null,
-      managementCancelScheduledMonthAt: validatedData.managementCancelScheduledMonth
-        ? now
-        : null,
-      managementCancelScheduledMonthBy: validatedData.managementCancelScheduledMonth
-        ? session.user.id
-        : null,
+      managementCancelScheduledMonthAt:
+        validatedData.managementCancelScheduledMonth ? now : null,
+      managementCancelScheduledMonthBy:
+        validatedData.managementCancelScheduledMonth ? session.user.id : null,
       managementCancelRequestedDate:
         validatedData.managementCancelRequestedDate || null,
-      managementCancelRequestedDateAt: validatedData.managementCancelRequestedDate
-        ? now
-        : null,
-      managementCancelRequestedDateBy: validatedData.managementCancelRequestedDate
-        ? session.user.id
-        : null,
+      managementCancelRequestedDateAt:
+        validatedData.managementCancelRequestedDate ? now : null,
+      managementCancelRequestedDateBy:
+        validatedData.managementCancelRequestedDate ? session.user.id : null,
       managementCancelCompletedDate:
         validatedData.managementCancelCompletedDate || null,
-      managementCancelCompletedDateAt: validatedData.managementCancelCompletedDate
-        ? now
-        : null,
-      managementCancelCompletedDateBy: validatedData.managementCancelCompletedDate
-        ? session.user.id
-        : null,
+      managementCancelCompletedDateAt:
+        validatedData.managementCancelCompletedDate ? now : null,
+      managementCancelCompletedDateBy:
+        validatedData.managementCancelCompletedDate ? session.user.id : null,
     });
 
     return property;
   });
 
-  revalidatePath("/properties");
+  // revalidatePath("/properties");
   return result;
 }
 
@@ -739,7 +733,6 @@ export async function updateProperty(data: PropertyUpdate) {
   });
 
   revalidatePath("/properties");
-  revalidatePath(`/properties/${validatedData.id}`);
   return result;
 }
 
@@ -1083,4 +1076,23 @@ export async function updatePropertyDocumentItem(data: {
 
   revalidatePath("/properties");
   revalidatePath("/properties/unconfirmed");
+}
+
+/**
+ * 案件の号室を更新（インライン編集用）
+ */
+export async function updatePropertyRoomNumber(data: {
+  id: string;
+  roomNumber: string | null;
+}) {
+  const session = await verifySession();
+
+  await db
+    .update(properties)
+    .set({
+      roomNumber: data.roomNumber?.trim() || null,
+      updatedBy: session.user.id,
+      updatedAt: new Date(),
+    })
+    .where(eq(properties.id, data.id));
 }

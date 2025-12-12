@@ -29,8 +29,8 @@ import { DocumentStatusInlineEdit } from "@/components/property/inline-edit/docu
 import { NotesPopoverEdit } from "@/components/property/inline-edit/notes-popover-edit";
 import { SettlementDatePopoverEdit } from "@/components/property/inline-edit/settlement-date-popover-edit";
 import { PropertyDetailModal } from "@/components/property/property-detail-modal";
-import { useState } from "react";
-import { PopoverProvider, PropertyNameCell } from "../property-name-cell";
+import { useQueryState } from "nuqs";
+import { PropertyNameCell } from "../property-name-cell";
 
 interface SearchPropertiesTableProps {
   properties: PropertyWithRelations[];
@@ -46,13 +46,10 @@ export function SearchPropertiesTable({
   truncateText,
 }: SearchPropertiesTableProps) {
   const router = useRouter();
-  const [selectedProperty, setSelectedProperty] =
-    useState<PropertyWithRelations | null>(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [, setPropertyId] = useQueryState("propertyId");
 
   const handlePropertyClick = (property: PropertyWithRelations) => {
-    setSelectedProperty(property);
-    setIsModalOpen(true);
+    setPropertyId(property.id);
   };
 
   const handleViewDetails = (property: PropertyWithRelations) => {
@@ -71,8 +68,7 @@ export function SearchPropertiesTable({
   return (
     <>
       <div className="overflow-auto max-h-[calc(100vh-250px)]">
-        <PopoverProvider>
-          <Table className="text-[10px]">
+        <Table className="text-[10px]">
             <TableHeader className="sticky top-0 bg-background z-10">
               <TableRow>
                 <TableHead className="text-[10px] p-1 sticky left-0 bg-background z-20 w-[70px]">
@@ -244,16 +240,11 @@ export function SearchPropertiesTable({
                 </TableRow>
               ))}
             </TableBody>
-          </Table>
-        </PopoverProvider>
+        </Table>
       </div>
 
       {/* 編集モーダル */}
-      <PropertyDetailModal
-        property={selectedProperty}
-        open={isModalOpen}
-        onOpenChange={setIsModalOpen}
-      />
+      <PropertyDetailModal />
     </>
   );
 }

@@ -10,21 +10,24 @@ import { truncateText } from "@/lib/property";
 export default function OrganizationBadge({
   organization,
   className,
+  size = "small",
 }: {
   organization: OrganizationNameType | null;
   className?: string;
+  size?: "small" | "medium";
 }) {
   return (
     <Badge
       variant="outline"
       className={cn(
-        "text-[9px] px-1 py-0",
+        size === "small" && "text-[9px] px-1 py-0",
+        size === "medium" && "text-xs",
         organization && ORGANIZATION_COLORS[organization],
-        className,
+        className
       )}
     >
       {truncateText(
-        (organization && ORGANIZATION_LABELS[organization]) || null,
+        (organization && ORGANIZATION_LABELS[organization]) || null
       )}
     </Badge>
   );

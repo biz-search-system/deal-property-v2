@@ -11,6 +11,7 @@ import {
   TabsTrigger,
 } from "@workspace/ui/components/tabs";
 import { useMemo, useState } from "react";
+import { useQueryState } from "nuqs";
 import { PropertiesTable } from "./properties-table";
 
 interface MonthlyPropertiesClientProps {
@@ -25,9 +26,7 @@ export function MonthlyPropertiesClient({
   properties,
 }: MonthlyPropertiesClientProps) {
   const [selectedAccount, setSelectedAccount] = useState<string>("legit");
-  const [selectedProperty, setSelectedProperty] =
-    useState<PropertyWithRelations | null>(null);
-  const [modalOpen, setModalOpen] = useState(false);
+  const [, setPropertyId] = useQueryState("propertyId");
 
   // 業者確定後と決済完了で分類
   const categorizedProperties = useMemo(() => {
@@ -113,8 +112,7 @@ export function MonthlyPropertiesClient({
   };
 
   const handlePropertyClick = (property: PropertyWithRelations) => {
-    setSelectedProperty(property);
-    setModalOpen(true);
+    setPropertyId(property.id);
   };
 
   return (
@@ -247,11 +245,7 @@ export function MonthlyPropertiesClient({
         </Tabs>
 
         {/* 案件詳細モーダル */}
-        <PropertyDetailModal
-          open={modalOpen}
-          onOpenChange={setModalOpen}
-          property={selectedProperty}
-        />
+        <PropertyDetailModal />
       </div>
     </div>
   );

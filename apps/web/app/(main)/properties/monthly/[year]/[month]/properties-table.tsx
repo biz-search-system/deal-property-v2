@@ -182,7 +182,7 @@ export function PropertiesTable({
                     <DropdownMenuItem
                       onClick={() => {
                         router.push(
-                          `/properties/monthly/${year}/${month}/${property.id}`,
+                          `/properties/monthly/${year}/${month}/${property.id}`
                         );
                       }}
                     >
@@ -190,6 +190,7 @@ export function PropertiesTable({
                       詳細
                     </DropdownMenuItem>
                     <DropdownMenuItem
+                      // onClick={() => handlePropertyClick(property)}
                       onClick={() => handlePropertyClick(property)}
                     >
                       <Edit className="h-3 w-3" />

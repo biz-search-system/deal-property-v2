@@ -1,5 +1,5 @@
 import { getAllPropertiesBySettlementDate } from "@/lib/data/property";
-import { SearchPropertiesClient } from "./search-properties-client";
+import { SearchProperties } from "../../../../components/property/search/search-properties";
 import type { Metadata } from "next";
 import { BreadcrumbConfig } from "@/components/breadcrumb-provider";
 
@@ -29,7 +29,7 @@ export default async function SearchPage() {
           { label: "案件検索", href: "/properties/search" },
         ]}
       />
-      <SearchPropertiesClient properties={transformedProperties} />;
+      <SearchProperties properties={transformedProperties} />;
     </>
   );
 }

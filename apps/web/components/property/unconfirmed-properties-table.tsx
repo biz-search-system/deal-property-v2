@@ -30,7 +30,7 @@ import { DocumentStatusInlineEdit } from "./inline-edit/document-status-inline-e
 import { NotesPopoverEdit } from "./inline-edit/notes-popover-edit";
 import { ProgressStatusInlineEdit } from "./inline-edit/progress-status-inline-edit";
 import { SettlementDatePopoverEdit } from "./inline-edit/settlement-date-popover-edit";
-import { PopoverProvider, PropertyNameCell } from "./property-name-cell";
+import { PropertyNameCell } from "./property-name-cell";
 interface UnconfirmedPropertiesTableProps {
   properties: PropertyWithRelations[];
 }
@@ -63,8 +63,7 @@ export function UnconfirmedPropertiesTable({
 
   return (
     <div className="overflow-auto max-h-[calc(100vh-400px)]">
-      <PopoverProvider>
-        <Table className="text-[10px]">
+      <Table className="text-[10px]">
           <TableHeader className="sticky top-0 bg-background z-10">
             <TableRow>
               <TableHead className="text-[10px] p-1 sticky left-0 bg-background z-20 w-[70px]">
@@ -242,7 +241,6 @@ export function UnconfirmedPropertiesTable({
             ))}
           </TableBody>
         </Table>
-      </PopoverProvider>
     </div>
   );
 }

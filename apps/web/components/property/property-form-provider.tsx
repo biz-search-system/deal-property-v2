@@ -17,16 +17,14 @@ import type {
   PropertyDocumentItem,
   SettlementProgress,
 } from "@workspace/drizzle/types";
+import { useEffect } from "react";
 
 interface PropertyFormProviderProps {
   children: React.ReactNode;
-  defaultValues?: Partial<Property> & {
-    staffIds?: string[];
-    contractProgress?: ContractProgress | null;
-    documentItems?: PropertyDocumentItem[];
-    settlementProgress?: SettlementProgress | null;
-  };
+  defaultValues?: DefaultValuesInput;
   mode: "create" | "edit";
+  onSuccess?: () => void;
+  isValidating?: boolean;
 }
 
 /** 書類項目配列からitemTypeでステータスを取得するヘルパー */
@@ -34,7 +32,9 @@ function getDocumentItemStatus(
   items: PropertyDocumentItem[] | undefined,
   itemType: string
 ): string {
-  return items?.find((item) => item.itemType === itemType)?.status || "not_requested";
+  return (
+    items?.find((item) => item.itemType === itemType)?.status || "not_requested"
+  );
 }
 
 /** 円から万円に変換（DB → フォーム） */
@@ -43,167 +43,173 @@ function yenToManyen(yen: number | null | undefined): number | undefined {
   return yen / 10000;
 }
 
+type DefaultValuesInput = Partial<Property> & {
+  staffIds?: string[];
+  contractProgress?: ContractProgress | null;
+  documentItems?: PropertyDocumentItem[];
+  settlementProgress?: SettlementProgress | null;
+};
+
+/** defaultValues をフォーム用の値に変換 */
+function transformToFormValues(
+  defaultValues?: DefaultValuesInput
+): PropertyCreate {
+  return {
+    organizationId: defaultValues?.organizationId || "",
+    propertyName: defaultValues?.propertyName || "",
+    roomNumber: defaultValues?.roomNumber || "",
+    ownerName: defaultValues?.ownerName || "",
+    // DB（円）→ フォーム（万円）への変換
+    amountA: yenToManyen(defaultValues?.amountA),
+    amountExit: yenToManyen(defaultValues?.amountExit),
+    commission: yenToManyen(defaultValues?.commission),
+    bcDeposit: yenToManyen(defaultValues?.bcDeposit),
+    contractDateA: defaultValues?.contractDateA
+      ? defaultValues.contractDateA instanceof Date
+        ? defaultValues.contractDateA.toISOString().split("T")[0]
+        : defaultValues.contractDateA
+      : "",
+    contractDateBc: defaultValues?.contractDateBc
+      ? defaultValues.contractDateBc instanceof Date
+        ? defaultValues.contractDateBc.toISOString().split("T")[0]
+        : defaultValues.contractDateBc
+      : "",
+    settlementDate: defaultValues?.settlementDate
+      ? defaultValues.settlementDate instanceof Date
+        ? defaultValues.settlementDate.toISOString().split("T")[0]
+        : defaultValues.settlementDate
+      : "",
+    contractType: defaultValues?.contractType || "",
+    companyB: defaultValues?.companyB || "",
+    brokerCompany: defaultValues?.brokerCompany || "",
+    buyerCompany: defaultValues?.buyerCompany || "",
+    mortgageBank: defaultValues?.mortgageBank || "",
+    listType: defaultValues?.listType || "",
+    notes: defaultValues?.notes || "",
+    progressStatus: defaultValues?.progressStatus || "bc_before_confirmed",
+    documentStatus: defaultValues?.documentStatus || "waiting_request",
+    accountCompany: defaultValues?.accountCompany || "",
+    bankAccount: defaultValues?.bankAccount || "",
+    staffIds: defaultValues?.staffIds || [],
+    // 契約進捗 マイソク配布
+    maisokuDistribution:
+      defaultValues?.contractProgress?.maisokuDistribution || "not_distributed",
+    // 契約進捗 AB関係
+    abContractSaved: defaultValues?.contractProgress?.abContractSaved ?? false,
+    abAuthorizationSaved:
+      defaultValues?.contractProgress?.abAuthorizationSaved ?? false,
+    abSellerIdSaved: defaultValues?.contractProgress?.abSellerIdSaved ?? false,
+    // 契約進捗 BC関係
+    bcContractCreated:
+      defaultValues?.contractProgress?.bcContractCreated ?? false,
+    bcDescriptionCreated:
+      defaultValues?.contractProgress?.bcDescriptionCreated ?? false,
+    bcContractSent: defaultValues?.contractProgress?.bcContractSent ?? false,
+    bcDescriptionSent:
+      defaultValues?.contractProgress?.bcDescriptionSent ?? false,
+    bcContractCbDone:
+      defaultValues?.contractProgress?.bcContractCbDone ?? false,
+    bcDescriptionCbDone:
+      defaultValues?.contractProgress?.bcDescriptionCbDone ?? false,
+    // 書類項目（銀行関係）
+    documentItem_loan_calculation: getDocumentItemStatus(
+      defaultValues?.documentItems,
+      "loan_calculation"
+    ),
+    // 書類項目（賃貸管理関係）
+    documentItem_rental_contract: getDocumentItemStatus(
+      defaultValues?.documentItems,
+      "rental_contract"
+    ),
+    documentItem_management_contract: getDocumentItemStatus(
+      defaultValues?.documentItems,
+      "management_contract"
+    ),
+    documentItem_move_in_application: getDocumentItemStatus(
+      defaultValues?.documentItems,
+      "move_in_application"
+    ),
+    // 書類項目（建物管理関係）
+    documentItem_important_matters_report: getDocumentItemStatus(
+      defaultValues?.documentItems,
+      "important_matters_report"
+    ),
+    documentItem_management_rules: getDocumentItemStatus(
+      defaultValues?.documentItems,
+      "management_rules"
+    ),
+    documentItem_long_term_repair_plan: getDocumentItemStatus(
+      defaultValues?.documentItems,
+      "long_term_repair_plan"
+    ),
+    documentItem_general_meeting_minutes: getDocumentItemStatus(
+      defaultValues?.documentItems,
+      "general_meeting_minutes"
+    ),
+    documentItem_pamphlet: getDocumentItemStatus(
+      defaultValues?.documentItems,
+      "pamphlet"
+    ),
+    documentItem_bank_transfer_form: getDocumentItemStatus(
+      defaultValues?.documentItems,
+      "bank_transfer_form"
+    ),
+    documentItem_owner_change_notification: getDocumentItemStatus(
+      defaultValues?.documentItems,
+      "owner_change_notification"
+    ),
+    // 書類項目（役所関係）
+    documentItem_tax_certificate: getDocumentItemStatus(
+      defaultValues?.documentItems,
+      "tax_certificate"
+    ),
+    documentItem_building_plan_overview: getDocumentItemStatus(
+      defaultValues?.documentItems,
+      "building_plan_overview"
+    ),
+    documentItem_ledger_certificate: getDocumentItemStatus(
+      defaultValues?.documentItems,
+      "ledger_certificate"
+    ),
+    documentItem_zoning_district: getDocumentItemStatus(
+      defaultValues?.documentItems,
+      "zoning_district"
+    ),
+    documentItem_road_ledger: getDocumentItemStatus(
+      defaultValues?.documentItems,
+      "road_ledger"
+    ),
+    // 決済進捗 精算書関係
+    bcSettlementStatus:
+      defaultValues?.settlementProgress?.bcSettlementStatus || "not_created",
+    abSettlementStatus:
+      defaultValues?.settlementProgress?.abSettlementStatus || "not_created",
+    // 決済進捗 司法書士関係
+    lawyerRequested:
+      defaultValues?.settlementProgress?.lawyerRequested ?? false,
+    documentsShared:
+      defaultValues?.settlementProgress?.documentsShared ?? false,
+    // 決済進捗 賃貸管理関係
+    managementCancelScheduledMonth:
+      defaultValues?.settlementProgress?.managementCancelScheduledMonth || "",
+    managementCancelRequestedDate:
+      defaultValues?.settlementProgress?.managementCancelRequestedDate || "",
+    managementCancelCompletedDate:
+      defaultValues?.settlementProgress?.managementCancelCompletedDate || "",
+  };
+}
+
 export default function PropertyFormProvider({
   children,
   defaultValues,
   mode,
+  onSuccess,
+  isValidating,
 }: PropertyFormProviderProps) {
   const router = useRouter();
-
   const form = useForm<PropertyCreate>({
     resolver: zodResolver(propertyCreateSchema),
-    defaultValues: {
-      organizationId: defaultValues?.organizationId || "",
-      propertyName: defaultValues?.propertyName || "",
-      roomNumber: defaultValues?.roomNumber || "",
-      ownerName: defaultValues?.ownerName || "",
-      // DB（円）→ フォーム（万円）への変換
-      amountA: yenToManyen(defaultValues?.amountA),
-      amountExit: yenToManyen(defaultValues?.amountExit),
-      commission: yenToManyen(defaultValues?.commission),
-      bcDeposit: yenToManyen(defaultValues?.bcDeposit),
-      contractDateA: defaultValues?.contractDateA
-        ? defaultValues.contractDateA instanceof Date
-          ? defaultValues.contractDateA.toISOString().split("T")[0]
-          : defaultValues.contractDateA
-        : "",
-      contractDateBc: defaultValues?.contractDateBc
-        ? defaultValues.contractDateBc instanceof Date
-          ? defaultValues.contractDateBc.toISOString().split("T")[0]
-          : defaultValues.contractDateBc
-        : "",
-      settlementDate: defaultValues?.settlementDate
-        ? defaultValues.settlementDate instanceof Date
-          ? defaultValues.settlementDate.toISOString().split("T")[0]
-          : defaultValues.settlementDate
-        : "",
-      contractType: defaultValues?.contractType || "",
-      companyB: defaultValues?.companyB || "",
-      brokerCompany: defaultValues?.brokerCompany || "",
-      buyerCompany: defaultValues?.buyerCompany || "",
-      mortgageBank: defaultValues?.mortgageBank || "",
-      listType: defaultValues?.listType || "",
-      notes: defaultValues?.notes || "",
-      progressStatus: defaultValues?.progressStatus || "bc_before_confirmed", // DBデフォルト値
-      documentStatus: defaultValues?.documentStatus || "waiting_request", // DBデフォルト値
-      accountCompany: defaultValues?.accountCompany || "",
-      bankAccount: defaultValues?.bankAccount || "",
-      staffIds: defaultValues?.staffIds || [],
-      // 契約進捗 マイソク配布
-      maisokuDistribution:
-        defaultValues?.contractProgress?.maisokuDistribution || "not_distributed",
-      // 契約進捗 AB関係
-      abContractSaved:
-        defaultValues?.contractProgress?.abContractSaved ?? false,
-      abAuthorizationSaved:
-        defaultValues?.contractProgress?.abAuthorizationSaved ?? false,
-      abSellerIdSaved:
-        defaultValues?.contractProgress?.abSellerIdSaved ?? false,
-      // 契約進捗 BC関係
-      bcContractCreated:
-        defaultValues?.contractProgress?.bcContractCreated ?? false,
-      bcDescriptionCreated:
-        defaultValues?.contractProgress?.bcDescriptionCreated ?? false,
-      bcContractSent: defaultValues?.contractProgress?.bcContractSent ?? false,
-      bcDescriptionSent:
-        defaultValues?.contractProgress?.bcDescriptionSent ?? false,
-      bcContractCbDone:
-        defaultValues?.contractProgress?.bcContractCbDone ?? false,
-      bcDescriptionCbDone:
-        defaultValues?.contractProgress?.bcDescriptionCbDone ?? false,
-
-      // 書類項目（銀行関係）
-      documentItem_loan_calculation: getDocumentItemStatus(
-        defaultValues?.documentItems,
-        "loan_calculation"
-      ),
-
-      // 書類項目（賃貸管理関係）
-      documentItem_rental_contract: getDocumentItemStatus(
-        defaultValues?.documentItems,
-        "rental_contract"
-      ),
-      documentItem_management_contract: getDocumentItemStatus(
-        defaultValues?.documentItems,
-        "management_contract"
-      ),
-      documentItem_move_in_application: getDocumentItemStatus(
-        defaultValues?.documentItems,
-        "move_in_application"
-      ),
-
-      // 書類項目（建物管理関係）
-      documentItem_important_matters_report: getDocumentItemStatus(
-        defaultValues?.documentItems,
-        "important_matters_report"
-      ),
-      documentItem_management_rules: getDocumentItemStatus(
-        defaultValues?.documentItems,
-        "management_rules"
-      ),
-      documentItem_long_term_repair_plan: getDocumentItemStatus(
-        defaultValues?.documentItems,
-        "long_term_repair_plan"
-      ),
-      documentItem_general_meeting_minutes: getDocumentItemStatus(
-        defaultValues?.documentItems,
-        "general_meeting_minutes"
-      ),
-      documentItem_pamphlet: getDocumentItemStatus(
-        defaultValues?.documentItems,
-        "pamphlet"
-      ),
-      documentItem_bank_transfer_form: getDocumentItemStatus(
-        defaultValues?.documentItems,
-        "bank_transfer_form"
-      ),
-      documentItem_owner_change_notification: getDocumentItemStatus(
-        defaultValues?.documentItems,
-        "owner_change_notification"
-      ),
-
-      // 書類項目（役所関係）
-      documentItem_tax_certificate: getDocumentItemStatus(
-        defaultValues?.documentItems,
-        "tax_certificate"
-      ),
-      documentItem_building_plan_overview: getDocumentItemStatus(
-        defaultValues?.documentItems,
-        "building_plan_overview"
-      ),
-      documentItem_ledger_certificate: getDocumentItemStatus(
-        defaultValues?.documentItems,
-        "ledger_certificate"
-      ),
-      documentItem_zoning_district: getDocumentItemStatus(
-        defaultValues?.documentItems,
-        "zoning_district"
-      ),
-      documentItem_road_ledger: getDocumentItemStatus(
-        defaultValues?.documentItems,
-        "road_ledger"
-      ),
-
-      // 決済進捗 精算書関係
-      bcSettlementStatus:
-        defaultValues?.settlementProgress?.bcSettlementStatus || "not_created",
-      abSettlementStatus:
-        defaultValues?.settlementProgress?.abSettlementStatus || "not_created",
-
-      // 決済進捗 司法書士関係
-      lawyerRequested:
-        defaultValues?.settlementProgress?.lawyerRequested ?? false,
-      documentsShared:
-        defaultValues?.settlementProgress?.documentsShared ?? false,
-
-      // 決済進捗 賃貸管理関係
-      managementCancelScheduledMonth:
-        defaultValues?.settlementProgress?.managementCancelScheduledMonth || "",
-      managementCancelRequestedDate:
-        defaultValues?.settlementProgress?.managementCancelRequestedDate || "",
-      managementCancelCompletedDate:
-        defaultValues?.settlementProgress?.managementCancelCompletedDate || "",
-    },
+    defaultValues: transformToFormValues(defaultValues),
   });
 
   // 未保存変更がある場合の離脱防止
@@ -221,8 +227,9 @@ export default function PropertyFormProvider({
           return;
         }
         await updateProperty({ ...data, id: defaultValues.id });
-        toast.success("案件を更新しました");
-        // router.push("/properties/unconfirmed");
+        toast.success("案件を更新しました123");
+        onSuccess?.();
+        router.refresh();
       }
     } catch (error) {
       toast.error(
@@ -233,6 +240,13 @@ export default function PropertyFormProvider({
       console.error(error);
     }
   };
+
+  // defaultValues が変更されたらフォームをリセット
+  useEffect(() => {
+    if (!isValidating) {
+      form.reset(transformToFormValues(defaultValues));
+    }
+  }, [isValidating, form]);
 
   return (
     <Form {...form}>

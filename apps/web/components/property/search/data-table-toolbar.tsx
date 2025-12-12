@@ -25,7 +25,26 @@ import {
   DOCUMENT_STATUS_LABELS,
   CONTRACT_TYPE_LABELS,
   ORGANIZATION_LABELS,
+  ORGANIZATION_COLORS,
+  organization,
+  cn,
 } from "@workspace/utils";
+import { Badge } from "@workspace/ui/components/badge";
+import { OrganizationNameType } from "@workspace/utils";
+import {
+  ContractType,
+  DocumentStatus,
+  ProgressStatus,
+} from "@workspace/drizzle/types";
+import ProgressStatusBadge from "../badge/progress-status-badge";
+import {
+  contractType,
+  documentStatus,
+  progressStatus,
+} from "@workspace/drizzle/schemas";
+import OrganizationBadge from "../badge/organization-badge";
+import DocumentStatusBadge from "../badge/document-status-badge";
+import ContractTypeBadge from "../badge/contract-type-badge";
 
 /** カラムIDから日本語表示名へのマッピング */
 const COLUMN_LABELS: Record<string, string> = {
@@ -57,18 +76,30 @@ export function DataTableToolbar<TData>({
   table,
 }: DataTableToolbarProps<TData>) {
   const isFiltered = table.getState().columnFilters.length > 0;
+  const filterOrganizationName = table
+    .getColumn("organization")
+    ?.getFilterValue() as OrganizationNameType | undefined;
+  const filterProgressStatus = table
+    .getColumn("progressStatus")
+    ?.getFilterValue() as ProgressStatus | undefined;
+  const filterDocumentStatus = table
+    .getColumn("documentStatus")
+    ?.getFilterValue() as DocumentStatus | undefined;
+  const filterContractType = table
+    .getColumn("contractType")
+    ?.getFilterValue() as ContractType | undefined;
 
   return (
     <div className="flex flex-col gap-3">
       {/* 検索バー */}
       <div className="flex items-center gap-2">
         <div className="relative flex-1 max-w-sm">
-          <Search className="absolute left-2 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+          <Search className="absolute left-2 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
           <Input
             placeholder="物件名、オーナー名で検索..."
             value={table.getState().globalFilter ?? ""}
             onChange={(event) => table.setGlobalFilter(event.target.value)}
-            className="pl-8 h-8"
+            className="pl-8 h-9 w-[664px]"
           />
         </div>
       </div>
@@ -78,24 +109,30 @@ export function DataTableToolbar<TData>({
         <div className="flex flex-1 items-center gap-2">
           {/* 組織フィルター */}
           <Select
-            value={
-              (table.getColumn("organization")?.getFilterValue() as string) ??
-              "all"
-            }
+            value={filterOrganizationName ?? "all"}
             onValueChange={(value) =>
               table
                 .getColumn("organization")
                 ?.setFilterValue(value === "all" ? undefined : value)
             }
           >
-            <SelectTrigger className="h-8 w-[150px]">
-              <SelectValue placeholder="組織" />
+            <SelectTrigger className="h-8 w-[160px]">
+              <SelectValue placeholder="組織">
+                {filterOrganizationName ? (
+                  <OrganizationBadge
+                    organization={filterOrganizationName}
+                    size="medium"
+                  />
+                ) : (
+                  "管理組織"
+                )}
+              </SelectValue>
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">すべて</SelectItem>
-              {Object.values(ORGANIZATION_LABELS).map((org) => (
+              {organization.map((org) => (
                 <SelectItem key={org} value={org}>
-                  {org}
+                  <OrganizationBadge organization={org} size="medium" />
                 </SelectItem>
               ))}
             </SelectContent>
@@ -103,24 +140,30 @@ export function DataTableToolbar<TData>({
 
           {/* 進捗フィルター */}
           <Select
-            value={
-              (table.getColumn("progressStatus")?.getFilterValue() as string) ??
-              "all"
-            }
+            value={filterProgressStatus ?? "all"}
             onValueChange={(value) =>
               table
                 .getColumn("progressStatus")
                 ?.setFilterValue(value === "all" ? undefined : value)
             }
           >
-            <SelectTrigger className="h-8 w-[150px]">
-              <SelectValue placeholder="進捗" />
+            <SelectTrigger className="h-8 w-[160px]">
+              <SelectValue placeholder="進捗">
+                {filterProgressStatus ? (
+                  <ProgressStatusBadge
+                    progressStatus={filterProgressStatus}
+                    size="medium"
+                  />
+                ) : (
+                  "契約ステータス"
+                )}
+              </SelectValue>
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">すべて</SelectItem>
-              {Object.entries(PROGRESS_STATUS_LABELS).map(([key, label]) => (
-                <SelectItem key={key} value={key}>
-                  {label}
+              {progressStatus.map((status) => (
+                <SelectItem key={status} value={status}>
+                  <ProgressStatusBadge progressStatus={status} size="medium" />
                 </SelectItem>
               ))}
             </SelectContent>
@@ -128,24 +171,30 @@ export function DataTableToolbar<TData>({
 
           {/* 書類フィルター */}
           <Select
-            value={
-              (table.getColumn("documentStatus")?.getFilterValue() as string) ??
-              "all"
-            }
+            value={filterDocumentStatus ?? "all"}
             onValueChange={(value) =>
               table
                 .getColumn("documentStatus")
                 ?.setFilterValue(value === "all" ? undefined : value)
             }
           >
-            <SelectTrigger className="h-8 w-[150px]">
-              <SelectValue placeholder="書類" />
+            <SelectTrigger className="h-8 w-[160px]">
+              <SelectValue placeholder="書類">
+                {filterDocumentStatus ? (
+                  <DocumentStatusBadge
+                    documentStatus={filterDocumentStatus}
+                    size="medium"
+                  />
+                ) : (
+                  "書類ステータス"
+                )}
+              </SelectValue>
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">すべて</SelectItem>
-              {Object.entries(DOCUMENT_STATUS_LABELS).map(([key, label]) => (
-                <SelectItem key={key} value={key}>
-                  {label}
+              {documentStatus.map((status) => (
+                <SelectItem key={status} value={status}>
+                  <DocumentStatusBadge documentStatus={status} size="medium" />
                 </SelectItem>
               ))}
             </SelectContent>
@@ -153,24 +202,30 @@ export function DataTableToolbar<TData>({
 
           {/* 契約形態フィルター */}
           <Select
-            value={
-              (table.getColumn("contractType")?.getFilterValue() as string) ??
-              "all"
-            }
+            value={filterContractType ?? "all"}
             onValueChange={(value) =>
               table
                 .getColumn("contractType")
                 ?.setFilterValue(value === "all" ? undefined : value)
             }
           >
-            <SelectTrigger className="h-8 w-[150px]">
-              <SelectValue placeholder="契約形態" />
+            <SelectTrigger className="h-8 w-[160px]">
+              <SelectValue placeholder="契約形態">
+                {filterContractType ? (
+                  <ContractTypeBadge
+                    contractType={filterContractType}
+                    size="medium"
+                  />
+                ) : (
+                  "契約形態"
+                )}
+              </SelectValue>
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">すべて</SelectItem>
-              {Object.entries(CONTRACT_TYPE_LABELS).map(([key, label]) => (
-                <SelectItem key={key} value={key}>
-                  {label}
+              {contractType.map((type) => (
+                <SelectItem key={type} value={type}>
+                  <ContractTypeBadge contractType={type} size="medium" />
                 </SelectItem>
               ))}
             </SelectContent>
@@ -194,8 +249,8 @@ export function DataTableToolbar<TData>({
           {/* カラム表示制御 */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="outline" size="sm" className="h-8">
-                <SlidersHorizontal className="mr-2 h-4 w-4" />
+              <Button variant="outline">
+                <SlidersHorizontal className="mr-2 size-4" />
                 表示項目
               </Button>
             </DropdownMenuTrigger>
@@ -210,8 +265,7 @@ export function DataTableToolbar<TData>({
                     column.getCanHide()
                 )
                 .map((column) => {
-                  const displayName =
-                    COLUMN_LABELS[column.id] || column.id;
+                  const displayName = COLUMN_LABELS[column.id] || column.id;
                   return (
                     <DropdownMenuCheckboxItem
                       key={column.id}

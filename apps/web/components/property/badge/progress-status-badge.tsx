@@ -12,6 +12,7 @@ interface ProgressStatusBadgeProps {
   onClick?: () => void;
   maxLength?: number;
   className?: string;
+  size?: "small" | "medium";
 }
 
 export default function ProgressStatusBadge({
@@ -19,15 +20,17 @@ export default function ProgressStatusBadge({
   onClick,
   maxLength = 6,
   className,
+  size = "small",
 }: ProgressStatusBadgeProps) {
   return (
     <Badge
       variant="outline"
       className={cn(
-        "text-[9px] px-1 py-0 border",
+        size === "small" && "text-[9px] px-1 py-0 border",
+        size === "medium" && "text-xs",
         onClick && "cursor-pointer",
         PROGRESS_STATUS_COLORS[progressStatus],
-        className,
+        className
       )}
       onClick={onClick}
     >

@@ -73,7 +73,7 @@ export function DataTable<TData, TValue>({
   });
 
   return (
-    <div className="flex h-full flex-col gap-3 overflow-hidden">
+    <div className="flex h-full flex-col gap-3">
       <div className="shrink-0">
         <DataTableToolbar table={table} />
       </div>

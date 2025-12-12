@@ -13,6 +13,7 @@ interface DocumentStatusBadgeProps {
   onClick?: () => void;
   maxLength?: number;
   className?: string;
+  size?: "small" | "medium";
 }
 
 export default function DocumentStatusBadge({
@@ -20,15 +21,17 @@ export default function DocumentStatusBadge({
   onClick,
   maxLength = 8,
   className,
+  size = "small",
 }: DocumentStatusBadgeProps) {
   return (
     <Badge
       variant="outline"
       className={cn(
-        "text-[9px] px-1 py-0 border",
+        size === "small" && "text-[9px] px-1 py-0 border",
+        size === "medium" && "text-xs",
         onClick && "cursor-pointer",
         DOCUMENT_STATUS_COLORS[documentStatus],
-        className,
+        className
       )}
       onClick={onClick}
     >

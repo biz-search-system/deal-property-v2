@@ -5,6 +5,7 @@ import { properties } from "@workspace/drizzle/schemas";
 import { and, eq, gte, lte, not, isNull } from "drizzle-orm";
 import type { DocumentStatus, ProgressStatus } from "@workspace/drizzle/types";
 import { getOrganizations } from "@/lib/data/organization";
+import { cache } from "react";
 
 /**
  * 全案件を取得
@@ -29,7 +30,7 @@ export async function getProperties() {
 /**
  * IDで案件を取得
  */
-export async function getPropertyById(id: string) {
+export const getPropertyById = cache(async (id: string) => {
   return db.query.properties.findFirst({
     where: eq(properties.id, id),
     with: {
@@ -133,7 +134,7 @@ export async function getPropertyById(id: string) {
       },
     },
   });
-}
+});
 
 /**
  * 月次案件一覧用のデータ取得
