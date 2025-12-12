@@ -21,10 +21,28 @@ import {
   Edit,
 } from "lucide-react";
 import { getPropertyById } from "@/lib/data/property";
-import { format } from "date-fns";
-import { ja } from "date-fns/locale";
 import type { Metadata } from "next";
 import { BreadcrumbConfig } from "@/components/breadcrumb-provider";
+import {
+  formatDateWithDay,
+  formatDateTimeShort,
+  PROGRESS_STATUS_LABELS,
+  DOCUMENT_STATUS_LABELS,
+  CONTRACT_TYPE_LABELS,
+  COMPANY_B_LABELS,
+  BROKER_COMPANY_LABELS,
+  ACCOUNT_COMPANY_LABELS,
+  BANK_ACCOUNT_LABELS,
+} from "@workspace/utils";
+import type {
+  ProgressStatus,
+  DocumentStatus,
+  ContractType,
+  CompanyB,
+  BrokerCompany,
+  AccountCompany,
+  BankAccount,
+} from "@workspace/drizzle/types";
 
 export async function generateMetadata({
   params,
@@ -53,118 +71,19 @@ export default async function PropertyDetailPage({
     notFound();
   }
 
-  const formatCurrency = (value: number | null | undefined) => {
+  /** 金額を円単位でフォーマット */
+  const formatCurrency = (value: number | null | undefined): string => {
+    if (value == null) return "-";
+    return `${value.toLocaleString()}円`;
+  };
+
+  /** ラベル取得ヘルパー */
+  const getLabel = <T extends string>(
+    value: T | null | undefined,
+    labels: Record<T, string>
+  ): string => {
     if (!value) return "-";
-    return `${value.toLocaleString()}万円`;
-  };
-
-  const formatDate = (date: Date | string | null | undefined) => {
-    if (!date) return "-";
-    try {
-      const dateObj = typeof date === "string" ? new Date(date) : date;
-      return format(dateObj, "yyyy年M月d日(E)", { locale: ja });
-    } catch {
-      return "-";
-    }
-  };
-
-  const formatDateTime = (date: Date | string | null | undefined) => {
-    if (!date) return "-";
-    try {
-      const dateObj = typeof date === "string" ? new Date(date) : date;
-      return format(dateObj, "yyyy/MM/dd HH:mm", { locale: ja });
-    } catch {
-      return "-";
-    }
-  };
-
-  // 利益計算
-  const profit =
-    (property.amountExit || 0) -
-    (property.amountA || 0) +
-    (property.commission || 0);
-
-  // ステータスのラベル取得
-  const getProgressStatusLabel = (status: string | null) => {
-    const labels: Record<string, string> = {
-      bc_before_confirmed: "BC確定前",
-      contract_cb_waiting: "契約CB待ち",
-      bc_contract_waiting: "BC契約待ち",
-      settlement_date_waiting: "決済日待ち",
-      settlement_cb_waiting: "精算CB待ち",
-      settlement_waiting: "決済待ち",
-      settlement_completed: "決済完了",
-    };
-    return status ? labels[status] || status : "-";
-  };
-
-  const getDocumentStatusLabel = (status: string | null) => {
-    const labels: Record<string, string> = {
-      waiting_request: "営業依頼待ち",
-      in_progress: "書類取得中",
-      all_completed: "全書類取得完了",
-    };
-    return status ? labels[status] || status : "-";
-  };
-
-  const getContractTypeLabel = (type: string | null) => {
-    const labels: Record<string, string> = {
-      ab_bc: "AB・BC",
-      ac: "AC",
-      iyaku: "違約",
-      hakushi: "白紙",
-      mitei: "未定",
-      jisha: "自社仕入れ",
-      bengoshi: "弁護士",
-      kaichu: "買仲",
-      iyaku_yotei: "違約予定",
-    };
-    return type ? labels[type] || type : "-";
-  };
-
-  const getCompanyBLabel = (company: string | null) => {
-    const labels: Record<string, string> = {
-      ms: "エムズ",
-      life: "ライフ",
-      legit: "レイジット",
-      esc: "エスク",
-      trader: "取引業者",
-      second: "セカンド",
-    };
-    return company ? labels[company] || company : "-";
-  };
-
-  const getBrokerCompanyLabel = (company: string | null) => {
-    const labels: Record<string, string> = {
-      legit: "レイジット",
-      tousei: "TOUSEI",
-      esc: "エスク",
-      shine: "シャイン",
-      nbf: "NBF",
-      rd: "RD",
-      ms: "エムズ",
-    };
-    return company ? labels[company] || company : "-";
-  };
-
-  const getAccountCompanyLabel = (company: string | null) => {
-    const labels: Record<string, string> = {
-      legit: "レイジット",
-      life: "ライフ",
-      ms: "エムズ",
-    };
-    return company ? labels[company] || company : "-";
-  };
-
-  const getBankAccountLabel = (account: string | null) => {
-    const labels: Record<string, string> = {
-      gmo_main: "GMOメイン",
-      gmo_sub: "GMOサブ",
-      rakuten: "楽天",
-      gmo: "GMO",
-      mizuho: "みずほ",
-    };
-    return account ? labels[account] || account : "-";
+    return labels[value] ?? value;
   };
 
   return (
@@ -175,7 +94,7 @@ export default async function PropertyDetailPage({
             <Button variant="ghost" size="sm" asChild className="gap-2">
               <Link href="/properties/unconfirmed">
                 <ArrowLeft className="h-4 w-4" />
-                一覧に戻る
+                業者確定前一覧に戻る
               </Link>
             </Button>
             <div className="flex gap-2">
@@ -214,10 +133,16 @@ export default async function PropertyDetailPage({
               </div>
             </div>
             <Badge variant="outline">
-              {getProgressStatusLabel(property.progressStatus)}
+              {getLabel(
+                property.progressStatus as ProgressStatus,
+                PROGRESS_STATUS_LABELS
+              )}
             </Badge>
             <Badge variant="outline">
-              {getDocumentStatusLabel(property.documentStatus)}
+              {getLabel(
+                property.documentStatus as DocumentStatus,
+                DOCUMENT_STATUS_LABELS
+              )}
             </Badge>
           </div>
         </div>
@@ -235,7 +160,7 @@ export default async function PropertyDetailPage({
               </CardHeader>
               <CardContent>
                 <div className="text-4xl font-bold text-green-600">
-                  {formatCurrency(profit)}
+                  {formatCurrency(property.profit)}
                 </div>
                 <p className="text-sm text-muted-foreground mt-2">
                   出口金額 - A金額 + 仲介手数料
@@ -306,7 +231,7 @@ export default async function PropertyDetailPage({
                     A契約日（AB契約日）
                   </div>
                   <div className="text-lg font-medium">
-                    {formatDate(property.contractDateA)}
+                    {formatDateWithDay(property.contractDateA)}
                   </div>
                 </div>
                 <Separator />
@@ -315,7 +240,7 @@ export default async function PropertyDetailPage({
                     BC契約日
                   </div>
                   <div className="text-lg font-medium">
-                    {formatDate(property.contractDateBc)}
+                    {formatDateWithDay(property.contractDateBc)}
                   </div>
                 </div>
                 <Separator />
@@ -324,7 +249,7 @@ export default async function PropertyDetailPage({
                     決済予定日
                   </div>
                   <div className="text-lg font-medium">
-                    {formatDate(property.settlementDate)}
+                    {formatDateWithDay(property.settlementDate)}
                   </div>
                 </div>
               </CardContent>
@@ -419,7 +344,10 @@ export default async function PropertyDetailPage({
                       書類ステータス
                     </div>
                     <Badge variant="outline">
-                      {getDocumentStatusLabel(property.documentProgress.status)}
+                      {getLabel(
+                        property.documentProgress.status as DocumentStatus,
+                        DOCUMENT_STATUS_LABELS
+                      )}
                     </Badge>
                   </div>
                 </CardContent>
@@ -458,7 +386,10 @@ export default async function PropertyDetailPage({
                     契約形態
                   </div>
                   <div className="font-medium">
-                    {getContractTypeLabel(property.contractType)}
+                    {getLabel(
+                      property.contractType as ContractType,
+                      CONTRACT_TYPE_LABELS
+                    )}
                   </div>
                 </div>
                 <Separator />
@@ -476,7 +407,7 @@ export default async function PropertyDetailPage({
                     B会社
                   </div>
                   <div className="font-medium">
-                    {getCompanyBLabel(property.companyB)}
+                    {getLabel(property.companyB as CompanyB, COMPANY_B_LABELS)}
                   </div>
                 </div>
                 <Separator />
@@ -485,7 +416,10 @@ export default async function PropertyDetailPage({
                     仲介会社
                   </div>
                   <div className="font-medium">
-                    {getBrokerCompanyLabel(property.brokerCompany)}
+                    {getLabel(
+                      property.brokerCompany as BrokerCompany,
+                      BROKER_COMPANY_LABELS
+                    )}
                   </div>
                 </div>
                 <Separator />
@@ -511,7 +445,10 @@ export default async function PropertyDetailPage({
                     使用口座会社
                   </div>
                   <div className="font-medium">
-                    {getAccountCompanyLabel(property.accountCompany)}
+                    {getLabel(
+                      property.accountCompany as AccountCompany,
+                      ACCOUNT_COMPANY_LABELS
+                    )}
                   </div>
                 </div>
                 <Separator />
@@ -520,7 +457,10 @@ export default async function PropertyDetailPage({
                     使用銀行口座
                   </div>
                   <div className="font-medium">
-                    {getBankAccountLabel(property.bankAccount)}
+                    {getLabel(
+                      property.bankAccount as BankAccount,
+                      BANK_ACCOUNT_LABELS
+                    )}
                   </div>
                 </div>
               </CardContent>
@@ -557,7 +497,7 @@ export default async function PropertyDetailPage({
                     作成日時
                   </div>
                   <div className="text-sm">
-                    {formatDateTime(property.createdAt)}
+                    {formatDateTimeShort(property.createdAt)}
                   </div>
                 </div>
                 <Separator />
@@ -566,7 +506,7 @@ export default async function PropertyDetailPage({
                     更新日時
                   </div>
                   <div className="text-sm">
-                    {formatDateTime(property.updatedAt)}
+                    {formatDateTimeShort(property.updatedAt)}
                   </div>
                 </div>
               </CardContent>
@@ -587,16 +527,6 @@ function ProgressItem({
   checked: boolean;
   date: Date | string | null | undefined;
 }) {
-  const formatDate = (d: Date | string | null | undefined) => {
-    if (!d) return "";
-    try {
-      const dateObj = typeof d === "string" ? new Date(d) : d;
-      return format(dateObj, "yyyy/MM/dd HH:mm", { locale: ja });
-    } catch {
-      return "";
-    }
-  };
-
   return (
     <div className="flex items-start justify-between gap-4">
       <div className="flex items-center gap-2">
@@ -611,7 +541,7 @@ function ProgressItem({
       </div>
       {checked && date && (
         <div className="text-xs text-muted-foreground text-right">
-          {formatDate(date)}
+          {formatDateTimeShort(date)}
         </div>
       )}
     </div>

@@ -227,7 +227,9 @@ export function UnconfirmedPropertiesTable({
                       </DropdownMenuItem>
                       <DropdownMenuItem
                         onClick={() => {
-                          router.push(`/properties/${property.id}/edit`);
+                          router.push(
+                            `/properties/unconfirmed/${property.id}/edit`
+                          );
                         }}
                       >
                         <Edit className="h-3 w-3" />

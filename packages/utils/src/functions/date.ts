@@ -1,28 +1,70 @@
 import {
   format,
-  formatDistanceToNow,
   differenceInDays,
   differenceInHours,
   differenceInMinutes,
 } from "date-fns";
 import { ja } from "date-fns/locale/ja";
 
+type DateInput = Date | string | number | null | undefined;
+
+/**
+ * 日付を「yyyy年M月d日(E)」形式でフォーマット
+ * @example formatToJapaneseDate(new Date()) // "2024年1月15日(月)"
+ */
 export const formatToJapaneseDate = (
   timestamp: number | string | Date = Date.now()
-) => {
-  const formattedDate = format(timestamp, "yyyy年MM月dd日(E)", {
+): string => {
+  const formattedDate = format(timestamp, "yyyy年M月d日(E)", {
     locale: ja,
   });
   return formattedDate;
 };
 
+/**
+ * 日時を日本語フォーマットで返す
+ * @param timestamp 日付を表す値
+ * @param formatString フォーマット文字列（デフォルト: "yyyy年MM月dd日 HH時mm分ss秒（E）"）
+ */
 export const formatToJapaneseDateTime = (
   timestamp: Date | number | string = Date.now(),
-  formatString = "yyyy年MM月dd日  HH時mm分ss秒（E）"
-) => {
+  formatString = "yyyy年MM月dd日 HH時mm分ss秒（E）"
+): string => {
   return format(new Date(timestamp), formatString, {
     locale: ja,
   });
+};
+
+/**
+ * 日付を曜日付きでフォーマット（nullの場合は"-"を返す）
+ * @param date 日付
+ * @returns フォーマットされた日付文字列（例: "2024年1月15日(月)"）
+ */
+export const formatDateWithDay = (date: DateInput): string => {
+  if (!date) return "-";
+  try {
+    const dateObj = typeof date === "string" || typeof date === "number" ? new Date(date) : date;
+    if (isNaN(dateObj.getTime())) return "-";
+    return format(dateObj, "yyyy年M月d日(E)", { locale: ja });
+  } catch {
+    return "-";
+  }
+};
+
+/**
+ * 日時を「yyyy/MM/dd HH:mm」形式でフォーマット（nullの場合は"-"を返す）
+ * @param date 日付
+ * @returns フォーマットされた日時文字列（例: "2024/01/15 14:30"）
+ */
+export const formatDateTimeShort = (date: DateInput): string => {
+  if (!date) return "-";
+  try {
+    const dateObj = typeof date === "string" || typeof date === "number" ? new Date(date) : date;
+    if (isNaN(dateObj.getTime())) return "-";
+    return format(dateObj, "yyyy/MM/dd HH:mm", { locale: ja });
+  } catch {
+    return "-";
+  }
 };
 
 /**

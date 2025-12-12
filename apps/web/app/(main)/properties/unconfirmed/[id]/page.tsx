@@ -2,8 +2,6 @@ import { BreadcrumbConfig } from "@/components/breadcrumb-provider";
 import { getPropertyById } from "@/lib/data/property";
 import { Badge } from "@workspace/ui/components/badge";
 import { Separator } from "@workspace/ui/components/separator";
-import { format } from "date-fns";
-import { ja } from "date-fns/locale";
 import {
   Building2,
   Calendar,
@@ -15,6 +13,26 @@ import {
 } from "lucide-react";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import {
+  formatDateWithDay,
+  formatDateTimeShort,
+  PROGRESS_STATUS_LABELS,
+  DOCUMENT_STATUS_LABELS,
+  CONTRACT_TYPE_LABELS,
+  COMPANY_B_LABELS,
+  BROKER_COMPANY_LABELS,
+  ACCOUNT_COMPANY_LABELS,
+  BANK_ACCOUNT_LABELS,
+} from "@workspace/utils";
+import type {
+  ProgressStatus,
+  DocumentStatus,
+  ContractType,
+  CompanyB,
+  BrokerCompany,
+  AccountCompany,
+  BankAccount,
+} from "@workspace/drizzle/types";
 
 export async function generateMetadata({
   params,
@@ -43,119 +61,19 @@ export default async function PropertyDetailPage({
     notFound();
   }
 
-  const formatCurrency = (value: number | null | undefined) => {
+  /** 金額を円単位でフォーマット */
+  const formatCurrency = (value: number | null | undefined): string => {
+    if (value == null) return "-";
+    return `${value.toLocaleString()}円`;
+  };
+
+  /** ラベル取得ヘルパー */
+  const getLabel = <T extends string>(
+    value: T | null | undefined,
+    labels: Record<T, string>
+  ): string => {
     if (!value) return "-";
-    return `${value.toLocaleString()}万円`;
-  };
-
-  const formatDate = (date: Date | string | null | undefined) => {
-    if (!date) return "-";
-    try {
-      const dateObj = typeof date === "string" ? new Date(date) : date;
-      return format(dateObj, "yyyy年M月d日(E)", { locale: ja });
-    } catch {
-      return "-";
-    }
-  };
-
-  const formatDateTime = (date: Date | string | null | undefined) => {
-    if (!date) return "-";
-    try {
-      const dateObj = typeof date === "string" ? new Date(date) : date;
-      return format(dateObj, "yyyy/MM/dd HH:mm", { locale: ja });
-    } catch {
-      return "-";
-    }
-  };
-
-  // 利益計算（出口 - A金額 - 仲手等）
-  const profit =
-    (property.amountExit || 0) -
-    (property.amountA || 0) -
-    (property.commission || 0);
-
-  // ステータスのラベル取得
-  const getProgressStatusLabel = (status: string | null) => {
-    const labels: Record<string, string> = {
-      bc_before_confirmed: "BC確定前",
-      contract_cb_waiting: "契約CB待ち",
-      bc_contract_waiting: "BC契約待ち",
-      settlement_date_waiting: "決済日待ち",
-      settlement_cb_waiting: "精算CB待ち",
-      settlement_waiting: "決済待ち",
-      settlement_completed: "決済完了",
-    };
-    return status ? labels[status] || status : "-";
-  };
-
-  const getDocumentStatusLabel = (status: string | null) => {
-    const labels: Record<string, string> = {
-      waiting_request: "営業依頼待ち",
-      in_progress: "書類取得中",
-      all_completed: "全書類取得完了",
-    };
-    return status ? labels[status] || status : "-";
-  };
-
-  const getContractTypeLabel = (type: string | null) => {
-    const labels: Record<string, string> = {
-      ab_bc: "AB・BC",
-      ac: "AC",
-      iyaku: "違約",
-      hakushi: "白紙",
-      mitei: "未定",
-      jisha: "自社仕入れ",
-      bengoshi: "弁護士",
-      kaichu: "買仲",
-      iyaku_yotei: "違約予定",
-    };
-    return type ? labels[type] || type : "-";
-  };
-
-  const getCompanyBLabel = (company: string | null) => {
-    const labels: Record<string, string> = {
-      ms: "エムズ",
-      life: "ライフ",
-      legit: "レイジット",
-      esc: "エスク",
-      trader: "取引業者",
-      shine: "シャイン",
-      second: "セカンド",
-    };
-    return company ? labels[company] || company : "-";
-  };
-
-  const getBrokerCompanyLabel = (company: string | null) => {
-    const labels: Record<string, string> = {
-      legit: "レイジット",
-      tousei: "TOUSEI",
-      esc: "エスク",
-      shine: "シャイン",
-      nbf: "NBF",
-      rd: "RD",
-      ms: "エムズ",
-    };
-    return company ? labels[company] || company : "-";
-  };
-
-  const getAccountCompanyLabel = (company: string | null) => {
-    const labels: Record<string, string> = {
-      legit: "レイジット",
-      life: "ライフ",
-      ms: "エムズ",
-    };
-    return company ? labels[company] || company : "-";
-  };
-
-  const getBankAccountLabel = (account: string | null) => {
-    const labels: Record<string, string> = {
-      gmo_main: "GMOメイン",
-      gmo_sub: "GMOサブ",
-      rakuten: "楽天",
-      gmo: "GMO",
-      mizuho: "みずほ",
-    };
-    return account ? labels[account] || account : "-";
+    return labels[value] ?? value;
   };
 
   return (
@@ -176,9 +94,11 @@ export default async function PropertyDetailPage({
                 {property.propertyName}
               </h1>
               <div className="flex gap-2">
-                <Badge>{getProgressStatusLabel(property.progressStatus)}</Badge>
+                <Badge>
+                  {getLabel(property.progressStatus as ProgressStatus, PROGRESS_STATUS_LABELS)}
+                </Badge>
                 <Badge variant="secondary">
-                  {getDocumentStatusLabel(property.documentStatus)}
+                  {getLabel(property.documentStatus as DocumentStatus, DOCUMENT_STATUS_LABELS)}
                 </Badge>
               </div>
             </div>
@@ -200,15 +120,6 @@ export default async function PropertyDetailPage({
               ))}
             </div>
           </div>
-
-          {/* 管理組織タイプは現在のスキーマに存在しないためコメントアウト */}
-          {/* <div className="mb-8 flex items-center gap-2">
-          <Building2 className="h-4 w-4 text-muted-foreground" />
-          <span className="text-sm text-muted-foreground">管理組織:</span>
-          <Badge variant="outline">
-            {getManagementOrgTypeLabel(property.managementOrgType)}
-          </Badge>
-        </div> */}
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             <div className="lg:col-span-2 space-y-8">
@@ -261,11 +172,11 @@ export default async function PropertyDetailPage({
                       <div className="flex items-center justify-between">
                         <div className="text-sm font-medium">利益見込み</div>
                         <div className="text-3xl font-bold text-green-600">
-                          {formatCurrency(profit)}
+                          {formatCurrency(property.profit)}
                         </div>
                       </div>
                       <div className="text-xs text-muted-foreground mt-2">
-                        出口金額 - 入口金額 - 仲介手数料
+                        出口金額 - 入口金額 + 仲介手数料
                       </div>
                     </div>
                   </div>
@@ -284,7 +195,7 @@ export default async function PropertyDetailPage({
                         A契約日（AB契約日）
                       </div>
                       <div className="text-lg font-medium">
-                        {formatDate(property.contractDateA)}
+                        {formatDateWithDay(property.contractDateA)}
                       </div>
                     </div>
                     <Separator />
@@ -293,7 +204,7 @@ export default async function PropertyDetailPage({
                         BC契約日
                       </div>
                       <div className="text-lg font-medium">
-                        {formatDate(property.contractDateBc)}
+                        {formatDateWithDay(property.contractDateBc)}
                       </div>
                     </div>
                     <Separator />
@@ -302,7 +213,7 @@ export default async function PropertyDetailPage({
                         決済予定日
                       </div>
                       <div className="text-lg font-medium">
-                        {formatDate(property.settlementDate)}
+                        {formatDateWithDay(property.settlementDate)}
                       </div>
                     </div>
                   </div>
@@ -325,13 +236,7 @@ export default async function PropertyDetailPage({
                         checked={
                           property.contractProgress?.abContractSaved || false
                         }
-                        date={
-                          property.contractProgress?.abContractSavedAt
-                            ? formatDateTime(
-                                property.contractProgress.abContractSavedAt
-                              )
-                            : null
-                        }
+                        date={property.contractProgress?.abContractSavedAt}
                       />
                       <ProgressItem
                         label="委任状関係 保存完了"
@@ -339,26 +244,14 @@ export default async function PropertyDetailPage({
                           property.contractProgress?.abAuthorizationSaved ||
                           false
                         }
-                        date={
-                          property.contractProgress?.abAuthorizationSavedAt
-                            ? formatDateTime(
-                                property.contractProgress.abAuthorizationSavedAt
-                              )
-                            : null
-                        }
+                        date={property.contractProgress?.abAuthorizationSavedAt}
                       />
                       <ProgressItem
                         label="売主身分証 保存完了"
                         checked={
                           property.contractProgress?.abSellerIdSaved || false
                         }
-                        date={
-                          property.contractProgress?.abSellerIdSavedAt
-                            ? formatDateTime(
-                                property.contractProgress.abSellerIdSavedAt
-                              )
-                            : null
-                        }
+                        date={property.contractProgress?.abSellerIdSavedAt}
                       />
                     </div>
                   </div>
@@ -373,13 +266,7 @@ export default async function PropertyDetailPage({
                         checked={
                           property.contractProgress?.bcContractCreated || false
                         }
-                        date={
-                          property.contractProgress?.bcContractCreatedAt
-                            ? formatDateTime(
-                                property.contractProgress.bcContractCreatedAt
-                              )
-                            : null
-                        }
+                        date={property.contractProgress?.bcContractCreatedAt}
                       />
                       <ProgressItem
                         label="重説作成"
@@ -387,52 +274,28 @@ export default async function PropertyDetailPage({
                           property.contractProgress?.bcDescriptionCreated ||
                           false
                         }
-                        date={
-                          property.contractProgress?.bcDescriptionCreatedAt
-                            ? formatDateTime(
-                                property.contractProgress.bcDescriptionCreatedAt
-                              )
-                            : null
-                        }
+                        date={property.contractProgress?.bcDescriptionCreatedAt}
                       />
                       <ProgressItem
                         label="BC売契送付"
                         checked={
                           property.contractProgress?.bcContractSent || false
                         }
-                        date={
-                          property.contractProgress?.bcContractSentAt
-                            ? formatDateTime(
-                                property.contractProgress.bcContractSentAt
-                              )
-                            : null
-                        }
+                        date={property.contractProgress?.bcContractSentAt}
                       />
                       <ProgressItem
                         label="重説送付"
                         checked={
                           property.contractProgress?.bcDescriptionSent || false
                         }
-                        date={
-                          property.contractProgress?.bcDescriptionSentAt
-                            ? formatDateTime(
-                                property.contractProgress.bcDescriptionSentAt
-                              )
-                            : null
-                        }
+                        date={property.contractProgress?.bcDescriptionSentAt}
                       />
                       <ProgressItem
                         label="BC売契CB完了"
                         checked={
                           property.contractProgress?.bcContractCbDone || false
                         }
-                        date={
-                          property.contractProgress?.bcContractCbDoneAt
-                            ? formatDateTime(
-                                property.contractProgress.bcContractCbDoneAt
-                              )
-                            : null
-                        }
+                        date={property.contractProgress?.bcContractCbDoneAt}
                       />
                       <ProgressItem
                         label="重説CB完了"
@@ -440,13 +303,7 @@ export default async function PropertyDetailPage({
                           property.contractProgress?.bcDescriptionCbDone ||
                           false
                         }
-                        date={
-                          property.contractProgress?.bcDescriptionCbDoneAt
-                            ? formatDateTime(
-                                property.contractProgress.bcDescriptionCbDoneAt
-                              )
-                            : null
-                        }
+                        date={property.contractProgress?.bcDescriptionCbDoneAt}
                       />
                     </div>
                   </div>
@@ -467,7 +324,7 @@ export default async function PropertyDetailPage({
                         契約形態
                       </div>
                       <div className="font-medium">
-                        {getContractTypeLabel(property.contractType)}
+                        {getLabel(property.contractType as ContractType, CONTRACT_TYPE_LABELS)}
                       </div>
                     </div>
                     <Separator />
@@ -485,7 +342,7 @@ export default async function PropertyDetailPage({
                         B会社
                       </div>
                       <div className="font-medium">
-                        {getCompanyBLabel(property.companyB)}
+                        {getLabel(property.companyB as CompanyB, COMPANY_B_LABELS)}
                       </div>
                     </div>
                     <Separator />
@@ -494,7 +351,7 @@ export default async function PropertyDetailPage({
                         仲介会社
                       </div>
                       <div className="font-medium">
-                        {getBrokerCompanyLabel(property.brokerCompany)}
+                        {getLabel(property.brokerCompany as BrokerCompany, BROKER_COMPANY_LABELS)}
                       </div>
                     </div>
                     <Separator />
@@ -519,7 +376,7 @@ export default async function PropertyDetailPage({
                         使用口座会社
                       </div>
                       <div className="font-medium">
-                        {getAccountCompanyLabel(property.accountCompany)}
+                        {getLabel(property.accountCompany as AccountCompany, ACCOUNT_COMPANY_LABELS)}
                       </div>
                     </div>
                     <Separator />
@@ -528,7 +385,7 @@ export default async function PropertyDetailPage({
                         使用銀行口座
                       </div>
                       <div className="font-medium">
-                        {getBankAccountLabel(property.bankAccount)}
+                        {getLabel(property.bankAccount as BankAccount, BANK_ACCOUNT_LABELS)}
                       </div>
                     </div>
                   </div>
@@ -578,22 +435,24 @@ function ProgressItem({
 }: {
   label: string;
   checked: boolean;
-  date: string | null;
+  date: Date | string | null | undefined;
 }) {
   return (
     <div className="flex items-start justify-between gap-4">
       <div className="flex items-center gap-2">
         {checked ? (
-          <Check className="h-4 w-4 text-green-600 flex-shrink-0" />
+          <Check className="h-4 w-4 text-green-600 shrink-0" />
         ) : (
-          <X className="h-4 w-4 text-muted-foreground flex-shrink-0" />
+          <X className="h-4 w-4 text-muted-foreground shrink-0" />
         )}
         <span className={checked ? "text-foreground" : "text-muted-foreground"}>
           {label}
         </span>
       </div>
       {checked && date && (
-        <div className="text-xs text-muted-foreground text-right">{date}</div>
+        <div className="text-xs text-muted-foreground text-right">
+          {formatDateTimeShort(date)}
+        </div>
       )}
     </div>
   );
