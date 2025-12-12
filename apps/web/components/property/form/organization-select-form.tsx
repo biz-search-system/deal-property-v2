@@ -86,6 +86,7 @@ export default function OrganizationSelectForm<
                       organization={
                         selectedOrganization.name as OrganizationNameType
                       }
+                      size="medium"
                     />
                   )}
                 </SelectValue>
@@ -96,7 +97,10 @@ export default function OrganizationSelectForm<
                 const organizationName = org.name as OrganizationNameType;
                 return (
                   <SelectItem key={org.id} value={org.id}>
-                    <OrganizationBadge organization={organizationName} />
+                    <OrganizationBadge
+                      organization={organizationName}
+                      size="medium"
+                    />
                   </SelectItem>
                 );
               })}
@@ -109,19 +113,3 @@ export default function OrganizationSelectForm<
     />
   );
 }
-
-// // バッジコンポーネントを分離して再利用可能にする
-// export function OrganizationBadge({
-//   organizationName,
-// }: {
-//   organizationName: OrganizationNameType;
-// }) {
-//   return (
-//     <Badge
-//       variant="outline"
-//       className={cn("text-xs", ORGANIZATION_COLORS[organizationName])}
-//     >
-//       {ORGANIZATION_LABELS[organizationName]}
-//     </Badge>
-//   );
-// }

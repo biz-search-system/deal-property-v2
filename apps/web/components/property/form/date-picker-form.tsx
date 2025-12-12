@@ -68,7 +68,7 @@ export default function DatePickerForm<T extends FieldValues>({
     if (isNaN(date.getTime())) return "日付を選択";
 
     if (isMonthEndDate(dateValue)) {
-      return `${date.getMonth() + 1}月末`;
+      return `${date.getMonth() + 1}月末予定`;
     }
 
     return format(date, "yyyy/MM/dd(E)", { locale: ja });
