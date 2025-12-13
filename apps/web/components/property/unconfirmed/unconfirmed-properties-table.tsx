@@ -61,7 +61,7 @@ export function UnconfirmedPropertiesTable({
       case "staff":
         return "w-[50px]";
       case "propertyName":
-        return "";
+        return "max-w-[120px]";
       case "roomNumber":
         return "w-[40px]";
       case "ownerName":
@@ -100,11 +100,11 @@ export function UnconfirmedPropertiesTable({
       case "staff":
         return `${base} w-[50px]`;
       case "propertyName":
-        return `${base} max-w-[120px]`;
+        return `${base} max-w-[140px]`;
       case "roomNumber":
         return base;
       case "ownerName":
-        return `${base} max-w-[120px]`;
+        return `${base} max-w-[60px]`;
       case "notes":
         return `${base} max-w-[80px]`;
       case "actions":

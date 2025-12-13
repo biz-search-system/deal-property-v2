@@ -131,7 +131,7 @@ export const monthlyColumns: ColumnDef<PropertyWithRelations>[] = [
             await updatePropertyName({ id, propertyName: value });
           }}
           required
-          maxLength={200}
+          maxLength={400}
           title="物件名編集"
           description="物件名を編集できます"
           placeholder="物件名を入力してください"

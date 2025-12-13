@@ -209,11 +209,11 @@ export function DataTable<TData, TValue>({
                           case "staff":
                             return `${base} w-[50px]`;
                           case "propertyName":
-                            return `${base} max-w-[120px]`;
+                            return `${base} max-w-[140px]`;
                           case "roomNumber":
                             return `${base}`;
                           case "ownerName":
-                            return `${base} max-w-[120px] `;
+                            return `${base} max-w-[60px] `;
                           case "notes":
                             return `${base} max-w-[80px]`;
                           case "actions":
