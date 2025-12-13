@@ -27,7 +27,9 @@ import {
   BANK_ACCOUNT_BY_COMPANY,
   BANK_ACCOUNT_LABELS,
   formatAmountInYen,
+  formatShortDate,
   getBankAccountLimit,
+  toJstDateKey,
 } from "@workspace/utils";
 import type { AccountCompany } from "@workspace/drizzle/types";
 import type { PropertyWithRelations } from "@/lib/types/property";
@@ -40,17 +42,6 @@ const accountCompanies: AccountCompany[] = ["legit", "life", "ms"];
 
 /** 最初に表示する行数 */
 const INITIAL_VISIBLE_ROWS = 3;
-
-/** 日付をYYYY-MM-DD形式の文字列に変換 */
-function formatDateKey(date: Date): string {
-  return date.toISOString().split("T")[0] ?? "";
-}
-
-/** 日付文字列をM/D形式に変換 */
-function formatShortDate(dateKey: string): string {
-  const [, month, day] = dateKey.split("-");
-  return `${Number(month)}/${Number(day)}`;
-}
 
 export function AccountSettlementSummary({
   properties,
@@ -71,7 +62,7 @@ export function AccountSettlementSummary({
     ...new Set(
       filteredProperties
         .filter((p) => p.settlementDate)
-        .map((p) => formatDateKey(new Date(p.settlementDate!)))
+        .map((p) => toJstDateKey(p.settlementDate))
     ),
   ].sort();
 
@@ -85,7 +76,7 @@ export function AccountSettlementSummary({
     const dailyTotals = new Map<string, number>();
     for (const p of accountProperties) {
       if (p.settlementDate) {
-        const dateKey = formatDateKey(new Date(p.settlementDate));
+        const dateKey = toJstDateKey(p.settlementDate);
         const current = dailyTotals.get(dateKey) || 0;
         dailyTotals.set(dateKey, current + (p.amountExit || 0));
       }

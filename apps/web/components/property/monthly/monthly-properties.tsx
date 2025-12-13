@@ -1,6 +1,6 @@
 "use client";
 
-import { AccountSettlementSummary } from "@/components/property/account-settlement-summary";
+import { AccountSettlementSummary } from "@/components/property/monthly/account-settlement-summary";
 import type { PropertyWithRelations } from "@/lib/types/property";
 import { Card } from "@workspace/ui/components/card";
 import {
