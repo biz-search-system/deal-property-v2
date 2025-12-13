@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   FormField,
   FormItem,
@@ -51,6 +51,20 @@ export default function BasicInfoTab({
   const selectedStaffIds = watch("staffIds") || [];
   const [availableStaff, setAvailableStaff] = useState(initialStaff);
   const organizationId = watch("organizationId");
+  const contractTypeValue = watch("contractType");
+
+  // 違約の場合は金額フィールドを0にして非活性にする
+  const isIyaku = contractTypeValue === "iyaku";
+
+  // 違約に変更されたときに金額を0にリセット
+  useEffect(() => {
+    if (isIyaku) {
+      setValue("amountA", 0);
+      setValue("amountExit", 0);
+      setValue("commission", 0);
+      setValue("bcDeposit", 0);
+    }
+  }, [isIyaku, setValue]);
 
   // マスタオプションの取得
   const {
@@ -281,6 +295,11 @@ export default function BasicInfoTab({
       <SectionCard title="金額情報">
         <p className="text-xs text-muted-foreground mb-4">
           ※ 入力は万円単位です。DBには円単位で保存されます。
+          {isIyaku && (
+            <span className="text-destructive ml-2">
+              （違約のため金額フィールドは0固定です）
+            </span>
+          )}
         </p>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4 w-full">
           <FormField
@@ -293,16 +312,24 @@ export default function BasicInfoTab({
                   <Input
                     id="amountA"
                     type="number"
+                    min="0"
                     step="0.01"
                     placeholder="金額を入力"
                     autoComplete="off"
+                    disabled={isIyaku}
                     {...field}
                     value={value ?? ""}
-                    onChange={(e) =>
+                    onChange={(e) => {
+                      const num = Number(e.target.value);
                       onChange(
-                        e.target.value === "" ? null : Number(e.target.value)
-                      )
-                    }
+                        e.target.value === ""
+                          ? null
+                          : num < 0
+                            ? 0
+                            : num
+                      );
+                    }}
+                    onWheel={(e) => e.currentTarget.blur()}
                   />
                 </FormControl>
                 <FormMessage />
@@ -320,16 +347,24 @@ export default function BasicInfoTab({
                   <Input
                     id="amountExit"
                     type="number"
+                    min="0"
                     step="0.01"
                     placeholder="金額を入力"
                     autoComplete="off"
+                    disabled={isIyaku}
                     {...field}
                     value={value ?? ""}
-                    onChange={(e) =>
+                    onChange={(e) => {
+                      const num = Number(e.target.value);
                       onChange(
-                        e.target.value === "" ? null : Number(e.target.value)
-                      )
-                    }
+                        e.target.value === ""
+                          ? null
+                          : num < 0
+                            ? 0
+                            : num
+                      );
+                    }}
+                    onWheel={(e) => e.currentTarget.blur()}
                   />
                 </FormControl>
                 <FormMessage />
@@ -347,16 +382,24 @@ export default function BasicInfoTab({
                   <Input
                     id="commission"
                     type="number"
+                    min="0"
                     step="0.01"
                     placeholder="金額を入力"
                     autoComplete="off"
+                    disabled={isIyaku}
                     {...field}
                     value={value ?? ""}
-                    onChange={(e) =>
+                    onChange={(e) => {
+                      const num = Number(e.target.value);
                       onChange(
-                        e.target.value === "" ? null : Number(e.target.value)
-                      )
-                    }
+                        e.target.value === ""
+                          ? null
+                          : num < 0
+                            ? 0
+                            : num
+                      );
+                    }}
+                    onWheel={(e) => e.currentTarget.blur()}
                   />
                 </FormControl>
                 <FormMessage />
@@ -364,28 +407,66 @@ export default function BasicInfoTab({
             )}
           />
 
-          {/* 利益（自動計算） */}
-          <FormItem>
-            <div className="flex flex-row justify-between gap-2">
-              <FormLabel>利益（自動計算）</FormLabel>
-              <p className="text-xs text-muted-foreground">
-                出口金額 - A金額 + 仲手等
-              </p>
-            </div>
-            <FormControl>
-              <Input
-                readOnly
-                className="bg-muted font-semibold text-green-600"
-                value={(() => {
-                  const amountA = watch("amountA") || 0;
-                  const amountExit = watch("amountExit") || 0;
-                  const commission = watch("commission") || 0;
-                  const profit = amountExit - amountA + commission;
-                  return profit !== 0 ? `${profit.toLocaleString()}万円` : "-";
-                })()}
-              />
-            </FormControl>
-          </FormItem>
+          {/* 利益 - 違約の場合は手動入力、それ以外は自動計算 */}
+          {isIyaku ? (
+            <FormField
+              control={control}
+              name="profit"
+              render={({ field: { value, onChange, ...field } }) => (
+                <FormItem>
+                  <FormLabel>利益（万円）</FormLabel>
+                  <FormControl>
+                    <Input
+                      id="profit"
+                      type="number"
+                      min="0"
+                      step="0.01"
+                      placeholder="利益を入力"
+                      autoComplete="off"
+                      {...field}
+                      value={value ?? ""}
+                      onChange={(e) => {
+                        const num = Number(e.target.value);
+                        onChange(
+                          e.target.value === ""
+                            ? null
+                            : num < 0
+                              ? 0
+                              : num
+                        );
+                      }}
+                      onWheel={(e) => e.currentTarget.blur()}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          ) : (
+            <FormItem>
+              <div className="flex flex-row justify-between gap-2">
+                <FormLabel>利益（自動計算）</FormLabel>
+                <p className="text-xs text-muted-foreground">
+                  出口金額 - A金額 + 仲手等
+                </p>
+              </div>
+              <FormControl>
+                <Input
+                  readOnly
+                  className="bg-muted font-semibold text-green-600"
+                  value={(() => {
+                    const amountA = watch("amountA") || 0;
+                    const amountExit = watch("amountExit") || 0;
+                    const commission = watch("commission") || 0;
+                    const profit = amountExit - amountA + commission;
+                    return profit !== 0
+                      ? `${profit.toLocaleString()}万円`
+                      : "-";
+                  })()}
+                />
+              </FormControl>
+            </FormItem>
+          )}
 
           <FormField
             control={control}
@@ -397,16 +478,24 @@ export default function BasicInfoTab({
                   <Input
                     id="bcDeposit"
                     type="number"
+                    min="0"
                     step="0.01"
                     placeholder="金額を入力"
                     autoComplete="off"
+                    disabled={isIyaku}
                     {...field}
                     value={value ?? ""}
-                    onChange={(e) =>
+                    onChange={(e) => {
+                      const num = Number(e.target.value);
                       onChange(
-                        e.target.value === "" ? null : Number(e.target.value)
-                      )
-                    }
+                        e.target.value === ""
+                          ? null
+                          : num < 0
+                            ? 0
+                            : num
+                      );
+                    }}
+                    onWheel={(e) => e.currentTarget.blur()}
                   />
                 </FormControl>
                 <FormMessage />

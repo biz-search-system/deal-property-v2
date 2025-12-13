@@ -48,12 +48,19 @@ export async function createProperty(data: PropertyCreate) {
     const commissionYen = manyenToYen(validatedData.commission);
     const bcDepositYen = manyenToYen(validatedData.bcDeposit);
 
-    // 利益を自動計算（出口金額 - A金額 + 仲手等）※円単位
+    // 利益を計算
+    // 違約の場合は手動入力値を使用、それ以外は自動計算
     let profit: number | undefined = undefined;
-    if (amountExitYen != null && amountAYen != null) {
-      profit = amountExitYen - amountAYen;
-      if (commissionYen != null) {
-        profit += commissionYen;
+    if (validatedData.contractType === "iyaku") {
+      // 違約の場合は手動入力値（万円→円）
+      profit = manyenToYen(validatedData.profit);
+    } else {
+      // 通常の場合は自動計算（出口金額 - A金額 + 仲手等）※円単位
+      if (amountExitYen != null && amountAYen != null) {
+        profit = amountExitYen - amountAYen;
+        if (commissionYen != null) {
+          profit += commissionYen;
+        }
       }
     }
 
@@ -292,12 +299,19 @@ export async function updateProperty(data: PropertyUpdate) {
     const commissionYen = manyenToYen(validatedData.commission);
     const bcDepositYen = manyenToYen(validatedData.bcDeposit);
 
-    // 利益を自動計算（出口金額 - A金額 + 仲手等）※円単位
+    // 利益を計算
+    // 違約の場合は手動入力値を使用、それ以外は自動計算
     let profit: number | undefined = undefined;
-    if (amountExitYen != null && amountAYen != null) {
-      profit = amountExitYen - amountAYen;
-      if (commissionYen != null) {
-        profit += commissionYen;
+    if (validatedData.contractType === "iyaku") {
+      // 違約の場合は手動入力値（万円→円）
+      profit = manyenToYen(validatedData.profit);
+    } else {
+      // 通常の場合は自動計算（出口金額 - A金額 + 仲手等）※円単位
+      if (amountExitYen != null && amountAYen != null) {
+        profit = amountExitYen - amountAYen;
+        if (commissionYen != null) {
+          profit += commissionYen;
+        }
       }
     }
 

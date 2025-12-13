@@ -214,8 +214,10 @@ export default function PropertyFormProvider({
   const pathname = usePathname();
   const isUnconfirmed = pathname.includes("/properties/unconfirmed");
 
+  const isDirty = form.formState.isDirty;
+
   // 未保存変更がある場合の離脱防止
-  useNavigationGuard(form.formState.isDirty);
+  useNavigationGuard(isDirty);
 
   const onSubmit = async (data: PropertyCreate) => {
     try {
@@ -246,12 +248,11 @@ export default function PropertyFormProvider({
     }
   };
 
-  // defaultValues が変更されたらフォームをリセット
   useEffect(() => {
-    if (!isValidating) {
+    if (!isValidating && !isDirty) {
       form.reset(transformToFormValues(defaultValues));
     }
-  }, [isValidating, form]);
+  }, [isValidating, form, isDirty]);
 
   return (
     <Form {...form}>
