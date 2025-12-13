@@ -83,22 +83,16 @@ export default function DatePickerForm<T extends FieldValues>({
     return isNaN(date.getTime()) ? undefined : date;
   };
 
-  // 日付を YYYY-MM-DD 形式の文字列に変換
-  const formatToDateString = (date: Date): string => {
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, "0");
-    const day = String(date.getDate()).padStart(2, "0");
-    return `${year}-${month}-${day}`;
+  // 日付を ISO 形式の文字列に変換（時刻情報を含む）
+  const formatToISOString = (date: Date): string => {
+    return date.toISOString();
   };
 
   // 月末予定用の日付文字列を生成（午前0時0分10秒）
-  const formatMonthEndDateString = (date: Date): string => {
+  const createMonthEndDateString = (date: Date): string => {
     const monthEnd = endOfMonth(date);
-    const year = monthEnd.getFullYear();
-    const month = String(monthEnd.getMonth() + 1).padStart(2, "0");
-    const day = String(monthEnd.getDate()).padStart(2, "0");
-    // ISO形式で時刻を含める（00:00:10）
-    return `${year}-${month}-${day}T00:00:10`;
+    monthEnd.setHours(0, 0, 10, 0);
+    return formatToISOString(monthEnd);
   };
 
   return (
@@ -145,9 +139,9 @@ export default function DatePickerForm<T extends FieldValues>({
                     variant="outline"
                     size="sm"
                     onClick={() => {
-                      const monthEndStr =
-                        formatMonthEndDateString(selectedMonth);
-                      field.onChange(monthEndStr);
+                      const monthEndDateStr =
+                        createMonthEndDateString(selectedMonth);
+                      field.onChange(monthEndDateStr);
                       setOpen(false);
                     }}
                     className="h-7 px-2 text-xs"
@@ -178,7 +172,9 @@ export default function DatePickerForm<T extends FieldValues>({
                 selected={parseDate(field.value)}
                 onSelect={(date) => {
                   if (date) {
-                    field.onChange(formatToDateString(date));
+                    // 通常の日付選択: 午前0時0分0秒
+                    date.setHours(0, 0, 0, 0);
+                    field.onChange(formatToISOString(date));
                   }
                   setOpen(false);
                 }}

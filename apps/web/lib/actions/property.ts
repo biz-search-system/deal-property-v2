@@ -845,20 +845,17 @@ export async function updatePropertyNotes(data: { id: string; notes: string }) {
  */
 export async function updatePropertySettlementDate(data: {
   id: string;
-  settlementDate: string | null;
+  settlementDate: Date | null;
 }) {
   // セッション認証
   const session = await verifySession();
 
   const now = new Date();
-  const settlementDateValue = data.settlementDate
-    ? new Date(data.settlementDate)
-    : null;
 
   await db
     .update(properties)
     .set({
-      settlementDate: settlementDateValue,
+      settlementDate: data.settlementDate,
       settlementDateUpdatedAt: now,
       settlementDateUpdatedBy: session.user.id,
       updatedBy: session.user.id,
@@ -870,9 +867,9 @@ export async function updatePropertySettlementDate(data: {
   revalidatePath("/properties/unconfirmed");
   revalidatePath("/properties/search");
   // 月次ビューも更新
-  if (settlementDateValue) {
-    const year = settlementDateValue.getFullYear();
-    const month = settlementDateValue.getMonth() + 1;
+  if (data.settlementDate) {
+    const year = data.settlementDate.getFullYear();
+    const month = data.settlementDate.getMonth() + 1;
     revalidatePath(`/properties/monthly/${year}/${month}`);
   }
 }
