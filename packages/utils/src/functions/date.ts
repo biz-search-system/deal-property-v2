@@ -102,3 +102,39 @@ export const formatRelativeTime = (
   const isSameYear = date.getFullYear() === now.getFullYear();
   return format(date, isSameYear ? "M月d日" : "yyyy年M月d日", { locale: ja });
 };
+
+/**
+ * 日付を日本時間のYYYY-MM-DD形式の文字列に変換
+ * @param date 日付
+ * @returns 日本時間でのYYYY-MM-DD形式の文字列
+ * @example toJstDateKey(new Date()) // "2025-01-15"
+ */
+export const toJstDateKey = (date: DateInput): string => {
+  if (!date) return "";
+  const dateObj =
+    typeof date === "string" || typeof date === "number"
+      ? new Date(date)
+      : date;
+  if (isNaN(dateObj.getTime())) return "";
+
+  return dateObj
+    .toLocaleDateString("ja-JP", {
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+      timeZone: "Asia/Tokyo",
+    })
+    .replace(/\//g, "-");
+};
+
+/**
+ * YYYY-MM-DD形式の日付文字列をM/D形式に変換
+ * @param dateKey YYYY-MM-DD形式の日付文字列
+ * @returns M/D形式の文字列
+ * @example formatShortDate("2025-01-15") // "1/15"
+ */
+export const formatShortDate = (dateKey: string): string => {
+  const [, month, day] = dateKey.split("-");
+  if (!month || !day) return "";
+  return `${Number(month)}/${Number(day)}`;
+};
