@@ -18,7 +18,7 @@ interface SettlementDatePopoverEditProps {
   propertyId: string;
   currentDate: Date | string | null;
   // カスタムの保存処理（指定しない場合はデフォルトのサーバーアクションを使用）
-  onSave?: (propertyId: string, newDate: Date | null) => void | Promise<void>;
+  onSave?: (propertyId: string, newDate: string | null) => void | Promise<void>;
   // 編集可能かどうか
   editable?: boolean;
   // 表示フォーマット関数（指定しない場合はデフォルトフォーマットを使用）
@@ -67,28 +67,32 @@ export function SettlementDatePopoverEdit({
   // 表示用フォーマット関数の決定
   const displayFormatter = formatDisplay || defaultFormatDisplay;
 
-  // 日付を日本標準時の指定時刻に設定するヘルパー関数
-  const setJSTDateTime = (
-    date: Date,
-    hours: number,
-    minutes: number,
-    seconds: number,
-    milliseconds: number = 0
-  ): Date => {
-    const result = new Date(date);
-    result.setHours(hours, minutes, seconds, milliseconds);
-    return result;
+  // 日付を YYYY-MM-DD 形式の文字列に変換
+  const formatToDateString = (date: Date): string => {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
+    return `${year}-${month}-${day}`;
+  };
+
+  // 月末予定用の日付文字列を生成（午前0時0分10秒）
+  const formatMonthEndDateString = (date: Date): string => {
+    const monthEnd = endOfMonth(date);
+    const year = monthEnd.getFullYear();
+    const month = String(monthEnd.getMonth() + 1).padStart(2, "0");
+    const day = String(monthEnd.getDate()).padStart(2, "0");
+    return `${year}-${month}-${day}T00:00:10`;
   };
 
   // 日付を保存する内部処理
-  const saveDate = async (date: Date | null) => {
+  const saveDate = async (dateStr: string | null) => {
     if (onSave) {
-      await onSave(propertyId, date);
+      await onSave(propertyId, dateStr);
     } else {
       // デフォルトのサーバーアクション
       await updatePropertySettlementDate({
         id: propertyId,
-        settlementDate: date,
+        settlementDate: dateStr,
       });
       toast.success("決済日を更新しました");
     }
@@ -108,15 +112,14 @@ export function SettlementDatePopoverEdit({
 
     setIsSaving(true);
     try {
-      let processedDate: Date | null = null;
+      let processedDateStr: string | null = null;
 
       if (date) {
-        // 通常の日付選択: 午前0時0分0秒
-        processedDate = setJSTDateTime(date, 0, 0, 0, 0);
+        // 通常の日付選択: YYYY-MM-DD 形式
+        processedDateStr = formatToDateString(date);
       }
-      console.log(processedDate, "processedDate");
 
-      await saveDate(processedDate);
+      await saveDate(processedDateStr);
       setOpen(false);
     } catch (error) {
       toast.error("決済日の更新に失敗しました");
@@ -126,17 +129,16 @@ export function SettlementDatePopoverEdit({
     }
   };
 
-  // 月末予定を設定（午前0時0分0秒で保存）
+  // 月末予定を設定（午前0時0分10秒で保存）
   const handleSetMonthEnd = async () => {
     if (isSaving) return;
 
     setIsSaving(true);
     try {
-      const monthEnd = endOfMonth(selectedMonth);
-      // 月末予定: 午前0時0分0秒
-      const processedDate = setJSTDateTime(monthEnd, 0, 0, 10, 0);
+      // 月末予定: YYYY-MM-DDTHH:mm:ss 形式
+      const processedDateStr = formatMonthEndDateString(selectedMonth);
 
-      await saveDate(processedDate);
+      await saveDate(processedDateStr);
       setOpen(false);
     } catch (error) {
       toast.error("決済日の更新に失敗しました");

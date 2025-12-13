@@ -68,6 +68,7 @@ export const brokerCompany = [
   "nbf",
   "shine",
   "esc",
+  "none",
 ] as const;
 /** B会社 */
 export const companyB = [

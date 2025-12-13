@@ -11,6 +11,7 @@ export const BROKER_COMPANY_LABELS: Record<BrokerCompany, string> = {
   nbf: "NBF",
   shine: "シャイン",
   esc: "エスク",
+  none: "無し",
 };
 
 /**
@@ -27,4 +28,5 @@ export const BROKER_COMPANY_COLORS: Record<BrokerCompany, string> = {
   shine:
     "border-yellow-400 bg-yellow-50 text-yellow-700 dark:bg-yellow-950 dark:text-yellow-300", // シャイン
   esc: "border-pink-400 bg-pink-50 text-pink-700 dark:bg-pink-950 dark:text-pink-300", // エスク
+  none: "border-gray-300 bg-gray-100 text-gray-500 dark:bg-gray-800 dark:text-gray-500", // 無し
 };

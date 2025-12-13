@@ -123,8 +123,8 @@ export const propertyCreateSchema = z.object({
   ownerName: z
     .string()
     .trim()
-    .min(1, "オーナー名は必須です")
-    .max(100, "オーナー名は100文字以内で入力してください"),
+    .max(100, "オーナー名は100文字以内で入力してください")
+    .optional(),
 
   // 金額情報
   amountA: z

@@ -106,7 +106,7 @@ export function TextPopoverEdit({
       <PopoverTrigger asChild>
         <div
           className="cursor-pointer truncate rounded px-1 text-[10px] hover:bg-muted"
-          style={{ maxWidth: `${maxDisplayWidth}px` }}
+          // style={{ maxWidth: `${maxDisplayWidth}px` }}
           title={currentValue || ""}
         >
           {currentValue || (
@@ -114,7 +114,7 @@ export function TextPopoverEdit({
           )}
         </div>
       </PopoverTrigger>
-      <PopoverContent className="w-80">
+      <PopoverContent className="">
         <div className="grid gap-4">
           <div className="space-y-2">
             <h4 className="font-medium leading-none">{title}</h4>

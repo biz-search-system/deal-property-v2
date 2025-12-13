@@ -62,7 +62,7 @@ export async function createProperty(data: PropertyCreate) {
       organizationId: validatedData.organizationId,
       propertyName: validatedData.propertyName,
       roomNumber: validatedData.roomNumber || undefined,
-      ownerName: validatedData.ownerName,
+      ownerName: validatedData.ownerName || "", //スキマー更新新する必要ある
       amountA: amountAYen,
       amountExit: amountExitYen,
       commission: commissionYen,
@@ -845,17 +845,20 @@ export async function updatePropertyNotes(data: { id: string; notes: string }) {
  */
 export async function updatePropertySettlementDate(data: {
   id: string;
-  settlementDate: Date | null;
+  settlementDate: string | null;
 }) {
   // セッション認証
   const session = await verifySession();
 
   const now = new Date();
+  const settlementDateValue = data.settlementDate
+    ? new Date(data.settlementDate)
+    : null;
 
   await db
     .update(properties)
     .set({
-      settlementDate: data.settlementDate,
+      settlementDate: settlementDateValue,
       settlementDateUpdatedAt: now,
       settlementDateUpdatedBy: session.user.id,
       updatedBy: session.user.id,
@@ -867,9 +870,9 @@ export async function updatePropertySettlementDate(data: {
   revalidatePath("/properties/unconfirmed");
   revalidatePath("/properties/search");
   // 月次ビューも更新
-  if (data.settlementDate) {
-    const year = data.settlementDate.getFullYear();
-    const month = data.settlementDate.getMonth() + 1;
+  if (settlementDateValue) {
+    const year = settlementDateValue.getFullYear();
+    const month = settlementDateValue.getMonth() + 1;
     revalidatePath(`/properties/monthly/${year}/${month}`);
   }
 }
