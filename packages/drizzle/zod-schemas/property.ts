@@ -142,6 +142,7 @@ export const propertyCreateSchema = z.object({
     .nonnegative("仲手等は0以上で入力してください")
     .nullable()
     .optional(),
+  profit: z.number().nullable().optional(), // 利益（違約の場合は手動入力）
   bcDeposit: z
     .number()
     .nonnegative("BC手付は0以上で入力してください")
