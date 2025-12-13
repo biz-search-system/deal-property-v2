@@ -124,7 +124,6 @@ export const propertyCreateSchema = z.object({
     .string()
     .trim()
     .max(100, "オーナー名は100文字以内で入力してください")
-    .nullable()
     .optional(),
 
   // 金額情報

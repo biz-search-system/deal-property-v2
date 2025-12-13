@@ -62,7 +62,7 @@ export async function createProperty(data: PropertyCreate) {
       organizationId: validatedData.organizationId,
       propertyName: validatedData.propertyName,
       roomNumber: validatedData.roomNumber || undefined,
-      ownerName: validatedData.ownerName,
+      ownerName: validatedData.ownerName || "", //スキマー更新新する必要ある
       amountA: amountAYen,
       amountExit: amountExitYen,
       commission: commissionYen,
