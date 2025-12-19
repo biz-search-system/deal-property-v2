@@ -1,9 +1,13 @@
 import { MonthlyProperties } from "../../../../../../components/property/monthly/monthly-properties";
-import { getMonthlyProperties } from "@/lib/data/property";
+import {
+  getMonthlyProperties,
+  getMonthlyPropertiesByOrganizations,
+} from "@/lib/data/property";
 import { auth } from "@workspace/auth";
 import { headers } from "next/headers";
 import type { Metadata } from "next";
 import { MonthlyBreadcrumb } from "@/components/property/monthly/monthly-breadcrumb";
+import { verifySession } from "@/lib/data/sesstion";
 
 export async function generateMetadata({
   params,
@@ -20,16 +24,10 @@ export default async function MonthlyPropertiesPage({
   const { year, month } = await params;
 
   // セッション取得
-  const session = await auth.api.getSession({
-    headers: await headers(),
-  });
-
-  if (!session) {
-    throw new Error("Unauthorized");
-  }
+  await verifySession();
 
   // 月次案件を取得（DBでフィルタリング済み）
-  const monthlyProperties = await getMonthlyProperties(
+  const monthlyProperties = await getMonthlyPropertiesByOrganizations(
     Number(year),
     Number(month)
   );

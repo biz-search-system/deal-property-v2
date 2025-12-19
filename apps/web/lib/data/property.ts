@@ -143,13 +143,14 @@ export const getPropertyById = cache(async (id: string) => {
 export async function getMonthlyProperties(
   year: number,
   month: number,
-  organizationId?: string
+  organizationId: string
 ) {
   // 月の開始日と終了日を計算
   const startDate = new Date(year, month - 1, 1);
   const endDate = new Date(year, month, 0, 23, 59, 59, 999);
 
   const conditions = [
+    eq(properties.organizationId, organizationId),
     // BC確定前以外
     not(eq(properties.progressStatus, "bc_before_confirmed")),
     // 決済日が存在し、指定月内
@@ -157,11 +158,6 @@ export async function getMonthlyProperties(
     gte(properties.settlementDate, startDate),
     lte(properties.settlementDate, endDate),
   ];
-
-  // 組織IDが指定されていればフィルタに追加
-  if (organizationId) {
-    conditions.push(eq(properties.organizationId, organizationId));
-  }
 
   return db.query.properties.findMany({
     where: and(...conditions),
@@ -178,6 +174,26 @@ export async function getMonthlyProperties(
     },
     orderBy: (props, { asc }) => [asc(props.settlementDate)],
   });
+}
+
+/**
+ * 全組織の月次案件を取得
+ * @param year 年
+ * @param month 月
+ * @returns 月次案件リスト
+ */
+export async function getMonthlyPropertiesByOrganizations(
+  year: number,
+  month: number
+) {
+  const organizations = await getOrganizations();
+  if (!organizations || organizations.length === 0) {
+    return [];
+  }
+  const properties = await Promise.all(
+    organizations.map((org) => getMonthlyProperties(year, month, org.id))
+  );
+  return properties.flat();
 }
 
 /**
@@ -212,7 +228,9 @@ export async function getUnconfirmedProperties(organizationId?: string) {
 /**
  * 指定組織のBC確定前案件を決済日順で取得
  */
-async function getUnconfirmedPropertiesBySettlementDate(organizationId: string) {
+async function getUnconfirmedPropertiesBySettlementDate(
+  organizationId: string
+) {
   return db.query.properties.findMany({
     where: and(
       eq(properties.organizationId, organizationId),

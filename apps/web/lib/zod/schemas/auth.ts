@@ -18,10 +18,7 @@ export const usernameSchema = z
   .trim()
   .min(3, "ユーザー名は3文字以上で入力してください")
   .max(20, "ユーザー名は20文字以内で入力してください")
-  .regex(
-    /^[a-zA-Z0-9_-]+$/,
-    "ユーザー名は英数字、ハイフン、アンダースコアのみ使用できます"
-  );
+  .regex(/^[a-zA-Z0-9_]+$/, "ユーザー名は英数字、ハイフンのみ使用できます");
 
 // サインアップフォームのバリデーションスキーマ
 export const signupSchema = z.object({
@@ -33,7 +30,11 @@ export const signupSchema = z.object({
 });
 /** ログインフォームのバリデーションスキーマ */
 export const loginSchema = z.object({
-  email: emailSchema,
+  emailOrUsername: z
+    .string()
+    .trim()
+    .min(1, "メールアドレスまたはユーザーIDは1文字以上で入力してください")
+    .max(255, "メールアドレスまたはユーザーIDは255文字以内で入力してください"),
   password: passwordSchema,
 });
 /** パスワード忘れフォームのバリデーションスキーマ */
@@ -48,4 +49,23 @@ export const resetPasswordSchema = z.object({
 export const passwordChangeSchema = z.object({
   currentPassword: passwordSchema,
   newPassword: passwordSchema,
+});
+
+export const slugSchema = z
+  .string()
+  .trim()
+  .min(3, "スラッグは必須です")
+  .max(50, "スラッグは50文字以内で入力してください")
+  .regex(
+    /^[a-z0-9_]+$/,
+    "スラッグは半角英数字、アンダースコアのみ使用できます"
+  );
+
+export const organizationCreateSchema = z.object({
+  name: z
+    .string()
+    .trim()
+    .min(1, "組織名は必須です")
+    .max(100, "組織名は100文字以内で入力してください"),
+  slug: slugSchema,
 });

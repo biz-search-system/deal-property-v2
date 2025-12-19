@@ -2,14 +2,14 @@ import "server-only";
 
 import { auth } from "@workspace/auth";
 import { headers } from "next/headers";
-import { sortOrganizations } from "@workspace/utils";
 
 export async function getOrganizations() {
   const result = await auth.api.listOrganizations({
     headers: await headers(),
   });
 
-  return sortOrganizations(result) || [];
+  // DBのsortOrderでソート
+  return [...result].sort((a, b) => (a.sortOrder ?? 0) - (b.sortOrder ?? 0));
 }
 
 export async function getOrganizationsWithUserRole(userId: string) {
@@ -41,13 +41,17 @@ export async function getOrganizationsWithUserRole(userId: string) {
         logo: org.logo,
         metadata: org.metadata,
         createdAt: org.createdAt,
+        sortOrder: org.sortOrder,
         userRole: currentUserMember?.role || "member",
         memberCount: fullOrg?.members.length || 0,
       };
     })
   );
 
-  return sortOrganizations(orgsWithRole);
+  // DBのsortOrderでソート
+  return [...orgsWithRole].sort(
+    (a, b) => (a.sortOrder ?? 0) - (b.sortOrder ?? 0)
+  );
 }
 
 export async function getActiveOrganization(activeOrgId: string) {
