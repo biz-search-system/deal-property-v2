@@ -144,7 +144,7 @@ export function LoginForm({
               </div>
             </form>
           </Form>
-          {/* <Button
+          <Button
             type="button"
             className="w-full"
             disabled={isPending}
@@ -168,7 +168,7 @@ export function LoginForm({
             ) : (
               "ログイン"
             )}
-          </Button> */}
+          </Button>
           <div className="bg-muted relative hidden md:flex items-center justify-center">
             <HeroImage />
           </div>
