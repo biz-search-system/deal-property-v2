@@ -20,6 +20,7 @@ interface InvitationEmailProps {
   inviteLink?: string;
   recipientEmail?: string;
   teamName: string | null;
+  domain: string;
 }
 
 export const InvitationEmail = ({
@@ -29,6 +30,7 @@ export const InvitationEmail = ({
   inviteLink = "https://example.com/invite/abc123",
   recipientEmail = "{{ .Email }}",
   teamName = "サンプルチーム",
+  domain = "example.com",
 }: InvitationEmailProps) => {
   const previewText = teamName
     ? `${organizationName}の${teamName}チームへの招待`
@@ -44,7 +46,7 @@ export const InvitationEmail = ({
             <Section className="mt-[32px]">
               <Img
                 // src="https://www.deal-property.space/logo.svg"
-                src="https://www.deal-property.space/logo.png"
+                src={`https://${domain}/logo.png`}
                 width="80"
                 height="80"
                 alt="Logo"
@@ -105,6 +107,7 @@ InvitationEmail.PreviewProps = {
   inviteLink: "https://example.com/invite/abc123",
   recipientEmail: "user@example.com",
   teamName: "営業部",
+  domain: "example.com",
 } as InvitationEmailProps;
 
 export default InvitationEmail;

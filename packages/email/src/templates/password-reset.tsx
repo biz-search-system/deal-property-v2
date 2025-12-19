@@ -15,11 +15,13 @@ import {
 interface PasswordResetEmailProps {
   email?: string;
   resetUrl?: string;
+  domain: string;
 }
 
 export const PasswordResetEmail = ({
   email = "user@example.com",
   resetUrl = "https://example.com/reset-password",
+  domain = "example.com",
 }: PasswordResetEmailProps) => {
   const previewText = "パスワードリセットのご案内";
 
@@ -32,7 +34,7 @@ export const PasswordResetEmail = ({
           <Container className="mx-auto my-[40px] max-w-[465px] rounded border border-[#eaeaea] border-solid p-[20px]">
             <Section className="mt-[32px]">
               <Img
-                src="https://www.deal-property.space/logo.png"
+                src={`https://${domain}/logo.png`}
                 width="80"
                 height="80"
                 alt="Logo"
@@ -83,6 +85,7 @@ export const PasswordResetEmail = ({
 PasswordResetEmail.PreviewProps = {
   email: "user@example.com",
   resetUrl: "https://www.deal-property.space/reset-password?token=example",
+  domain: "example.com",
 } as PasswordResetEmailProps;
 
 export default PasswordResetEmail;

@@ -83,6 +83,7 @@ export const organizations = sqliteTable("organizations", {
   logo: text("logo"),
   createdAt: timestamps.createdAt,
   metadata: text("metadata"),
+  sortOrder: integer("sort_order").notNull().default(0),
 });
 
 export const teams = sqliteTable(

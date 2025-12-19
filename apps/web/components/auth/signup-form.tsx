@@ -14,19 +14,20 @@ import {
 } from "@workspace/ui/components/form";
 import { cn } from "@workspace/utils";
 import HeroImage from "@/components/hero-image";
-import { useTransition } from "react";
+import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { Loader2 } from "lucide-react";
+import { Loader2, CheckCircle2, XCircle } from "lucide-react";
 import { toast } from "sonner";
 import Link from "next/link";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { authClient } from "@workspace/auth/client";
-import { Signup } from "@/lib/types/auth";
-import { signupSchema } from "@/lib/zod/schemas/auth";
+// import { Signup } from "@workspace/drizzle/types";
+
 import PasswordForm from "./password-form";
-// import { signupSchema } from "@workspace/drizzle/zod/auth";
-// import { Signup } from "@workspace/drizzle/types/auth";
+import { useDebouncedCallback } from "use-debounce";
+import { signupSchema, usernameSchema } from "@/lib/zod/schemas/auth";
+import { Signup } from "@/lib/types/auth";
 
 interface SignupFormProps {
   className?: string;
@@ -43,22 +44,69 @@ export function SignupForm({
 }: SignupFormProps) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
+  const [isCheckingUsername, setIsCheckingUsername] = useState(false);
 
   // React Hook Formの設定
   const form = useForm<Signup>({
     resolver: zodResolver(signupSchema),
     mode: "onChange",
     defaultValues: {
-      email: initialEmail || "",
+      email: initialEmail,
       name: "",
       username: "",
       password: "",
-      invitationId: invitationId || "",
+      invitationId: invitationId,
     },
   });
 
   // 招待経由の場合、メールアドレスを読み取り専用
   const isInvitation = !!invitationId;
+
+  // ユーザー名の状態判定
+  const { errors, dirtyFields } = form.formState;
+  const hasUsernameError = !!errors.username;
+  const isUsernameDirty = !!dirtyFields.username;
+  const isUsernameValid =
+    isUsernameDirty && !hasUsernameError && !isCheckingUsername;
+
+  // ユーザー名の重複チェック（デバウンス付き）
+  const checkUsernameAvailability = useDebouncedCallback(
+    async (username: string) => {
+      // 空の場合は確認中を解除
+      if (!username) {
+        setIsCheckingUsername(false);
+        return;
+      }
+
+      // 基本的なバリデーションをパスしているか確認
+      const result = usernameSchema.safeParse(username);
+      if (!result.success) {
+        setIsCheckingUsername(false);
+        return;
+      }
+      try {
+        const { data: response, error } = await authClient.isUsernameAvailable({
+          username,
+        });
+
+        if (error) {
+          toast.error(error.message || "ユーザー名の確認に失敗しました");
+          return;
+        }
+
+        if (!response.available) {
+          form.setError("username", {
+            type: "manual",
+            message: "このユーザー名は既に使用されています",
+          });
+        }
+      } finally {
+        setIsCheckingUsername(false);
+      }
+    },
+    500,
+    { leading: true }
+  );
 
   const onSubmit = (data: Signup) => {
     startTransition(async () => {
@@ -78,7 +126,7 @@ export function SignupForm({
           signupError.code === "USERNAME_IS_ALREADY_TAKEN_PLEASE_TRY_ANOTHER"
         ) {
           toast.error(
-            "このメールアドレスはすでに使用されています.ログインして招待を受け入れてください.",
+            "このメールアドレスはすでに使用されています.ログインして招待を受け入れてください."
           );
           router.push(`/login?invitationId=${invitationId}`);
           return;
@@ -94,27 +142,24 @@ export function SignupForm({
             await authClient.organization.acceptInvitation({
               invitationId,
             });
-
           if (acceptError) {
             console.error(acceptError);
             toast.error(acceptError.message || "招待の受け入れに失敗しました");
             return;
           }
-
           if (acceptResult) {
             toast.success("アカウントの登録と組織への参加が完了しました！");
             router.push("/properties/unconfirmed");
             return;
           }
         }
-
         // 通常のサインアップ成功時
         toast.success("アカウントの登録が完了しました！");
         router.push("/properties/unconfirmed");
       }
     });
   };
-
+  // const { isDirty, isValid } = form.formState;
   return (
     <div className={cn("flex flex-col gap-6", className)}>
       <Card className="overflow-hidden p-0">
@@ -138,7 +183,7 @@ export function SignupForm({
                 <FormField
                   control={form.control}
                   name="name"
-                  render={({ field }) => (
+                  render={({ field, formState: { errors } }) => (
                     <FormItem>
                       <FormLabel>お名前</FormLabel>
                       <FormControl>
@@ -148,7 +193,13 @@ export function SignupForm({
                           disabled={isPending}
                         />
                       </FormControl>
-                      <FormMessage />
+                      {errors.name?.message ? (
+                        <FormMessage>{errors.name.message}</FormMessage>
+                      ) : (
+                        <FormDescription>
+                          苗字のみを入力してください（例：山田）
+                        </FormDescription>
+                      )}
                     </FormItem>
                   )}
                 />
@@ -158,18 +209,45 @@ export function SignupForm({
                   name="username"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>ユーザー名</FormLabel>
+                      <FormLabel>ユーザーID</FormLabel>
                       <FormControl>
-                        <Input
-                          placeholder="yamada_taro"
-                          {...field}
-                          disabled={isPending}
-                        />
+                        <div className="relative">
+                          <Input
+                            placeholder="yamada_taro"
+                            {...field}
+                            onChange={(e) => {
+                              field.onChange(e);
+                              if (e.target.value) {
+                                setIsCheckingUsername(true);
+                              }
+                              checkUsernameAvailability(e.target.value);
+                            }}
+                            disabled={isPending}
+                          />
+                          {field.value && (
+                            <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                              {isCheckingUsername && (
+                                <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
+                              )}
+                              {isUsernameValid && (
+                                <CheckCircle2 className="h-4 w-4 text-green-500" />
+                              )}
+                              {hasUsernameError && !isCheckingUsername && (
+                                <XCircle className="h-4 w-4 text-destructive" />
+                              )}
+                            </div>
+                          )}
+                        </div>
                       </FormControl>
-                      <FormDescription>
-                        英数字、ハイフン、アンダースコアのみ（3-20文字）
-                      </FormDescription>
-                      <FormMessage />
+                      {hasUsernameError ? (
+                        <FormMessage />
+                      ) : (
+                        <FormDescription>
+                          {isCheckingUsername
+                            ? "利用可能か確認中..."
+                            : "英数字、アンダースコアのみ（3-20文字）"}
+                        </FormDescription>
+                      )}
                     </FormItem>
                   )}
                 />
@@ -203,13 +281,13 @@ export function SignupForm({
                   name="password"
                   mode="signup"
                   autoComplete="new-password"
-                  placeholder="8文字以上の英数字で入力してください"
+                  placeholder="6文字以上の英数字で入力してください"
                 />
 
                 <Button type="submit" className="w-full" disabled={isPending}>
                   {isPending ? (
                     <>
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      <Loader2 className="mr-2 size-4 animate-spin" />
                       登録中...
                     </>
                   ) : (

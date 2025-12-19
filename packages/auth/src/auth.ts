@@ -14,8 +14,8 @@ import { getBaseURL, customNanoid } from "@workspace/utils";
 import { resend } from "@workspace/email/resend";
 import InvitationEmail from "@workspace/email/templates/invitation";
 import PasswordResetEmail from "@workspace/email/templates/password-reset";
-import { eq } from "drizzle-orm";
-import { teams } from "@workspace/drizzle/schemas";
+import { eq, sql } from "drizzle-orm";
+import { teams, organizations } from "@workspace/drizzle/schemas";
 
 /**
  * チーム名を取得
@@ -49,16 +49,18 @@ export const auth = betterAuth({
     sendResetPassword: async ({ user, url, token }, request) => {
       const email = user.email;
       const resetPasswordLink = `${getBaseURL()}/reset-password?token=${token}`;
+      const resendDomain = process.env.RESEND_DOMAIN!;
       const result = await resend.emails.send({
-        from: "パスワードリセット <password-reset@deal-property.space>",
+        from: `パスワードリセット <password-reset@${resendDomain}>`,
         to: email,
         subject: `パスワードリセットのご案内`,
         react: PasswordResetEmail({
           email: email,
           resetUrl: resetPasswordLink,
+          domain: resendDomain,
         }),
       });
-      console.log(result);
+      // console.log(result);
     },
     onPasswordReset: async ({ user }, request) => {
       // your logic here
@@ -78,17 +80,45 @@ export const auth = betterAuth({
           enabled: false, // true にすると組織作成時に同名のチームが自動作成される
         },
       },
+      schema: {
+        organization: {
+          additionalFields: {
+            sortOrder: {
+              type: "number",
+              input: false,
+              required: false,
+            },
+          },
+        },
+      },
+      organizationHooks: {
+        beforeCreateOrganization: async ({ organization }) => {
+          // 現在の最大sortOrderを取得して+1
+          const maxResult = await db
+            .select({ max: sql<number>`COALESCE(MAX(sort_order), 0)` })
+            .from(organizations)
+            .get();
+
+          const nextOrder = (maxResult?.max ?? 0) + 1;
+
+          return {
+            data: {
+              ...organization,
+              sortOrder: nextOrder,
+            },
+          };
+        },
+      },
       async sendInvitationEmail(data) {
         const invitationId = data.id;
         const inviterEmail = data.inviter.user.email;
         // サインアップページへの直接リンク（組織名を含む）
-        const inviteLink = `${getBaseURL()}/signup?id=${invitationId}&email=${encodeURIComponent(
-          data.email
-        )}&org=${encodeURIComponent(data.organization.name)}`;
+        const inviteLink = `${getBaseURL()}/signup?id=${invitationId}`;
         const teamId = data.invitation?.teamId;
         const teamName = teamId ? await getTeamName(teamId) : null;
+        const resendDomain = process.env.RESEND_DOMAIN!;
         await resend.emails.send({
-          from: "招待 <invitation@deal-property.space>",
+          from: `Deal Property <invitation@${resendDomain}>`,
           to: data.email,
           subject: `${data.organization.name}への招待`,
           react: InvitationEmail({
@@ -98,6 +128,7 @@ export const auth = betterAuth({
             inviteLink,
             recipientEmail: data.email,
             teamName: teamName,
+            domain: resendDomain,
           }),
         });
       },

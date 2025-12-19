@@ -27,29 +27,44 @@ import PasswordForm from "./password-form";
 
 export function LoginForm({
   className,
+  invitationId,
   ...props
-}: React.ComponentProps<"div">) {
+}: React.ComponentProps<"div"> & { invitationId?: string }) {
   const router = useRouter();
-  const searchParams = useSearchParams();
   const [isPending, startTransition] = useTransition();
-
-  const invitationId = searchParams.get("invitationId");
 
   const form = useForm<Login>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
-      email: "",
+      emailOrUsername: "",
       password: "",
     },
   });
 
   const onSubmit = (data: Login) => {
+    // メールアドレスかユーザー名かを判断
+    const isEmail = data.emailOrUsername.includes("@");
     startTransition(async () => {
-      const result = await authClient.signIn.email(data);
-
-      if (result.error) {
-        toast.error(result.error.message || "ログインに失敗しました");
-        return;
+      if (isEmail) {
+        const { error } = await authClient.signIn.email({
+          email: data.emailOrUsername,
+          password: data.password,
+        });
+        if (error) {
+          // console.error(error);
+          toast.error(error.message || "ログインに失敗しました");
+          return;
+        }
+      } else {
+        const { error } = await authClient.signIn.username({
+          username: data.emailOrUsername,
+          password: data.password,
+        });
+        if (error) {
+          // console.error(error);
+          toast.error(error.message || "ログインに失敗しました");
+          return;
+        }
       }
       // 認証関連データを一括更新
       await refreshAuthenticatedData();
@@ -91,16 +106,16 @@ export function LoginForm({
 
                 <FormField
                   control={form.control}
-                  name="email"
+                  name="emailOrUsername"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>メールアドレス</FormLabel>
+                      <FormLabel>メールアドレスまたはユーザーID</FormLabel>
                       <FormControl>
                         <Input
                           {...field}
-                          type="email"
-                          placeholder="example@example.com"
-                          autoComplete="email"
+                          type="text"
+                          placeholder="example@example.com or yamada_taro"
+                          autoComplete="emailOrUsername"
                           disabled={isPending}
                         />
                       </FormControl>
@@ -129,6 +144,31 @@ export function LoginForm({
               </div>
             </form>
           </Form>
+          <Button
+            type="button"
+            className="w-full"
+            disabled={isPending}
+            onClick={() => {
+              authClient.signIn
+                .anonymous()
+                .then(() => {
+                  toast.success("ログインしました");
+                  router.push("/properties/unconfirmed");
+                })
+                .catch((error) => {
+                  console.error(error);
+                });
+            }}
+          >
+            {isPending ? (
+              <>
+                <Loader2 className="animate-spin h-4 w-4" />
+                ログイン中...
+              </>
+            ) : (
+              "ログイン"
+            )}
+          </Button>
           <div className="bg-muted relative hidden md:flex items-center justify-center">
             <HeroImage />
           </div>
