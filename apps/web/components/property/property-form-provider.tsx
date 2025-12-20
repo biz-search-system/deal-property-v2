@@ -239,11 +239,11 @@ export default function PropertyFormProvider({
         router.refresh();
       }
     } catch (error) {
-      toast.error(
-        mode === "create"
-          ? "案件の作成に失敗しました"
-          : "案件の更新に失敗しました"
-      );
+      // サーバーからのエラーメッセージがあればそれを表示
+      const defaultMessage =
+        mode === "create" ? "案件の作成に失敗しました" : "案件の更新に失敗しました";
+      const message = error instanceof Error ? error.message : defaultMessage;
+      toast.error(message);
       console.error(error);
     }
   };
