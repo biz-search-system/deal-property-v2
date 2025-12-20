@@ -54,7 +54,7 @@ export const passwordChangeSchema = z.object({
 export const slugSchema = z
   .string()
   .trim()
-  .min(3, "スラッグは必須です")
+  .min(2, "スラッグは2文字以上で入力してください")
   .max(50, "スラッグは50文字以内で入力してください")
   .regex(
     /^[a-z0-9_]+$/,
