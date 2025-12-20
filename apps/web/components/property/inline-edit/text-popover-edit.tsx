@@ -1,6 +1,7 @@
 "use client";
 
 import { Button } from "@workspace/ui/components/button";
+import { cn } from "@workspace/utils";
 import {
   Popover,
   PopoverContent,
@@ -104,14 +105,18 @@ export function TextPopoverEdit({
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
-        <div
-          className="cursor-pointer truncate rounded px-1 text-[10px] transition-all duration-300 ease-in-out hover:ring-1 hover:ring-ring"
+        <Button
+          variant="ghost"
+          className={cn(
+            "h-auto max-w-full w-full p-1 justify-start text-[10px] font-normal transition-[color,box-shadow] hover:bg-transparent hover:ring-ring/50 hover:ring-[3px]",
+            !currentValue && "text-muted-foreground"
+          )}
           title={currentValue || ""}
         >
-          {currentValue || (
-            <span className="text-muted-foreground">{emptyText}</span>
-          )}
-        </div>
+          <p className="truncate" style={{ maxWidth: `${maxDisplayWidth}px` }}>
+            {currentValue || emptyText}
+          </p>
+        </Button>
       </PopoverTrigger>
       <PopoverContent className="">
         <div className="grid gap-4">
