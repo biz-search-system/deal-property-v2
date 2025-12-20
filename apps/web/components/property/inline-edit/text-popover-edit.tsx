@@ -105,8 +105,7 @@ export function TextPopoverEdit({
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
         <div
-          className="cursor-pointer truncate rounded px-1 text-[10px] hover:bg-muted"
-          // style={{ maxWidth: `${maxDisplayWidth}px` }}
+          className="cursor-pointer truncate rounded px-1 text-[10px] transition-all duration-300 ease-in-out hover:ring-1 hover:ring-ring"
           title={currentValue || ""}
         >
           {currentValue || (
