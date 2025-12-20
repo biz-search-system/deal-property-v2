@@ -29,23 +29,24 @@ export default async function SignupPage({ searchParams }: SignupPageProps) {
   });
   //ログインしているユーザーが招待を受け入れる
   if (session && invitationId) {
+    let acceptResult;
     try {
-      const acceptResult = await auth.api.acceptInvitation({
+      acceptResult = await auth.api.acceptInvitation({
         body: {
           invitationId,
         },
         headers: await headers(),
       });
-
-      if (acceptResult) {
-        const orgName = encodeURIComponent(
-          result?.organizations.name || "組織"
-        );
-        redirect(`/properties/unconfirmed?invited=${orgName}`);
-      }
     } catch (error) {
       console.error("Failed to accept invitation:", error);
       redirect("/");
+    }
+
+    if (acceptResult) {
+      const orgName = encodeURIComponent(
+        result?.organizations.name || "組織"
+      );
+      redirect(`/properties/unconfirmed?invited=${orgName}`);
     }
   }
   // 招待されていないユーザーはホーム画面にリダイレクト
