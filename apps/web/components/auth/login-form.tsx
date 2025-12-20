@@ -144,31 +144,6 @@ export function LoginForm({
               </div>
             </form>
           </Form>
-          <Button
-            type="button"
-            className="w-full"
-            disabled={isPending}
-            onClick={() => {
-              authClient.signIn
-                .anonymous()
-                .then(() => {
-                  toast.success("ログインしました");
-                  router.push("/properties/unconfirmed");
-                })
-                .catch((error) => {
-                  console.error(error);
-                });
-            }}
-          >
-            {isPending ? (
-              <>
-                <Loader2 className="animate-spin h-4 w-4" />
-                ログイン中...
-              </>
-            ) : (
-              "ログイン"
-            )}
-          </Button>
           <div className="bg-muted relative hidden md:flex items-center justify-center">
             <HeroImage />
           </div>

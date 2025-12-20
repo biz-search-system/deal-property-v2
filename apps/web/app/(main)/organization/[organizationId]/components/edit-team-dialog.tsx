@@ -182,13 +182,8 @@ export function EditTeamDialog({
             <AlertDialogCancel disabled={isPending}>
               キャンセル
             </AlertDialogCancel>
-            <AlertDialogAction
-              onClick={handleDelete}
-              disabled={isPending}
-              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-            >
-              {isPending && <Loader2 className="h-4 w-4 animate-spin" />}
-              削除
+            <AlertDialogAction onClick={handleDelete} disabled={isPending}>
+              {isPending ? <Loader2 className="size-4 animate-spin" /> : "削除"}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

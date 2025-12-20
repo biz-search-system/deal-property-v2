@@ -1,18 +1,17 @@
+import { BreadcrumbConfig } from "@/components/breadcrumb-provider";
+import { getFullOrganization } from "@/lib/data/organization";
+import { verifySession } from "@/lib/data/sesstion";
 import {
   Tabs,
   TabsContent,
   TabsList,
   TabsTrigger,
 } from "@workspace/ui/components/tabs";
-import { Users, Mail, UserPlus, Users2 } from "lucide-react";
-import { MembersTab } from "./components/members-tab";
+import { Mail, UserPlus, Users, Users2 } from "lucide-react";
 import { InvitationsTab } from "./components/invitations-tab";
 import { InviteTab } from "./components/invite-tab";
+import { MembersTab } from "./components/members-tab";
 import { TeamsTab } from "./components/teams-tab";
-import { getFullOrganization } from "@/lib/data/organization";
-import { auth } from "@workspace/auth";
-import { headers } from "next/headers";
-import { BreadcrumbConfig } from "@/components/breadcrumb-provider";
 
 export const metadata = {
   title: "メンバー管理",
@@ -25,19 +24,12 @@ export default async function OrganizationMembersPage({
   const { organizationId } = await params;
 
   // 現在のユーザーのセッションを取得
-  const session = await auth.api.getSession({
-    headers: await headers(),
-  });
-
-  // 組織の詳細情報を取得してユーザーのロールを確認
-  let userRole: string | undefined;
-  if (session) {
-    const fullOrg = await getFullOrganization(organizationId);
-    const currentUserMember = fullOrg?.members.find(
-      (m) => m.userId === session.user.id
-    );
-    userRole = currentUserMember?.role;
-  }
+  const session = await verifySession();
+  const fullOrg = await getFullOrganization(organizationId);
+  const currentUserMember = fullOrg?.members.find(
+    (m) => m.userId === session.user.id
+  );
+  const userRole = currentUserMember?.role;
 
   return (
     <div className="container mx-auto py-6 space-y-8">

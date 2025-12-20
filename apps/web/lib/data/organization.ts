@@ -89,6 +89,8 @@ export async function getOrganizationMembers(
     headers: await headers(),
   });
 
+  // console.log("result", result);
+
   return result;
 }
 
