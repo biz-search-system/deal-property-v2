@@ -40,7 +40,6 @@ import {
   updatePropertyNotes,
   updatePropertyOwnerName,
   updatePropertyEnumField,
-  updatePropertyBuyerCompany,
   updatePropertyProgressStatus,
   updatePropertyDocumentStatus,
 } from "@/lib/actions/property";
@@ -48,6 +47,7 @@ import { TextPopoverEdit } from "../inline-edit/text-popover-edit";
 import { CurrencyPopoverEdit } from "../inline-edit/currency-popover-edit";
 import { BadgeDropdownEdit } from "../inline-edit/badge-dropdown-edit";
 import { RoomNumberPopoverEdit } from "../inline-edit/room-number-popover-edit";
+import { BuyerCompanyComboboxEdit } from "../inline-edit/buyer-company-combobox-edit";
 import type {
   ContractType,
   CompanyB,
@@ -311,22 +311,10 @@ export const monthlyColumns: ColumnDef<PropertyWithRelations>[] = [
     },
     cell: ({ row }) => {
       return (
-        <TextPopoverEdit
+        <BuyerCompanyComboboxEdit
           key={`${row.original.id}-${row.original.buyerCompany}`}
-          id={row.original.id}
+          propertyId={row.original.id}
           currentValue={row.original.buyerCompany}
-          onSave={async (id, value) => {
-            await updatePropertyBuyerCompany({
-              id,
-              buyerCompany: value || null,
-            });
-          }}
-          maxLength={100}
-          title="買取会社編集"
-          description="買取会社を編集できます"
-          placeholder="買取会社を入力してください"
-          successMessage="買取会社を更新しました"
-          errorMessage="買取会社の更新に失敗しました"
         />
       );
     },

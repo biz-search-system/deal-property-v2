@@ -64,7 +64,7 @@ export function MonthlyPropertiesTable({
   const getHeaderColumnClass = (columnId: string) => {
     switch (columnId) {
       case "organization":
-        return "";
+        return "w-[70px]";
       case "staff":
         return "w-[50px]";
       case "propertyName":
@@ -75,11 +75,10 @@ export function MonthlyPropertiesTable({
         return "min-w-[55px]";
       case "amountA":
       case "amountExit":
+      case "commission":
       case "profit":
       case "bcDeposit":
         return "w-[50px]";
-      case "commission":
-        return "w-[100px]";
       case "settlementDate":
         return "w-[60px]";
       case "buyerCompany":
@@ -103,7 +102,7 @@ export function MonthlyPropertiesTable({
     const base = "text-[10px] p-1";
     switch (columnId) {
       case "organization":
-        return base;
+        return `${base} w-[70px]`;
       case "staff":
         return `${base} w-[50px]`;
       case "propertyName":
@@ -111,6 +110,8 @@ export function MonthlyPropertiesTable({
       case "roomNumber":
         return base;
       case "ownerName":
+        return `${base} max-w-[60px]`;
+      case "buyerCompany":
         return `${base} max-w-[60px]`;
       case "notes":
         return `${base} max-w-[80px]`;
