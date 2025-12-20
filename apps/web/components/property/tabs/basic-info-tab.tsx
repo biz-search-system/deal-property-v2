@@ -34,11 +34,11 @@ import { contractType } from "@workspace/drizzle/schemas";
 import { CONTRACT_TYPE_COLORS, CONTRACT_TYPE_LABELS } from "@workspace/utils";
 import { Badge } from "@workspace/ui/components/badge";
 import SectionCard from "../section-card";
-import { useMasterOptions } from "@/lib/swr/master-option";
+import { useSelectOptions } from "@/lib/swr/select-option";
 import {
-  createMasterOption,
-  deleteMasterOption,
-} from "@/lib/actions/master-option";
+  createSelectOption,
+  deleteSelectOption,
+} from "@/lib/actions/select-option";
 import { SalesTeamMember } from "@/lib/types/team";
 
 interface BasicInfoTabProps {
@@ -70,47 +70,45 @@ export default function BasicInfoTab({
     }
   }, [isIyaku, setValue]);
 
-  // マスタオプションの取得
+  // セレクトオプションの取得（全組織共通）
   const {
     options: buyerCompanyOptions,
     mutate: mutateBuyerCompany,
     isLoading: isLoadingBuyerCompany,
-  } = useMasterOptions("buyer_company", organizationId);
+  } = useSelectOptions("buyer_company");
   const {
     options: mortgageBankOptions,
     mutate: mutateMortgageBank,
     isLoading: isLoadingMortgageBank,
-  } = useMasterOptions("mortgage_bank", organizationId);
+  } = useSelectOptions("mortgage_bank");
 
   // 買取業者の追加
   const handleAddBuyerCompany = async (value: string) => {
-    await createMasterOption({
+    await createSelectOption({
       category: "buyer_company",
       value,
-      organizationId: organizationId || undefined,
     });
     mutateBuyerCompany();
   };
 
   // 買取業者の削除
   const handleDeleteBuyerCompany = async (id: string) => {
-    await deleteMasterOption(id);
+    await deleteSelectOption(id);
     mutateBuyerCompany();
   };
 
   // 抵当銀行の追加
   const handleAddMortgageBank = async (value: string) => {
-    await createMasterOption({
+    await createSelectOption({
       category: "mortgage_bank",
       value,
-      organizationId: organizationId || undefined,
     });
     mutateMortgageBank();
   };
 
   // 抵当銀行の削除
   const handleDeleteMortgageBank = async (id: string) => {
-    await deleteMasterOption(id);
+    await deleteSelectOption(id);
     mutateMortgageBank();
   };
 

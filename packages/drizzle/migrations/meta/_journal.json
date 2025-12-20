@@ -127,6 +127,20 @@
       "when": 1766217125695,
       "tag": "0017_living_mordo",
       "breakpoints": true
+    },
+    {
+      "idx": 18,
+      "version": "6",
+      "when": 1766255480815,
+      "tag": "0018_gigantic_grim_reaper",
+      "breakpoints": true
+    },
+    {
+      "idx": 19,
+      "version": "6",
+      "when": 1766260000000,
+      "tag": "0019_absurd_iron_monger",
+      "breakpoints": true
     }
   ]
 }
