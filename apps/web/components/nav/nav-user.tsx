@@ -1,16 +1,13 @@
 "use client";
 
 import {
-  IconCreditCard,
   IconDotsVertical,
   IconLogout,
-  IconNotification,
   IconUserCircle,
 } from "@tabler/icons-react";
 
 import { getAvatarUrl } from "@/lib/avatar";
 import { clearAllCache } from "@/lib/swr/mutate";
-import { useSession } from "@/lib/swr/session";
 import { authClient } from "@workspace/auth/client";
 import {
   Avatar,
@@ -38,7 +35,8 @@ import { useTransition } from "react";
 import { ModeSwitcher } from "./mode-switcher";
 
 export function NavUser() {
-  const { user } = useSession();
+  const { data: session } = authClient.useSession();
+  const user = session?.user;
   const router = useRouter();
   const { isMobile } = useSidebar();
   const { text, url } = getAvatarUrl({

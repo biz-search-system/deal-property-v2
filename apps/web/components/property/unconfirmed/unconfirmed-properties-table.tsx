@@ -16,9 +16,11 @@ import {
   TableHeader,
   TableRow,
 } from "@workspace/ui/components/table";
+import { deleteProperty } from "@/lib/actions/property";
 import type { PropertyWithRelations } from "@/lib/types/property";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { toast } from "sonner";
 import { unconfirmedColumns } from "./unconfirmed-columns";
 
 interface UnconfirmedPropertiesTableProps {
@@ -39,6 +41,15 @@ export function UnconfirmedPropertiesTable({
     router.push(`/properties/unconfirmed/${property.id}/edit`);
   };
 
+  const handleDelete = async (property: PropertyWithRelations) => {
+    try {
+      await deleteProperty(property.id);
+      toast.success("物件を削除しました");
+    } catch {
+      toast.error("物件の削除に失敗しました");
+    }
+  };
+
   const table = useReactTable({
     data: properties,
     columns: unconfirmedColumns,
@@ -51,28 +62,28 @@ export function UnconfirmedPropertiesTable({
     meta: {
       onView: handleViewDetails,
       onEdit: handleEdit,
+      onDelete: handleDelete,
     },
   });
 
   const getHeaderColumnClass = (columnId: string) => {
     switch (columnId) {
       case "organization":
-        return "";
+        return "w-[70px]";
       case "staff":
         return "w-[50px]";
       case "propertyName":
-        return "max-w-[120px]";
+        return "";
       case "roomNumber":
         return "w-[40px]";
       case "ownerName":
         return "min-w-[55px]";
       case "amountA":
       case "amountExit":
+      case "commission":
       case "profit":
       case "bcDeposit":
         return "w-[50px]";
-      case "commission":
-        return "w-[100px]";
       case "settlementDate":
         return "w-[60px]";
       case "buyerCompany":
@@ -96,7 +107,7 @@ export function UnconfirmedPropertiesTable({
     const base = "text-[10px] p-1";
     switch (columnId) {
       case "organization":
-        return base;
+        return `${base} w-[70px]`;
       case "staff":
         return `${base} w-[50px]`;
       case "propertyName":
@@ -104,6 +115,8 @@ export function UnconfirmedPropertiesTable({
       case "roomNumber":
         return base;
       case "ownerName":
+        return `${base} max-w-[60px]`;
+      case "buyerCompany":
         return `${base} max-w-[60px]`;
       case "notes":
         return `${base} max-w-[80px]`;

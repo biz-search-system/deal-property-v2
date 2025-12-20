@@ -20,7 +20,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@workspace/ui/components/select";
-import { organization, OrganizationNameType } from "@workspace/utils";
+import { organizationSlugs, OrganizationSlugType } from "@workspace/utils";
 import {
   ContractType,
   DocumentStatus,
@@ -70,7 +70,7 @@ export function DataTableToolbar<TData>({
     | {
         search?: string;
         onSearchChange?: (value: string) => void;
-        organizationFilter?: OrganizationNameType;
+        organizationFilter?: OrganizationSlugType;
         onOrganizationFilterChange?: (value: string) => void;
         progressStatusFilter?: ProgressStatus;
         onProgressStatusFilterChange?: (value: string) => void;
@@ -98,7 +98,7 @@ export function DataTableToolbar<TData>({
         <div className="relative">
           <Search className="absolute left-2 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
           <Input
-            placeholder="物件名、オーナー名、号室、備考をあいまい検索できます"
+            placeholder="物件名、オーナー名、号室、備考,担当者名をあいまい検索できます"
             value={search}
             onChange={(event) => onSearchChange?.(event.target.value)}
             className="pl-8 h-9 w-[664px]"
@@ -130,7 +130,7 @@ export function DataTableToolbar<TData>({
               <SelectValue placeholder="組織">
                 {organizationFilter ? (
                   <OrganizationBadge
-                    organization={organizationFilter}
+                    organizationSlug={organizationFilter}
                     size="medium"
                   />
                 ) : (
@@ -140,9 +140,9 @@ export function DataTableToolbar<TData>({
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">すべて</SelectItem>
-              {organization.map((org) => (
-                <SelectItem key={org} value={org}>
-                  <OrganizationBadge organization={org} size="medium" />
+              {organizationSlugs.map((orgSlug) => (
+                <SelectItem key={orgSlug} value={orgSlug}>
+                  <OrganizationBadge organizationSlug={orgSlug} size="medium" />
                 </SelectItem>
               ))}
             </SelectContent>

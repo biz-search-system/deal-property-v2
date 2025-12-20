@@ -10,42 +10,39 @@ import { eq, count } from "drizzle-orm";
  * 組織のチーム一覧を取得
  */
 export async function getOrganizationTeams(organizationId: string) {
-  const session = await auth.api.getSession({
-    headers: await headers(),
-  });
-
-  if (!session) {
-    throw new Error("Unauthorized");
-  }
-
   // Better Auth のチーム一覧取得APIを使用
-  const result = await auth.api.listOrganizationTeams({
-    query: { organizationId },
-    headers: await headers(),
-  });
+  // const result = await auth.api.listOrganizationTeams({
+  //   query: { organizationId },
+  //   headers: await headers(),
+  // });
 
-  return result;
+  return db.query.teams.findMany({
+    where: eq(teams.organizationId, organizationId),
+  });
 }
 
 /**
  * チームメンバー一覧を取得
  */
 export async function getTeamMembers(teamId: string) {
-  const session = await auth.api.getSession({
-    headers: await headers(),
-  });
-
-  if (!session) {
-    throw new Error("Unauthorized");
-  }
-
   // Better Auth のチームメンバー取得APIを使用
-  const result = await auth.api.listTeamMembers({
-    query: { teamId },
-    headers: await headers(),
+  // const result = await auth.api.listTeamMembers({
+  //   query: { teamId },
+  //   headers: await headers(),
+  // });
+  // userName, email, roleを取得
+  return await db.query.teamMembers.findMany({
+    where: eq(teamMembers.teamId, teamId),
+    with: {
+      users: {
+        columns: {
+          name: true,
+          email: true,
+          role: true,
+        },
+      },
+    },
   });
-
-  return result;
 }
 
 /**
@@ -83,16 +80,8 @@ export async function getTeamWithMemberCount(teamId: string) {
  * 組織のチーム一覧をメンバー数付きで取得
  */
 export async function getOrganizationTeamsWithMemberCount(
-  organizationId: string,
+  organizationId: string
 ) {
-  const session = await auth.api.getSession({
-    headers: await headers(),
-  });
-
-  if (!session) {
-    throw new Error("Unauthorized");
-  }
-
   const teamsData = await db.query.teams.findMany({
     where: eq(teams.organizationId, organizationId),
   });
@@ -109,7 +98,7 @@ export async function getOrganizationTeamsWithMemberCount(
         ...team,
         memberCount: memberCountResult[0]?.value || 0,
       };
-    }),
+    })
   );
 
   return teamsWithCount;

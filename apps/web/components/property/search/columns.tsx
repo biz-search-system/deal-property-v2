@@ -1,60 +1,71 @@
 "use client";
 
-import { ColumnDef } from "@tanstack/react-table";
+import OrganizationBadge from "@/components/property/badge/organization-badge";
+import { SettlementDatePopoverEdit } from "@/components/property/inline-edit/settlement-date-popover-edit";
+import {
+  updatePropertyAmount,
+  updatePropertyDocumentStatus,
+  updatePropertyEnumField,
+  updatePropertyName,
+  updatePropertyNotes,
+  updatePropertyOwnerName,
+  updatePropertyProgressStatus,
+} from "@/lib/actions/property";
 import type { PropertyWithRelations } from "@/lib/types/property";
+import { ColumnDef } from "@tanstack/react-table";
+import {
+  brokerCompany,
+  companyB,
+  contractType,
+  documentStatus,
+  progressStatus,
+} from "@workspace/drizzle/schemas";
+import type {
+  BrokerCompany,
+  CompanyB,
+  ContractType,
+  DocumentStatus,
+  ProgressStatus,
+} from "@workspace/drizzle/types";
 import { Badge } from "@workspace/ui/components/badge";
 import { Button } from "@workspace/ui/components/button";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@workspace/ui/components/alert-dialog";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@workspace/ui/components/dropdown-menu";
-import { MoreHorizontal } from "lucide-react";
 import {
-  OrganizationNameType,
-  CONTRACT_TYPE_LABELS,
-  CONTRACT_TYPE_COLORS,
-  COMPANY_B_LABELS,
-  COMPANY_B_COLORS,
-  BROKER_COMPANY_LABELS,
   BROKER_COMPANY_COLORS,
-  PROGRESS_STATUS_LABELS,
-  PROGRESS_STATUS_COLORS,
-  DOCUMENT_STATUS_LABELS,
+  BROKER_COMPANY_LABELS,
+  COMPANY_B_COLORS,
+  COMPANY_B_LABELS,
+  CONTRACT_TYPE_COLORS,
+  CONTRACT_TYPE_LABELS,
   DOCUMENT_STATUS_COLORS,
+  DOCUMENT_STATUS_LABELS,
+  OrganizationSlugType,
+  PROGRESS_STATUS_COLORS,
+  PROGRESS_STATUS_LABELS,
 } from "@workspace/utils";
-import {
-  contractType,
-  companyB,
-  brokerCompany,
-  progressStatus,
-  documentStatus,
-} from "@workspace/drizzle/schemas";
-import OrganizationBadge from "@/components/property/badge/organization-badge";
-import { SettlementDatePopoverEdit } from "@/components/property/inline-edit/settlement-date-popover-edit";
-import { DataTableColumnHeader } from "./data-table-column-header";
-import {
-  updatePropertyAmount,
-  updatePropertyName,
-  updatePropertyNotes,
-  updatePropertyOwnerName,
-  updatePropertyEnumField,
-  updatePropertyBuyerCompany,
-  updatePropertyProgressStatus,
-  updatePropertyDocumentStatus,
-} from "@/lib/actions/property";
-import { TextPopoverEdit } from "../inline-edit/text-popover-edit";
-import { CurrencyPopoverEdit } from "../inline-edit/currency-popover-edit";
+import { Edit, Eye, MoreHorizontal, Trash2 } from "lucide-react";
 import { BadgeDropdownEdit } from "../inline-edit/badge-dropdown-edit";
+import { BuyerCompanyComboboxEdit } from "../inline-edit/buyer-company-combobox-edit";
+import { CurrencyPopoverEdit } from "../inline-edit/currency-popover-edit";
 import { RoomNumberPopoverEdit } from "../inline-edit/room-number-popover-edit";
-import type {
-  ContractType,
-  CompanyB,
-  BrokerCompany,
-  ProgressStatus,
-  DocumentStatus,
-} from "@workspace/drizzle/types";
+import { TextPopoverEdit } from "../inline-edit/text-popover-edit";
+import { DataTableColumnHeader } from "./data-table-column-header";
 
 const formatDateWithDay = (dateString: string | Date | null): string => {
   if (!dateString) return "-";
@@ -94,7 +105,7 @@ export const columns: ColumnDef<PropertyWithRelations>[] = [
       const organization = row.original.organization;
       return (
         <OrganizationBadge
-          organization={organization.name as OrganizationNameType}
+          organizationSlug={organization.slug as OrganizationSlugType}
         />
       );
     },
@@ -320,22 +331,10 @@ export const columns: ColumnDef<PropertyWithRelations>[] = [
     },
     cell: ({ row }) => {
       return (
-        <TextPopoverEdit
+        <BuyerCompanyComboboxEdit
           key={`${row.original.id}-${row.original.buyerCompany}`}
-          id={row.original.id}
+          propertyId={row.original.id}
           currentValue={row.original.buyerCompany}
-          onSave={async (id, value) => {
-            await updatePropertyBuyerCompany({
-              id,
-              buyerCompany: value || null,
-            });
-          }}
-          maxLength={100}
-          title="買取会社編集"
-          description="買取会社を編集できます"
-          placeholder="買取会社を入力してください"
-          successMessage="買取会社を更新しました"
-          errorMessage="買取会社の更新に失敗しました"
         />
       );
     },
@@ -505,25 +504,53 @@ export const columns: ColumnDef<PropertyWithRelations>[] = [
       const meta = table.options.meta as {
         onView?: (property: PropertyWithRelations) => void;
         onEdit?: (property: PropertyWithRelations) => void;
+        onDelete?: (property: PropertyWithRelations) => void;
       };
 
       return (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="sm" className="h-5 w-5 p-0">
-              <MoreHorizontal className="h-3 w-3" />
-              <span className="sr-only">操作メニュー</span>
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuItem onClick={() => meta?.onView?.(property)}>
-              詳細
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => meta?.onEdit?.(property)}>
-              編集
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+        <AlertDialog>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="sm" className="h-5 w-5 p-0">
+                <MoreHorizontal className="h-3 w-3" />
+                <span className="sr-only">操作メニュー</span>
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem onClick={() => meta?.onView?.(property)}>
+                <Eye className="h-3 w-3" />
+                詳細
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => meta?.onEdit?.(property)}>
+                <Edit className="h-3 w-3" />
+                編集
+              </DropdownMenuItem>
+              <AlertDialogTrigger asChild>
+                <DropdownMenuItem className="text-destructive focus:text-destructive">
+                  <Trash2 className="h-3 w-3" />
+                  削除
+                </DropdownMenuItem>
+              </AlertDialogTrigger>
+            </DropdownMenuContent>
+          </DropdownMenu>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>物件を削除しますか？</AlertDialogTitle>
+              <AlertDialogDescription>
+                「{property.propertyName}」を削除します。この操作は取り消せません。
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>キャンセル</AlertDialogCancel>
+              <AlertDialogAction
+                onClick={() => meta?.onDelete?.(property)}
+                className="bg-destructive text-white hover:bg-destructive/90 dark:bg-destructive/60"
+              >
+                削除
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
       );
     },
   },

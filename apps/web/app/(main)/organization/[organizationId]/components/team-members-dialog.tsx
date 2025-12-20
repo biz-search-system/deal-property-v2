@@ -32,6 +32,7 @@ import {
   AvatarImage,
 } from "@workspace/ui/components/avatar";
 import { getAvatarUrl } from "@/lib/avatar";
+import { SetActiveOrganization } from "./set-active-organization";
 
 interface TeamMembersDialogProps {
   open: boolean;
@@ -55,6 +56,8 @@ export function TeamMembersDialog({
   } = useTeamMembers(teamId);
   const { organizationMembers, isLoading: orgLoading } =
     useOrganizationMembers(organizationId);
+
+  console.log("organizationMembers", organizationMembers);
   const [selectedUserId, setSelectedUserId] = useState<string>("");
   const [isPending, startTransition] = useTransition();
 
@@ -62,8 +65,8 @@ export function TeamMembersDialog({
   const availableMembers = organizationMembers?.members.filter(
     (orgMember) =>
       !teamMembers?.some(
-        (teamMember) => teamMember.userId === orgMember.user.id,
-      ),
+        (teamMember) => teamMember.userId === orgMember.user.id
+      )
   );
 
   const handleAddMember = () => {
@@ -113,6 +116,7 @@ export function TeamMembersDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
+      <SetActiveOrganization organizationId={organizationId} />
       <DialogContent className="max-w-2xl">
         <DialogHeader>
           <DialogTitle>チームメンバー管理</DialogTitle>
@@ -206,7 +210,7 @@ export function TeamMembersDialog({
                 <div className="divide-y">
                   {teamMembers.map((member) => {
                     const user = organizationMembers?.members.find(
-                      (m) => m.user.id === member.userId,
+                      (m) => m.user.id === member.userId
                     )?.user;
 
                     const avatarData = getAvatarUrl({
@@ -239,7 +243,7 @@ export function TeamMembersDialog({
                           onClick={() =>
                             handleRemoveMember(
                               member.userId,
-                              user?.name || null,
+                              user?.name || null
                             )
                           }
                           disabled={isPending}

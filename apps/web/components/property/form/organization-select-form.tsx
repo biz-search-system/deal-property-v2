@@ -1,10 +1,13 @@
 "use client";
 
-import { Organization } from "@/lib/types/organization";
+import {
+  Organization,
+  OrganizationWithUserRole,
+} from "@/lib/types/organization";
 import {
   ORGANIZATION_COLORS,
   ORGANIZATION_LABELS,
-  OrganizationNameType,
+  OrganizationSlugType,
 } from "@workspace/utils";
 import { Badge } from "@workspace/ui/components/badge";
 import {
@@ -83,8 +86,8 @@ export default function OrganizationSelectForm<
                 <SelectValue placeholder={placeholder}>
                   {selectedOrganization && (
                     <OrganizationBadge
-                      organization={
-                        selectedOrganization.name as OrganizationNameType
+                      organizationSlug={
+                        selectedOrganization.slug as OrganizationSlugType
                       }
                       size="medium"
                     />
@@ -94,11 +97,11 @@ export default function OrganizationSelectForm<
             </FormControl>
             <SelectContent>
               {organizations.map((org) => {
-                const organizationName = org.name as OrganizationNameType;
+                const organizationSlug = org.slug as OrganizationSlugType;
                 return (
                   <SelectItem key={org.id} value={org.id}>
                     <OrganizationBadge
-                      organization={organizationName}
+                      organizationSlug={organizationSlug}
                       size="medium"
                     />
                   </SelectItem>

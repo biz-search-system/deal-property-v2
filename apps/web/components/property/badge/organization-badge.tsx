@@ -1,18 +1,18 @@
 import {
   ORGANIZATION_COLORS,
   ORGANIZATION_LABELS,
-  OrganizationNameType,
+  OrganizationSlugType,
 } from "@workspace/utils";
 import { Badge } from "@workspace/ui/components/badge";
 import { cn } from "@workspace/utils";
 import { truncateText } from "@/lib/property";
 
 export default function OrganizationBadge({
-  organization,
+  organizationSlug,
   className,
   size = "small",
 }: {
-  organization: OrganizationNameType | null;
+  organizationSlug: OrganizationSlugType | null;
   className?: string;
   size?: "small" | "medium";
 }) {
@@ -22,12 +22,12 @@ export default function OrganizationBadge({
       className={cn(
         size === "small" && "text-[9px] px-1 py-0",
         size === "medium" && "text-xs",
-        organization && ORGANIZATION_COLORS[organization],
+        organizationSlug && ORGANIZATION_COLORS[organizationSlug],
         className
       )}
     >
       {truncateText(
-        (organization && ORGANIZATION_LABELS[organization]) || null
+        (organizationSlug && ORGANIZATION_LABELS[organizationSlug]) || null
       )}
     </Badge>
   );

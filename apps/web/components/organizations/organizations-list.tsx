@@ -1,6 +1,10 @@
 "use client";
 
-import Link from "next/link";
+import {
+  Organization,
+  OrganizationWithUserRole,
+} from "@/lib/types/organization";
+import { Badge } from "@workspace/ui/components/badge";
 import {
   Card,
   CardContent,
@@ -8,13 +12,13 @@ import {
   CardHeader,
   CardTitle,
 } from "@workspace/ui/components/card";
-import { Badge } from "@workspace/ui/components/badge";
 import { Users } from "lucide-react";
-import { OrganizationWithUserRole } from "@/lib/types/organization";
+import Link from "next/link";
 import { OrganizationCardMenu } from "./organization-card-menu";
 
 interface OrganizationsListProps {
   organizations: OrganizationWithUserRole[];
+  // organizations: Organization[];
   activeOrgId: string | null;
 }
 

@@ -7,6 +7,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@workspace/ui/components/popover";
+import { cn } from "@workspace/utils";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -60,9 +61,15 @@ export function RoomNumberPopoverEdit({
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
-        <div className="cursor-pointer truncate rounded px-1 text-[10px] hover:bg-muted">
-          {currentValue || <span className="text-muted-foreground">-</span>}
-        </div>
+        <Button
+          variant="ghost"
+          className={cn(
+            "h-auto max-w-full w-full p-1 justify-start text-[10px] font-normal transition-[color,box-shadow] hover:bg-transparent hover:ring-ring/50 hover:ring-[3px]",
+            !currentValue && "text-muted-foreground"
+          )}
+        >
+          <p className="truncate">{currentValue || "-"}</p>
+        </Button>
       </PopoverTrigger>
       <PopoverContent className="w-48">
         <div className="grid gap-3">

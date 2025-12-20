@@ -50,7 +50,7 @@ export const auth = betterAuth({
       const email = user.email;
       const resetPasswordLink = `${getBaseURL()}/reset-password?token=${token}`;
       const resendDomain = process.env.RESEND_DOMAIN!;
-      const result = await resend.emails.send({
+      const { error } = await resend.emails.send({
         from: `パスワードリセット <password-reset@${resendDomain}>`,
         to: email,
         subject: `パスワードリセットのご案内`,
@@ -60,7 +60,9 @@ export const auth = betterAuth({
           domain: resendDomain,
         }),
       });
-      // console.log(result);
+      if (error) {
+        console.error(error);
+      }
     },
     onPasswordReset: async ({ user }, request) => {
       // your logic here

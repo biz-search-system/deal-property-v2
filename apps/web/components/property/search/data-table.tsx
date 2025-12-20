@@ -12,6 +12,11 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
+import {
+  ContractType,
+  DocumentStatus,
+  ProgressStatus,
+} from "@workspace/drizzle/types";
 import { Card } from "@workspace/ui/components/card";
 import { ScrollArea } from "@workspace/ui/components/scroll-area";
 import {
@@ -22,12 +27,7 @@ import {
   TableHeader,
   TableRow,
 } from "@workspace/ui/components/table";
-import {
-  ContractType,
-  DocumentStatus,
-  ProgressStatus,
-} from "@workspace/drizzle/types";
-import { OrganizationNameType } from "@workspace/utils";
+import { OrganizationSlugType } from "@workspace/utils";
 import { useState } from "react";
 import { DataTablePagination } from "./data-table-pagination";
 import { DataTableToolbar } from "./data-table-toolbar";
@@ -37,12 +37,13 @@ interface DataTableProps<TData, TValue> {
   data: TData[];
   onView?: (data: TData) => void;
   onEdit?: (data: TData) => void;
+  onDelete?: (data: TData) => void;
   /** 検索文字列 */
   search?: string;
   /** 検索文字列変更時のコールバック */
   onSearchChange?: (value: string) => void;
   /** 組織フィルター */
-  organizationFilter?: OrganizationNameType;
+  organizationFilter?: OrganizationSlugType;
   /** 組織フィルター変更時のコールバック */
   onOrganizationFilterChange?: (value: string) => void;
   /** 進捗ステータスフィルター */
@@ -64,6 +65,7 @@ export function DataTable<TData, TValue>({
   data,
   onView,
   onEdit,
+  onDelete,
   search = "",
   onSearchChange,
   organizationFilter,
@@ -97,6 +99,7 @@ export function DataTable<TData, TValue>({
     meta: {
       onView,
       onEdit,
+      onDelete,
       search,
       onSearchChange,
       organizationFilter,
@@ -135,7 +138,7 @@ export function DataTable<TData, TValue>({
                       const id = header.column.id;
                       switch (id) {
                         case "organization":
-                          return "";
+                          return "w-[70px]";
                         case "staff":
                           return "w-[50px]";
                         case "propertyName":
@@ -149,7 +152,7 @@ export function DataTable<TData, TValue>({
                         case "amountExit":
                           return "w-[50px]";
                         case "commission":
-                          return "w-[100px]";
+                          return "w-[50px]";
                         case "profit":
                           return "w-[50px]";
                         case "bcDeposit":
@@ -157,7 +160,7 @@ export function DataTable<TData, TValue>({
                         case "settlementDate":
                           return "w-[60px]";
                         case "buyerCompany":
-                          return "min-w-[50px]";
+                          return "min-w-[40px]";
                         case "contractType":
                         case "companyB":
                         case "brokerCompany":
@@ -205,15 +208,17 @@ export function DataTable<TData, TValue>({
                         const base = "text-[10px] p-1";
                         switch (id) {
                           case "organization":
-                            return `${base}`;
+                            return `${base} w-[70px]`;
                           case "staff":
-                            return `${base} w-[50px]`;
+                            return `${base} max-w-[80px]`;
                           case "propertyName":
                             return `${base} max-w-[140px]`;
                           case "roomNumber":
                             return `${base}`;
                           case "ownerName":
-                            return `${base} max-w-[60px] `;
+                            return `${base} max-w-[60px]`;
+                          case "buyerCompany":
+                            return `${base} max-w-[50px]`;
                           case "notes":
                             return `${base} max-w-[80px]`;
                           case "actions":

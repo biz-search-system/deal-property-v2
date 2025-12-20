@@ -33,6 +33,10 @@ export default function PasswordForm<
 }) {
   const [passwordVisible, setPasswordVisible] = useState(false);
 
+  const {
+    formState: { errors },
+  } = form;
+
   return (
     <FormField
       control={form.control}
@@ -74,12 +78,15 @@ export default function PasswordForm<
               </Button>
             </div>
           </FormControl>
-          <FormMessage />
-          <FormDescription>
-            {autoComplete === "new-password"
-              ? "英字と数字を含む6文字以上で設定してください"
-              : ""}
-          </FormDescription>
+          {errors[name] ? (
+            <FormMessage />
+          ) : (
+            <FormDescription>
+              {autoComplete === "new-password"
+                ? "英字と数字を含む6文字以上で設定してください"
+                : ""}
+            </FormDescription>
+          )}
         </FormItem>
       )}
     />

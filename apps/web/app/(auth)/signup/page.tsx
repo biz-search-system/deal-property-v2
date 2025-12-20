@@ -29,15 +29,24 @@ export default async function SignupPage({ searchParams }: SignupPageProps) {
   });
   //ログインしているユーザーが招待を受け入れる
   if (session && invitationId) {
-    const result = await auth.api.acceptInvitation({
-      body: {
-        invitationId,
-      },
-      headers: await headers(),
-    });
+    let acceptResult;
+    try {
+      acceptResult = await auth.api.acceptInvitation({
+        body: {
+          invitationId,
+        },
+        headers: await headers(),
+      });
+    } catch (error) {
+      console.error("Failed to accept invitation:", error);
+      redirect("/");
+    }
 
-    if (result) {
-      redirect(`/properties/unconfirmed`);
+    if (acceptResult) {
+      const orgName = encodeURIComponent(
+        result?.organizations.name || "組織"
+      );
+      redirect(`/properties/unconfirmed?invited=${orgName}`);
     }
   }
   // 招待されていないユーザーはホーム画面にリダイレクト

@@ -11,6 +11,23 @@ export const PROGRESS_STATUS_LABELS: Record<ProgressStatus, string> = {
   settlement_completed: "決済完了",
 } as const;
 
+/** 決済日が未設定の場合に制限される進捗ステータス（BC確定前以外すべて） */
+export const SETTLEMENT_DATE_REQUIRED_STATUSES: ProgressStatus[] = [
+  "waiting_contract_cb", // 契約CB待ち
+  "waiting_bc_contract", // BC契約待ち
+  "waiting_settlement_date", // 決済日待ち
+  "waiting_settlement_cb", // 精算CB待ち
+  "waiting_settlement", // 決済待ち
+  "settlement_completed", // 決済完了
+];
+
+/** 月末予定の場合に制限される進捗ステータス（決済日が確定していないと設定不可） */
+export const MONTH_END_RESTRICTED_STATUSES: ProgressStatus[] = [
+  "waiting_settlement_cb", // 精算CB待ち
+  "waiting_settlement", // 決済待ち
+  "settlement_completed", // 決済完了
+];
+
 /** 進捗ステータスのカラーマッピング */
 export const PROGRESS_STATUS_COLORS: Record<ProgressStatus, string> = {
   bc_before_confirmed:

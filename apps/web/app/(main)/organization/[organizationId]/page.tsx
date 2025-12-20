@@ -1,18 +1,19 @@
+import { BreadcrumbConfig } from "@/components/breadcrumb-provider";
+import { getFullOrganization } from "@/lib/data/organization";
+import { verifySession } from "@/lib/data/sesstion";
 import {
   Tabs,
   TabsContent,
   TabsList,
   TabsTrigger,
 } from "@workspace/ui/components/tabs";
-import { Users, Mail, UserPlus, Users2 } from "lucide-react";
-import { MembersTab } from "./components/members-tab";
+import { Mail, UserPlus, Users, Users2 } from "lucide-react";
+import { notFound } from "next/navigation";
 import { InvitationsTab } from "./components/invitations-tab";
 import { InviteTab } from "./components/invite-tab";
+import { MembersTab } from "./components/members-tab";
+import { SetActiveOrganization } from "./components/set-active-organization";
 import { TeamsTab } from "./components/teams-tab";
-import { getFullOrganization } from "@/lib/data/organization";
-import { auth } from "@workspace/auth";
-import { headers } from "next/headers";
-import { BreadcrumbConfig } from "@/components/breadcrumb-provider";
 
 export const metadata = {
   title: "メンバー管理",
@@ -25,26 +26,25 @@ export default async function OrganizationMembersPage({
   const { organizationId } = await params;
 
   // 現在のユーザーのセッションを取得
-  const session = await auth.api.getSession({
-    headers: await headers(),
-  });
+  const session = await verifySession();
+  const fullOrg = await getFullOrganization(organizationId);
 
-  // 組織の詳細情報を取得してユーザーのロールを確認
-  let userRole: string | undefined;
-  if (session) {
-    const fullOrg = await getFullOrganization(organizationId);
-    const currentUserMember = fullOrg?.members.find(
-      (m) => m.userId === session.user.id
-    );
-    userRole = currentUserMember?.role;
+  // 組織が存在しない、またはユーザーがメンバーでない場合は404
+  const currentUserMember = fullOrg?.members.find(
+    (m) => m.userId === session.user.id
+  );
+  if (!fullOrg || !currentUserMember) {
+    notFound();
   }
+
+  const userRole = currentUserMember.role;
 
   return (
     <div className="container mx-auto py-6 space-y-8">
       <BreadcrumbConfig
         items={[
           { label: "組織管理", href: "/organization" },
-          { label: "メンバー管理" },
+          { label: fullOrg.name },
         ]}
       />
       <Tabs defaultValue="members" className="space-y-4">

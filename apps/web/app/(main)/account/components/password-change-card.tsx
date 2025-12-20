@@ -1,35 +1,15 @@
 "use client";
 
-import { useState, useTransition } from "react";
 import { changePassword } from "@/lib/actions/user";
-import { Button } from "@workspace/ui/components/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@workspace/ui/components/card";
-import {
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@workspace/ui/components/form";
-import { Input } from "@workspace/ui/components/input";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-import { toast } from "sonner";
-import { z } from "zod";
-import { Loader2, Eye, EyeOff } from "lucide-react";
-import FormSectionCard from "./form-section-card";
-import InputForm from "./input-form";
 import { PasswordChange } from "@/lib/types/auth";
 import { passwordChangeSchema } from "@/lib/zod/schemas/auth";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Form } from "@workspace/ui/components/form";
+import { useTransition } from "react";
+import { useForm } from "react-hook-form";
+import { toast } from "sonner";
+import FormSectionCard from "./form-section-card";
+import InputForm from "./input-form";
 
 export function PasswordChangeCard() {
   const [isPending, startTransition] = useTransition();

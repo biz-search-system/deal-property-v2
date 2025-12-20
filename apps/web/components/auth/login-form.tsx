@@ -28,8 +28,9 @@ import PasswordForm from "./password-form";
 export function LoginForm({
   className,
   invitationId,
+  organizationName,
   ...props
-}: React.ComponentProps<"div"> & { invitationId?: string }) {
+}: React.ComponentProps<"div"> & { invitationId?: string; organizationName?: string }) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
 
@@ -86,7 +87,14 @@ export function LoginForm({
       toast.success(
         invitationId ? "招待の受け入れに成功しました" : "ログインしました"
       );
-      router.push("/properties/unconfirmed");
+
+      // 招待がある場合は組織名をクエリパラメータに追加
+      if (invitationId && organizationName) {
+        const encodedOrgName = encodeURIComponent(organizationName);
+        router.push(`/properties/unconfirmed?invited=${encodedOrgName}`);
+      } else {
+        router.push("/properties/unconfirmed");
+      }
     });
   };
 
@@ -144,31 +152,6 @@ export function LoginForm({
               </div>
             </form>
           </Form>
-          <Button
-            type="button"
-            className="w-full"
-            disabled={isPending}
-            onClick={() => {
-              authClient.signIn
-                .anonymous()
-                .then(() => {
-                  toast.success("ログインしました");
-                  router.push("/properties/unconfirmed");
-                })
-                .catch((error) => {
-                  console.error(error);
-                });
-            }}
-          >
-            {isPending ? (
-              <>
-                <Loader2 className="animate-spin h-4 w-4" />
-                ログイン中...
-              </>
-            ) : (
-              "ログイン"
-            )}
-          </Button>
           <div className="bg-muted relative hidden md:flex items-center justify-center">
             <HeroImage />
           </div>

@@ -16,11 +16,13 @@ import {
   TableHeader,
   TableRow,
 } from "@workspace/ui/components/table";
+import { deleteProperty } from "@/lib/actions/property";
 import type { PropertyWithRelations } from "@/lib/types/property";
 import { useRouter } from "next/navigation";
 import { PropertyDetailModal } from "@/components/property/property-detail-modal";
 import { useQueryState } from "nuqs";
 import { useState } from "react";
+import { toast } from "sonner";
 import { monthlyColumns } from "./monthly-columns";
 
 interface MonthlyPropertiesTableProps {
@@ -46,6 +48,15 @@ export function MonthlyPropertiesTable({
     router.push(`/properties/monthly/${year}/${month}/${property.id}`);
   };
 
+  const handleDelete = async (property: PropertyWithRelations) => {
+    try {
+      await deleteProperty(property.id);
+      toast.success("物件を削除しました");
+    } catch {
+      toast.error("物件の削除に失敗しました");
+    }
+  };
+
   const table = useReactTable({
     data: properties,
     columns: monthlyColumns,
@@ -58,13 +69,14 @@ export function MonthlyPropertiesTable({
     meta: {
       onView: handleViewDetails,
       onEdit: handlePropertyClick,
+      onDelete: handleDelete,
     },
   });
 
   const getHeaderColumnClass = (columnId: string) => {
     switch (columnId) {
       case "organization":
-        return "";
+        return "w-[70px]";
       case "staff":
         return "w-[50px]";
       case "propertyName":
@@ -75,11 +87,10 @@ export function MonthlyPropertiesTable({
         return "min-w-[55px]";
       case "amountA":
       case "amountExit":
+      case "commission":
       case "profit":
       case "bcDeposit":
         return "w-[50px]";
-      case "commission":
-        return "w-[100px]";
       case "settlementDate":
         return "w-[60px]";
       case "buyerCompany":
@@ -103,7 +114,7 @@ export function MonthlyPropertiesTable({
     const base = "text-[10px] p-1";
     switch (columnId) {
       case "organization":
-        return base;
+        return `${base} w-[70px]`;
       case "staff":
         return `${base} w-[50px]`;
       case "propertyName":
@@ -111,6 +122,8 @@ export function MonthlyPropertiesTable({
       case "roomNumber":
         return base;
       case "ownerName":
+        return `${base} max-w-[60px]`;
+      case "buyerCompany":
         return `${base} max-w-[60px]`;
       case "notes":
         return `${base} max-w-[80px]`;

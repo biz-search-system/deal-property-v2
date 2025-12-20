@@ -7,6 +7,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@workspace/ui/components/popover";
+import { cn } from "@workspace/utils";
 import { useState } from "react";
 import { toast } from "sonner";
 
@@ -118,14 +119,18 @@ export function CurrencyPopoverEdit({
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
-        <div
-          className={`cursor-pointer rounded px-1 text-right text-[10px] hover:bg-muted ${highlight ? "font-semibold text-green-600 dark:text-green-400" : ""}`}
+        <Button
+          variant="ghost"
+          className={cn(
+            "h-auto max-w-full w-full p-1 justify-end text-[10px] font-normal transition-[color,box-shadow] hover:bg-transparent hover:ring-ring/50 hover:ring-[3px]",
+            highlight && "font-semibold text-green-600 dark:text-green-400"
+          )}
           title={
             currentValue !== null ? `${currentValue.toLocaleString()}円` : ""
           }
         >
-          {formatDisplay(currentValue)}
-        </div>
+          <p className="truncate">{formatDisplay(currentValue)}</p>
+        </Button>
       </PopoverTrigger>
       <PopoverContent className="w-64">
         <div className="grid gap-4">

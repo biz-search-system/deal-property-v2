@@ -2,14 +2,16 @@ import {
   getOrganizations,
   getOrganizationsWithUserRole,
 } from "@/lib/data/organization";
-import { OrganizationsResponse } from "@/lib/types/organization";
+import {
+  OrganizationsResponse,
+  OrganizationsWithUserRoleResponse,
+} from "@/lib/types/organization";
 import { auth } from "@workspace/auth";
 import { headers } from "next/headers";
 import { NextResponse } from "next/server";
 
 export async function GET(): Promise<
-  // NextResponse<OrganizationsWithUserRoleResponse>
-  NextResponse<OrganizationsResponse>
+  NextResponse<OrganizationsWithUserRoleResponse>
 > {
   // セッション確認
   const session = await auth.api.getSession({
@@ -29,8 +31,7 @@ export async function GET(): Promise<
     const activeOrgId = session.session.activeOrganizationId;
 
     // 組織一覧を取得
-    // const organizations = await getOrganizationsWithUserRole(userId);
-    const organizations = await getOrganizations();
+    const organizations = await getOrganizationsWithUserRole(userId);
 
     return NextResponse.json({
       organizations,
