@@ -53,6 +53,10 @@ export interface OrganizationInvitationsSuccessResponse {
   organizationInvitations: OrganizationInvitations[];
 }
 
+export interface OrganizationsSuccessResponse {
+  organizations: Organization[];
+}
+
 export interface OrganizationsWithUserRoleSuccessResponse {
   organizations: OrganizationWithUserRole[];
   activeOrgId: string | null;
@@ -71,6 +75,10 @@ export type OrganizationMembersResponse =
   | ErrorResponse;
 export type OrganizationInvitationsResponse =
   | OrganizationInvitationsSuccessResponse
+  | ErrorResponse;
+
+export type OrganizationsResponse =
+  | OrganizationsSuccessResponse
   | ErrorResponse;
 export type OrganizationsWithUserRoleResponse =
   | OrganizationsWithUserRoleSuccessResponse

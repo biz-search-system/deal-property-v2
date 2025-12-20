@@ -1,5 +1,10 @@
 "use client";
 
+import type {
+  Organization,
+  OrganizationWithUserRole,
+} from "@/lib/types/organization";
+import { SalesTeamMember } from "@/lib/types/team";
 import {
   Tabs,
   TabsContent,
@@ -10,10 +15,9 @@ import BasicInfoTab from "./tabs/basic-info-tab";
 import ContractProgressTab from "./tabs/contract-progress-tab";
 import DocumentProgressTab from "./tabs/document-progress-tab";
 import SettlementProgressTab from "./tabs/settlement-progress-tab";
-import type { Organization } from "@/lib/types/organization";
 
 interface PropertyFormTabsProps {
-  availableStaff: { id: string; name: string; email: string; role: string }[];
+  availableStaff: SalesTeamMember[];
   organizations?: Organization[];
   defaultTab?: string;
 }

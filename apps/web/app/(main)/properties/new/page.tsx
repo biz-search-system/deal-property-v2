@@ -17,7 +17,11 @@ import BasicInfoTab from "@/components/property/tabs/basic-info-tab";
 import ContractProgressTab from "@/components/property/tabs/contract-progress-tab";
 import DocumentProgressTab from "@/components/property/tabs/document-progress-tab";
 import SettlementProgressTab from "@/components/property/tabs/settlement-progress-tab";
-import { getOrganizations, getSalesTeamMembers } from "@/lib/data/organization";
+import {
+  getOrganizations,
+  getOrganizationsByCurrentUser,
+  getSalesTeamMembers,
+} from "@/lib/data/organization";
 import { verifySession } from "@/lib/data/sesstion";
 import { BreadcrumbConfig } from "@/components/breadcrumb-provider";
 
@@ -28,8 +32,11 @@ export const metadata = {
 export default async function PropertyNewPage() {
   // セッション取得
   const session = await verifySession();
-  // ユーザーが所属している組織一覧を取得
+  // 組織一覧を取得
   const organizations = await getOrganizations();
+  // 現在のユーザーが所属する組織一覧を取得
+  // const organizationsByCurrentUser = await getOrganizationsByCurrentUser();
+  // console.log("organizationsByCurrentUser", organizationsByCurrentUser);
   // デフォルト組織IDを取得
   const activeOrganizationId = session.session.activeOrganizationId;
   // デフォルト組織の営業チームメンバーを取得
@@ -53,43 +60,46 @@ export default async function PropertyNewPage() {
           }}
         >
           <Card className="flex min-h-0 flex-1 flex-col gap-2 p-3 lg:p-5">
-          <CardHeader className="shrink-0">
-            <div className="flex items-center justify-between">
-              <CardTitle>案件情報</CardTitle>
-              <PropertyFormActions mode="create" />
-            </div>
-          </CardHeader>
-          <CardContent className="flex min-h-0 flex-1 flex-col px-3 lg:px-4">
-            <Tabs defaultValue="basic" className="flex min-h-0 flex-1 flex-col">
-              <TabsList className="grid w-full grid-cols-4">
-                <TabsTrigger value="basic">基本情報</TabsTrigger>
-                <TabsTrigger value="contract">契約進捗</TabsTrigger>
-                <TabsTrigger value="document">書類進捗</TabsTrigger>
-                <TabsTrigger value="settlement">決済進捗</TabsTrigger>
-              </TabsList>
-
-              <div className="min-h-0 flex-1 overflow-auto">
-                <TabsContent value="basic" className="mt-3 px-1">
-                  <BasicInfoTab
-                    availableStaff={availableStaff}
-                    organizations={organizations}
-                  />
-                </TabsContent>
-
-                <TabsContent value="contract" className="mt-3 px-1">
-                  <ContractProgressTab />
-                </TabsContent>
-
-                <TabsContent value="document" className="mt-3 px-1">
-                  <DocumentProgressTab />
-                </TabsContent>
-
-                <TabsContent value="settlement" className="mt-3 px-1">
-                  <SettlementProgressTab />
-                </TabsContent>
+            <CardHeader className="shrink-0">
+              <div className="flex items-center justify-between">
+                <CardTitle>案件情報</CardTitle>
+                <PropertyFormActions mode="create" />
               </div>
-            </Tabs>
-          </CardContent>
+            </CardHeader>
+            <CardContent className="flex min-h-0 flex-1 flex-col px-3 lg:px-4">
+              <Tabs
+                defaultValue="basic"
+                className="flex min-h-0 flex-1 flex-col"
+              >
+                <TabsList className="grid w-full grid-cols-4">
+                  <TabsTrigger value="basic">基本情報</TabsTrigger>
+                  <TabsTrigger value="contract">契約進捗</TabsTrigger>
+                  <TabsTrigger value="document">書類進捗</TabsTrigger>
+                  <TabsTrigger value="settlement">決済進捗</TabsTrigger>
+                </TabsList>
+
+                <div className="min-h-0 flex-1 overflow-auto">
+                  <TabsContent value="basic" className="mt-3 px-1">
+                    <BasicInfoTab
+                      availableStaff={availableStaff}
+                      organizations={organizations}
+                    />
+                  </TabsContent>
+
+                  <TabsContent value="contract" className="mt-3 px-1">
+                    <ContractProgressTab />
+                  </TabsContent>
+
+                  <TabsContent value="document" className="mt-3 px-1">
+                    <DocumentProgressTab />
+                  </TabsContent>
+
+                  <TabsContent value="settlement" className="mt-3 px-1">
+                    <SettlementProgressTab />
+                  </TabsContent>
+                </div>
+              </Tabs>
+            </CardContent>
           </Card>
         </PropertyFormProvider>
       </PropertyProvider>

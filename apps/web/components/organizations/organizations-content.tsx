@@ -1,13 +1,20 @@
 "use client";
 
 import { OrganizationsList } from "@/components/organizations/organizations-list";
-import { useOrganizationsWithUserRole } from "@/lib/swr/organization";
+import {
+  useOrganizations,
+  useOrganizationsWithUserRole,
+} from "@/lib/swr/organization";
+import { authClient } from "@workspace/auth/client";
 import { Card, CardContent } from "@workspace/ui/components/card";
 import { Loader2 } from "lucide-react";
 
 export function OrganizationsContent() {
   const { organizations, activeOrgId, isLoading, isValidating, error } =
     useOrganizationsWithUserRole();
+  // const { organizations, isLoading, isValidating, error } = useOrganizations();
+  // const sesstion = authClient.useSession();
+  // const activeOrgId = sesstion.data?.session?.activeOrganizationId;
 
   if (error) {
     return (

@@ -6,6 +6,7 @@ import type {
   OrganizationNameSuccessResponse,
   OrganizationsWithUserRoleSuccessResponse,
   CurrentUserOrganizationInfoSuccessResponse,
+  OrganizationsSuccessResponse,
 } from "@/lib/types/organization";
 
 export const useOrganizationName = (
@@ -83,11 +84,29 @@ export const useOrganizationInvitations = (
   };
 };
 
+export const useOrganizations = (swrOptions?: SWRConfiguration) => {
+  // Route ハンドラーの成功レスポンス型と一致
+  const { data, error, isLoading, isValidating, mutate } =
+    useSWR<OrganizationsSuccessResponse>("/api/organization", fetcher, {
+      dedupingInterval: 60000, // 60秒間キャッシュ
+      revalidateOnFocus: false, // フォーカス時の再検証無効
+      ...swrOptions,
+    });
+
+  return {
+    organizations: data?.organizations,
+    isLoading,
+    isValidating,
+    error,
+    mutate,
+  };
+};
+
 export const useOrganizationsWithUserRole = (swrOptions?: SWRConfiguration) => {
   // Route ハンドラーの成功レスポンス型と一致
   const { data, error, isLoading, isValidating, mutate } =
     useSWR<OrganizationsWithUserRoleSuccessResponse>(
-      "/api/organization",
+      "/api/organization/user-role",
       fetcher,
       {
         dedupingInterval: 60000, // 60秒間キャッシュ

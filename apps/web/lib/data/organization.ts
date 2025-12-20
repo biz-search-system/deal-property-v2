@@ -1,13 +1,28 @@
 import "server-only";
 
 import { auth } from "@workspace/auth";
+import { db } from "@workspace/drizzle/db";
 import { headers } from "next/headers";
+import { getOrganizationTeams, getTeamMembers } from "./team";
 
-export async function getOrganizations() {
+/**
+ * 組織一覧を取得
+ * @returns 組織一覧（sortOrder順）
+ */
+export function getOrganizations() {
+  return db.query.organizations.findMany({
+    orderBy: (orgs, { asc }) => [asc(orgs.sortOrder)],
+  });
+}
+/**
+ *
+ * @returns 現在のユーザーが所属する組織一覧
+ * 役割とチーム情報含む
+ */
+export async function getOrganizationsByCurrentUser() {
   const result = await auth.api.listOrganizations({
     headers: await headers(),
   });
-
   // DBのsortOrderでソート
   return [...result].sort((a, b) => (a.sortOrder ?? 0) - (b.sortOrder ?? 0));
 }
@@ -107,76 +122,79 @@ export async function getOrganizationInvitations(organizationId: string) {
  */
 export async function getSalesTeamMembers(organizationId: string) {
   // 組織の完全な情報を取得（メンバー含む）
-  const fullOrg = await auth.api.getFullOrganization({
-    query: { organizationId },
-    headers: await headers(),
-  });
+  // const fullOrg = await auth.api.getFullOrganization({
+  //   query: { organizationId },
+  //   headers: await headers(),
+  // });
 
-  if (!fullOrg || !fullOrg.members) {
-    return [];
-  }
+  // if (!fullOrg || !fullOrg.members) {
+  //   return [];
+  // }
 
-  // チーム一覧を取得
-  const teamsResult = await auth.api.listOrganizationTeams({
-    query: { organizationId },
-    headers: await headers(),
-  });
-
-  const teams = teamsResult || [];
+  // 対象組織のチーム一覧を取得
+  const teams = await getOrganizationTeams(organizationId);
 
   // 営業チームを探す
   const salesTeam = teams.find(
     (team) => team.name === "営業" || team.name === "営業チーム"
   );
-
   if (!salesTeam) {
-    // 営業チームがない場合は組織の全メンバーを返す
-    return fullOrg.members.map((member) => ({
-      id: member.userId,
-      name: member.user?.name || "名前なし",
-      email: member.user?.email || "",
-      role: member.role || "member",
-    }));
+    return [];
   }
+
+  // if (!salesTeam) {
+  //   // 営業チームがない場合は組織の全メンバーを返す
+  //   return fullOrg.members.map((member) => ({
+  //     id: member.userId,
+  //     name: member.user?.name || "名前なし",
+  //     email: member.user?.email || "",
+  //     role: member.role || "member",
+  //   }));
+  // }
 
   // 営業チームのメンバー一覧を取得
   try {
-    const teamMembers = await auth.api.listTeamMembers({
-      query: { teamId: salesTeam.id },
-      headers: await headers(),
-    });
+    // const teamMembers = await auth.api.listTeamMembers({
+    //   query: { teamId: salesTeam.id },
+    //   headers: await headers(),
+    // });
+    const teamMembers = await getTeamMembers(salesTeam.id);
 
-    if (!teamMembers || teamMembers.length === 0) {
-      // チームメンバーがいない場合は組織の全メンバーを返す
-      return fullOrg.members.map((member) => ({
-        id: member.userId,
-        name: member.user?.name || "名前なし",
-        email: member.user?.email || "",
-        role: member.role || "member",
-      }));
-    }
+    // if (!teamMembers || teamMembers.length === 0) {
+    //   // チームメンバーがいない場合は組織の全メンバーを返す
+    //   return fullOrg.members.map((member) => ({
+    //     id: member.userId,
+    //     name: member.user?.name || "名前なし",
+    //     email: member.user?.email || "",
+    //     role: member.role || "member",
+    //   }));
+    // }
 
     // チームメンバーのIDリストを作成
     const teamMemberIds = new Set(teamMembers.map((tm) => tm.userId));
 
     // fullOrgのメンバー情報から営業チームメンバーの詳細を取得
-    return fullOrg.members
-      .filter((member) => teamMemberIds.has(member.userId))
-      .map((member) => ({
-        id: member.userId,
-        name: member.user?.name || "名前なし",
-        email: member.user?.email || "",
-        role: member.role || "member",
-      }));
+    return teamMembers;
+
+    // fullOrg.members
+    //   .filter((member) => teamMemberIds.has(member.userId))
+    //   .map((member) => ({
+    //     id: member.userId,
+    //     name: member.user?.name || "名前なし",
+    //     email: member.user?.email || "",
+    //     role: member.role || "member",
+    //   }));
   } catch (error) {
     console.error(`Failed to get sales team members:`, error);
     // エラーの場合は組織の全メンバーを返す
-    return fullOrg.members.map((member) => ({
-      id: member.userId,
-      name: member.user?.name || "名前なし",
-      email: member.user?.email || "",
-      role: member.role || "member",
-    }));
+    return [];
+
+    // return fullOrg.members.map((member) => ({
+    //   id: member.userId,
+    //   name: member.user?.name || "名前なし",
+    //   email: member.user?.email || "",
+    //   role: member.role || "member",
+    // }));
   }
 }
 

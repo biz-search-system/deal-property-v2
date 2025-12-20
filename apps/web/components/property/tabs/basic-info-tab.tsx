@@ -26,7 +26,10 @@ import BrokerCompanySelectForm from "../form/broker-company-select-form";
 import BadgeSelectForm from "../form/badge-select-form";
 import ComboboxForm from "../form/combobox-form";
 import OrganizationSelectForm from "../form/organization-select-form";
-import { Organization } from "@/lib/types/organization";
+import {
+  Organization,
+  OrganizationWithUserRole,
+} from "@/lib/types/organization";
 import { contractType } from "@workspace/drizzle/schemas";
 import { CONTRACT_TYPE_COLORS, CONTRACT_TYPE_LABELS } from "@workspace/utils";
 import { Badge } from "@workspace/ui/components/badge";
@@ -36,9 +39,10 @@ import {
   createMasterOption,
   deleteMasterOption,
 } from "@/lib/actions/master-option";
+import { SalesTeamMember } from "@/lib/types/team";
 
 interface BasicInfoTabProps {
-  availableStaff: { id: string; name: string; email: string; role: string }[];
+  availableStaff: SalesTeamMember[];
   organizations?: Organization[];
 }
 
@@ -173,15 +177,15 @@ export default function BasicInfoTab({
                           <div className="flex flex-wrap gap-1">
                             {availableStaff
                               .filter((staff) =>
-                                selectedStaffIds.includes(staff.id)
+                                selectedStaffIds.includes(staff.userId)
                               )
                               .map((staff) => (
                                 <Badge
-                                  key={staff.id}
+                                  key={staff.userId}
                                   variant="outline"
                                   className=""
                                 >
-                                  {staff.name || "名前なし"}
+                                  {staff.users.name || "名前なし"}
                                 </Badge>
                               ))}
                           </div>
@@ -197,17 +201,17 @@ export default function BasicInfoTab({
                       {availableStaff.length > 0 ? (
                         availableStaff.map((staff) => (
                           <DropdownMenuCheckboxItem
-                            key={staff.id}
-                            checked={selectedStaffIds.includes(staff.id)}
+                            key={staff.userId}
+                            checked={selectedStaffIds.includes(staff.userId)}
                             onCheckedChange={(checked) =>
-                              handleStaffToggle(staff.id, checked)
+                              handleStaffToggle(staff.userId, checked)
                             }
                           >
                             <div className="flex flex-col">
-                              <span>{staff.name || "名前なし"}</span>
-                              {staff.email && (
+                              <span>{staff.users.name || "名前なし"}</span>
+                              {staff.users.email && (
                                 <span className="text-xs text-muted-foreground">
-                                  {staff.email}
+                                  {staff.users.email}
                                 </span>
                               )}
                             </div>
@@ -322,11 +326,7 @@ export default function BasicInfoTab({
                     onChange={(e) => {
                       const num = Number(e.target.value);
                       onChange(
-                        e.target.value === ""
-                          ? null
-                          : num < 0
-                            ? 0
-                            : num
+                        e.target.value === "" ? null : num < 0 ? 0 : num
                       );
                     }}
                     onWheel={(e) => e.currentTarget.blur()}
@@ -357,11 +357,7 @@ export default function BasicInfoTab({
                     onChange={(e) => {
                       const num = Number(e.target.value);
                       onChange(
-                        e.target.value === ""
-                          ? null
-                          : num < 0
-                            ? 0
-                            : num
+                        e.target.value === "" ? null : num < 0 ? 0 : num
                       );
                     }}
                     onWheel={(e) => e.currentTarget.blur()}
@@ -392,11 +388,7 @@ export default function BasicInfoTab({
                     onChange={(e) => {
                       const num = Number(e.target.value);
                       onChange(
-                        e.target.value === ""
-                          ? null
-                          : num < 0
-                            ? 0
-                            : num
+                        e.target.value === "" ? null : num < 0 ? 0 : num
                       );
                     }}
                     onWheel={(e) => e.currentTarget.blur()}
@@ -428,11 +420,7 @@ export default function BasicInfoTab({
                       onChange={(e) => {
                         const num = Number(e.target.value);
                         onChange(
-                          e.target.value === ""
-                            ? null
-                            : num < 0
-                              ? 0
-                              : num
+                          e.target.value === "" ? null : num < 0 ? 0 : num
                         );
                       }}
                       onWheel={(e) => e.currentTarget.blur()}
@@ -488,11 +476,7 @@ export default function BasicInfoTab({
                     onChange={(e) => {
                       const num = Number(e.target.value);
                       onChange(
-                        e.target.value === ""
-                          ? null
-                          : num < 0
-                            ? 0
-                            : num
+                        e.target.value === "" ? null : num < 0 ? 0 : num
                       );
                     }}
                     onWheel={(e) => e.currentTarget.blur()}

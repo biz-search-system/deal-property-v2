@@ -1,6 +1,9 @@
 "use client";
 
-import { Organization } from "@/lib/types/organization";
+import {
+  Organization,
+  OrganizationWithUserRole,
+} from "@/lib/types/organization";
 import {
   ORGANIZATION_COLORS,
   ORGANIZATION_LABELS,

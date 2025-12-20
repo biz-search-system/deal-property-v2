@@ -26,7 +26,10 @@ import PropertyFormProvider, {
 } from "./property-form-provider";
 import { PropertyProvider } from "./property-provider";
 import { PropertyFormTabs } from "./property-form-tabs";
-import { useOrganizationsWithUserRole } from "@/lib/swr/organization";
+import {
+  useOrganizations,
+  useOrganizationsWithUserRole,
+} from "@/lib/swr/organization";
 import { useSalesTeamMembers } from "@/lib/swr/team";
 import { usePropertyDetail } from "@/lib/swr/property";
 import {
@@ -106,8 +109,9 @@ export function PropertyDetailModal() {
   } = usePropertyDetail(propertyId);
 
   // 組織一覧を取得
-  const { organizations, isLoading: isLoadingOrgs } =
-    useOrganizationsWithUserRole();
+  // const { organizations, isLoading: isLoadingOrgs } =
+  //   useOrganizationsWithUserRole();
+  const { organizations, isLoading: isLoadingOrgs } = useOrganizations();
 
   // 営業チームメンバーを取得
   const { members: salesTeamMembers, isLoading: isLoadingMembers } =

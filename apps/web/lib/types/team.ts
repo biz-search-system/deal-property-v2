@@ -9,6 +9,7 @@ import {
   addTeamMemberSchema,
   removeTeamMemberSchema,
 } from "@/lib/zod/schemas/team";
+import { getSalesTeamMembers } from "../data/organization";
 
 // Drizzle schema から生成される型
 export type Team = {
@@ -37,6 +38,9 @@ export type OrganizationTeams = Awaited<
   ReturnType<typeof getOrganizationTeamsWithMemberCount>
 >;
 export type Member = Awaited<ReturnType<typeof getTeamMembers>>[number];
+export type SalesTeamMember = Awaited<
+  ReturnType<typeof getSalesTeamMembers>
+>[number];
 
 // エラーレスポンス（共通）
 export interface ErrorResponse {
@@ -54,13 +58,13 @@ export interface TeamMembersSuccessResponse {
   members: Member[];
 }
 
-// 営業チームメンバー型
-export interface SalesTeamMember {
-  id: string;
-  name: string;
-  email: string;
-  role: string;
-}
+// // 営業チームメンバー型
+// export interface SalesTeamMember {
+//   id: string;
+//   name: string;
+//   email: string;
+//   role: string;
+// }
 
 export interface SalesTeamMembersSuccessResponse {
   members: SalesTeamMember[];

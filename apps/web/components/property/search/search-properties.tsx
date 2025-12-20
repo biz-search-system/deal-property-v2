@@ -69,7 +69,13 @@ export function SearchProperties({ properties }: SearchPropertiesProps) {
     // fuse.jsでファジー検索
     if (search) {
       const fuse = new Fuse(result, {
-        keys: ["propertyName", "ownerName", "roomNumber", "notes"],
+        keys: [
+          "propertyName",
+          "ownerName",
+          "roomNumber",
+          "notes",
+          "staff.user.name",
+        ],
         threshold: 0.3,
         ignoreLocation: true,
       });
