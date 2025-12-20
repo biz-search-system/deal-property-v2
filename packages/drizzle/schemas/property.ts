@@ -248,6 +248,7 @@ export const propertyStaff = sqliteTable(
       .notNull()
       .references(() => users.id, { onDelete: "cascade" }),
     createdAt: timestamps.createdAt,
+    updatedAt: timestamps.updatedAt,
   },
   (table) => [
     index("idx_property_staff_property_id").on(table.propertyId),

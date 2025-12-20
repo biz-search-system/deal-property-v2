@@ -1,10 +1,13 @@
 import { getAllUnconfirmedPropertiesBySettlementDate } from "@/lib/data/property";
 import { UnconfirmedProperties } from "@/components/property/unconfirmed/unconfirmed-properties";
 import { BreadcrumbConfig } from "@/components/breadcrumb-provider";
+import { verifySession } from "@/lib/data/sesstion";
 
 export default async function UnconfirmedPropertiesPage() {
+  // return <div>UnconfirmedPropertiesPage</div>;
   // ユーザーの所属組織のBC確定前案件を組織順・決済日順で取得
-  const unconfirmedProperties = await getAllUnconfirmedPropertiesBySettlementDate();
+  const unconfirmedProperties =
+    await getAllUnconfirmedPropertiesBySettlementDate();
 
   // 集計計算（利益はprofitフィールドから直接取得）
   const totals = {

@@ -10,12 +10,12 @@ import { useSession } from "@/lib/swr/session";
 import { AppConfig } from "@/app.config";
 import { BreadcrumbMain } from "../breadcrumb-provider";
 
-export function SiteHeader() {
+export function SiteHeader({ systemOwnerIds }: { systemOwnerIds?: string[] }) {
   const pathname = usePathname();
   const params = useParams();
   const propertyId = params?.id as string | undefined;
   const { user } = useSession();
-  const isSystemOwner = AppConfig.systemOwnerIds.includes(user?.id || "");
+  const isSystemOwner = systemOwnerIds?.includes(user?.id || "");
 
   return (
     <header className="flex h-(--header-height) shrink-0 items-center gap-2 border-b transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-(--header-height)">
