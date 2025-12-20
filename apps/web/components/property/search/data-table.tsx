@@ -149,7 +149,7 @@ export function DataTable<TData, TValue>({
                         case "amountExit":
                           return "w-[50px]";
                         case "commission":
-                          return "w-[100px]";
+                          return "w-[50px]";
                         case "profit":
                           return "w-[50px]";
                         case "bcDeposit":

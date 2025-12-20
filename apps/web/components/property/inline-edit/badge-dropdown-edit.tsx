@@ -61,8 +61,7 @@ export function BadgeDropdownEdit<T extends string>({
       toast.success(successMessage);
     } catch (error) {
       // サーバーからのエラーメッセージがあればそれを表示
-      const message =
-        error instanceof Error ? error.message : errorMessage;
+      const message = error instanceof Error ? error.message : errorMessage;
       toast.error(message);
       console.error(error);
     } finally {
@@ -80,10 +79,11 @@ export function BadgeDropdownEdit<T extends string>({
     <Badge
       variant="outline"
       className={cn(
+        "max-w-full w-full",
         "text-[9px] px-1 py-0",
         value && colors[value],
         isSaving && "opacity-50",
-        editable && !isSaving && "hover:ring-1 hover:ring-ring",
+        editable && !isSaving && "hover:ring-1 hover:ring-ring"
       )}
     >
       {showFullText

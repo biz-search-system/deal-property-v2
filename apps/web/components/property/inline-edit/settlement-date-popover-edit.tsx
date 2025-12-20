@@ -172,11 +172,11 @@ export function SettlementDatePopoverEdit({
         <Button
           variant="ghost"
           className={cn(
-            "h-auto p-1 justify-start text-[10px] font-normal hover:bg-muted",
+            "h-auto max-w-full w-full p-1 justify-start text-[10px] font-normal transition-[color,box-shadow] hover:bg-transparent hover:ring-ring/50 hover:ring-[3px]",
             !currentDate && "text-muted-foreground"
           )}
         >
-          {displayFormatter(currentDate)}
+          <p className="truncate">{displayFormatter(currentDate)}</p>
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-auto p-0" align="start">
