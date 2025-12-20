@@ -60,7 +60,10 @@ export function BadgeDropdownEdit<T extends string>({
       await onSave(id, newValue);
       toast.success(successMessage);
     } catch (error) {
-      toast.error(errorMessage);
+      // サーバーからのエラーメッセージがあればそれを表示
+      const message =
+        error instanceof Error ? error.message : errorMessage;
+      toast.error(message);
       console.error(error);
     } finally {
       setIsSaving(false);

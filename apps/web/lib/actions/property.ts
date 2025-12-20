@@ -22,6 +22,7 @@ import {
 } from "@workspace/drizzle/zod-schemas";
 import { and, eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
+import { MONTH_END_RESTRICTED_STATUSES } from "@workspace/utils";
 import { verifySession } from "../data/sesstion";
 
 /** 万円から円に変換（フォーム → DB） */
@@ -785,6 +786,21 @@ export async function deleteProperty(id: string) {
 }
 
 /**
+ * 月末予定かどうかを判定するヘルパー関数
+ * 月末日かつ午前0時0分10秒の場合は月末予定
+ */
+function isMonthEndScheduled(date: Date): boolean {
+  const lastDayOfMonth = new Date(date.getFullYear(), date.getMonth() + 1, 0);
+  return (
+    date.getHours() === 0 &&
+    date.getMinutes() === 0 &&
+    date.getSeconds() === 10 &&
+    date.getMilliseconds() === 0 &&
+    date.getDate() === lastDayOfMonth.getDate()
+  );
+}
+
+/**
  * 案件の進捗ステータスを更新（インライン編集用）
  */
 export async function updatePropertyProgressStatus(data: {
@@ -793,6 +809,23 @@ export async function updatePropertyProgressStatus(data: {
 }) {
   // セッション認証
   const session = await verifySession();
+
+  // 決済日がnullの場合は更新不可
+  const property = await db.query.properties.findFirst({
+    where: eq(properties.id, data.id),
+    columns: { settlementDate: true },
+  });
+
+  if (!property?.settlementDate) {
+    throw new Error("決済日を設定してから進捗を更新してください");
+  }
+
+  // 月末予定の場合、特定のステータスへの変更を制限
+  if (isMonthEndScheduled(property.settlementDate)) {
+    if (MONTH_END_RESTRICTED_STATUSES.includes(data.progressStatus as never)) {
+      throw new Error("決済日の月末予定を確定させてから進捗を更新してください");
+    }
+  }
 
   await db
     .update(properties)
