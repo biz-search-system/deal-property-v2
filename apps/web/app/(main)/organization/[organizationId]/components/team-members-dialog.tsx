@@ -32,6 +32,7 @@ import {
   AvatarImage,
 } from "@workspace/ui/components/avatar";
 import { getAvatarUrl } from "@/lib/avatar";
+import { SetActiveOrganization } from "./set-active-organization";
 
 interface TeamMembersDialogProps {
   open: boolean;
@@ -115,6 +116,7 @@ export function TeamMembersDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
+      <SetActiveOrganization organizationId={organizationId} />
       <DialogContent className="max-w-2xl">
         <DialogHeader>
           <DialogTitle>チームメンバー管理</DialogTitle>

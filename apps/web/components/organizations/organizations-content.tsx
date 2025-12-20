@@ -6,7 +6,7 @@ import { Card, CardContent } from "@workspace/ui/components/card";
 import { Loader2 } from "lucide-react";
 
 export function OrganizationsContent() {
-  const { organizations, activeOrgId, isLoading, error } =
+  const { organizations, activeOrgId, isLoading, isValidating, error } =
     useOrganizationsWithUserRole();
 
   if (error) {
@@ -21,7 +21,7 @@ export function OrganizationsContent() {
     );
   }
 
-  if (isLoading) {
+  if (isLoading || isValidating) {
     return (
       <Card>
         <CardContent className="flex flex-col items-center justify-center py-12">

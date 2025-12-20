@@ -12,6 +12,11 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
+import {
+  ContractType,
+  DocumentStatus,
+  ProgressStatus,
+} from "@workspace/drizzle/types";
 import { Card } from "@workspace/ui/components/card";
 import { ScrollArea } from "@workspace/ui/components/scroll-area";
 import {
@@ -22,12 +27,7 @@ import {
   TableHeader,
   TableRow,
 } from "@workspace/ui/components/table";
-import {
-  ContractType,
-  DocumentStatus,
-  ProgressStatus,
-} from "@workspace/drizzle/types";
-import { OrganizationNameType } from "@workspace/utils";
+import { OrganizationSlugType } from "@workspace/utils";
 import { useState } from "react";
 import { DataTablePagination } from "./data-table-pagination";
 import { DataTableToolbar } from "./data-table-toolbar";
@@ -42,7 +42,7 @@ interface DataTableProps<TData, TValue> {
   /** 検索文字列変更時のコールバック */
   onSearchChange?: (value: string) => void;
   /** 組織フィルター */
-  organizationFilter?: OrganizationNameType;
+  organizationFilter?: OrganizationSlugType;
   /** 組織フィルター変更時のコールバック */
   onOrganizationFilterChange?: (value: string) => void;
   /** 進捗ステータスフィルター */

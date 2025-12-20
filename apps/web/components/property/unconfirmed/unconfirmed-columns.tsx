@@ -12,7 +12,7 @@ import {
 } from "@workspace/ui/components/dropdown-menu";
 import { MoreVertical, Eye, Edit } from "lucide-react";
 import {
-  OrganizationNameType,
+  OrganizationSlugType,
   CONTRACT_TYPE_LABELS,
   CONTRACT_TYPE_COLORS,
   COMPANY_B_LABELS,
@@ -89,7 +89,7 @@ export const unconfirmedColumns: ColumnDef<PropertyWithRelations>[] = [
       const organization = row.original.organization;
       return (
         <OrganizationBadge
-          organization={organization.name as OrganizationNameType}
+          organizationSlug={organization.slug as OrganizationSlugType}
         />
       );
     },

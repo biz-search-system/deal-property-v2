@@ -9,7 +9,7 @@ import {
   DocumentStatus,
   ProgressStatus,
 } from "@workspace/drizzle/types";
-import { OrganizationNameType } from "@workspace/utils";
+import { OrganizationSlugType } from "@workspace/utils";
 import Fuse from "fuse.js";
 import { useRouter } from "next/navigation";
 import { useQueryState } from "nuqs";
@@ -105,7 +105,7 @@ export function SearchProperties({ properties }: SearchPropertiesProps) {
           search={search}
           onSearchChange={setSearch}
           organizationFilter={
-            (organizationFilter as OrganizationNameType) || undefined
+            (organizationFilter as OrganizationSlugType) || undefined
           }
           onOrganizationFilterChange={setOrganizationFilter}
           progressStatusFilter={

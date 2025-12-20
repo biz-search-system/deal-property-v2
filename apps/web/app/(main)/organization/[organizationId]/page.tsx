@@ -8,9 +8,11 @@ import {
   TabsTrigger,
 } from "@workspace/ui/components/tabs";
 import { Mail, UserPlus, Users, Users2 } from "lucide-react";
+import { notFound } from "next/navigation";
 import { InvitationsTab } from "./components/invitations-tab";
 import { InviteTab } from "./components/invite-tab";
 import { MembersTab } from "./components/members-tab";
+import { SetActiveOrganization } from "./components/set-active-organization";
 import { TeamsTab } from "./components/teams-tab";
 
 export const metadata = {
@@ -26,17 +28,23 @@ export default async function OrganizationMembersPage({
   // 現在のユーザーのセッションを取得
   const session = await verifySession();
   const fullOrg = await getFullOrganization(organizationId);
+
+  // 組織が存在しない、またはユーザーがメンバーでない場合は404
   const currentUserMember = fullOrg?.members.find(
     (m) => m.userId === session.user.id
   );
-  const userRole = currentUserMember?.role;
+  if (!fullOrg || !currentUserMember) {
+    notFound();
+  }
+
+  const userRole = currentUserMember.role;
 
   return (
     <div className="container mx-auto py-6 space-y-8">
       <BreadcrumbConfig
         items={[
           { label: "組織管理", href: "/organization" },
-          { label: "メンバー管理" },
+          { label: fullOrg.name },
         ]}
       />
       <Tabs defaultValue="members" className="space-y-4">

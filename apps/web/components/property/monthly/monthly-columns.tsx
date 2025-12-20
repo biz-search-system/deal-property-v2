@@ -12,7 +12,6 @@ import {
 } from "@workspace/ui/components/dropdown-menu";
 import { MoreVertical, Eye, Edit } from "lucide-react";
 import {
-  OrganizationNameType,
   CONTRACT_TYPE_LABELS,
   CONTRACT_TYPE_COLORS,
   COMPANY_B_LABELS,
@@ -23,6 +22,7 @@ import {
   PROGRESS_STATUS_COLORS,
   DOCUMENT_STATUS_LABELS,
   DOCUMENT_STATUS_COLORS,
+  OrganizationSlugType,
 } from "@workspace/utils";
 import {
   contractType,
@@ -89,7 +89,7 @@ export const monthlyColumns: ColumnDef<PropertyWithRelations>[] = [
       const organization = row.original.organization;
       return (
         <OrganizationBadge
-          organization={organization.name as OrganizationNameType}
+          organizationSlug={organization.slug as OrganizationSlugType}
         />
       );
     },

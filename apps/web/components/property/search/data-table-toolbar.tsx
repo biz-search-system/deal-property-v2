@@ -20,7 +20,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@workspace/ui/components/select";
-import { organization, OrganizationNameType } from "@workspace/utils";
+import { organizationSlugs, OrganizationSlugType } from "@workspace/utils";
 import {
   ContractType,
   DocumentStatus,
@@ -70,7 +70,7 @@ export function DataTableToolbar<TData>({
     | {
         search?: string;
         onSearchChange?: (value: string) => void;
-        organizationFilter?: OrganizationNameType;
+        organizationFilter?: OrganizationSlugType;
         onOrganizationFilterChange?: (value: string) => void;
         progressStatusFilter?: ProgressStatus;
         onProgressStatusFilterChange?: (value: string) => void;
@@ -130,7 +130,7 @@ export function DataTableToolbar<TData>({
               <SelectValue placeholder="組織">
                 {organizationFilter ? (
                   <OrganizationBadge
-                    organization={organizationFilter}
+                    organizationSlug={organizationFilter}
                     size="medium"
                   />
                 ) : (
@@ -140,9 +140,9 @@ export function DataTableToolbar<TData>({
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">すべて</SelectItem>
-              {organization.map((org) => (
-                <SelectItem key={org} value={org}>
-                  <OrganizationBadge organization={org} size="medium" />
+              {organizationSlugs.map((orgSlug) => (
+                <SelectItem key={orgSlug} value={orgSlug}>
+                  <OrganizationBadge organizationSlug={orgSlug} size="medium" />
                 </SelectItem>
               ))}
             </SelectContent>

@@ -1,7 +1,33 @@
 "use client";
 
-import { ColumnDef } from "@tanstack/react-table";
+import OrganizationBadge from "@/components/property/badge/organization-badge";
+import { SettlementDatePopoverEdit } from "@/components/property/inline-edit/settlement-date-popover-edit";
+import {
+  updatePropertyAmount,
+  updatePropertyBuyerCompany,
+  updatePropertyDocumentStatus,
+  updatePropertyEnumField,
+  updatePropertyName,
+  updatePropertyNotes,
+  updatePropertyOwnerName,
+  updatePropertyProgressStatus,
+} from "@/lib/actions/property";
 import type { PropertyWithRelations } from "@/lib/types/property";
+import { ColumnDef } from "@tanstack/react-table";
+import {
+  brokerCompany,
+  companyB,
+  contractType,
+  documentStatus,
+  progressStatus,
+} from "@workspace/drizzle/schemas";
+import type {
+  BrokerCompany,
+  CompanyB,
+  ContractType,
+  DocumentStatus,
+  ProgressStatus,
+} from "@workspace/drizzle/types";
 import { Badge } from "@workspace/ui/components/badge";
 import { Button } from "@workspace/ui/components/button";
 import {
@@ -10,51 +36,25 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@workspace/ui/components/dropdown-menu";
-import { MoreHorizontal } from "lucide-react";
 import {
-  OrganizationNameType,
-  CONTRACT_TYPE_LABELS,
-  CONTRACT_TYPE_COLORS,
-  COMPANY_B_LABELS,
-  COMPANY_B_COLORS,
-  BROKER_COMPANY_LABELS,
   BROKER_COMPANY_COLORS,
-  PROGRESS_STATUS_LABELS,
-  PROGRESS_STATUS_COLORS,
-  DOCUMENT_STATUS_LABELS,
+  BROKER_COMPANY_LABELS,
+  COMPANY_B_COLORS,
+  COMPANY_B_LABELS,
+  CONTRACT_TYPE_COLORS,
+  CONTRACT_TYPE_LABELS,
   DOCUMENT_STATUS_COLORS,
+  DOCUMENT_STATUS_LABELS,
+  OrganizationSlugType,
+  PROGRESS_STATUS_COLORS,
+  PROGRESS_STATUS_LABELS,
 } from "@workspace/utils";
-import {
-  contractType,
-  companyB,
-  brokerCompany,
-  progressStatus,
-  documentStatus,
-} from "@workspace/drizzle/schemas";
-import OrganizationBadge from "@/components/property/badge/organization-badge";
-import { SettlementDatePopoverEdit } from "@/components/property/inline-edit/settlement-date-popover-edit";
-import { DataTableColumnHeader } from "./data-table-column-header";
-import {
-  updatePropertyAmount,
-  updatePropertyName,
-  updatePropertyNotes,
-  updatePropertyOwnerName,
-  updatePropertyEnumField,
-  updatePropertyBuyerCompany,
-  updatePropertyProgressStatus,
-  updatePropertyDocumentStatus,
-} from "@/lib/actions/property";
-import { TextPopoverEdit } from "../inline-edit/text-popover-edit";
-import { CurrencyPopoverEdit } from "../inline-edit/currency-popover-edit";
+import { MoreHorizontal } from "lucide-react";
 import { BadgeDropdownEdit } from "../inline-edit/badge-dropdown-edit";
+import { CurrencyPopoverEdit } from "../inline-edit/currency-popover-edit";
 import { RoomNumberPopoverEdit } from "../inline-edit/room-number-popover-edit";
-import type {
-  ContractType,
-  CompanyB,
-  BrokerCompany,
-  ProgressStatus,
-  DocumentStatus,
-} from "@workspace/drizzle/types";
+import { TextPopoverEdit } from "../inline-edit/text-popover-edit";
+import { DataTableColumnHeader } from "./data-table-column-header";
 
 const formatDateWithDay = (dateString: string | Date | null): string => {
   if (!dateString) return "-";
@@ -94,7 +94,7 @@ export const columns: ColumnDef<PropertyWithRelations>[] = [
       const organization = row.original.organization;
       return (
         <OrganizationBadge
-          organization={organization.name as OrganizationNameType}
+          organizationSlug={organization.slug as OrganizationSlugType}
         />
       );
     },

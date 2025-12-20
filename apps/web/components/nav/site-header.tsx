@@ -1,20 +1,20 @@
 "use client";
 
+import { authClient } from "@workspace/auth/client";
+import { Button } from "@workspace/ui/components/button";
 import { Separator } from "@workspace/ui/components/separator";
 import { SidebarTrigger } from "@workspace/ui/components/sidebar";
-import { Button } from "@workspace/ui/components/button";
-import { useParams, usePathname } from "next/navigation";
+import { Edit, Eye, Plus } from "lucide-react";
 import Link from "next/link";
-import { ArrowLeft, Edit, Eye, Plus } from "lucide-react";
-import { useSession } from "@/lib/swr/session";
-import { AppConfig } from "@/app.config";
+import { useParams, usePathname } from "next/navigation";
 import { BreadcrumbMain } from "../breadcrumb-provider";
 
 export function SiteHeader({ systemOwnerIds }: { systemOwnerIds?: string[] }) {
   const pathname = usePathname();
   const params = useParams();
   const propertyId = params?.id as string | undefined;
-  const { user } = useSession();
+  const { data: session } = authClient.useSession();
+  const user = session?.user;
   const isSystemOwner = systemOwnerIds?.includes(user?.id || "");
 
   return (
