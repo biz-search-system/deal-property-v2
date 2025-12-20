@@ -3,6 +3,7 @@
 import { PropertyDetailModal } from "@/components/property/property-detail-modal";
 import { columns } from "@/components/property/search/columns";
 import { DataTable } from "@/components/property/search/data-table";
+import { deleteProperty } from "@/lib/actions/property";
 import type { PropertyWithRelations } from "@/lib/types/property";
 import {
   ContractType,
@@ -14,6 +15,7 @@ import Fuse from "fuse.js";
 import { useRouter } from "next/navigation";
 import { useQueryState } from "nuqs";
 import { useMemo } from "react";
+import { toast } from "sonner";
 
 interface SearchPropertiesProps {
   properties: PropertyWithRelations[];
@@ -116,6 +118,15 @@ export function SearchProperties({ properties }: SearchPropertiesProps) {
     router.push(`/properties/search/${property.id}`);
   };
 
+  const handleDelete = async (property: PropertyWithRelations) => {
+    try {
+      await deleteProperty(property.id);
+      toast.success("物件を削除しました");
+    } catch {
+      toast.error("物件の削除に失敗しました");
+    }
+  };
+
   return (
     <div className="flex h-full flex-col overflow-hidden">
       <div className="flex flex-1 flex-col gap-3 overflow-hidden p-4 lg:p-3">
@@ -124,6 +135,7 @@ export function SearchProperties({ properties }: SearchPropertiesProps) {
           data={filteredProperties}
           onView={handleViewDetails}
           onEdit={handlePropertyClick}
+          onDelete={handleDelete}
           search={search}
           onSearchChange={setSearch}
           organizationFilter={

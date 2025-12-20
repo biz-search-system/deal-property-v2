@@ -16,9 +16,11 @@ import {
   TableHeader,
   TableRow,
 } from "@workspace/ui/components/table";
+import { deleteProperty } from "@/lib/actions/property";
 import type { PropertyWithRelations } from "@/lib/types/property";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { toast } from "sonner";
 import { unconfirmedColumns } from "./unconfirmed-columns";
 
 interface UnconfirmedPropertiesTableProps {
@@ -39,6 +41,15 @@ export function UnconfirmedPropertiesTable({
     router.push(`/properties/unconfirmed/${property.id}/edit`);
   };
 
+  const handleDelete = async (property: PropertyWithRelations) => {
+    try {
+      await deleteProperty(property.id);
+      toast.success("物件を削除しました");
+    } catch {
+      toast.error("物件の削除に失敗しました");
+    }
+  };
+
   const table = useReactTable({
     data: properties,
     columns: unconfirmedColumns,
@@ -51,6 +62,7 @@ export function UnconfirmedPropertiesTable({
     meta: {
       onView: handleViewDetails,
       onEdit: handleEdit,
+      onDelete: handleDelete,
     },
   });
 

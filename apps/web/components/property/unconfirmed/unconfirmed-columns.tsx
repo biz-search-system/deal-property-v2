@@ -5,12 +5,23 @@ import type { PropertyWithRelations } from "@/lib/types/property";
 import { Badge } from "@workspace/ui/components/badge";
 import { Button } from "@workspace/ui/components/button";
 import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@workspace/ui/components/alert-dialog";
+import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@workspace/ui/components/dropdown-menu";
-import { MoreVertical, Eye, Edit } from "lucide-react";
+import { MoreVertical, Eye, Edit, Trash2 } from "lucide-react";
 import {
   OrganizationSlugType,
   CONTRACT_TYPE_LABELS,
@@ -475,27 +486,53 @@ export const unconfirmedColumns: ColumnDef<PropertyWithRelations>[] = [
       const meta = table.options.meta as {
         onView?: (property: PropertyWithRelations) => void;
         onEdit?: (property: PropertyWithRelations) => void;
+        onDelete?: (property: PropertyWithRelations) => void;
       };
 
       return (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="sm" className="h-5 w-5 p-0">
-              <MoreVertical className="h-3 w-3" />
-              <span className="sr-only">操作メニュー</span>
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuItem onClick={() => meta?.onView?.(property)}>
-              <Eye className="h-3 w-3" />
-              詳細
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => meta?.onEdit?.(property)}>
-              <Edit className="h-3 w-3" />
-              編集
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+        <AlertDialog>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="sm" className="h-5 w-5 p-0">
+                <MoreVertical className="h-3 w-3" />
+                <span className="sr-only">操作メニュー</span>
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem onClick={() => meta?.onView?.(property)}>
+                <Eye className="h-3 w-3" />
+                詳細
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => meta?.onEdit?.(property)}>
+                <Edit className="h-3 w-3" />
+                編集
+              </DropdownMenuItem>
+              <AlertDialogTrigger asChild>
+                <DropdownMenuItem className="text-destructive focus:text-destructive">
+                  <Trash2 className="h-3 w-3" />
+                  削除
+                </DropdownMenuItem>
+              </AlertDialogTrigger>
+            </DropdownMenuContent>
+          </DropdownMenu>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>物件を削除しますか？</AlertDialogTitle>
+              <AlertDialogDescription>
+                「{property.propertyName}」を削除します。この操作は取り消せません。
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>キャンセル</AlertDialogCancel>
+              <AlertDialogAction
+                onClick={() => meta?.onDelete?.(property)}
+                className="bg-destructive text-white hover:bg-destructive/90 dark:bg-destructive/60"
+              >
+                削除
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
       );
     },
   },

@@ -16,11 +16,13 @@ import {
   TableHeader,
   TableRow,
 } from "@workspace/ui/components/table";
+import { deleteProperty } from "@/lib/actions/property";
 import type { PropertyWithRelations } from "@/lib/types/property";
 import { useRouter } from "next/navigation";
 import { PropertyDetailModal } from "@/components/property/property-detail-modal";
 import { useQueryState } from "nuqs";
 import { useState } from "react";
+import { toast } from "sonner";
 import { monthlyColumns } from "./monthly-columns";
 
 interface MonthlyPropertiesTableProps {
@@ -46,6 +48,15 @@ export function MonthlyPropertiesTable({
     router.push(`/properties/monthly/${year}/${month}/${property.id}`);
   };
 
+  const handleDelete = async (property: PropertyWithRelations) => {
+    try {
+      await deleteProperty(property.id);
+      toast.success("物件を削除しました");
+    } catch {
+      toast.error("物件の削除に失敗しました");
+    }
+  };
+
   const table = useReactTable({
     data: properties,
     columns: monthlyColumns,
@@ -58,6 +69,7 @@ export function MonthlyPropertiesTable({
     meta: {
       onView: handleViewDetails,
       onEdit: handlePropertyClick,
+      onDelete: handleDelete,
     },
   });
 

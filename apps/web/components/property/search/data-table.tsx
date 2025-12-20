@@ -37,6 +37,7 @@ interface DataTableProps<TData, TValue> {
   data: TData[];
   onView?: (data: TData) => void;
   onEdit?: (data: TData) => void;
+  onDelete?: (data: TData) => void;
   /** 検索文字列 */
   search?: string;
   /** 検索文字列変更時のコールバック */
@@ -64,6 +65,7 @@ export function DataTable<TData, TValue>({
   data,
   onView,
   onEdit,
+  onDelete,
   search = "",
   onSearchChange,
   organizationFilter,
@@ -97,6 +99,7 @@ export function DataTable<TData, TValue>({
     meta: {
       onView,
       onEdit,
+      onDelete,
       search,
       onSearchChange,
       organizationFilter,
