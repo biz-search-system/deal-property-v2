@@ -66,20 +66,36 @@ export function SearchProperties({ properties }: SearchPropertiesProps) {
       result = result.filter((p) => p.contractType === contractTypeFilter);
     }
 
-    // fuse.jsでファジー検索
+    // fuse.jsでファジー検索（複数キーワードAND検索対応）
     if (search) {
-      const fuse = new Fuse(result, {
-        keys: [
+      const keywords = search.trim().split(/\s+/).filter(Boolean);
+
+      if (keywords.length > 0) {
+        const keys = [
           "propertyName",
           "ownerName",
           "roomNumber",
           "notes",
           "staff.user.name",
-        ],
-        threshold: 0.3,
-        ignoreLocation: true,
-      });
-      result = fuse.search(search).map((r) => r.item);
+        ];
+
+        const fuse = new Fuse(result, {
+          keys,
+          threshold: 0.3,
+          ignoreLocation: true,
+          useExtendedSearch: true,
+        });
+
+        // $and オペレータで複数キーワードのAND検索
+        // 各キーワードをすべてのキーに対して OR 検索し、それらを AND で結合
+        const query = {
+          $and: keywords.map((keyword) => ({
+            $or: keys.map((key) => ({ [key]: keyword })),
+          })),
+        };
+
+        result = fuse.search(query).map((r) => r.item);
+      }
     }
 
     return result;
