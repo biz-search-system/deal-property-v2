@@ -1,0 +1,1 @@
+ALTER TABLE `property_staff` DROP COLUMN `updated_at`;

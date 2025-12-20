@@ -7,6 +7,10 @@ import {
   getCurrentUserOrganizationInfo,
 } from "@/lib/data/organization";
 
+export interface OrganizationMetadata {
+  systemOwnerIds: string[];
+}
+
 export type Organization = Awaited<ReturnType<typeof getOrganizations>>[number];
 
 export type OrganizationWithUserRole = Awaited<

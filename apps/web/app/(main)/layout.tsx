@@ -4,16 +4,22 @@ import {
 } from "@/components/breadcrumb-provider";
 import { AppSidebar } from "@/components/nav/app-sidebar";
 import { SiteHeader } from "@/components/nav/site-header";
+import { OrganizationMetadata } from "@/lib/types/organization";
 import {
   SidebarInset,
   SidebarProvider,
 } from "@workspace/ui/components/sidebar";
+import { get } from "@vercel/edge-config";
 
 export default async function Layout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const organization = await get<OrganizationMetadata>("organization");
+  const systemOwnerIds = organization?.systemOwnerIds;
+  // console.log("systemOwnerIds", systemOwnerIds);
+
   return (
     <BreadcrumbProvider>
       <SidebarProvider
@@ -28,7 +34,7 @@ export default async function Layout({
       >
         <AppSidebar variant="inset" />
         <SidebarInset className="flex max-h-svh flex-col overflow-hidden md:max-h-[calc(100svh-1rem)]">
-          <SiteHeader />
+          <SiteHeader systemOwnerIds={systemOwnerIds} />
           <div className="min-h-0 flex-1 overflow-hidden">{children}</div>
         </SidebarInset>
       </SidebarProvider>
