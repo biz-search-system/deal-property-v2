@@ -135,7 +135,7 @@ export function DataTable<TData, TValue>({
                       const id = header.column.id;
                       switch (id) {
                         case "organization":
-                          return "";
+                          return "w-[70px]";
                         case "staff":
                           return "w-[50px]";
                         case "propertyName":
@@ -157,7 +157,7 @@ export function DataTable<TData, TValue>({
                         case "settlementDate":
                           return "w-[60px]";
                         case "buyerCompany":
-                          return "min-w-[50px]";
+                          return "min-w-[40px]";
                         case "contractType":
                         case "companyB":
                         case "brokerCompany":
@@ -205,15 +205,17 @@ export function DataTable<TData, TValue>({
                         const base = "text-[10px] p-1";
                         switch (id) {
                           case "organization":
-                            return `${base}`;
+                            return `${base} w-[70px]`;
                           case "staff":
-                            return `${base} w-[50px]`;
+                            return `${base} max-w-[80px]`;
                           case "propertyName":
                             return `${base} max-w-[140px]`;
                           case "roomNumber":
                             return `${base}`;
                           case "ownerName":
-                            return `${base} max-w-[60px] `;
+                            return `${base} max-w-[60px]`;
+                          case "buyerCompany":
+                            return `${base} max-w-[50px]`;
                           case "notes":
                             return `${base} max-w-[80px]`;
                           case "actions":

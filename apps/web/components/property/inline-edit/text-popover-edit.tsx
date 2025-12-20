@@ -21,8 +21,6 @@ interface TextPopoverEditProps {
   onSave: (id: string, newValue: string) => void | Promise<void>;
   /** 編集可能かどうか */
   editable?: boolean;
-  /** 表示の最大幅（px） */
-  maxDisplayWidth?: number;
   /** 入力の最大文字数 */
   maxLength?: number;
   /** 必須かどうか */
@@ -48,7 +46,6 @@ export function TextPopoverEdit({
   currentValue,
   onSave,
   editable = true,
-  maxDisplayWidth = 120,
   maxLength = 500,
   required = false,
   title,
@@ -93,8 +90,7 @@ export function TextPopoverEdit({
   if (!editable) {
     return (
       <div
-        className="truncate text-[10px]"
-        style={{ maxWidth: `${maxDisplayWidth}px` }}
+        className="max-w-full w-full truncate text-[10px]"
         title={currentValue || ""}
       >
         {currentValue || <span className="text-muted-foreground">-</span>}
@@ -113,9 +109,7 @@ export function TextPopoverEdit({
           )}
           title={currentValue || ""}
         >
-          <p className="truncate" style={{ maxWidth: `${maxDisplayWidth}px` }}>
-            {currentValue || emptyText}
-          </p>
+          <p className="truncate">{currentValue || emptyText}</p>
         </Button>
       </PopoverTrigger>
       <PopoverContent className="">

@@ -47,7 +47,7 @@ export function SearchProperties({ properties }: SearchPropertiesProps) {
     // 組織フィルター
     if (organizationFilter) {
       result = result.filter(
-        (p) => p.organization?.name === organizationFilter
+        (p) => p.organization?.slug === organizationFilter
       );
     }
 
