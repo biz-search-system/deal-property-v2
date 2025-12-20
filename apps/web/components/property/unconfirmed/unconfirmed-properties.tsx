@@ -3,6 +3,7 @@
 import type { PropertyWithRelations } from "@/lib/types/property";
 import { Card } from "@workspace/ui/components/card";
 import { UnconfirmedPropertiesTable } from "./unconfirmed-properties-table";
+import { InvitationSuccessDialog } from "@/components/invitation-success-dialog";
 
 interface UnconfirmedPropertiesProps {
   properties: PropertyWithRelations[];
@@ -54,6 +55,9 @@ export function UnconfirmedProperties({
           <UnconfirmedPropertiesTable properties={properties} />
         </Card>
       </div>
+
+      {/* 招待成功ダイアログ */}
+      <InvitationSuccessDialog />
     </div>
   );
 }

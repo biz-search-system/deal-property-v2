@@ -149,7 +149,8 @@ export function SignupForm({
           }
           if (acceptResult) {
             toast.success("アカウントの登録と組織への参加が完了しました！");
-            router.push("/properties/unconfirmed");
+            const encodedOrgName = encodeURIComponent(organizationName);
+            router.push(`/properties/unconfirmed?invited=${encodedOrgName}`);
             return;
           }
         }
