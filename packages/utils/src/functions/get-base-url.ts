@@ -10,6 +10,7 @@ export const getBaseURL = (options?: { useCommitURL?: boolean }) => {
       : options?.useCommitURL
         ? process.env.NEXT_PUBLIC_VERCEL_URL
         : process.env.NEXT_PUBLIC_VERCEL_BRANCH_URL;
+  console.log("url", url);
 
   return url
     ? `https://${url}`
