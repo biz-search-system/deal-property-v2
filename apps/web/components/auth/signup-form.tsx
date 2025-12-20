@@ -22,12 +22,11 @@ import Link from "next/link";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { authClient } from "@workspace/auth/client";
-// import { Signup } from "@workspace/drizzle/types";
-
 import PasswordForm from "./password-form";
 import { useDebouncedCallback } from "use-debounce";
 import { signupSchema, usernameSchema } from "@/lib/zod/schemas/auth";
 import { Signup } from "@/lib/types/auth";
+import { getAvatarUrl } from "@/lib/avatar";
 
 interface SignupFormProps {
   className?: string;
@@ -111,6 +110,10 @@ export function SignupForm({
   const onSubmit = (data: Signup) => {
     startTransition(async () => {
       const { email, name, password, username, invitationId } = data;
+      const { url } = getAvatarUrl({
+        username: username,
+        email: email,
+      });
 
       // 1. アカウント作成
       const { data: signupResult, error: signupError } =
@@ -119,6 +122,7 @@ export function SignupForm({
           name,
           password,
           username,
+          image: url,
         });
 
       if (signupError) {
