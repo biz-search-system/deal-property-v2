@@ -172,21 +172,24 @@ export const properties = sqliteTable(
       mode: "timestamp_ms",
     }),
     contractDateAUpdatedBy: text("contract_date_a_updated_by").references(
-      () => users.id
+      () => users.id,
+      { onDelete: "set null" }
     ),
     contractDateBc: integer("contract_date_bc", { mode: "timestamp_ms" }),
     contractDateBcUpdatedAt: integer("contract_date_bc_updated_at", {
       mode: "timestamp_ms",
     }),
     contractDateBcUpdatedBy: text("contract_date_bc_updated_by").references(
-      () => users.id
+      () => users.id,
+      { onDelete: "set null" }
     ),
     settlementDate: integer("settlement_date", { mode: "timestamp_ms" }), // 決済日
     settlementDateUpdatedAt: integer("settlement_date_updated_at", {
       mode: "timestamp_ms",
     }),
     settlementDateUpdatedBy: text("settlement_date_updated_by").references(
-      () => users.id
+      () => users.id,
+      { onDelete: "set null" }
     ),
     contractType: text("contract_type", { enum: contractType }),
     companyB: text("company_b", { enum: companyB }),
@@ -201,7 +204,8 @@ export const properties = sqliteTable(
       mode: "timestamp_ms",
     }),
     progressStatusUpdatedBy: text("progress_status_updated_by").references(
-      () => users.id
+      () => users.id,
+      { onDelete: "set null" }
     ),
     documentStatus: text("document_status", { enum: documentStatus })
       .notNull()
@@ -210,17 +214,18 @@ export const properties = sqliteTable(
       mode: "timestamp_ms",
     }),
     documentStatusUpdatedBy: text("document_status_updated_by").references(
-      () => users.id
+      () => users.id,
+      { onDelete: "set null" }
     ),
     notes: text("notes"),
     accountCompany: text("account_company", { enum: accountCompany }),
     bankAccount: text("bank_account", { enum: bankAccount }),
-    createdBy: text("created_by")
-      .notNull()
-      .references(() => users.id, { onDelete: "cascade" }),
-    updatedBy: text("updated_by")
-      .notNull()
-      .references(() => users.id, { onDelete: "cascade" }),
+    createdBy: text("created_by").references(() => users.id, {
+      onDelete: "set null",
+    }),
+    updatedBy: text("updated_by").references(() => users.id, {
+      onDelete: "set null",
+    }),
     ...timestamps,
   },
   (table) => [
@@ -244,18 +249,14 @@ export const propertyStaff = sqliteTable(
     propertyId: text("property_id")
       .notNull()
       .references(() => properties.id, { onDelete: "cascade" }),
-    userId: text("user_id")
-      .notNull()
-      .references(() => users.id, { onDelete: "cascade" }),
+    userId: text("user_id").references(() => users.id, {
+      onDelete: "set null",
+    }),
     createdAt: timestamps.createdAt,
   },
   (table) => [
     index("idx_property_staff_property_id").on(table.propertyId),
     index("idx_property_staff_user_id").on(table.userId),
-    unique("uk_property_staff_property_user").on(
-      table.propertyId,
-      table.userId
-    ),
   ]
 );
 
@@ -281,13 +282,16 @@ export const contractProgress = sqliteTable("contract_progress", {
     mode: "timestamp_ms",
   }),
   maisokuDistributionBy: text("maisoku_distribution_by").references(
-    () => users.id
+    () => users.id,
+    { onDelete: "set null" }
   ),
   abContractSaved: integer("ab_contract_saved", { mode: "boolean" })
     .notNull()
     .default(false),
   abContractSavedAt: integer("ab_contract_saved_at", { mode: "timestamp_ms" }),
-  abContractSavedBy: text("ab_contract_saved_by").references(() => users.id),
+  abContractSavedBy: text("ab_contract_saved_by").references(() => users.id, {
+    onDelete: "set null",
+  }),
   abAuthorizationSaved: integer("ab_authorization_saved", { mode: "boolean" })
     .notNull()
     .default(false),
@@ -295,13 +299,16 @@ export const contractProgress = sqliteTable("contract_progress", {
     mode: "timestamp_ms",
   }),
   abAuthorizationSavedBy: text("ab_authorization_saved_by").references(
-    () => users.id
+    () => users.id,
+    { onDelete: "set null" }
   ),
   abSellerIdSaved: integer("ab_seller_id_saved", { mode: "boolean" })
     .notNull()
     .default(false),
   abSellerIdSavedAt: integer("ab_seller_id_saved_at", { mode: "timestamp_ms" }),
-  abSellerIdSavedBy: text("ab_seller_id_saved_by").references(() => users.id),
+  abSellerIdSavedBy: text("ab_seller_id_saved_by").references(() => users.id, {
+    onDelete: "set null",
+  }),
   bcContractCreated: integer("bc_contract_created", { mode: "boolean" })
     .notNull()
     .default(false),
@@ -309,7 +316,8 @@ export const contractProgress = sqliteTable("contract_progress", {
     mode: "timestamp_ms",
   }),
   bcContractCreatedBy: text("bc_contract_created_by").references(
-    () => users.id
+    () => users.id,
+    { onDelete: "set null" }
   ),
   bcDescriptionCreated: integer("bc_description_created", { mode: "boolean" })
     .notNull()
@@ -318,13 +326,16 @@ export const contractProgress = sqliteTable("contract_progress", {
     mode: "timestamp_ms",
   }),
   bcDescriptionCreatedBy: text("bc_description_created_by").references(
-    () => users.id
+    () => users.id,
+    { onDelete: "set null" }
   ),
   bcContractSent: integer("bc_contract_sent", { mode: "boolean" })
     .notNull()
     .default(false),
   bcContractSentAt: integer("bc_contract_sent_at", { mode: "timestamp_ms" }),
-  bcContractSentBy: text("bc_contract_sent_by").references(() => users.id),
+  bcContractSentBy: text("bc_contract_sent_by").references(() => users.id, {
+    onDelete: "set null",
+  }),
   bcDescriptionSent: integer("bc_description_sent", { mode: "boolean" })
     .notNull()
     .default(false),
@@ -332,7 +343,8 @@ export const contractProgress = sqliteTable("contract_progress", {
     mode: "timestamp_ms",
   }),
   bcDescriptionSentBy: text("bc_description_sent_by").references(
-    () => users.id
+    () => users.id,
+    { onDelete: "set null" }
   ),
   bcContractCbDone: integer("bc_contract_cb_done", { mode: "boolean" })
     .notNull()
@@ -340,7 +352,10 @@ export const contractProgress = sqliteTable("contract_progress", {
   bcContractCbDoneAt: integer("bc_contract_cb_done_at", {
     mode: "timestamp_ms",
   }),
-  bcContractCbDoneBy: text("bc_contract_cb_done_by").references(() => users.id),
+  bcContractCbDoneBy: text("bc_contract_cb_done_by").references(
+    () => users.id,
+    { onDelete: "set null" }
+  ),
   bcDescriptionCbDone: integer("bc_description_cb_done", { mode: "boolean" })
     .notNull()
     .default(false),
@@ -348,7 +363,8 @@ export const contractProgress = sqliteTable("contract_progress", {
     mode: "timestamp_ms",
   }),
   bcDescriptionCbDoneBy: text("bc_description_cb_done_by").references(
-    () => users.id
+    () => users.id,
+    { onDelete: "set null" }
   ),
   ...timestamps,
 });
@@ -367,9 +383,9 @@ export const documentProgress = sqliteTable("document_progress", {
   status: text("status", { enum: documentStatus })
     .notNull()
     .default("waiting_request"),
-  updatedBy: text("updated_by")
-    .notNull()
-    .references(() => users.id),
+  updatedBy: text("updated_by").references(() => users.id, {
+    onDelete: "set null",
+  }),
   ...timestamps,
 });
 
@@ -393,7 +409,8 @@ export const settlementProgress = sqliteTable("settlement_progress", {
     mode: "timestamp_ms",
   }),
   bcSettlementStatusBy: text("bc_settlement_status_by").references(
-    () => users.id
+    () => users.id,
+    { onDelete: "set null" }
   ),
   abSettlementStatus: text("ab_settlement_status", { enum: abSettlementStatus })
     .notNull()
@@ -402,7 +419,8 @@ export const settlementProgress = sqliteTable("settlement_progress", {
     mode: "timestamp_ms",
   }),
   abSettlementStatusBy: text("ab_settlement_status_by").references(
-    () => users.id
+    () => users.id,
+    { onDelete: "set null" }
   ),
   loanCalculationSaved: integer("loan_calculation_saved", { mode: "boolean" })
     .notNull()
@@ -411,18 +429,23 @@ export const settlementProgress = sqliteTable("settlement_progress", {
     mode: "timestamp_ms",
   }),
   loanCalculationSavedBy: text("loan_calculation_saved_by").references(
-    () => users.id
+    () => users.id,
+    { onDelete: "set null" }
   ),
   lawyerRequested: integer("lawyer_requested", { mode: "boolean" })
     .notNull()
     .default(false),
   lawyerRequestedAt: integer("lawyer_requested_at", { mode: "timestamp_ms" }),
-  lawyerRequestedBy: text("lawyer_requested_by").references(() => users.id),
+  lawyerRequestedBy: text("lawyer_requested_by").references(() => users.id, {
+    onDelete: "set null",
+  }),
   documentsShared: integer("documents_shared", { mode: "boolean" })
     .notNull()
     .default(false),
   documentsSharedAt: integer("documents_shared_at", { mode: "timestamp_ms" }),
-  documentsSharedBy: text("documents_shared_by").references(() => users.id),
+  documentsSharedBy: text("documents_shared_by").references(() => users.id, {
+    onDelete: "set null",
+  }),
   // 賃貸管理関係 - 管理解約予定月
   managementCancelScheduledMonth: text("management_cancel_scheduled_month"),
   managementCancelScheduledMonthAt: integer(
@@ -431,7 +454,7 @@ export const settlementProgress = sqliteTable("settlement_progress", {
   ),
   managementCancelScheduledMonthBy: text(
     "management_cancel_scheduled_month_by"
-  ).references(() => users.id),
+  ).references(() => users.id, { onDelete: "set null" }),
   // 賃貸管理関係 - 管理解約依頼日
   managementCancelRequestedDate: text("management_cancel_requested_date"),
   managementCancelRequestedDateAt: integer(
@@ -440,7 +463,7 @@ export const settlementProgress = sqliteTable("settlement_progress", {
   ),
   managementCancelRequestedDateBy: text(
     "management_cancel_requested_date_by"
-  ).references(() => users.id),
+  ).references(() => users.id, { onDelete: "set null" }),
   // 賃貸管理関係 - 管理解約完了日
   managementCancelCompletedDate: text("management_cancel_completed_date"),
   managementCancelCompletedDateAt: integer(
@@ -449,7 +472,7 @@ export const settlementProgress = sqliteTable("settlement_progress", {
   ),
   managementCancelCompletedDateBy: text(
     "management_cancel_completed_date_by"
-  ).references(() => users.id),
+  ).references(() => users.id, { onDelete: "set null" }),
   identityVerification: text("identity_verification", {
     enum: identityVerification,
   })
@@ -461,7 +484,10 @@ export const settlementProgress = sqliteTable("settlement_progress", {
   documentsCompleteAt: integer("documents_complete_at", {
     mode: "timestamp_ms",
   }),
-  documentsCompleteBy: text("documents_complete_by").references(() => users.id),
+  documentsCompleteBy: text("documents_complete_by").references(
+    () => users.id,
+    { onDelete: "set null" }
+  ),
   mortgageBankStatus: text("mortgage_bank_status", {
     enum: mortgageBankStatus,
   })
@@ -474,13 +500,16 @@ export const settlementProgress = sqliteTable("settlement_progress", {
     mode: "timestamp_ms",
   }),
   bankDocumentsCompleteBy: text("bank_documents_complete_by").references(
-    () => users.id
+    () => users.id,
+    { onDelete: "set null" }
   ),
   loanSaved: integer("loan_saved", { mode: "boolean" })
     .notNull()
     .default(false),
   loanSavedAt: integer("loan_saved_at", { mode: "timestamp_ms" }),
-  loanSavedBy: text("loan_saved_by").references(() => users.id),
+  loanSavedBy: text("loan_saved_by").references(() => users.id, {
+    onDelete: "set null",
+  }),
   sellerPaymentDone: integer("seller_payment_done", { mode: "boolean" })
     .notNull()
     .default(false),
@@ -488,7 +517,8 @@ export const settlementProgress = sqliteTable("settlement_progress", {
     mode: "timestamp_ms",
   }),
   sellerPaymentDoneBy: text("seller_payment_done_by").references(
-    () => users.id
+    () => users.id,
+    { onDelete: "set null" }
   ),
   managementCancel: text("management_cancel", { enum: managementCancel })
     .notNull()
@@ -504,7 +534,9 @@ export const settlementProgress = sqliteTable("settlement_progress", {
     .notNull()
     .default(false),
   ledgerEntryAt: integer("ledger_entry_at", { mode: "timestamp_ms" }),
-  ledgerEntryBy: text("ledger_entry_by").references(() => users.id),
+  ledgerEntryBy: text("ledger_entry_by").references(() => users.id, {
+    onDelete: "set null",
+  }),
   ...timestamps,
 });
 
@@ -525,7 +557,9 @@ export const propertyDocumentItems = sqliteTable(
       .notNull()
       .default("not_requested"),
     updatedAt: integer("updated_at", { mode: "timestamp_ms" }),
-    updatedBy: text("updated_by").references(() => users.id),
+    updatedBy: text("updated_by").references(() => users.id, {
+      onDelete: "set null",
+    }),
   },
   (table) => [
     index("idx_property_document_items_property_id").on(table.propertyId),
@@ -551,9 +585,9 @@ export const propertyProgressHistory = sqliteTable(
       .references(() => properties.id, { onDelete: "cascade" }),
     fromStatus: text("from_status", { enum: progressStatus }),
     toStatus: text("to_status", { enum: progressStatus }).notNull(),
-    changedBy: text("changed_by")
-      .notNull()
-      .references(() => users.id),
+    changedBy: text("changed_by").references(() => users.id, {
+      onDelete: "set null",
+    }),
     changedAt: integer("changed_at", { mode: "timestamp_ms" })
       .default(sql`(cast(unixepoch('subsecond') * 1000 as integer))`)
       .notNull(),

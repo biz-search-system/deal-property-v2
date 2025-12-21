@@ -67,11 +67,13 @@ export function PropertyDetailView({ property }: PropertyDetailViewProps) {
         <Users className="h-4 w-4 text-muted-foreground" />
         <span className="text-sm text-muted-foreground">担当:</span>
         <div className="flex gap-2">
-          {property.staff?.map((staffMember) => (
-            <Badge key={staffMember.user.id} variant="secondary">
-              {staffMember.user.name}
-            </Badge>
-          ))}
+          {property.staff
+            ?.filter((staffMember) => staffMember.user !== null)
+            .map((staffMember) => (
+              <Badge key={staffMember.user!.id} variant="secondary">
+                {staffMember.user!.name}
+              </Badge>
+            ))}
         </div>
       </div>
 
