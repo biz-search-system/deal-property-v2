@@ -44,11 +44,24 @@ const defaultFormatCurrency = (value: number | null): string => {
   const man = value / 10000;
   // 小数点以下がある場合は小数第二位まで表示（末尾の0は削除）
   if (man % 1 !== 0) {
-    return `${parseFloat(man.toFixed(2))}万`;
+    return `${parseFloat(man.toFixed(2)).toLocaleString()}万`;
   }
-  return `${man.toFixed(0)}万`;
+  return `${man.toLocaleString()}万`;
 };
 
+/**
+ * 金額編集
+ * @param id 対象のID
+ * @param currentValue 現在の値（円単位）
+ * @param onSave 保存処理（editable=trueの場合は必須）
+ * @param editable 編集可能かどうか
+ * @param title ポップオーバーのタイトル
+ * @param description ポップオーバーの説明
+ * @param successMessage 成功時のメッセージ
+ * @param errorMessage エラー時のメッセージ
+ * @param formatDisplay 表示フォーマット関数
+ * @returns
+ */
 export function CurrencyPopoverEdit({
   id,
   currentValue,

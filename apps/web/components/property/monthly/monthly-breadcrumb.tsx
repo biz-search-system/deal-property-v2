@@ -43,7 +43,7 @@ function YearSelector({ year, month }: { year: string; month: string }) {
           <Button
             variant="ghost"
             size="sm"
-            className="h-auto w-auto p-0 hover:bg-accent"
+            className="h-auto w-auto p-1.5 transition-[color,box-shadow] hover:bg-transparent hover:ring-ring/50 hover:ring-[3px]"
           >
             <ChevronsUpDown className="size-4 opacity-50" />
           </Button>
@@ -79,7 +79,7 @@ function MonthSelector({ year, month }: { year: string; month: string }) {
           <Button
             variant="ghost"
             size="sm"
-            className="h-auto w-auto p-0 hover:bg-accent"
+            className="h-auto w-auto p-1.5 hover:bg-transparent hover:ring-ring/50 hover:ring-[3px]"
           >
             <ChevronsUpDown className="size-4 opacity-50" />
           </Button>
@@ -109,7 +109,6 @@ export function MonthlyBreadcrumb({
   propertyId,
 }: MonthlyBreadcrumbProps) {
   const breadcrumbItems: BreadCrumbItem[] = [
-    { label: "案件管理" },
     { label: "月別案件" },
     {
       label: `${year}年`,

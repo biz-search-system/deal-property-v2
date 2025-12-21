@@ -498,17 +498,23 @@ export const monthlyColumns: ColumnDef<PropertyWithRelations>[] = [
                 <span className="sr-only">操作メニュー</span>
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuItem onClick={() => meta?.onView?.(property)}>
+            <DropdownMenuContent align="end" className="min-w-[80px]">
+              <DropdownMenuItem
+                onClick={() => meta?.onView?.(property)}
+                className="text-xs px-2 py-1"
+              >
                 <Eye className="h-3 w-3" />
                 詳細
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => meta?.onEdit?.(property)}>
+              <DropdownMenuItem
+                onClick={() => meta?.onEdit?.(property)}
+                className="text-xs px-2 py-1"
+              >
                 <Edit className="h-3 w-3" />
                 編集
               </DropdownMenuItem>
               <AlertDialogTrigger asChild>
-                <DropdownMenuItem className="text-destructive focus:text-destructive">
+                <DropdownMenuItem className="text-xs px-2 py-1 text-destructive focus:text-destructive">
                   <Trash2 className="h-3 w-3" />
                   削除
                 </DropdownMenuItem>

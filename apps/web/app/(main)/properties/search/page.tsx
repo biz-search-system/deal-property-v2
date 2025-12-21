@@ -23,12 +23,7 @@ export default async function SearchPage() {
 
   return (
     <>
-      <BreadcrumbConfig
-        items={[
-          { label: "案件管理" },
-          { label: "案件検索", href: "/properties/search" },
-        ]}
-      />
+      <BreadcrumbConfig items={[{ label: "案件検索" }]} />
       <SearchProperties properties={transformedProperties} />;
     </>
   );

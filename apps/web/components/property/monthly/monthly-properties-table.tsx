@@ -114,9 +114,9 @@ export function MonthlyPropertiesTable({
     const base = "text-[10px] p-1";
     switch (columnId) {
       case "organization":
-        return `${base} w-[70px]`;
+        return `${base} w-[70px] text-center`;
       case "staff":
-        return `${base} w-[50px]`;
+        return `${base} max-w-[80px]`;
       case "propertyName":
         return `${base} max-w-[140px]`;
       case "roomNumber":
@@ -124,11 +124,11 @@ export function MonthlyPropertiesTable({
       case "ownerName":
         return `${base} max-w-[60px]`;
       case "buyerCompany":
-        return `${base} max-w-[60px]`;
+        return `${base} max-w-[50px]`;
       case "notes":
         return `${base} max-w-[80px]`;
       case "actions":
-        return `${base} sticky right-2`;
+        return `${base} text-center p-0`;
       default:
         return base;
     }
@@ -147,7 +147,7 @@ export function MonthlyPropertiesTable({
                 {headerGroup.headers.map((header) => (
                   <TableHead
                     key={header.id}
-                    className={`text-[10px] p-1 ${getHeaderColumnClass(header.column.id)}`}
+                    className={`text-[10px] p-1 text-center ${getHeaderColumnClass(header.column.id)}`}
                   >
                     {header.isPlaceholder
                       ? null
