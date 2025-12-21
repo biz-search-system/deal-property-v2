@@ -24,6 +24,7 @@ import { useTransition } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import PasswordForm from "./password-form";
+import GestLoginButton from "./gest-login-button";
 
 export function LoginForm({
   className,

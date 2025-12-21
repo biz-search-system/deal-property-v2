@@ -148,13 +148,9 @@ export function DataTable<TData, TValue>({
                         case "ownerName":
                           return "min-w-[55px]";
                         case "amountA":
-                          return "w-[50px]";
                         case "amountExit":
-                          return "w-[50px]";
                         case "commission":
-                          return "w-[50px]";
                         case "profit":
-                          return "w-[50px]";
                         case "bcDeposit":
                           return "w-[50px]";
                         case "settlementDate":
@@ -179,7 +175,7 @@ export function DataTable<TData, TValue>({
                     return (
                       <TableHead
                         key={header.id}
-                        className={`text-[10px] p-1 ${getColumnClass()}`}
+                        className={`text-[10px] p-1 text-center ${getColumnClass()}`}
                       >
                         {header.isPlaceholder
                           ? null
@@ -208,7 +204,7 @@ export function DataTable<TData, TValue>({
                         const base = "text-[10px] p-1";
                         switch (id) {
                           case "organization":
-                            return `${base} w-[70px]`;
+                            return `${base} w-[70px] text-center`;
                           case "staff":
                             return `${base} max-w-[80px]`;
                           case "propertyName":
@@ -222,7 +218,7 @@ export function DataTable<TData, TValue>({
                           case "notes":
                             return `${base} max-w-[80px]`;
                           case "actions":
-                            return `${base} sticky right-2`;
+                            return `${base} text-center p-0`;
                           default:
                             return base;
                         }
