@@ -54,8 +54,10 @@ export default async function PropertyEditPage({
   // 案件の組織IDに基づいて営業チームメンバーを取得
   const availableStaff = await getSalesTeamMembers(property.organizationId);
 
-  // 担当者のIDリストを取得
-  const staffIds = property.staff.map((s) => s.userId);
+  // 担当者のIDリストを取得（nullを除外）
+  const staffIds = property.staff
+    .map((s) => s.userId)
+    .filter((id): id is string => id !== null);
 
   return (
     <div className="flex h-full min-h-0 flex-col overflow-hidden p-3 lg:p-2">

@@ -151,8 +151,11 @@ export function PropertyDetailModal() {
     handleClose();
   };
 
-  // 担当者のIDリストを取得
-  const staffIds = property?.staff?.map((s) => s.userId) || [];
+  // 担当者のIDリストを取得（nullを除外）
+  const staffIds =
+    property?.staff
+      ?.map((s) => s.userId)
+      .filter((id): id is string => id !== null) || [];
 
   const isLoading = isLoadingProperty || isLoadingOrgs || isLoadingMembers;
   const isOpen = propertyId !== null;
