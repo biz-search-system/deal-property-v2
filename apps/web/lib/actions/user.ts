@@ -69,22 +69,24 @@ export async function changePassword(data: PasswordChange) {
 }
 
 /**
- * アカウントを削除
+ * アカウントを削除（論理削除）
+ * Better Authのbanユーザー機能を使用して、ユーザーをBANすることで論理削除を実現します。
+ * BANされたユーザーはログインできなくなり、データは保持されます。
  */
 export async function deleteAccount() {
   const session = await verifySession();
+  const userId = session.user.id;
 
-  // 現時点でBetter AuthにはユーザーがセルフでアカウントHTを削除するAPIがないため、
-  // 管理者権限でユーザーを削除する必要があります
-  // TODO: Better Authのセルフサービス削除APIが実装されたら置き換える
+  // ユーザーをBANして論理削除
+  await auth.api.banUser({
+    body: {
+      userId,
+      banReason: "アカウント削除リクエスト",
+    },
+  });
 
-  // 一時的な実装: セッションを削除してログアウトさせる
+  // セッションを削除してログアウト
   await auth.api.signOut({
     headers: await headers(),
   });
-
-  // 実際の削除処理は管理者が行う必要があります
-  // または、削除リクエストをキューに入れて、後で管理者が処理するなどの実装が必要
-
-  throw new Error("アカウント削除機能は現在準備中です");
 }

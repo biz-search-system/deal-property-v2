@@ -26,7 +26,9 @@ export const selectOptions = sqliteTable(
     id,
     category: text("category").notNull(),
     value: text("value").notNull(),
-    createdBy: text("created_by").references(() => users.id),
+    createdBy: text("created_by").references(() => users.id, {
+      onDelete: "set null",
+    }),
     ...timestamps,
   },
   (table) => [index("select_options_category_idx").on(table.category)]

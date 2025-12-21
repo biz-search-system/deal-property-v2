@@ -141,6 +141,27 @@
       "when": 1766260000000,
       "tag": "0019_absurd_iron_monger",
       "breakpoints": true
+    },
+    {
+      "idx": 20,
+      "version": "6",
+      "when": 1766300000000,
+      "tag": "0020_fix_user_foreign_keys",
+      "breakpoints": true
+    },
+    {
+      "idx": 21,
+      "version": "6",
+      "when": 1766310000000,
+      "tag": "0021_fix_remaining_foreign_keys",
+      "breakpoints": true
+    },
+    {
+      "idx": 22,
+      "version": "6",
+      "when": 1766279555803,
+      "tag": "0022_faulty_grey_gargoyle",
+      "breakpoints": true
     }
   ]
 }
