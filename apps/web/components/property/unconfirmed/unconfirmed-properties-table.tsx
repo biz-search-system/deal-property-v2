@@ -21,6 +21,10 @@ import type { PropertyWithRelations } from "@/lib/types/property";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
+import {
+  getHeaderColumnClass,
+  getCellColumnClass,
+} from "../table/column-class-helpers";
 import { unconfirmedColumns } from "./unconfirmed-columns";
 
 interface UnconfirmedPropertiesTableProps {
@@ -66,67 +70,6 @@ export function UnconfirmedPropertiesTable({
     },
   });
 
-  const getHeaderColumnClass = (columnId: string) => {
-    switch (columnId) {
-      case "organization":
-        return "w-[70px]";
-      case "staff":
-        return "w-[50px]";
-      case "propertyName":
-        return "";
-      case "roomNumber":
-        return "w-[40px]";
-      case "ownerName":
-        return "min-w-[55px]";
-      case "amountA":
-      case "amountExit":
-      case "commission":
-      case "profit":
-      case "bcDeposit":
-        return "w-[50px]";
-      case "settlementDate":
-        return "w-[60px]";
-      case "buyerCompany":
-        return "min-w-[50px]";
-      case "contractType":
-      case "companyB":
-      case "brokerCompany":
-      case "progressStatus":
-      case "documentStatus":
-        return "w-[70px]";
-      case "notes":
-        return "min-w-[65px] max-w-[120px]";
-      case "actions":
-        return "sticky right-0 bg-background w-[50px]";
-      default:
-        return "";
-    }
-  };
-
-  const getCellColumnClass = (columnId: string) => {
-    const base = "text-[10px] p-1";
-    switch (columnId) {
-      case "organization":
-        return `${base} w-[70px]`;
-      case "staff":
-        return `${base} w-[50px]`;
-      case "propertyName":
-        return `${base} max-w-[140px]`;
-      case "roomNumber":
-        return base;
-      case "ownerName":
-        return `${base} max-w-[60px]`;
-      case "buyerCompany":
-        return `${base} max-w-[60px]`;
-      case "notes":
-        return `${base} max-w-[80px]`;
-      case "actions":
-        return `${base} sticky right-2`;
-      default:
-        return base;
-    }
-  };
-
   return (
     <>
       <ScrollArea className="min-h-0 flex-1 overflow-auto">
@@ -140,7 +83,7 @@ export function UnconfirmedPropertiesTable({
                 {headerGroup.headers.map((header) => (
                   <TableHead
                     key={header.id}
-                    className={`text-[10px] p-1 ${getHeaderColumnClass(header.column.id)}`}
+                    className={`text-[10px] p-1 text-center ${getHeaderColumnClass(header.column.id)}`}
                   >
                     {header.isPlaceholder
                       ? null

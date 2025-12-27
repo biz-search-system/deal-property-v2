@@ -21,7 +21,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@workspace/ui/components/dropdown-menu";
-import { MoreVertical, Eye, Edit, Trash2 } from "lucide-react";
+import { MoreHorizontal, Eye, Edit, Trash2 } from "lucide-react";
 import {
   OrganizationSlugType,
   CONTRACT_TYPE_LABELS,
@@ -503,23 +503,27 @@ export const unconfirmedColumns: ColumnDef<PropertyWithRelations>[] = [
         <AlertDialog>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="sm" className="h-5 w-5 p-0">
-                <MoreVertical className="h-3 w-3" />
+              <Button
+                variant="ghost"
+                size="icon"
+                className="size-6 p-0 hover:bg-transparent hover:ring-ring/50 hover:ring-[3px]"
+              >
+                <MoreHorizontal className="size-5" />
                 <span className="sr-only">操作メニュー</span>
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
+            <DropdownMenuContent align="end" className="min-w-[100px]">
               <DropdownMenuItem onClick={() => meta?.onView?.(property)}>
-                <Eye className="h-3 w-3" />
+                <Eye className="h-3 w-3 mr-2" />
                 詳細
               </DropdownMenuItem>
               <DropdownMenuItem onClick={() => meta?.onEdit?.(property)}>
-                <Edit className="h-3 w-3" />
+                <Edit className="h-3 w-3 mr-2" />
                 編集
               </DropdownMenuItem>
               <AlertDialogTrigger asChild>
                 <DropdownMenuItem className="text-destructive focus:text-destructive">
-                  <Trash2 className="h-3 w-3" />
+                  <Trash2 className="h-3 w-3 mr-2" />
                   削除
                 </DropdownMenuItem>
               </AlertDialogTrigger>

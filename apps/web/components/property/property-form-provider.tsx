@@ -224,6 +224,9 @@ export default function PropertyFormProvider({
       if (mode === "create") {
         const result = await createProperty(data);
         if (!result.success) {
+          // サーバーバリデーションエラーをフォームに反映
+          // progressStatus/settlementDateの整合性エラーはcontractタブ
+          form.setError("progressStatus", { message: result.error });
           toast.error(result.error);
           return;
         }
@@ -236,6 +239,8 @@ export default function PropertyFormProvider({
         }
         const result = await updateProperty({ ...data, id: defaultValues.id });
         if (!result.success) {
+          // サーバーバリデーションエラーをフォームに反映
+          form.setError("progressStatus", { message: result.error });
           toast.error(result.error);
           return;
         }
@@ -247,10 +252,13 @@ export default function PropertyFormProvider({
         router.refresh();
       }
     } catch (error) {
-      // 予期しないエラーの場合
+      // サーバーからのエラーメッセージがあればそれを表示
       const defaultMessage =
-        mode === "create" ? "案件の作成に失敗しました" : "案件の更新に失敗しました";
-      toast.error(defaultMessage);
+        mode === "create"
+          ? "案件の作成に失敗しました"
+          : "案件の更新に失敗しました";
+      const message = error instanceof Error ? error.message : defaultMessage;
+      toast.error(message);
       console.error(error);
     }
   };

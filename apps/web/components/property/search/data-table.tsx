@@ -29,6 +29,10 @@ import {
 } from "@workspace/ui/components/table";
 import { OrganizationSlugType } from "@workspace/utils";
 import { useState } from "react";
+import {
+  getHeaderColumnClass,
+  getCellColumnClass,
+} from "../table/column-class-helpers";
 import { DataTablePagination } from "./data-table-pagination";
 import { DataTableToolbar } from "./data-table-toolbar";
 
@@ -132,60 +136,19 @@ export function DataTable<TData, TValue>({
                   key={headerGroup.id}
                   className="hover:bg-transparent relative after:absolute after:bottom-0 after:left-0 after:right-0 after:h-px after:bg-border"
                 >
-                  {headerGroup.headers.map((header) => {
-                    // カラム幅とstickyクラスを設定
-                    const getColumnClass = () => {
-                      const id = header.column.id;
-                      switch (id) {
-                        case "organization":
-                          return "w-[70px]";
-                        case "staff":
-                          return "w-[50px]";
-                        case "propertyName":
-                          return "";
-                        case "roomNumber":
-                          return "w-[40px]";
-                        case "ownerName":
-                          return "min-w-[55px]";
-                        case "amountA":
-                        case "amountExit":
-                        case "commission":
-                        case "profit":
-                        case "bcDeposit":
-                          return "w-[50px]";
-                        case "settlementDate":
-                          return "w-[60px]";
-                        case "buyerCompany":
-                          return "min-w-[40px]";
-                        case "contractType":
-                        case "companyB":
-                        case "brokerCompany":
-                        case "progressStatus":
-                        case "documentStatus":
-                          return "w-[70px]";
-                        case "notes":
-                          return "min-w-[65px] max-w-[120px]";
-                        case "actions":
-                          return "sticky right-0 bg-background w-[50px]";
-                        default:
-                          return "";
-                      }
-                    };
-
-                    return (
-                      <TableHead
-                        key={header.id}
-                        className={`text-[10px] p-1 text-center ${getColumnClass()}`}
-                      >
-                        {header.isPlaceholder
-                          ? null
-                          : flexRender(
-                              header.column.columnDef.header,
-                              header.getContext()
-                            )}
-                      </TableHead>
-                    );
-                  })}
+                  {headerGroup.headers.map((header) => (
+                    <TableHead
+                      key={header.id}
+                      className={`text-[10px] p-1 text-center ${getHeaderColumnClass(header.column.id)}`}
+                    >
+                      {header.isPlaceholder
+                        ? null
+                        : flexRender(
+                            header.column.columnDef.header,
+                            header.getContext()
+                          )}
+                    </TableHead>
+                  ))}
                 </TableRow>
               ))}
             </TableHeader>
@@ -197,42 +160,17 @@ export function DataTable<TData, TValue>({
                     data-state={row.getIsSelected() && "selected"}
                     className="hover:bg-muted/50"
                   >
-                    {row.getVisibleCells().map((cell) => {
-                      // セルのクラスを設定（ヘッダーと同じ）
-                      const getCellClass = () => {
-                        const id = cell.column.id;
-                        const base = "text-[10px] p-1";
-                        switch (id) {
-                          case "organization":
-                            return `${base} w-[70px] text-center`;
-                          case "staff":
-                            return `${base} max-w-[80px]`;
-                          case "propertyName":
-                            return `${base} max-w-[140px]`;
-                          case "roomNumber":
-                            return `${base}`;
-                          case "ownerName":
-                            return `${base} max-w-[60px]`;
-                          case "buyerCompany":
-                            return `${base} max-w-[50px]`;
-                          case "notes":
-                            return `${base} max-w-[80px]`;
-                          case "actions":
-                            return `${base} text-center p-0`;
-                          default:
-                            return base;
-                        }
-                      };
-
-                      return (
-                        <TableCell key={cell.id} className={getCellClass()}>
-                          {flexRender(
-                            cell.column.columnDef.cell,
-                            cell.getContext()
-                          )}
-                        </TableCell>
-                      );
-                    })}
+                    {row.getVisibleCells().map((cell) => (
+                      <TableCell
+                        key={cell.id}
+                        className={getCellColumnClass(cell.column.id)}
+                      >
+                        {flexRender(
+                          cell.column.columnDef.cell,
+                          cell.getContext()
+                        )}
+                      </TableCell>
+                    ))}
                   </TableRow>
                 ))
               ) : (
