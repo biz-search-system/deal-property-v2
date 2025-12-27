@@ -21,7 +21,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@workspace/ui/components/dropdown-menu";
-import { MoreVertical, Eye, Edit, Trash2 } from "lucide-react";
+import { MoreHorizontal, Eye, Edit, Trash2 } from "lucide-react";
 import {
   CONTRACT_TYPE_LABELS,
   CONTRACT_TYPE_COLORS,
@@ -345,7 +345,11 @@ export const monthlyColumns: ColumnDef<PropertyWithRelations>[] = [
           labels={CONTRACT_TYPE_LABELS}
           colors={CONTRACT_TYPE_COLORS}
           onSave={async (id, value) => {
-            await updatePropertyEnumField({ id, field: "contractType", value });
+            return await updatePropertyEnumField({
+              id,
+              field: "contractType",
+              value,
+            });
           }}
           successMessage="契約形態を更新しました"
           errorMessage="契約形態の更新に失敗しました"
@@ -369,7 +373,11 @@ export const monthlyColumns: ColumnDef<PropertyWithRelations>[] = [
           labels={COMPANY_B_LABELS}
           colors={COMPANY_B_COLORS}
           onSave={async (id, value) => {
-            await updatePropertyEnumField({ id, field: "companyB", value });
+            return await updatePropertyEnumField({
+              id,
+              field: "companyB",
+              value,
+            });
           }}
           successMessage="B会社を更新しました"
           errorMessage="B会社の更新に失敗しました"
@@ -393,7 +401,7 @@ export const monthlyColumns: ColumnDef<PropertyWithRelations>[] = [
           labels={BROKER_COMPANY_LABELS}
           colors={BROKER_COMPANY_COLORS}
           onSave={async (id, value) => {
-            await updatePropertyEnumField({
+            return await updatePropertyEnumField({
               id,
               field: "brokerCompany",
               value,
@@ -421,9 +429,10 @@ export const monthlyColumns: ColumnDef<PropertyWithRelations>[] = [
           labels={PROGRESS_STATUS_LABELS}
           colors={PROGRESS_STATUS_COLORS}
           onSave={async (id, value) => {
-            if (value) {
-              await updatePropertyProgressStatus({ id, progressStatus: value });
-            }
+            return await updatePropertyProgressStatus({
+              id,
+              progressStatus: value,
+            });
           }}
           successMessage="進捗ステータスを更新しました"
           errorMessage="進捗ステータスの更新に失敗しました"
@@ -446,9 +455,10 @@ export const monthlyColumns: ColumnDef<PropertyWithRelations>[] = [
           labels={DOCUMENT_STATUS_LABELS}
           colors={DOCUMENT_STATUS_COLORS}
           onSave={async (id, value) => {
-            if (value) {
-              await updatePropertyDocumentStatus({ id, documentStatus: value });
-            }
+            return await updatePropertyDocumentStatus({
+              id,
+              documentStatus: value,
+            });
           }}
           successMessage="書類ステータスを更新しました"
           errorMessage="書類ステータスの更新に失敗しました"
@@ -493,29 +503,27 @@ export const monthlyColumns: ColumnDef<PropertyWithRelations>[] = [
         <AlertDialog>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="sm" className="h-5 w-5 p-0">
-                <MoreVertical className="h-3 w-3" />
+              <Button
+                variant="ghost"
+                size="icon"
+                className="size-6 p-0 hover:bg-transparent hover:ring-ring/50 hover:ring-[3px]"
+              >
+                <MoreHorizontal className="size-5" />
                 <span className="sr-only">操作メニュー</span>
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="min-w-[80px]">
-              <DropdownMenuItem
-                onClick={() => meta?.onView?.(property)}
-                className="text-xs px-2 py-1"
-              >
-                <Eye className="h-3 w-3" />
+            <DropdownMenuContent align="end" className="min-w-[100px]">
+              <DropdownMenuItem onClick={() => meta?.onView?.(property)}>
+                <Eye className="h-3 w-3 mr-2" />
                 詳細
               </DropdownMenuItem>
-              <DropdownMenuItem
-                onClick={() => meta?.onEdit?.(property)}
-                className="text-xs px-2 py-1"
-              >
-                <Edit className="h-3 w-3" />
+              <DropdownMenuItem onClick={() => meta?.onEdit?.(property)}>
+                <Edit className="h-3 w-3 mr-2" />
                 編集
               </DropdownMenuItem>
               <AlertDialogTrigger asChild>
-                <DropdownMenuItem className="text-xs px-2 py-1 text-destructive focus:text-destructive">
-                  <Trash2 className="h-3 w-3" />
+                <DropdownMenuItem className="text-destructive focus:text-destructive">
+                  <Trash2 className="h-3 w-3 mr-2" />
                   削除
                 </DropdownMenuItem>
               </AlertDialogTrigger>

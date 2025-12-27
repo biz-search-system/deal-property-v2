@@ -44,7 +44,10 @@ export default function DatePickerForm<T extends FieldValues>({
   updatedByUser,
 }: DatePickerFormProps<T>) {
   const [open, setOpen] = useState(false);
-  const [selectedMonth, setSelectedMonth] = useState<Date>(new Date());
+  const currentValue = form.watch(name);
+  const [selectedMonth, setSelectedMonth] = useState<Date>(
+    currentValue ? new Date(currentValue) : new Date()
+  );
 
   // 月末判定（午前0時0分10秒かつ月末日の場合）
   const isMonthEndDate = (dateValue: string | null | undefined): boolean => {
@@ -171,10 +174,17 @@ export default function DatePickerForm<T extends FieldValues>({
                 mode="single"
                 selected={parseDate(field.value)}
                 onSelect={(date) => {
-                  if (date) {
+                  // 同じ日付を選択した場合、react-day-pickerはundefinedを返すことがある
+                  // その場合は現在の日付を使用して「月末予定」から「通常日付」に更新する
+                  let selectedDate = date;
+                  if (!selectedDate && field.value) {
+                    selectedDate = new Date(field.value);
+                  }
+
+                  if (selectedDate) {
                     // 通常の日付選択: 午前0時0分0秒
-                    date.setHours(0, 0, 0, 0);
-                    field.onChange(formatToISOString(date));
+                    selectedDate.setHours(0, 0, 0, 0);
+                    field.onChange(formatToISOString(selectedDate));
                   }
                   setOpen(false);
                 }}
@@ -185,6 +195,7 @@ export default function DatePickerForm<T extends FieldValues>({
                 captionLayout="dropdown"
                 startMonth={new Date(new Date().getFullYear() - 5, 0)}
                 endMonth={new Date(new Date().getFullYear() + 5, 11)}
+                required
               />
             </PopoverContent>
           </Popover>

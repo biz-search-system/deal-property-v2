@@ -8,6 +8,7 @@ import {
 } from "../schemas/property";
 import z from "zod";
 import { abSettlementStatus } from "../types/property";
+import { validateProgressStatusWithSettlementDate } from "@workspace/utils";
 
 // ==================== 案件テーブル ====================
 
@@ -105,10 +106,10 @@ export const settlementProgressSelectSchema =
 // ==================== 複合スキーマ ====================
 
 /**
- * 案件作成用の複合スキーマ
+ * 案件作成用のベーススキーマ
  * 案件本体 + 担当者配列を含む
  */
-export const propertyCreateSchema = z.object({
+const propertyCreateBaseSchema = z.object({
   // 案件基本情報
   propertyName: z
     .string()
@@ -250,12 +251,45 @@ export const propertyCreateSchema = z.object({
 });
 
 /**
+ * 案件作成用の複合スキーマ（バリデーション付き）
+ */
+export const propertyCreateSchema = propertyCreateBaseSchema.superRefine(
+  (data, ctx) => {
+    const error = validateProgressStatusWithSettlementDate(
+      data.progressStatus,
+      data.settlementDate
+    );
+    if (error) {
+      ctx.addIssue({
+        code: "custom",
+        message: error,
+        path: ["progressStatus"],
+      });
+    }
+  }
+);
+
+/**
  * 案件更新用の複合スキーマ
  * 案件IDを含む
  */
-export const propertyUpdateSchema = propertyCreateSchema.extend({
-  id: z.string().min(1, "案件IDは必須です"),
-});
+export const propertyUpdateSchema = propertyCreateBaseSchema
+  .extend({
+    id: z.string().min(1, "案件IDは必須です"),
+  })
+  .superRefine((data, ctx) => {
+    const error = validateProgressStatusWithSettlementDate(
+      data.progressStatus,
+      data.settlementDate
+    );
+    if (error) {
+      ctx.addIssue({
+        code: "custom",
+        message: error,
+        path: ["progressStatus"],
+      });
+    }
+  });
 
 export type PropertyCreate = z.infer<typeof propertyCreateSchema>;
 export type PropertyUpdate = z.infer<typeof propertyUpdateSchema>;
