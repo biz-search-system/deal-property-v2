@@ -354,7 +354,11 @@ export const columns: ColumnDef<PropertyWithRelations>[] = [
           labels={CONTRACT_TYPE_LABELS}
           colors={CONTRACT_TYPE_COLORS}
           onSave={async (id, value) => {
-            await updatePropertyEnumField({ id, field: "contractType", value });
+            return await updatePropertyEnumField({
+              id,
+              field: "contractType",
+              value,
+            });
           }}
           successMessage="契約形態を更新しました"
           errorMessage="契約形態の更新に失敗しました"
@@ -381,7 +385,11 @@ export const columns: ColumnDef<PropertyWithRelations>[] = [
           labels={COMPANY_B_LABELS}
           colors={COMPANY_B_COLORS}
           onSave={async (id, value) => {
-            await updatePropertyEnumField({ id, field: "companyB", value });
+            return await updatePropertyEnumField({
+              id,
+              field: "companyB",
+              value,
+            });
           }}
           successMessage="B会社を更新しました"
           errorMessage="B会社の更新に失敗しました"
@@ -405,7 +413,7 @@ export const columns: ColumnDef<PropertyWithRelations>[] = [
           labels={BROKER_COMPANY_LABELS}
           colors={BROKER_COMPANY_COLORS}
           onSave={async (id, value) => {
-            await updatePropertyEnumField({
+            return await updatePropertyEnumField({
               id,
               field: "brokerCompany",
               value,
@@ -433,9 +441,10 @@ export const columns: ColumnDef<PropertyWithRelations>[] = [
           labels={PROGRESS_STATUS_LABELS}
           colors={PROGRESS_STATUS_COLORS}
           onSave={async (id, value) => {
-            if (value) {
-              await updatePropertyProgressStatus({ id, progressStatus: value });
-            }
+            return await updatePropertyProgressStatus({
+              id,
+              progressStatus: value,
+            });
           }}
           successMessage="進捗ステータスを更新しました"
           errorMessage="進捗ステータスの更新に失敗しました"
@@ -461,9 +470,10 @@ export const columns: ColumnDef<PropertyWithRelations>[] = [
           labels={DOCUMENT_STATUS_LABELS}
           colors={DOCUMENT_STATUS_COLORS}
           onSave={async (id, value) => {
-            if (value) {
-              await updatePropertyDocumentStatus({ id, documentStatus: value });
-            }
+            return await updatePropertyDocumentStatus({
+              id,
+              documentStatus: value,
+            });
           }}
           successMessage="書類ステータスを更新しました"
           errorMessage="書類ステータスの更新に失敗しました"

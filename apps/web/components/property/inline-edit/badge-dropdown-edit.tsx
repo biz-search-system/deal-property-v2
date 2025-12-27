@@ -11,8 +11,9 @@ import { cn } from "@workspace/utils";
 import { truncateText } from "@/lib/property";
 import { useState } from "react";
 import { toast } from "sonner";
+import type { ActionResult } from "@/lib/types/action";
 
-interface BadgeDropdownEditProps<T extends string> {
+interface BadgeDropdownEditPropsBase<T extends string> {
   /** 対象のID */
   id: string;
   /** 現在の値 */
@@ -23,8 +24,6 @@ interface BadgeDropdownEditProps<T extends string> {
   labels: Record<T, string>;
   /** 値から色クラスへのマッピング */
   colors: Record<T, string>;
-  /** 保存処理 */
-  onSave: (id: string, newValue: T | null) => void | Promise<void>;
   /** 編集可能かどうか */
   editable?: boolean;
   /** 成功時のメッセージ */
@@ -33,23 +32,44 @@ interface BadgeDropdownEditProps<T extends string> {
   errorMessage?: string;
   /** ドロップダウンメニュー内の表示文字数 */
   maxLength?: number;
-  /** nullを許可するか */
-  allowNull?: boolean;
 }
 
-export function BadgeDropdownEdit<T extends string>({
-  id,
-  currentValue,
-  options,
-  labels,
-  colors,
-  onSave,
-  editable = true,
-  successMessage = "更新しました",
-  errorMessage = "更新に失敗しました",
-  maxLength = 20,
-  allowNull = false,
-}: BadgeDropdownEditProps<T>) {
+interface BadgeDropdownEditPropsAllowNull<T extends string>
+  extends BadgeDropdownEditPropsBase<T> {
+  /** nullを許可する */
+  allowNull: true;
+  /** 保存処理（nullを許可） */
+  onSave: (id: string, newValue: T | null) => Promise<ActionResult>;
+}
+
+interface BadgeDropdownEditPropsNoNull<T extends string>
+  extends BadgeDropdownEditPropsBase<T> {
+  /** nullを許可しない */
+  allowNull?: false;
+  /** 保存処理（nullなし） */
+  onSave: (id: string, newValue: T) => Promise<ActionResult>;
+}
+
+type BadgeDropdownEditProps<T extends string> =
+  | BadgeDropdownEditPropsAllowNull<T>
+  | BadgeDropdownEditPropsNoNull<T>;
+
+export function BadgeDropdownEdit<T extends string>(
+  props: BadgeDropdownEditProps<T>
+) {
+  const {
+    id,
+    currentValue,
+    options,
+    labels,
+    colors,
+    editable = true,
+    successMessage = "更新しました",
+    errorMessage = "更新に失敗しました",
+    maxLength = 20,
+    allowNull = false,
+  } = props;
+
   const [isSaving, setIsSaving] = useState(false);
 
   const handleSelect = async (newValue: T | null) => {
@@ -57,12 +77,19 @@ export function BadgeDropdownEdit<T extends string>({
 
     setIsSaving(true);
     try {
-      await onSave(id, newValue);
+      // allowNullに応じてonSaveの呼び出し方を分岐
+      const result = props.allowNull
+        ? await props.onSave(id, newValue)
+        : await props.onSave(id, newValue as T);
+
+      if (!result.success) {
+        toast.error(result.error);
+        return;
+      }
+
       toast.success(successMessage);
     } catch (error) {
-      // サーバーからのエラーメッセージがあればそれを表示
-      const message = error instanceof Error ? error.message : errorMessage;
-      toast.error(message);
+      toast.error(errorMessage);
       console.error(error);
     } finally {
       setIsSaving(false);

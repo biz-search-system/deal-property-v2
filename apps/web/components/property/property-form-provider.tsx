@@ -222,7 +222,11 @@ export default function PropertyFormProvider({
   const onSubmit = async (data: PropertyCreate) => {
     try {
       if (mode === "create") {
-        await createProperty(data);
+        const result = await createProperty(data);
+        if (!result.success) {
+          toast.error(result.error);
+          return;
+        }
         toast.success("案件を作成しました");
         router.push("/properties/unconfirmed");
       } else {
@@ -230,7 +234,11 @@ export default function PropertyFormProvider({
           toast.error("案件IDが見つかりません");
           return;
         }
-        await updateProperty({ ...data, id: defaultValues.id });
+        const result = await updateProperty({ ...data, id: defaultValues.id });
+        if (!result.success) {
+          toast.error(result.error);
+          return;
+        }
         toast.success("案件を更新しました");
         if (isUnconfirmed) {
           router.push("/properties/unconfirmed");
@@ -239,11 +247,10 @@ export default function PropertyFormProvider({
         router.refresh();
       }
     } catch (error) {
-      // サーバーからのエラーメッセージがあればそれを表示
+      // 予期しないエラーの場合
       const defaultMessage =
         mode === "create" ? "案件の作成に失敗しました" : "案件の更新に失敗しました";
-      const message = error instanceof Error ? error.message : defaultMessage;
-      toast.error(message);
+      toast.error(defaultMessage);
       console.error(error);
     }
   };

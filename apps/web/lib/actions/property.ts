@@ -27,6 +27,7 @@ import {
   SETTLEMENT_DATE_REQUIRED_STATUSES,
 } from "@workspace/utils";
 import { verifySession } from "../data/sesstion";
+import type { ActionResult } from "../types/action";
 
 /** 万円から円に変換（フォーム → DB） */
 function manyenToYen(manyen: number | null | undefined): number | undefined {
@@ -53,12 +54,13 @@ function isMonthEndScheduled(date: Date): boolean {
  * 進捗ステータスと決済日の整合性をチェック
  * - 決済日がnullの場合、BC確定前以外は設定不可
  * - 決済日が月末予定の場合、精算CB待ち/決済待ち/決済完了は設定不可
+ * @returns エラーメッセージ（問題なければnull）
  */
 function validateProgressStatusWithSettlementDate(
   progressStatus: string | undefined,
   settlementDate: Date | string | null | undefined
-): void {
-  if (!progressStatus) return;
+): string | null {
+  if (!progressStatus) return null;
 
   // 決済日がnull/undefined/空文字の場合
   if (!settlementDate || settlementDate === "") {
@@ -68,9 +70,9 @@ function validateProgressStatusWithSettlementDate(
     ).includes(progressStatus);
 
     if (requiresSettlementDate) {
-      throw new Error("決済日を設定してから進捗を更新してください");
+      return "決済日を設定してから進捗を更新してください";
     }
-    return;
+    return null;
   }
 
   // 決済日をDateオブジェクトに変換
@@ -86,9 +88,9 @@ function validateProgressStatusWithSettlementDate(
     ).includes(progressStatus);
 
     if (requiresSettlementDate) {
-      throw new Error("決済日を設定してから進捗を更新してください");
+      return "決済日を設定してから進捗を更新してください";
     }
-    return;
+    return null;
   }
 
   // 月末予定の場合は制限対象のステータスへの変更を制限
@@ -98,15 +100,19 @@ function validateProgressStatusWithSettlementDate(
     ).includes(progressStatus);
 
     if (isMonthEndRestricted) {
-      throw new Error("決済日の月末予定を確定させてから進捗を更新してください");
+      return "決済日の月末予定を確定させてから進捗を更新してください";
     }
   }
+
+  return null;
 }
 
 /**
  * 案件を新規作成する
  */
-export async function createProperty(data: PropertyCreate) {
+export async function createProperty(
+  data: PropertyCreate
+): Promise<ActionResult> {
   // セッション認証
   const session = await verifySession();
 
@@ -114,10 +120,13 @@ export async function createProperty(data: PropertyCreate) {
   const validatedData = propertyCreateSchema.parse(data);
 
   // 進捗ステータスと決済日の整合性チェック
-  validateProgressStatusWithSettlementDate(
+  const validationError = validateProgressStatusWithSettlementDate(
     validatedData.progressStatus,
     validatedData.settlementDate
   );
+  if (validationError) {
+    return { success: false, error: validationError };
+  }
 
   // トランザクションで案件と関連データを作成
   const result = await db.transaction(async (tx) => {
@@ -219,7 +228,7 @@ export async function createProperty(data: PropertyCreate) {
       .returning();
 
     if (!property) {
-      throw new Error("案件の作成に失敗しました");
+      return null;
     }
 
     // 2. 担当者を登録
@@ -351,14 +360,20 @@ export async function createProperty(data: PropertyCreate) {
     return property;
   });
 
+  if (!result) {
+    return { success: false, error: "案件の作成に失敗しました" };
+  }
+
   revalidatePath("/properties/unconfirmed");
-  return result;
+  return { success: true };
 }
 
 /**
  * 案件を更新する
  */
-export async function updateProperty(data: PropertyUpdate) {
+export async function updateProperty(
+  data: PropertyUpdate
+): Promise<ActionResult> {
   // セッション認証
   const session = await verifySession();
 
@@ -366,10 +381,13 @@ export async function updateProperty(data: PropertyUpdate) {
   const validatedData = propertyUpdateSchema.parse(data);
 
   // 進捗ステータスと決済日の整合性チェック
-  validateProgressStatusWithSettlementDate(
+  const validationError = validateProgressStatusWithSettlementDate(
     validatedData.progressStatus,
     validatedData.settlementDate
   );
+  if (validationError) {
+    return { success: false, error: validationError };
+  }
 
   // トランザクションで案件と関連データを更新
   const result = await db.transaction(async (tx) => {
@@ -832,7 +850,8 @@ export async function updateProperty(data: PropertyUpdate) {
   });
 
   revalidatePath("/properties");
-  return result;
+
+  return { success: true };
 }
 
 /**
@@ -875,7 +894,7 @@ export async function deleteProperty(id: string) {
 export async function updatePropertyProgressStatus(data: {
   id: string;
   progressStatus: string;
-}) {
+}): Promise<ActionResult> {
   // セッション認証
   const session = await verifySession();
 
@@ -886,10 +905,14 @@ export async function updatePropertyProgressStatus(data: {
   });
 
   // 進捗ステータスと決済日の整合性チェック
-  validateProgressStatusWithSettlementDate(
+  const validationError = validateProgressStatusWithSettlementDate(
     data.progressStatus,
     property?.settlementDate ?? undefined
   );
+
+  if (validationError) {
+    return { success: false, error: validationError };
+  }
 
   await db
     .update(properties)
@@ -902,6 +925,8 @@ export async function updatePropertyProgressStatus(data: {
 
   revalidatePath("/properties");
   revalidatePath("/properties/unconfirmed");
+
+  return { success: true };
 }
 
 /**
@@ -910,7 +935,7 @@ export async function updatePropertyProgressStatus(data: {
 export async function updatePropertyDocumentStatus(data: {
   id: string;
   documentStatus: string;
-}) {
+}): Promise<ActionResult> {
   // セッション認証
   const session = await verifySession();
 
@@ -929,6 +954,8 @@ export async function updatePropertyDocumentStatus(data: {
 
   revalidatePath("/properties");
   revalidatePath("/properties/unconfirmed");
+
+  return { success: true };
 }
 
 /**
@@ -1104,7 +1131,7 @@ export async function updatePropertyEnumField(data: {
   id: string;
   field: "contractType" | "companyB" | "brokerCompany";
   value: string | null;
-}) {
+}): Promise<ActionResult> {
   // セッション認証
   const session = await verifySession();
 
@@ -1119,6 +1146,8 @@ export async function updatePropertyEnumField(data: {
 
   revalidatePath("/properties");
   revalidatePath("/properties/unconfirmed");
+
+  return { success: true };
 }
 
 /**

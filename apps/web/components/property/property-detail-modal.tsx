@@ -49,28 +49,42 @@ function ModalFormActions({
   onRequestClose: (isDirty: boolean) => void;
 }) {
   const { formState } = usePropertyForm();
-  const { isSubmitting, isDirty } = formState;
+  const { isSubmitting, isDirty, errors } = formState;
 
   const handleCancelClick = () => {
     onRequestClose(isDirty);
   };
 
+  // 最初のエラーメッセージを取得
+  const firstError = Object.values(errors)[0];
+  const errorMessage = firstError?.message as string | undefined;
+
   return (
-    <div className="mt-6 flex shrink-0 items-center justify-end gap-3">
-      {isValidating && (
-        <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
-      )}
-      <Button
-        type="button"
-        variant="outline"
-        onClick={handleCancelClick}
-        disabled={isSubmitting}
-      >
-        キャンセル
-      </Button>
-      <Button type="submit" disabled={isSubmitting}>
-        {isSubmitting ? "保存中..." : "保存"}
-      </Button>
+    <div className="mt-6 flex shrink-0 items-center justify-between gap-3">
+      {/* 左側: エラーメッセージ */}
+      <div className="min-w-0 flex-1">
+        {errorMessage && (
+          <p className="truncate text-sm text-destructive">{errorMessage}</p>
+        )}
+      </div>
+
+      {/* 右側: ボタン */}
+      <div className="flex shrink-0 items-center gap-3">
+        {isValidating && (
+          <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
+        )}
+        <Button
+          type="button"
+          variant="outline"
+          onClick={handleCancelClick}
+          disabled={isSubmitting}
+        >
+          キャンセル
+        </Button>
+        <Button type="submit" disabled={isSubmitting}>
+          {isSubmitting ? "保存中..." : "保存"}
+        </Button>
+      </div>
     </div>
   );
 }

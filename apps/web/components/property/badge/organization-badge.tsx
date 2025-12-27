@@ -20,6 +20,7 @@ export default function OrganizationBadge({
     <Badge
       variant="outline"
       className={cn(
+        "max-w-full w-full",
         size === "small" && "text-[9px] px-1 py-0",
         size === "medium" && "text-xs",
         organizationSlug && ORGANIZATION_COLORS[organizationSlug],
