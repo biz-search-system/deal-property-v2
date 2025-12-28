@@ -1,7 +1,5 @@
 import { drizzle } from "drizzle-orm/libsql/web";
 import * as schemas from "./schemas/index";
-// import * as authSchema from "./schemas/auth";
-// import * as propertySchema from "./schemas/property";
 
 // Drizzle インスタンスの初期化
 export const db = drizzle({
@@ -10,8 +8,6 @@ export const db = drizzle({
     authToken: process.env.TURSO_AUTH_TOKEN!,
   },
   schema: {
-    // ...authSchema,
-    // ...propertySchema,
     ...schemas,
   },
 });
