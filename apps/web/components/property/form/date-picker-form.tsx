@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { format } from "date-fns";
 import { ja } from "date-fns/locale";
 import { CalendarIcon } from "lucide-react";
 import { Button } from "@workspace/ui/components/button";
@@ -20,8 +19,8 @@ import {
 } from "@workspace/ui/components/popover";
 import {
   cn,
-  isMonthEndScheduled,
   createMonthEndDate,
+  formatDateWithMonthEnd,
 } from "@workspace/utils";
 import type { FieldValues, Path, UseFormReturn } from "react-hook-form";
 import { UserActionBadge } from "../user-action-badge";
@@ -56,16 +55,8 @@ export default function DatePickerForm<T extends FieldValues>({
   // 日付を表示用にフォーマット
   const formatDisplayDate = (dateValue: string | null | undefined): string => {
     if (!dateValue) return "日付を選択";
-    const date = new Date(dateValue);
-    if (isNaN(date.getTime())) return "日付を選択";
-
-    if (isMonthEndScheduled(date)) {
-      // JSTに変換して月を取得
-      const jstDate = new Date(date.getTime() + 9 * 60 * 60 * 1000);
-      return `${jstDate.getUTCMonth() + 1}月末予定`;
-    }
-
-    return format(date, "yyyy/MM/dd(E)", { locale: ja });
+    const result = formatDateWithMonthEnd(dateValue);
+    return result === "-" ? "日付を選択" : result;
   };
 
   // 日付文字列をDate型に変換（カレンダー表示用）

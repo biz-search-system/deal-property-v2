@@ -3,10 +3,15 @@ import {
   differenceInDays,
   differenceInHours,
   differenceInMinutes,
+  lastDayOfMonth,
 } from "date-fns";
 import { ja } from "date-fns/locale/ja";
+import { toZonedTime, fromZonedTime } from "date-fns-tz";
 
 type DateInput = Date | string | number | null | undefined;
+
+/** 日本時間のタイムゾーン */
+const JST = "Asia/Tokyo";
 
 /**
  * 日付を「yyyy年M月d日(E)」形式でフォーマット
@@ -146,18 +151,15 @@ export const formatShortDate = (dateKey: string): string => {
  * @returns 月末予定かどうか
  */
 export const isMonthEndScheduled = (date: Date): boolean => {
-  // JSTに変換して判定（UTC+9）
-  const jstDate = new Date(date.getTime() + 9 * 60 * 60 * 1000);
-  const year = jstDate.getUTCFullYear();
-  const month = jstDate.getUTCMonth();
-  const lastDayOfMonth = new Date(Date.UTC(year, month + 1, 0));
+  // JSTに変換
+  const jstDate = toZonedTime(date, JST);
+  const monthEnd = lastDayOfMonth(jstDate);
 
   return (
-    jstDate.getUTCHours() === 0 &&
-    jstDate.getUTCMinutes() === 0 &&
-    jstDate.getUTCSeconds() === 10 &&
-    jstDate.getUTCMilliseconds() === 0 &&
-    jstDate.getUTCDate() === lastDayOfMonth.getUTCDate()
+    jstDate.getHours() === 0 &&
+    jstDate.getMinutes() === 0 &&
+    jstDate.getSeconds() === 10 &&
+    jstDate.getDate() === monthEnd.getDate()
   );
 };
 
@@ -167,12 +169,18 @@ export const isMonthEndScheduled = (date: Date): boolean => {
  * @returns 月末予定の日付（Date）- ISO文字列に変換するとJST 00:00:10がUTCで保存される
  */
 export const createMonthEndDate = (date: Date): Date => {
-  const year = date.getFullYear();
-  const month = date.getMonth();
-  // 月末日を取得
-  const lastDay = new Date(year, month + 1, 0).getDate();
-  // JST基準で月末日の00:00:10を設定（UTC-9時間 = 前日15:00:10）
-  return new Date(Date.UTC(year, month, lastDay - 1, 15, 0, 10, 0));
+  const monthEnd = lastDayOfMonth(date);
+  // JST基準で月末日の00:00:10を設定してUTCに変換
+  const jstMonthEnd = new Date(
+    monthEnd.getFullYear(),
+    monthEnd.getMonth(),
+    monthEnd.getDate(),
+    0,
+    0,
+    10,
+    0
+  );
+  return fromZonedTime(jstMonthEnd, JST);
 };
 
 /**
@@ -189,14 +197,12 @@ export const formatDateWithMonthEnd = (
 
   if (isNaN(date.getTime())) return "-";
 
+  // JSTに変換
+  const jstDate = toZonedTime(date, JST);
+
   if (isMonthEndScheduled(date)) {
-    // JSTに変換して月を取得
-    const jstDate = new Date(date.getTime() + 9 * 60 * 60 * 1000);
-    return `${jstDate.getUTCMonth() + 1}月末予定`;
+    return `${jstDate.getMonth() + 1}月末予定`;
   }
 
-  // JSTで表示
-  const jstDate = new Date(date.getTime() + 9 * 60 * 60 * 1000);
-  const days = ["日", "月", "火", "水", "木", "金", "土"];
-  return `${jstDate.getUTCMonth() + 1}/${jstDate.getUTCDate()}(${days[jstDate.getUTCDay()]})`;
+  return format(jstDate, "M/d(E)", { locale: ja });
 };

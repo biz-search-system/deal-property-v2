@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { format } from "date-fns";
 import { ja } from "date-fns/locale";
 import { Button } from "@workspace/ui/components/button";
 import { Calendar } from "@workspace/ui/components/calendar";
@@ -14,8 +13,8 @@ import { updatePropertySettlementDate } from "@/lib/actions/property";
 import { toast } from "sonner";
 import {
   cn,
-  isMonthEndScheduled,
   createMonthEndDate,
+  formatDateWithMonthEnd,
 } from "@workspace/utils";
 
 interface SettlementDatePopoverEditProps {
@@ -42,25 +41,8 @@ export function SettlementDatePopoverEdit({
     currentDate ? new Date(currentDate) : new Date()
   );
 
-  // デフォルトの日付フォーマット（月末判定付き）
-  const defaultFormatDisplay = (dateValue: Date | string | null): string => {
-    if (!dateValue) return "-";
-    const date =
-      typeof dateValue === "string" ? new Date(dateValue) : dateValue;
-
-    if (isNaN(date.getTime())) return "-";
-
-    if (isMonthEndScheduled(date)) {
-      // JSTに変換して月を取得
-      const jstDate = new Date(date.getTime() + 9 * 60 * 60 * 1000);
-      return `${jstDate.getUTCMonth() + 1}月末予定`;
-    }
-
-    return format(date, "yyyy/MM/dd(E)", { locale: ja });
-  };
-
   // 表示用フォーマット関数の決定
-  const displayFormatter = formatDisplay || defaultFormatDisplay;
+  const displayFormatter = formatDisplay || formatDateWithMonthEnd;
 
   // 日付を指定時刻に設定するヘルパー関数
   const setDateTime = (
