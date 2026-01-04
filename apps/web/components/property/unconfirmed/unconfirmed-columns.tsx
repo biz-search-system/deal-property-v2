@@ -34,6 +34,7 @@ import {
   PROGRESS_STATUS_COLORS,
   DOCUMENT_STATUS_LABELS,
   DOCUMENT_STATUS_COLORS,
+  formatDateWithMonthEnd,
 } from "@workspace/utils";
 import {
   contractType,
@@ -74,20 +75,7 @@ const formatDateWithDay = (dateString: string | Date | null): string => {
 
   if (isNaN(date.getTime())) return "-";
 
-  const lastDayOfMonth = new Date(date.getFullYear(), date.getMonth() + 1, 0);
-  const isMonthEnd =
-    date.getHours() === 0 &&
-    date.getMinutes() === 0 &&
-    date.getSeconds() === 10 &&
-    date.getMilliseconds() === 0 &&
-    date.getDate() === lastDayOfMonth.getDate();
-
-  if (isMonthEnd) {
-    return `${date.getMonth() + 1}月末予定`;
-  }
-
-  const days = ["日", "月", "火", "水", "木", "金", "土"];
-  return `${date.getMonth() + 1}/${date.getDate()}(${days[date.getDay()]})`;
+  return formatDateWithMonthEnd(date);
 };
 
 export const unconfirmedColumns: ColumnDef<PropertyWithRelations>[] = [

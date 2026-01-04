@@ -22,7 +22,10 @@ import {
 } from "@workspace/drizzle/zod-schemas";
 import { and, eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
-import { validateProgressStatusWithSettlementDate } from "@workspace/utils";
+import {
+  validateProgressStatusWithSettlementDate,
+  toJstDateKey,
+} from "@workspace/utils";
 import { verifySession } from "../data/sesstion";
 import type { ActionResult } from "../types/action";
 
@@ -929,10 +932,10 @@ export async function updatePropertySettlementDate(data: {
   revalidatePath("/properties");
   revalidatePath("/properties/unconfirmed");
   revalidatePath("/properties/search");
-  // 月次ビューも更新
+  // 月次ビューも更新（JST基準で年月を計算）
   if (data.settlementDate) {
-    const year = data.settlementDate.getFullYear();
-    const month = data.settlementDate.getMonth() + 1;
+    const jstDateKey = toJstDateKey(data.settlementDate);
+    const [year, month] = jstDateKey.split("-");
     revalidatePath(`/properties/monthly/${year}/${month}`);
   }
 }

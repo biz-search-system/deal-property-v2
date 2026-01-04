@@ -2,21 +2,7 @@ import {
   MONTH_END_RESTRICTED_STATUSES,
   SETTLEMENT_DATE_REQUIRED_STATUSES,
 } from "../constants/progress-status";
-
-/**
- * 月末予定かどうかを判定するヘルパー関数
- * 月末日かつ午前0時0分10秒の場合は月末予定
- */
-export function isMonthEndScheduled(date: Date): boolean {
-  const lastDayOfMonth = new Date(date.getFullYear(), date.getMonth() + 1, 0);
-  return (
-    date.getHours() === 0 &&
-    date.getMinutes() === 0 &&
-    date.getSeconds() === 10 &&
-    date.getMilliseconds() === 0 &&
-    date.getDate() === lastDayOfMonth.getDate()
-  );
-}
+import { isMonthEndScheduled } from "./date";
 
 /**
  * 進捗ステータスと決済日の整合性をチェック

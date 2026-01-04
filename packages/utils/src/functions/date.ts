@@ -3,10 +3,15 @@ import {
   differenceInDays,
   differenceInHours,
   differenceInMinutes,
+  lastDayOfMonth,
 } from "date-fns";
 import { ja } from "date-fns/locale/ja";
+import { toZonedTime, fromZonedTime } from "date-fns-tz";
 
 type DateInput = Date | string | number | null | undefined;
+
+/** 日本時間のタイムゾーン */
+const JST = "Asia/Tokyo";
 
 /**
  * 日付を「yyyy年M月d日(E)」形式でフォーマット
@@ -137,4 +142,67 @@ export const formatShortDate = (dateKey: string): string => {
   const [, month, day] = dateKey.split("-");
   if (!month || !day) return "";
   return `${Number(month)}/${Number(day)}`;
+};
+
+/**
+ * 日本時間（JST）基準で月末予定かどうかを判定
+ * 月末日かつ午前0時0分10秒（JST）の場合は月末予定
+ * @param date 判定する日付
+ * @returns 月末予定かどうか
+ */
+export const isMonthEndScheduled = (date: Date): boolean => {
+  // JSTに変換
+  const jstDate = toZonedTime(date, JST);
+  const monthEnd = lastDayOfMonth(jstDate);
+
+  return (
+    jstDate.getHours() === 0 &&
+    jstDate.getMinutes() === 0 &&
+    jstDate.getSeconds() === 10 &&
+    jstDate.getDate() === monthEnd.getDate()
+  );
+};
+
+/**
+ * 月末予定用の日付を生成（日本時間で午前0時0分10秒）
+ * @param date 基準となる日付（この月の月末を生成）
+ * @returns 月末予定の日付（Date）- ISO文字列に変換するとJST 00:00:10がUTCで保存される
+ */
+export const createMonthEndDate = (date: Date): Date => {
+  const monthEnd = lastDayOfMonth(date);
+  // JST基準で月末日の00:00:10を設定してUTCに変換
+  const jstMonthEnd = new Date(
+    monthEnd.getFullYear(),
+    monthEnd.getMonth(),
+    monthEnd.getDate(),
+    0,
+    0,
+    10,
+    0
+  );
+  return fromZonedTime(jstMonthEnd, JST);
+};
+
+/**
+ * 日付を月末予定を考慮してフォーマット（日本時間基準）
+ * 月末予定の場合は「○月末予定」、通常は「M/D(曜日)」形式
+ * @param dateValue 日付
+ * @returns フォーマットされた文字列
+ */
+export const formatDateWithMonthEnd = (
+  dateValue: Date | string | null
+): string => {
+  if (!dateValue) return "-";
+  const date = typeof dateValue === "string" ? new Date(dateValue) : dateValue;
+
+  if (isNaN(date.getTime())) return "-";
+
+  // JSTに変換
+  const jstDate = toZonedTime(date, JST);
+
+  if (isMonthEndScheduled(date)) {
+    return `${jstDate.getMonth() + 1}月末予定`;
+  }
+
+  return format(jstDate, "M/d(E)", { locale: ja });
 };
