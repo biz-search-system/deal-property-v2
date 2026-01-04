@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { format, endOfMonth } from "date-fns";
+import { format } from "date-fns";
 import { ja } from "date-fns/locale";
 import { CalendarIcon } from "lucide-react";
 import { Button } from "@workspace/ui/components/button";
@@ -18,7 +18,11 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@workspace/ui/components/popover";
-import { cn } from "@workspace/utils";
+import {
+  cn,
+  isMonthEndScheduled,
+  createMonthEndDate,
+} from "@workspace/utils";
 import type { FieldValues, Path, UseFormReturn } from "react-hook-form";
 import { UserActionBadge } from "../user-action-badge";
 
@@ -49,29 +53,16 @@ export default function DatePickerForm<T extends FieldValues>({
     currentValue ? new Date(currentValue) : new Date()
   );
 
-  // 月末判定（午前0時0分10秒かつ月末日の場合）
-  const isMonthEndDate = (dateValue: string | null | undefined): boolean => {
-    if (!dateValue) return false;
-    const date = new Date(dateValue);
-    if (isNaN(date.getTime())) return false;
-
-    return (
-      date.getHours() === 0 &&
-      date.getMinutes() === 0 &&
-      date.getSeconds() === 10 &&
-      date.getMilliseconds() === 0 &&
-      date.getDate() === endOfMonth(date).getDate()
-    );
-  };
-
   // 日付を表示用にフォーマット
   const formatDisplayDate = (dateValue: string | null | undefined): string => {
     if (!dateValue) return "日付を選択";
     const date = new Date(dateValue);
     if (isNaN(date.getTime())) return "日付を選択";
 
-    if (isMonthEndDate(dateValue)) {
-      return `${date.getMonth() + 1}月末予定`;
+    if (isMonthEndScheduled(date)) {
+      // JSTに変換して月を取得
+      const jstDate = new Date(date.getTime() + 9 * 60 * 60 * 1000);
+      return `${jstDate.getUTCMonth() + 1}月末予定`;
     }
 
     return format(date, "yyyy/MM/dd(E)", { locale: ja });
@@ -84,18 +75,6 @@ export default function DatePickerForm<T extends FieldValues>({
     if (!dateValue) return undefined;
     const date = new Date(dateValue);
     return isNaN(date.getTime()) ? undefined : date;
-  };
-
-  // 日付を ISO 形式の文字列に変換（時刻情報を含む）
-  const formatToISOString = (date: Date): string => {
-    return date.toISOString();
-  };
-
-  // 月末予定用の日付文字列を生成（午前0時0分10秒）
-  const createMonthEndDateString = (date: Date): string => {
-    const monthEnd = endOfMonth(date);
-    monthEnd.setHours(0, 0, 10, 0);
-    return formatToISOString(monthEnd);
   };
 
   return (
@@ -142,9 +121,8 @@ export default function DatePickerForm<T extends FieldValues>({
                     variant="outline"
                     size="sm"
                     onClick={() => {
-                      const monthEndDateStr =
-                        createMonthEndDateString(selectedMonth);
-                      field.onChange(monthEndDateStr);
+                      const monthEndDate = createMonthEndDate(selectedMonth);
+                      field.onChange(monthEndDate.toISOString());
                       setOpen(false);
                     }}
                     className="h-7 px-2 text-xs"
@@ -184,7 +162,7 @@ export default function DatePickerForm<T extends FieldValues>({
                   if (selectedDate) {
                     // 通常の日付選択: 午前0時0分0秒
                     selectedDate.setHours(0, 0, 0, 0);
-                    field.onChange(formatToISOString(selectedDate));
+                    field.onChange(selectedDate.toISOString());
                   }
                   setOpen(false);
                 }}

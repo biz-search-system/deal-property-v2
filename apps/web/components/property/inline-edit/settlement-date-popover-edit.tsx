@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { format, endOfMonth } from "date-fns";
+import { format } from "date-fns";
 import { ja } from "date-fns/locale";
 import { Button } from "@workspace/ui/components/button";
 import { Calendar } from "@workspace/ui/components/calendar";
@@ -12,7 +12,11 @@ import {
 } from "@workspace/ui/components/popover";
 import { updatePropertySettlementDate } from "@/lib/actions/property";
 import { toast } from "sonner";
-import { cn } from "@workspace/utils";
+import {
+  cn,
+  isMonthEndScheduled,
+  createMonthEndDate,
+} from "@workspace/utils";
 
 interface SettlementDatePopoverEditProps {
   propertyId: string;
@@ -44,23 +48,14 @@ export function SettlementDatePopoverEdit({
     const date =
       typeof dateValue === "string" ? new Date(dateValue) : dateValue;
 
-    // 無効な日付チェック
     if (isNaN(date.getTime())) return "-";
 
-    // 月末判定（午前0時0分10秒かつ月末日の場合）
-    const isMonthEnd =
-      date.getHours() === 0 &&
-      date.getMinutes() === 0 &&
-      date.getSeconds() === 10 &&
-      date.getMilliseconds() === 0 &&
-      date.getDate() === endOfMonth(date).getDate();
-
-    if (isMonthEnd) {
-      // 月末表示（例: 11月末）
-      return `${date.getMonth() + 1}月末予定`;
+    if (isMonthEndScheduled(date)) {
+      // JSTに変換して月を取得
+      const jstDate = new Date(date.getTime() + 9 * 60 * 60 * 1000);
+      return `${jstDate.getUTCMonth() + 1}月末予定`;
     }
 
-    // 通常の曜日付きフォーマット（例: 2024/11/22(金)）
     return format(date, "yyyy/MM/dd(E)", { locale: ja });
   };
 
@@ -125,15 +120,13 @@ export function SettlementDatePopoverEdit({
     }
   };
 
-  // 月末予定を設定（午前0時0分10秒で保存）
+  // 月末予定を設定（JST基準で午前0時0分10秒で保存）
   const handleSetMonthEnd = async () => {
     if (isSaving) return;
 
     setIsSaving(true);
     try {
-      const monthEnd = endOfMonth(selectedMonth);
-      // 月末予定: 午前0時0分10秒
-      const processedDate = setDateTime(monthEnd, 0, 0, 10, 0);
+      const processedDate = createMonthEndDate(selectedMonth);
 
       await saveDate(processedDate);
       setOpen(false);

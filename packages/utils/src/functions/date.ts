@@ -138,3 +138,65 @@ export const formatShortDate = (dateKey: string): string => {
   if (!month || !day) return "";
   return `${Number(month)}/${Number(day)}`;
 };
+
+/**
+ * 日本時間（JST）基準で月末予定かどうかを判定
+ * 月末日かつ午前0時0分10秒（JST）の場合は月末予定
+ * @param date 判定する日付
+ * @returns 月末予定かどうか
+ */
+export const isMonthEndScheduled = (date: Date): boolean => {
+  // JSTに変換して判定（UTC+9）
+  const jstDate = new Date(date.getTime() + 9 * 60 * 60 * 1000);
+  const year = jstDate.getUTCFullYear();
+  const month = jstDate.getUTCMonth();
+  const lastDayOfMonth = new Date(Date.UTC(year, month + 1, 0));
+
+  return (
+    jstDate.getUTCHours() === 0 &&
+    jstDate.getUTCMinutes() === 0 &&
+    jstDate.getUTCSeconds() === 10 &&
+    jstDate.getUTCMilliseconds() === 0 &&
+    jstDate.getUTCDate() === lastDayOfMonth.getUTCDate()
+  );
+};
+
+/**
+ * 月末予定用の日付を生成（日本時間で午前0時0分10秒）
+ * @param date 基準となる日付（この月の月末を生成）
+ * @returns 月末予定の日付（Date）- ISO文字列に変換するとJST 00:00:10がUTCで保存される
+ */
+export const createMonthEndDate = (date: Date): Date => {
+  const year = date.getFullYear();
+  const month = date.getMonth();
+  // 月末日を取得
+  const lastDay = new Date(year, month + 1, 0).getDate();
+  // JST基準で月末日の00:00:10を設定（UTC-9時間 = 前日15:00:10）
+  return new Date(Date.UTC(year, month, lastDay - 1, 15, 0, 10, 0));
+};
+
+/**
+ * 日付を月末予定を考慮してフォーマット（日本時間基準）
+ * 月末予定の場合は「○月末予定」、通常は「M/D(曜日)」形式
+ * @param dateValue 日付
+ * @returns フォーマットされた文字列
+ */
+export const formatDateWithMonthEnd = (
+  dateValue: Date | string | null
+): string => {
+  if (!dateValue) return "-";
+  const date = typeof dateValue === "string" ? new Date(dateValue) : dateValue;
+
+  if (isNaN(date.getTime())) return "-";
+
+  if (isMonthEndScheduled(date)) {
+    // JSTに変換して月を取得
+    const jstDate = new Date(date.getTime() + 9 * 60 * 60 * 1000);
+    return `${jstDate.getUTCMonth() + 1}月末予定`;
+  }
+
+  // JSTで表示
+  const jstDate = new Date(date.getTime() + 9 * 60 * 60 * 1000);
+  const days = ["日", "月", "火", "水", "木", "金", "土"];
+  return `${jstDate.getUTCMonth() + 1}/${jstDate.getUTCDate()}(${days[jstDate.getUTCDay()]})`;
+};
