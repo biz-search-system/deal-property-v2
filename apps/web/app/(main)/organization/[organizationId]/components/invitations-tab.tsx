@@ -109,7 +109,7 @@ export function InvitationsTab({ organizationId }: InvitationsTabProps) {
         </Alert>
       )}
 
-      <Card className="flex flex-1">
+      <Card className="flex flex-1 overflow-auto">
         <ScrollArea className="h-full">
           <CardHeader>
             <CardTitle>招待状一覧</CardTitle>
