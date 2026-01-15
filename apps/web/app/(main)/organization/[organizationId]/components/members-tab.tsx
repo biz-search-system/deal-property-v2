@@ -140,8 +140,8 @@ export function MembersTab({ organizationId }: MembersTabProps) {
           <AlertDescription>{success}</AlertDescription>
         </Alert>
       )}
-      <Card className="flex flex-1">
-        <ScrollArea className="h-full">
+      <Card className="flex flex-1 overflow-auto">
+        <ScrollArea className="h-full ">
           <CardHeader>
             <CardTitle>組織のメンバー</CardTitle>
             <CardDescription>
