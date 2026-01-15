@@ -19,6 +19,7 @@ import {
 import { Button } from "@workspace/ui/components/button";
 import { Alert, AlertDescription } from "@workspace/ui/components/alert";
 import { Badge } from "@workspace/ui/components/badge";
+import { ScrollArea } from "@workspace/ui/components/scroll-area";
 import { Loader2, XCircle, AlertCircle, CheckCircle } from "lucide-react";
 import { useOrganizationInvitations } from "@/lib/swr/organization";
 import { cancelInvitationAction } from "@/lib/actions/organization";
@@ -93,7 +94,7 @@ export function InvitationsTab({ organizationId }: InvitationsTabProps) {
   }
 
   return (
-    <>
+    <div className="flex flex-col h-full">
       {actionError && (
         <Alert variant="destructive" className="mb-4">
           <AlertCircle className="h-4 w-4" />
@@ -108,55 +109,57 @@ export function InvitationsTab({ organizationId }: InvitationsTabProps) {
         </Alert>
       )}
 
-      <Card>
-        <CardHeader>
-          <CardTitle>招待状一覧</CardTitle>
-          <CardDescription>送信済みの招待状を管理します</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>メールアドレス</TableHead>
-                <TableHead>役割</TableHead>
-                <TableHead>ステータス</TableHead>
-                <TableHead>有効期限</TableHead>
-                <TableHead>招待者</TableHead>
-                <TableHead>アクション</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {invitations?.map((invitation) => (
-                <TableRow key={invitation.id}>
-                  <TableCell>{invitation.email}</TableCell>
-                  <TableCell>{getRoleBadge(invitation.role)}</TableCell>
-                  <TableCell>{getStatusBadge(invitation.status)}</TableCell>
-                  <TableCell>
-                    {new Date(
-                      typeof invitation.expiresAt === "string"
-                        ? invitation.expiresAt
-                        : invitation.expiresAt,
-                    ).toLocaleDateString("ja-JP")}
-                  </TableCell>
-                  <TableCell>{invitation.inviterId || "不明"}</TableCell>
-                  <TableCell>
-                    {invitation.status === "pending" && (
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => handleCancelInvitation(invitation.id)}
-                      >
-                        <XCircle className="h-4 w-4" />
-                        <span className="sr-only">招待をキャンセル</span>
-                      </Button>
-                    )}
-                  </TableCell>
+      <Card className="flex flex-1">
+        <ScrollArea className="h-full">
+          <CardHeader>
+            <CardTitle>招待状一覧</CardTitle>
+            <CardDescription>送信済みの招待状を管理します</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>メールアドレス</TableHead>
+                  <TableHead>役割</TableHead>
+                  <TableHead>ステータス</TableHead>
+                  <TableHead>有効期限</TableHead>
+                  <TableHead>招待者</TableHead>
+                  <TableHead>アクション</TableHead>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </CardContent>
+              </TableHeader>
+              <TableBody>
+                {invitations?.map((invitation) => (
+                  <TableRow key={invitation.id}>
+                    <TableCell>{invitation.email}</TableCell>
+                    <TableCell>{getRoleBadge(invitation.role)}</TableCell>
+                    <TableCell>{getStatusBadge(invitation.status)}</TableCell>
+                    <TableCell>
+                      {new Date(
+                        typeof invitation.expiresAt === "string"
+                          ? invitation.expiresAt
+                          : invitation.expiresAt
+                      ).toLocaleDateString("ja-JP")}
+                    </TableCell>
+                    <TableCell>{invitation.inviterId || "不明"}</TableCell>
+                    <TableCell>
+                      {invitation.status === "pending" && (
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => handleCancelInvitation(invitation.id)}
+                        >
+                          <XCircle className="h-4 w-4" />
+                          <span className="sr-only">招待をキャンセル</span>
+                        </Button>
+                      )}
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </CardContent>
+        </ScrollArea>
       </Card>
-    </>
+    </div>
   );
 }

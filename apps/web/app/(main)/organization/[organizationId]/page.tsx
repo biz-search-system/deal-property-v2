@@ -40,49 +40,54 @@ export default async function OrganizationMembersPage({
   const userRole = currentUserMember.role;
 
   return (
-    <div className="container mx-auto py-6 space-y-8">
-      <BreadcrumbConfig
-        items={[
-          { label: "組織管理", href: "/organization" },
-          { label: fullOrg.name },
-        ]}
-      />
-      <Tabs defaultValue="members" className="space-y-4">
-        <TabsList>
-          <TabsTrigger value="members">
-            <Users className="size-4 mr-2" />
-            メンバー
-          </TabsTrigger>
-          <TabsTrigger value="invitations">
-            <Mail className="size-4 mr-2" />
-            招待状
-          </TabsTrigger>
-          <TabsTrigger value="invite">
-            <UserPlus className="size-4 mr-2" />
-            新規招待
-          </TabsTrigger>
-          <TabsTrigger value="teams">
-            <Users2 className="size-4 mr-2" />
-            チーム
-          </TabsTrigger>
-        </TabsList>
+    <div className="flex h-full flex-col">
+      <div className="flex flex-1 flex-col gap-4 overflow-hidden p-4 lg:p-6">
+        <BreadcrumbConfig
+          items={[
+            { label: "組織管理", href: "/organization" },
+            { label: fullOrg.name },
+          ]}
+        />
+        <Tabs
+          defaultValue="members"
+          className="flex flex-1 flex-col overflow-hidden"
+        >
+          <TabsList>
+            <TabsTrigger value="members">
+              <Users className="size-4 mr-2" />
+              メンバー
+            </TabsTrigger>
+            <TabsTrigger value="invitations">
+              <Mail className="size-4 mr-2" />
+              招待状
+            </TabsTrigger>
+            <TabsTrigger value="invite">
+              <UserPlus className="size-4 mr-2" />
+              新規招待
+            </TabsTrigger>
+            <TabsTrigger value="teams">
+              <Users2 className="size-4 mr-2" />
+              チーム
+            </TabsTrigger>
+          </TabsList>
 
-        <TabsContent value="members">
-          <MembersTab organizationId={organizationId} />
-        </TabsContent>
+          <TabsContent value="members" className="flex-1 overflow-hidden">
+            <MembersTab organizationId={organizationId} />
+          </TabsContent>
 
-        <TabsContent value="invitations">
-          <InvitationsTab organizationId={organizationId} />
-        </TabsContent>
+          <TabsContent value="invitations" className="flex-1 overflow-hidden">
+            <InvitationsTab organizationId={organizationId} />
+          </TabsContent>
 
-        <TabsContent value="invite">
-          <InviteTab organizationId={organizationId} />
-        </TabsContent>
+          <TabsContent value="invite" className="flex-1 overflow-auto">
+            <InviteTab organizationId={organizationId} />
+          </TabsContent>
 
-        <TabsContent value="teams">
-          <TeamsTab organizationId={organizationId} userRole={userRole} />
-        </TabsContent>
-      </Tabs>
+          <TabsContent value="teams" className="flex-1 overflow-hidden">
+            <TeamsTab organizationId={organizationId} userRole={userRole} />
+          </TabsContent>
+        </Tabs>
+      </div>
     </div>
   );
 }

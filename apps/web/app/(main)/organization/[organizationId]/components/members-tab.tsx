@@ -41,6 +41,7 @@ import {
   removeMemberAction,
   updateMemberRoleAction,
 } from "@/lib/actions/organization";
+import { ScrollArea } from "@workspace/ui/components/scroll-area";
 
 interface MembersTabProps {
   organizationId: string;
@@ -59,13 +60,13 @@ export function MembersTab({ organizationId }: MembersTabProps) {
 
     try {
       const member = organizationMembers?.members.find(
-        (m) => m.id === deleteMemberId,
+        (m) => m.id === deleteMemberId
       );
       if (!member) return;
 
       const result = await removeMemberAction(
         member.user.email,
-        organizationId,
+        organizationId
       );
 
       if (result.success) {
@@ -84,13 +85,13 @@ export function MembersTab({ organizationId }: MembersTabProps) {
 
   const handleRoleChange = async (
     memberId: string,
-    newRole: "member" | "owner" | "admin",
+    newRole: "member" | "owner" | "admin"
   ) => {
     try {
       const result = await updateMemberRoleAction(
         memberId,
         newRole,
-        organizationId,
+        organizationId
       );
 
       if (result.success) {
@@ -125,7 +126,7 @@ export function MembersTab({ organizationId }: MembersTabProps) {
   }
 
   return (
-    <>
+    <div className="flex flex-col h-full">
       {actionError && (
         <Alert variant="destructive" className="mb-4">
           <AlertCircle className="h-4 w-4" />
@@ -139,79 +140,80 @@ export function MembersTab({ organizationId }: MembersTabProps) {
           <AlertDescription>{success}</AlertDescription>
         </Alert>
       )}
-
-      <Card>
-        <CardHeader>
-          <CardTitle>組織のメンバー</CardTitle>
-          <CardDescription>
-            現在の組織のメンバーと役割を管理します
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>名前</TableHead>
-                <TableHead>メールアドレス</TableHead>
-                <TableHead>役割</TableHead>
-                <TableHead>参加日</TableHead>
-                <TableHead>アクション</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {organizationMembers?.members.map((member) => (
-                <TableRow key={member.id}>
-                  <TableCell className="font-medium">
-                    {member.user.name}
-                  </TableCell>
-                  <TableCell>{member.user.email}</TableCell>
-                  <TableCell>
-                    <Select
-                      value={member.role}
-                      onValueChange={(value) =>
-                        handleRoleChange(
-                          member.id,
-                          value as "member" | "owner" | "admin",
-                        )
-                      }
-                      disabled={member.role === "owner"}
-                    >
-                      <SelectTrigger className="w-32">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="member">メンバー</SelectItem>
-                        <SelectItem value="admin">管理者</SelectItem>
-                        {member.role === "owner" && (
-                          <SelectItem value="owner">オーナー</SelectItem>
-                        )}
-                      </SelectContent>
-                    </Select>
-                  </TableCell>
-                  <TableCell>
-                    {new Date(
-                      typeof member.createdAt === "string"
-                        ? member.createdAt
-                        : member.createdAt,
-                    ).toLocaleDateString("ja-JP")}
-                  </TableCell>
-                  <TableCell>
-                    {member.role !== "owner" && (
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => setDeleteMemberId(member.id)}
-                      >
-                        <Trash2 className="h-4 w-4" />
-                        <span className="sr-only">メンバーを削除</span>
-                      </Button>
-                    )}
-                  </TableCell>
+      <Card className="flex flex-1">
+        <ScrollArea className="h-full">
+          <CardHeader>
+            <CardTitle>組織のメンバー</CardTitle>
+            <CardDescription>
+              現在の組織のメンバーと役割を管理します
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>名前</TableHead>
+                  <TableHead>メールアドレス</TableHead>
+                  <TableHead>役割</TableHead>
+                  <TableHead>参加日</TableHead>
+                  <TableHead>アクション</TableHead>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </CardContent>
+              </TableHeader>
+              <TableBody>
+                {organizationMembers?.members.map((member) => (
+                  <TableRow key={member.id}>
+                    <TableCell className="font-medium">
+                      {member.user.name}
+                    </TableCell>
+                    <TableCell>{member.user.email}</TableCell>
+                    <TableCell>
+                      <Select
+                        value={member.role}
+                        onValueChange={(value) =>
+                          handleRoleChange(
+                            member.id,
+                            value as "member" | "owner" | "admin"
+                          )
+                        }
+                        disabled={member.role === "owner"}
+                      >
+                        <SelectTrigger className="w-32">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="member">メンバー</SelectItem>
+                          <SelectItem value="admin">管理者</SelectItem>
+                          {member.role === "owner" && (
+                            <SelectItem value="owner">オーナー</SelectItem>
+                          )}
+                        </SelectContent>
+                      </Select>
+                    </TableCell>
+                    <TableCell>
+                      {new Date(
+                        typeof member.createdAt === "string"
+                          ? member.createdAt
+                          : member.createdAt
+                      ).toLocaleDateString("ja-JP")}
+                    </TableCell>
+                    <TableCell>
+                      {member.role !== "owner" && (
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => setDeleteMemberId(member.id)}
+                        >
+                          <Trash2 className="h-4 w-4" />
+                          <span className="sr-only">メンバーを削除</span>
+                        </Button>
+                      )}
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </CardContent>
+        </ScrollArea>
       </Card>
 
       <AlertDialog
@@ -236,6 +238,6 @@ export function MembersTab({ organizationId }: MembersTabProps) {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
-    </>
+    </div>
   );
 }
