@@ -328,7 +328,7 @@
 
 ## 9. 権限
 
-### 9.1 閲覧権限
+### 9.1 閲覧権限（設計）
 
 | ロール | 閲覧範囲 |
 |--------|----------|
@@ -339,6 +339,53 @@
 ### 9.2 編集ボタンの表示
 
 全ロールで編集ボタンを表示（編集画面で権限チェック）。
+
+### 9.3 現在の実装状況（暫定）
+
+> **⚠️ 注意**: 現在の実装では権限制御が未実装のため、ログインユーザーは全案件を閲覧可能な状態です。
+
+#### 実装状況サマリー
+
+| 項目 | 設計 | 現在の実装 | 状態 |
+|------|------|------------|------|
+| 組織フィルタリング | 所属組織のみ | なし（全案件取得） | ❌ 未実装 |
+| ロール検証 | owner/admin/member で制御 | なし | ❌ 未実装 |
+| セッション検証 | あり | ログイン確認のみ | ⚠️ 部分的 |
+
+#### 詳細
+
+**1. データ取得関数（`apps/web/lib/data/property.ts`）**
+
+- `getPropertyById(id)`: IDのみでフィルタリング。organizationId による検証なし
+- `getProperties()`: 制限なしで全案件を返却
+- `getFilteredProperties(options?)`: organizationId はオプション引数。未指定時は全案件
+- `getUnconfirmedProperties(organizationId?)`: organizationId がオプション。未指定時は全案件
+
+**2. APIエンドポイント（`apps/web/app/api/property/[id]/route.ts`）**
+
+- ログイン状態の確認のみ実施
+- 取得した案件の organizationId とユーザーの所属組織の照合なし
+- ロール（owner/admin/member）による制御なし
+
+**3. 一覧ページ**
+
+- 検索ページ（`/properties/search`）: `getAllPropertiesBySettlementDate()` を使用（全案件取得）
+- 月次ページ（`/properties/monthly/[year]/[month]`）: `getMonthlyPropertiesByOrganizations()` を使用（全組織の案件取得）
+- BC確定前ページ（`/properties/unconfirmed`）: `getAllUnconfirmedPropertiesBySettlementDate()` を使用（全案件取得）
+
+**4. 詳細ページ**
+
+- 月次からの詳細（`/properties/monthly/[year]/[month]/[id]`）
+- 検索からの詳細（`/properties/search/[id]`）
+- BC確定前からの詳細（`/properties/unconfirmed/[id]`）
+
+#### 今後の実装予定
+
+Phase 1 の後続タスクとして、以下の権限制御を実装予定：
+
+1. データ取得時にセッションユーザーの所属組織でフィルタリング
+2. owner ロールの場合のみ全組織の案件を取得可能にする
+3. admin/member は所属組織の案件のみに制限
 
 ---
 
