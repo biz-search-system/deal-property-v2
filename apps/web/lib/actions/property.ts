@@ -877,8 +877,8 @@ export async function updateProperty(
       (validatedData.nameChange ?? false) !==
       (currentSettlement?.nameChange ?? false);
     const identityVerificationMethodChanged =
-      (validatedData.identityVerificationMethod ?? null) !==
-      (currentSettlement?.identityVerificationMethod ?? null);
+      (validatedData.identityVerificationMethod ?? "not_confirmed") !==
+      (currentSettlement?.identityVerificationMethod ?? "not_confirmed");
     const identityVerificationCallChanged =
       (validatedData.identityVerificationCall ?? "not_requested") !==
       (currentSettlement?.identityVerificationCall ?? "not_requested");
