@@ -54,3 +54,28 @@ export const BROKER_TYPE_COLORS: Record<BrokerType, string> = {
   broker:
     "bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-300",
 };
+
+/** 業者分析データ */
+export interface BrokerAnalytics {
+  brokerId: string;
+  brokerName: string;
+  brokerType: BrokerType;
+  /** 配布回数 */
+  distributionCount: number;
+  /** 回答回数 */
+  responseCount: number;
+  /** 回答率（%） */
+  responseRate: number;
+  /** 成約回数 */
+  contractCount: number;
+  /** 成約率（%） */
+  contractRate: number;
+  /** 平均回答金額（万円） */
+  averageResponsePrice: number | null;
+  /** 平均回答日数 */
+  averageResponseDays: number | null;
+  /** アッパー獲得回数 */
+  upperCount: number;
+  /** 直近取引日 */
+  lastTransactionAt: Date | null;
+}

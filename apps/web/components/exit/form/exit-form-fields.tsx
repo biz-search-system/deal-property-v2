@@ -1,19 +1,15 @@
 "use client";
 
-import InputForm from "@/components/property/form/input-form";
 import AmountInputForm from "@/components/property/form/amount-input-form";
-import { useExitForm } from "../exit-form-provider";
-import { Field, FieldLabel } from "@workspace/ui/components/field";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@workspace/ui/components/select";
+import InputForm from "@/components/property/form/input-form";
+import SelectForm from "@/components/property/form/select-form";
+import SectionCard from "@/components/property/section-card";
+import { EXIT_STATUS_LABELS, SITUATION_LABELS } from "@/lib/types/exit";
+import type { ExitStatus, Situation } from "@/lib/types/exit";
+import { Field, FieldError, FieldLabel } from "@workspace/ui/components/field";
+import { Textarea } from "@workspace/ui/components/textarea";
 import { Controller } from "react-hook-form";
-import { SITUATION_LABELS, EXIT_STATUS_LABELS } from "@/lib/types/exit";
-import type { Situation, ExitStatus } from "@/lib/types/exit";
+import { useExitForm } from "../exit-form-provider";
 
 const SITUATION_OPTIONS: { value: Situation; label: string }[] = [
   { value: "renting", label: SITUATION_LABELS.renting },
@@ -30,242 +26,141 @@ const STATUS_OPTIONS: { value: ExitStatus; label: string }[] = [
   { value: "troubled", label: EXIT_STATUS_LABELS.troubled },
 ];
 
-/** 物件名フィールド */
-export function PropertyNameField() {
+export function ExitFormFields() {
   const form = useExitForm();
-  return (
-    <InputForm
-      form={form}
-      name="propertyName"
-      label="物件名"
-      placeholder="物件名を入力"
-      required
-    />
-  );
-}
 
-/** 号室フィールド */
-export function RoomNumberField() {
-  const form = useExitForm();
   return (
-    <InputForm
-      form={form}
-      name="roomNumber"
-      label="号室"
-      placeholder="号室を入力"
-    />
-  );
-}
+    <div className="space-y-6">
+      <SectionCard title="物件情報">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
+          <InputForm
+            form={form}
+            name="propertyName"
+            label="物件名"
+            placeholder="物件名を入力"
+            required
+          />
+          <InputForm
+            form={form}
+            name="roomNumber"
+            label="号室"
+            placeholder="号室を入力"
+          />
+          <InputForm
+            form={form}
+            name="address"
+            label="住所"
+            placeholder="住所を入力"
+          />
+          <InputForm
+            form={form}
+            name="builtDate"
+            label="築年月"
+            placeholder="2020-01"
+          />
+          <AmountInputForm
+            form={form}
+            name="area"
+            label="面積（㎡）"
+            placeholder="面積を入力"
+            step={0.01}
+          />
+          <InputForm
+            form={form}
+            name="structure"
+            label="構造"
+            placeholder="RC造"
+          />
+          <InputForm
+            form={form}
+            name="floor"
+            label="階数"
+            placeholder="5/10"
+          />
+        </div>
+      </SectionCard>
 
-/** 住所フィールド */
-export function AddressField() {
-  const form = useExitForm();
-  return (
-    <InputForm
-      form={form}
-      name="address"
-      label="住所"
-      placeholder="住所を入力"
-    />
-  );
-}
+      <SectionCard title="現況情報">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
+          <SelectForm
+            form={form}
+            name="situation"
+            label="現況"
+            options={SITUATION_OPTIONS}
+          />
+          <AmountInputForm
+            form={form}
+            name="rent"
+            label="家賃（円）"
+            placeholder="家賃を入力"
+            step={1}
+          />
+          <AmountInputForm
+            form={form}
+            name="managementFee"
+            label="管積（円）"
+            placeholder="管理費を入力"
+            step={1}
+          />
+        </div>
+      </SectionCard>
 
-/** 築年月フィールド */
-export function BuiltDateField() {
-  const form = useExitForm();
-  return (
-    <InputForm
-      form={form}
-      name="builtDate"
-      label="築年月"
-      placeholder="2020-01"
-    />
-  );
-}
+      <SectionCard title="金額情報">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
+          <AmountInputForm
+            form={form}
+            name="purchasePrice"
+            label="仕入れ金額（万円）"
+            placeholder="仕入れ金額を入力"
+            step={1}
+          />
+          <AmountInputForm
+            form={form}
+            name="maisokuPrice"
+            label="マイソク価格（万円）"
+            placeholder="マイソク価格を入力"
+            step={1}
+          />
+          <AmountInputForm
+            form={form}
+            name="expectedYield"
+            label="想定利回り（%）"
+            placeholder="想定利回りを入力"
+            step={0.01}
+          />
+        </div>
+      </SectionCard>
 
-/** 面積フィールド */
-export function AreaField() {
-  const form = useExitForm();
-  return (
-    <AmountInputForm
-      form={form}
-      name="area"
-      label="面積（㎡）"
-      placeholder="面積を入力"
-      step={0.01}
-    />
-  );
-}
-
-/** 構造フィールド */
-export function StructureField() {
-  const form = useExitForm();
-  return (
-    <InputForm
-      form={form}
-      name="structure"
-      label="構造"
-      placeholder="RC造"
-    />
-  );
-}
-
-/** 階数フィールド */
-export function FloorField() {
-  const form = useExitForm();
-  return (
-    <InputForm
-      form={form}
-      name="floor"
-      label="階数"
-      placeholder="5/10"
-    />
-  );
-}
-
-/** 現況フィールド */
-export function SituationField() {
-  const form = useExitForm();
-  return (
-    <Controller
-      control={form.control}
-      name="situation"
-      render={({ field }) => (
-        <Field>
-          <FieldLabel htmlFor={field.name}>現況</FieldLabel>
-          <Select
-            name={field.name}
-            value={field.value || ""}
-            onValueChange={(value) => field.onChange(value || null)}
-          >
-            <SelectTrigger id={field.name}>
-              <SelectValue placeholder="選択してください" />
-            </SelectTrigger>
-            <SelectContent>
-              {SITUATION_OPTIONS.map((option) => (
-                <SelectItem key={option.value} value={option.value}>
-                  {option.label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </Field>
-      )}
-    />
-  );
-}
-
-/** 家賃フィールド */
-export function RentField() {
-  const form = useExitForm();
-  return (
-    <AmountInputForm
-      form={form}
-      name="rent"
-      label="家賃（円）"
-      placeholder="家賃を入力"
-      step={1}
-    />
-  );
-}
-
-/** 管理費フィールド */
-export function ManagementFeeField() {
-  const form = useExitForm();
-  return (
-    <AmountInputForm
-      form={form}
-      name="managementFee"
-      label="管積（円）"
-      placeholder="管理費を入力"
-      step={1}
-    />
-  );
-}
-
-/** 仕入れ金額フィールド */
-export function PurchasePriceField() {
-  const form = useExitForm();
-  return (
-    <AmountInputForm
-      form={form}
-      name="purchasePrice"
-      label="仕入れ金額（万円）"
-      placeholder="仕入れ金額を入力"
-      step={1}
-    />
-  );
-}
-
-/** マイソク価格フィールド */
-export function MaisokuPriceField() {
-  const form = useExitForm();
-  return (
-    <AmountInputForm
-      form={form}
-      name="maisokuPrice"
-      label="マイソク価格（万円）"
-      placeholder="マイソク価格を入力"
-      step={1}
-    />
-  );
-}
-
-/** 想定利回りフィールド */
-export function ExpectedYieldField() {
-  const form = useExitForm();
-  return (
-    <AmountInputForm
-      form={form}
-      name="expectedYield"
-      label="想定利回り（%）"
-      placeholder="想定利回りを入力"
-      step={0.01}
-    />
-  );
-}
-
-/** ステータスフィールド */
-export function StatusField() {
-  const form = useExitForm();
-  return (
-    <Controller
-      control={form.control}
-      name="status"
-      render={({ field }) => (
-        <Field>
-          <FieldLabel htmlFor={field.name}>ステータス</FieldLabel>
-          <Select
-            name={field.name}
-            value={field.value}
-            onValueChange={field.onChange}
-          >
-            <SelectTrigger id={field.name}>
-              <SelectValue placeholder="選択してください" />
-            </SelectTrigger>
-            <SelectContent>
-              {STATUS_OPTIONS.map((option) => (
-                <SelectItem key={option.value} value={option.value}>
-                  {option.label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </Field>
-      )}
-    />
-  );
-}
-
-/** 備考フィールド */
-export function NotesField() {
-  const form = useExitForm();
-  return (
-    <InputForm
-      form={form}
-      name="notes"
-      label="備考"
-      placeholder="備考を入力"
-    />
+      <SectionCard title="ステータス・備考">
+        <div className="grid grid-cols-1 gap-y-4">
+          <SelectForm
+            form={form}
+            name="status"
+            label="ステータス"
+            options={STATUS_OPTIONS}
+          />
+          <Controller
+            control={form.control}
+            name="notes"
+            render={({ field, fieldState }) => (
+              <Field data-invalid={fieldState.invalid}>
+                <FieldLabel htmlFor={field.name}>備考</FieldLabel>
+                <Textarea
+                  id={field.name}
+                  placeholder="備考を入力"
+                  autoComplete="off"
+                  rows={4}
+                  {...field}
+                  value={field.value ?? ""}
+                />
+                {fieldState.invalid && (
+                  <FieldError errors={[fieldState.error]} />
+                )}
+              </Field>
+            )}
+          />
+        </div>
+      </SectionCard>
+    </div>
   );
 }

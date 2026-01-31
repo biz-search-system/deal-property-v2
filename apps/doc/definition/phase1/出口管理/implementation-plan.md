@@ -39,6 +39,32 @@
 | 2026-01-31 | 1-C      | 新規登録フォームコンポーネント作成       | `components/exit/exit-new-form.tsx`                             |
 | 2026-01-31 | 1-C      | 新規登録ページ作成                       | `app/(main)/exits/new/page.tsx`                                 |
 | 2026-01-31 | 1-B      | 一覧に新規登録ボタン追加                 | `components/exit/exit-list.tsx`                                 |
+| 2026-01-31 | 1-H      | site-headerに新規登録ボタン移動          | `components/nav/site-header.tsx`                                |
+| 2026-01-31 | 1-B      | fuse.jsによるファジー検索実装            | `components/exit/exit-list-table.tsx`                           |
+| 2026-01-31 | 1-B      | ツールバーを削除しテーブル内に統合       | `components/exit/exit-list-table.tsx`                           |
+| 2026-01-31 | 1-B      | ページネーションコンポーネント作成       | `components/exit/exit-list-pagination.tsx`                      |
+| 2026-01-31 | 1-B      | テーブルをCardで囲む構造に変更           | `components/exit/exit-list-table.tsx`                           |
+| 2026-01-31 | 1-B      | 一覧からCardラッパー削除                 | `components/exit/exit-list.tsx`                                 |
+| 2026-01-31 | 1-C      | 新規登録ページにパンくず追加             | `app/(main)/exits/new/page.tsx`                                 |
+| 2026-01-31 | 1-C      | フォームフィールドをSectionCard統合      | `components/exit/form/exit-form-fields.tsx`                     |
+| 2026-01-31 | 1-C      | SelectForm使用に変更                     | `components/exit/form/exit-form-fields.tsx`                     |
+| 2026-01-31 | 1-C      | フォームをbroker-new-formパターンに統一  | `components/exit/exit-new-form.tsx`                             |
+| 2026-01-31 | 1-E      | 業者マスタ検索・フィルター2行構成に変更  | `components/exit/broker/broker-table.tsx`                       |
+| 2026-01-31 | 共通     | SummaryCardGrid共通コンポーネント作成    | `components/ui/summary-card.tsx`                                |
+| 2026-01-31 | 1-B      | ExitStatusSummaryを共通コンポーネント化  | `components/exit/exit-status-summary.tsx`                       |
+| 2026-01-31 | 1-E      | 業者マスタ一覧のサマリー共通化           | `app/(main)/brokers/page.tsx`                                   |
+| 2026-01-31 | 1-E      | 業者Zodスキーマ作成                      | `lib/zod/schemas/broker.ts`                                     |
+| 2026-01-31 | 1-E      | 業者フォームプロバイダー作成             | `components/exit/broker/broker-form-provider.tsx`               |
+| 2026-01-31 | 1-E      | 業者フォームフィールド作成               | `components/exit/broker/broker-form-fields.tsx`                 |
+| 2026-01-31 | 1-E      | 業者新規登録フォーム作成                 | `components/exit/broker/broker-new-form.tsx`                    |
+| 2026-01-31 | 1-E      | 業者新規登録ページ作成                   | `app/(main)/brokers/new/page.tsx`                               |
+| 2026-01-31 | 1-E      | 業者分析型定義追加                       | `lib/types/broker.ts`                                           |
+| 2026-01-31 | 1-E      | 業者分析モックデータ作成                 | `lib/mocks/brokers.ts`                                          |
+| 2026-01-31 | 1-E      | 業者分析カラム定義作成                   | `components/exit/broker/broker-analytics-columns.tsx`           |
+| 2026-01-31 | 1-E      | 業者分析テーブル作成                     | `components/exit/broker/broker-analytics-table.tsx`             |
+| 2026-01-31 | 1-E      | 業者分析サマリー作成                     | `components/exit/broker/broker-analytics-summary.tsx`           |
+| 2026-01-31 | 1-E      | 業者分析ページ作成                       | `app/(main)/brokers/analytics/page.tsx`                         |
+| 2026-01-31 | 1-H      | サイドバーに業者分析リンク追加           | `components/nav/nav-items.ts`                                   |
 
 ---
 

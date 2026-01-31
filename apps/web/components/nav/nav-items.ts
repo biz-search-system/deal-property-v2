@@ -49,6 +49,10 @@ export const navItems = () => {
             title: "業者マスタ",
             url: "/brokers",
           },
+          {
+            title: "業者分析",
+            url: "/brokers/analytics",
+          },
         ],
       },
       {
