@@ -226,6 +226,7 @@ export default function SettlementProgressTab() {
                   label: MORTGAGE_CANCELLATION_LABELS[status],
                   color: MORTGAGE_CANCELLATION_COLORS[status],
                 }))}
+                className="pb-2"
               />
               <CheckboxForm
                 form={form}
