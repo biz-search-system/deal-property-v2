@@ -1,4 +1,9 @@
-import { IconListDetails, IconSettings, IconUsers } from "@tabler/icons-react";
+import {
+  IconBuilding,
+  IconListDetails,
+  IconSettings,
+  IconUsers,
+} from "@tabler/icons-react";
 
 export const navItems = () => {
   const now = new Date();
@@ -28,6 +33,21 @@ export const navItems = () => {
           {
             title: "案件検索",
             url: `/properties/search`,
+          },
+        ],
+      },
+      {
+        title: "出口管理",
+        url: "#",
+        icon: IconBuilding,
+        items: [
+          {
+            title: "出口一覧",
+            url: "/exits",
+          },
+          {
+            title: "業者マスタ",
+            url: "/brokers",
           },
         ],
       },
