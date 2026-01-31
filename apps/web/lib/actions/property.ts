@@ -457,8 +457,8 @@ export async function createProperty(
     // 6. 書類項目を保存（デフォルト値以外の場合のみ）
     const documentItemsToInsert: {
       propertyId: string;
-      itemType: string;
-      status: string;
+      itemType: DocumentItemType;
+      status: DocumentItemStatus;
       updatedAt: Date;
       updatedBy: string;
     }[] = [];
@@ -510,12 +510,12 @@ export async function createProperty(
     for (const mapping of documentItemMappings) {
       const status =
         validatedData[mapping.field as keyof typeof validatedData] as
-          | string
+          | DocumentItemStatus
           | undefined;
       if (status && status !== "not_requested") {
         documentItemsToInsert.push({
           propertyId: property.id,
-          itemType: mapping.itemType,
+          itemType: mapping.itemType as DocumentItemType,
           status: status,
           updatedAt: now,
           updatedBy: session.user.id,
