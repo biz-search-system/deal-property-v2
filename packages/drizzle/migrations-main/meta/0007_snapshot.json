@@ -1,8 +1,8 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "3dc41378-7bdc-4d0e-a7e2-c6af7e173715",
-  "prevId": "334c1242-5190-428d-a589-618e4b5958b0",
+  "id": "4b951577-d185-41fc-a9bb-438ea0be9bc1",
+  "prevId": "673685bb-8479-4c38-83cd-82d4d32d567c",
   "tables": {
     "accounts": {
       "name": "accounts",
@@ -380,14 +380,6 @@
           "primaryKey": false,
           "notNull": false,
           "autoincrement": false
-        },
-        "sort_order": {
-          "name": "sort_order",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false,
-          "default": 0
         }
       },
       "indexes": {
@@ -879,28 +871,6 @@
           "notNull": true,
           "autoincrement": false
         },
-        "maisoku_distribution": {
-          "name": "maisoku_distribution",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false,
-          "default": "'not_distributed'"
-        },
-        "maisoku_distribution_at": {
-          "name": "maisoku_distribution_at",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "maisoku_distribution_by": {
-          "name": "maisoku_distribution_by",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
         "ab_contract_saved": {
           "name": "ab_contract_saved",
           "type": "integer",
@@ -1139,19 +1109,6 @@
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
-        "contract_progress_maisoku_distribution_by_users_id_fk": {
-          "name": "contract_progress_maisoku_distribution_by_users_id_fk",
-          "tableFrom": "contract_progress",
-          "tableTo": "users",
-          "columnsFrom": [
-            "maisoku_distribution_by"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "set null",
-          "onUpdate": "no action"
-        },
         "contract_progress_ab_contract_saved_by_users_id_fk": {
           "name": "contract_progress_ab_contract_saved_by_users_id_fk",
           "tableFrom": "contract_progress",
@@ -1162,7 +1119,7 @@
           "columnsTo": [
             "id"
           ],
-          "onDelete": "set null",
+          "onDelete": "no action",
           "onUpdate": "no action"
         },
         "contract_progress_ab_authorization_saved_by_users_id_fk": {
@@ -1175,7 +1132,7 @@
           "columnsTo": [
             "id"
           ],
-          "onDelete": "set null",
+          "onDelete": "no action",
           "onUpdate": "no action"
         },
         "contract_progress_ab_seller_id_saved_by_users_id_fk": {
@@ -1188,7 +1145,7 @@
           "columnsTo": [
             "id"
           ],
-          "onDelete": "set null",
+          "onDelete": "no action",
           "onUpdate": "no action"
         },
         "contract_progress_bc_contract_created_by_users_id_fk": {
@@ -1201,7 +1158,7 @@
           "columnsTo": [
             "id"
           ],
-          "onDelete": "set null",
+          "onDelete": "no action",
           "onUpdate": "no action"
         },
         "contract_progress_bc_description_created_by_users_id_fk": {
@@ -1214,7 +1171,7 @@
           "columnsTo": [
             "id"
           ],
-          "onDelete": "set null",
+          "onDelete": "no action",
           "onUpdate": "no action"
         },
         "contract_progress_bc_contract_sent_by_users_id_fk": {
@@ -1227,7 +1184,7 @@
           "columnsTo": [
             "id"
           ],
-          "onDelete": "set null",
+          "onDelete": "no action",
           "onUpdate": "no action"
         },
         "contract_progress_bc_description_sent_by_users_id_fk": {
@@ -1240,7 +1197,7 @@
           "columnsTo": [
             "id"
           ],
-          "onDelete": "set null",
+          "onDelete": "no action",
           "onUpdate": "no action"
         },
         "contract_progress_bc_contract_cb_done_by_users_id_fk": {
@@ -1253,7 +1210,7 @@
           "columnsTo": [
             "id"
           ],
-          "onDelete": "set null",
+          "onDelete": "no action",
           "onUpdate": "no action"
         },
         "contract_progress_bc_description_cb_done_by_users_id_fk": {
@@ -1266,7 +1223,7 @@
           "columnsTo": [
             "id"
           ],
-          "onDelete": "set null",
+          "onDelete": "no action",
           "onUpdate": "no action"
         }
       },
@@ -1303,7 +1260,7 @@
           "name": "updated_by",
           "type": "text",
           "primaryKey": false,
-          "notNull": false,
+          "notNull": true,
           "autoincrement": false
         },
         "created_at": {
@@ -1356,7 +1313,7 @@
           "columnsTo": [
             "id"
           ],
-          "onDelete": "set null",
+          "onDelete": "no action",
           "onUpdate": "no action"
         }
       },
@@ -1550,20 +1507,6 @@
           "autoincrement": false,
           "default": "'bc_before_confirmed'"
         },
-        "progress_status_updated_at": {
-          "name": "progress_status_updated_at",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "progress_status_updated_by": {
-          "name": "progress_status_updated_by",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
         "document_status": {
           "name": "document_status",
           "type": "text",
@@ -1571,20 +1514,6 @@
           "notNull": true,
           "autoincrement": false,
           "default": "'waiting_request'"
-        },
-        "document_status_updated_at": {
-          "name": "document_status_updated_at",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "document_status_updated_by": {
-          "name": "document_status_updated_by",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
         },
         "notes": {
           "name": "notes",
@@ -1611,14 +1540,14 @@
           "name": "created_by",
           "type": "text",
           "primaryKey": false,
-          "notNull": false,
+          "notNull": true,
           "autoincrement": false
         },
         "updated_by": {
           "name": "updated_by",
           "type": "text",
           "primaryKey": false,
-          "notNull": false,
+          "notNull": true,
           "autoincrement": false
         },
         "created_at": {
@@ -1699,7 +1628,7 @@
           "columnsTo": [
             "id"
           ],
-          "onDelete": "set null",
+          "onDelete": "no action",
           "onUpdate": "no action"
         },
         "properties_contract_date_bc_updated_by_users_id_fk": {
@@ -1712,7 +1641,7 @@
           "columnsTo": [
             "id"
           ],
-          "onDelete": "set null",
+          "onDelete": "no action",
           "onUpdate": "no action"
         },
         "properties_settlement_date_updated_by_users_id_fk": {
@@ -1725,33 +1654,7 @@
           "columnsTo": [
             "id"
           ],
-          "onDelete": "set null",
-          "onUpdate": "no action"
-        },
-        "properties_progress_status_updated_by_users_id_fk": {
-          "name": "properties_progress_status_updated_by_users_id_fk",
-          "tableFrom": "properties",
-          "tableTo": "users",
-          "columnsFrom": [
-            "progress_status_updated_by"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "set null",
-          "onUpdate": "no action"
-        },
-        "properties_document_status_updated_by_users_id_fk": {
-          "name": "properties_document_status_updated_by_users_id_fk",
-          "tableFrom": "properties",
-          "tableTo": "users",
-          "columnsFrom": [
-            "document_status_updated_by"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "set null",
+          "onDelete": "no action",
           "onUpdate": "no action"
         },
         "properties_created_by_users_id_fk": {
@@ -1764,7 +1667,7 @@
           "columnsTo": [
             "id"
           ],
-          "onDelete": "set null",
+          "onDelete": "cascade",
           "onUpdate": "no action"
         },
         "properties_updated_by_users_id_fk": {
@@ -1777,103 +1680,7 @@
           "columnsTo": [
             "id"
           ],
-          "onDelete": "set null",
-          "onUpdate": "no action"
-        }
-      },
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {},
-      "checkConstraints": {}
-    },
-    "property_document_items": {
-      "name": "property_document_items",
-      "columns": {
-        "id": {
-          "name": "id",
-          "type": "text",
-          "primaryKey": true,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "property_id": {
-          "name": "property_id",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "item_type": {
-          "name": "item_type",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "status": {
-          "name": "status",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false,
-          "default": "'not_requested'"
-        },
-        "updated_at": {
-          "name": "updated_at",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "updated_by": {
-          "name": "updated_by",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        }
-      },
-      "indexes": {
-        "idx_property_document_items_property_id": {
-          "name": "idx_property_document_items_property_id",
-          "columns": [
-            "property_id"
-          ],
-          "isUnique": false
-        },
-        "uk_property_document_items_property_item": {
-          "name": "uk_property_document_items_property_item",
-          "columns": [
-            "property_id",
-            "item_type"
-          ],
-          "isUnique": true
-        }
-      },
-      "foreignKeys": {
-        "property_document_items_property_id_properties_id_fk": {
-          "name": "property_document_items_property_id_properties_id_fk",
-          "tableFrom": "property_document_items",
-          "tableTo": "properties",
-          "columnsFrom": [
-            "property_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
           "onDelete": "cascade",
-          "onUpdate": "no action"
-        },
-        "property_document_items_updated_by_users_id_fk": {
-          "name": "property_document_items_updated_by_users_id_fk",
-          "tableFrom": "property_document_items",
-          "tableTo": "users",
-          "columnsFrom": [
-            "updated_by"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "set null",
           "onUpdate": "no action"
         }
       },
@@ -1916,7 +1723,7 @@
           "name": "changed_by",
           "type": "text",
           "primaryKey": false,
-          "notNull": false,
+          "notNull": true,
           "autoincrement": false
         },
         "changed_at": {
@@ -1968,7 +1775,7 @@
           "columnsTo": [
             "id"
           ],
-          "onDelete": "set null",
+          "onDelete": "no action",
           "onUpdate": "no action"
         }
       },
@@ -1997,7 +1804,7 @@
           "name": "user_id",
           "type": "text",
           "primaryKey": false,
-          "notNull": false,
+          "notNull": true,
           "autoincrement": false
         },
         "created_at": {
@@ -2023,6 +1830,14 @@
             "user_id"
           ],
           "isUnique": false
+        },
+        "uk_property_staff_property_user": {
+          "name": "uk_property_staff_property_user",
+          "columns": [
+            "property_id",
+            "user_id"
+          ],
+          "isUnique": true
         }
       },
       "foreignKeys": {
@@ -2049,7 +1864,7 @@
           "columnsTo": [
             "id"
           ],
-          "onDelete": "set null",
+          "onDelete": "cascade",
           "onUpdate": "no action"
         }
       },
@@ -2082,20 +1897,6 @@
           "autoincrement": false,
           "default": "'not_created'"
         },
-        "bc_settlement_status_at": {
-          "name": "bc_settlement_status_at",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "bc_settlement_status_by": {
-          "name": "bc_settlement_status_by",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
         "ab_settlement_status": {
           "name": "ab_settlement_status",
           "type": "text",
@@ -2103,20 +1904,6 @@
           "notNull": true,
           "autoincrement": false,
           "default": "'not_created'"
-        },
-        "ab_settlement_status_at": {
-          "name": "ab_settlement_status_at",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "ab_settlement_status_by": {
-          "name": "ab_settlement_status_by",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
         },
         "loan_calculation_saved": {
           "name": "loan_calculation_saved",
@@ -2179,69 +1966,6 @@
         },
         "documents_shared_by": {
           "name": "documents_shared_by",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "management_cancel_scheduled_month": {
-          "name": "management_cancel_scheduled_month",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "management_cancel_scheduled_month_at": {
-          "name": "management_cancel_scheduled_month_at",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "management_cancel_scheduled_month_by": {
-          "name": "management_cancel_scheduled_month_by",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "management_cancel_requested_date": {
-          "name": "management_cancel_requested_date",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "management_cancel_requested_date_at": {
-          "name": "management_cancel_requested_date_at",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "management_cancel_requested_date_by": {
-          "name": "management_cancel_requested_date_by",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "management_cancel_completed_date": {
-          "name": "management_cancel_completed_date",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "management_cancel_completed_date_at": {
-          "name": "management_cancel_completed_date_at",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "management_cancel_completed_date_by": {
-          "name": "management_cancel_completed_date_by",
           "type": "text",
           "primaryKey": false,
           "notNull": false,
@@ -2405,265 +2129,6 @@
           "notNull": false,
           "autoincrement": false
         },
-        "mortgage_cancellation": {
-          "name": "mortgage_cancellation",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false,
-          "default": "'not_requested'"
-        },
-        "mortgage_cancellation_at": {
-          "name": "mortgage_cancellation_at",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "mortgage_cancellation_by": {
-          "name": "mortgage_cancellation_by",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "property_title": {
-          "name": "property_title",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "property_title_at": {
-          "name": "property_title_at",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "property_title_by": {
-          "name": "property_title_by",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "address_change": {
-          "name": "address_change",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "address_change_at": {
-          "name": "address_change_at",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "address_change_by": {
-          "name": "address_change_by",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "name_change": {
-          "name": "name_change",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "name_change_at": {
-          "name": "name_change_at",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "name_change_by": {
-          "name": "name_change_by",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "identity_verification_method": {
-          "name": "identity_verification_method",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "identity_verification_method_at": {
-          "name": "identity_verification_method_at",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "identity_verification_method_by": {
-          "name": "identity_verification_method_by",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "identity_verification_call": {
-          "name": "identity_verification_call",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false,
-          "default": "'not_requested'"
-        },
-        "identity_verification_call_at": {
-          "name": "identity_verification_call_at",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "identity_verification_call_by": {
-          "name": "identity_verification_call_by",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "identity_verification_call_schedule": {
-          "name": "identity_verification_call_schedule",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "identity_verification_call_schedule_at": {
-          "name": "identity_verification_call_schedule_at",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "identity_verification_call_schedule_by": {
-          "name": "identity_verification_call_schedule_by",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "identity_verification_status": {
-          "name": "identity_verification_status",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false,
-          "default": "'not_started'"
-        },
-        "identity_verification_status_at": {
-          "name": "identity_verification_status_at",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "identity_verification_status_by": {
-          "name": "identity_verification_status_by",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "seller_funding_status": {
-          "name": "seller_funding_status",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false,
-          "default": "'not_required'"
-        },
-        "seller_funding_status_at": {
-          "name": "seller_funding_status_at",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "seller_funding_status_by": {
-          "name": "seller_funding_status_by",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "sublease_succession": {
-          "name": "sublease_succession",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false,
-          "default": "'not_required'"
-        },
-        "sublease_succession_at": {
-          "name": "sublease_succession_at",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "sublease_succession_by": {
-          "name": "sublease_succession_by",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "rental_contract_and_key": {
-          "name": "rental_contract_and_key",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false,
-          "default": "'not_requested'"
-        },
-        "rental_contract_and_key_at": {
-          "name": "rental_contract_and_key_at",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "rental_contract_and_key_by": {
-          "name": "rental_contract_and_key_by",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "guarantee_company_succession": {
-          "name": "guarantee_company_succession",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false,
-          "default": "'not_required'"
-        },
-        "guarantee_company_succession_at": {
-          "name": "guarantee_company_succession_at",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "guarantee_company_succession_by": {
-          "name": "guarantee_company_succession_by",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
         "created_at": {
           "name": "created_at",
           "type": "integer",
@@ -2704,32 +2169,6 @@
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
-        "settlement_progress_bc_settlement_status_by_users_id_fk": {
-          "name": "settlement_progress_bc_settlement_status_by_users_id_fk",
-          "tableFrom": "settlement_progress",
-          "tableTo": "users",
-          "columnsFrom": [
-            "bc_settlement_status_by"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "set null",
-          "onUpdate": "no action"
-        },
-        "settlement_progress_ab_settlement_status_by_users_id_fk": {
-          "name": "settlement_progress_ab_settlement_status_by_users_id_fk",
-          "tableFrom": "settlement_progress",
-          "tableTo": "users",
-          "columnsFrom": [
-            "ab_settlement_status_by"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "set null",
-          "onUpdate": "no action"
-        },
         "settlement_progress_loan_calculation_saved_by_users_id_fk": {
           "name": "settlement_progress_loan_calculation_saved_by_users_id_fk",
           "tableFrom": "settlement_progress",
@@ -2740,7 +2179,7 @@
           "columnsTo": [
             "id"
           ],
-          "onDelete": "set null",
+          "onDelete": "no action",
           "onUpdate": "no action"
         },
         "settlement_progress_lawyer_requested_by_users_id_fk": {
@@ -2753,7 +2192,7 @@
           "columnsTo": [
             "id"
           ],
-          "onDelete": "set null",
+          "onDelete": "no action",
           "onUpdate": "no action"
         },
         "settlement_progress_documents_shared_by_users_id_fk": {
@@ -2766,46 +2205,7 @@
           "columnsTo": [
             "id"
           ],
-          "onDelete": "set null",
-          "onUpdate": "no action"
-        },
-        "settlement_progress_management_cancel_scheduled_month_by_users_id_fk": {
-          "name": "settlement_progress_management_cancel_scheduled_month_by_users_id_fk",
-          "tableFrom": "settlement_progress",
-          "tableTo": "users",
-          "columnsFrom": [
-            "management_cancel_scheduled_month_by"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "set null",
-          "onUpdate": "no action"
-        },
-        "settlement_progress_management_cancel_requested_date_by_users_id_fk": {
-          "name": "settlement_progress_management_cancel_requested_date_by_users_id_fk",
-          "tableFrom": "settlement_progress",
-          "tableTo": "users",
-          "columnsFrom": [
-            "management_cancel_requested_date_by"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "set null",
-          "onUpdate": "no action"
-        },
-        "settlement_progress_management_cancel_completed_date_by_users_id_fk": {
-          "name": "settlement_progress_management_cancel_completed_date_by_users_id_fk",
-          "tableFrom": "settlement_progress",
-          "tableTo": "users",
-          "columnsFrom": [
-            "management_cancel_completed_date_by"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "set null",
+          "onDelete": "no action",
           "onUpdate": "no action"
         },
         "settlement_progress_documents_complete_by_users_id_fk": {
@@ -2818,7 +2218,7 @@
           "columnsTo": [
             "id"
           ],
-          "onDelete": "set null",
+          "onDelete": "no action",
           "onUpdate": "no action"
         },
         "settlement_progress_bank_documents_complete_by_users_id_fk": {
@@ -2831,7 +2231,7 @@
           "columnsTo": [
             "id"
           ],
-          "onDelete": "set null",
+          "onDelete": "no action",
           "onUpdate": "no action"
         },
         "settlement_progress_loan_saved_by_users_id_fk": {
@@ -2844,7 +2244,7 @@
           "columnsTo": [
             "id"
           ],
-          "onDelete": "set null",
+          "onDelete": "no action",
           "onUpdate": "no action"
         },
         "settlement_progress_seller_payment_done_by_users_id_fk": {
@@ -2857,7 +2257,7 @@
           "columnsTo": [
             "id"
           ],
-          "onDelete": "set null",
+          "onDelete": "no action",
           "onUpdate": "no action"
         },
         "settlement_progress_ledger_entry_by_users_id_fk": {
@@ -2870,239 +2270,7 @@
           "columnsTo": [
             "id"
           ],
-          "onDelete": "set null",
-          "onUpdate": "no action"
-        },
-        "settlement_progress_mortgage_cancellation_by_users_id_fk": {
-          "name": "settlement_progress_mortgage_cancellation_by_users_id_fk",
-          "tableFrom": "settlement_progress",
-          "tableTo": "users",
-          "columnsFrom": [
-            "mortgage_cancellation_by"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "set null",
-          "onUpdate": "no action"
-        },
-        "settlement_progress_property_title_by_users_id_fk": {
-          "name": "settlement_progress_property_title_by_users_id_fk",
-          "tableFrom": "settlement_progress",
-          "tableTo": "users",
-          "columnsFrom": [
-            "property_title_by"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "set null",
-          "onUpdate": "no action"
-        },
-        "settlement_progress_address_change_by_users_id_fk": {
-          "name": "settlement_progress_address_change_by_users_id_fk",
-          "tableFrom": "settlement_progress",
-          "tableTo": "users",
-          "columnsFrom": [
-            "address_change_by"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "set null",
-          "onUpdate": "no action"
-        },
-        "settlement_progress_name_change_by_users_id_fk": {
-          "name": "settlement_progress_name_change_by_users_id_fk",
-          "tableFrom": "settlement_progress",
-          "tableTo": "users",
-          "columnsFrom": [
-            "name_change_by"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "set null",
-          "onUpdate": "no action"
-        },
-        "settlement_progress_identity_verification_method_by_users_id_fk": {
-          "name": "settlement_progress_identity_verification_method_by_users_id_fk",
-          "tableFrom": "settlement_progress",
-          "tableTo": "users",
-          "columnsFrom": [
-            "identity_verification_method_by"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "set null",
-          "onUpdate": "no action"
-        },
-        "settlement_progress_identity_verification_call_by_users_id_fk": {
-          "name": "settlement_progress_identity_verification_call_by_users_id_fk",
-          "tableFrom": "settlement_progress",
-          "tableTo": "users",
-          "columnsFrom": [
-            "identity_verification_call_by"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "set null",
-          "onUpdate": "no action"
-        },
-        "settlement_progress_identity_verification_call_schedule_by_users_id_fk": {
-          "name": "settlement_progress_identity_verification_call_schedule_by_users_id_fk",
-          "tableFrom": "settlement_progress",
-          "tableTo": "users",
-          "columnsFrom": [
-            "identity_verification_call_schedule_by"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "set null",
-          "onUpdate": "no action"
-        },
-        "settlement_progress_identity_verification_status_by_users_id_fk": {
-          "name": "settlement_progress_identity_verification_status_by_users_id_fk",
-          "tableFrom": "settlement_progress",
-          "tableTo": "users",
-          "columnsFrom": [
-            "identity_verification_status_by"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "set null",
-          "onUpdate": "no action"
-        },
-        "settlement_progress_seller_funding_status_by_users_id_fk": {
-          "name": "settlement_progress_seller_funding_status_by_users_id_fk",
-          "tableFrom": "settlement_progress",
-          "tableTo": "users",
-          "columnsFrom": [
-            "seller_funding_status_by"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "set null",
-          "onUpdate": "no action"
-        },
-        "settlement_progress_sublease_succession_by_users_id_fk": {
-          "name": "settlement_progress_sublease_succession_by_users_id_fk",
-          "tableFrom": "settlement_progress",
-          "tableTo": "users",
-          "columnsFrom": [
-            "sublease_succession_by"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "set null",
-          "onUpdate": "no action"
-        },
-        "settlement_progress_rental_contract_and_key_by_users_id_fk": {
-          "name": "settlement_progress_rental_contract_and_key_by_users_id_fk",
-          "tableFrom": "settlement_progress",
-          "tableTo": "users",
-          "columnsFrom": [
-            "rental_contract_and_key_by"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "set null",
-          "onUpdate": "no action"
-        },
-        "settlement_progress_guarantee_company_succession_by_users_id_fk": {
-          "name": "settlement_progress_guarantee_company_succession_by_users_id_fk",
-          "tableFrom": "settlement_progress",
-          "tableTo": "users",
-          "columnsFrom": [
-            "guarantee_company_succession_by"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "set null",
-          "onUpdate": "no action"
-        }
-      },
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {},
-      "checkConstraints": {}
-    },
-    "select_options": {
-      "name": "select_options",
-      "columns": {
-        "id": {
-          "name": "id",
-          "type": "text",
-          "primaryKey": true,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "category": {
-          "name": "category",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "value": {
-          "name": "value",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "created_by": {
-          "name": "created_by",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "created_at": {
-          "name": "created_at",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false,
-          "default": "(cast(unixepoch('subsecond') * 1000 as integer))"
-        },
-        "updated_at": {
-          "name": "updated_at",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false,
-          "default": "(cast(unixepoch('subsecond') * 1000 as integer))"
-        }
-      },
-      "indexes": {
-        "select_options_category_idx": {
-          "name": "select_options_category_idx",
-          "columns": [
-            "category"
-          ],
-          "isUnique": false
-        }
-      },
-      "foreignKeys": {
-        "select_options_created_by_users_id_fk": {
-          "name": "select_options_created_by_users_id_fk",
-          "tableFrom": "select_options",
-          "tableTo": "users",
-          "columnsFrom": [
-            "created_by"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "set null",
+          "onDelete": "no action",
           "onUpdate": "no action"
         }
       },

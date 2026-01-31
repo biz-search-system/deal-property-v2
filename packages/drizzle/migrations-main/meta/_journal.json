@@ -155,13 +155,6 @@
       "when": 1766310000000,
       "tag": "0021_fix_remaining_foreign_keys",
       "breakpoints": true
-    },
-    {
-      "idx": 22,
-      "version": "6",
-      "when": 1769872968719,
-      "tag": "0022_strange_morlun",
-      "breakpoints": true
     }
   ]
 }
