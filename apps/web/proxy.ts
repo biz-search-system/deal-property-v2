@@ -28,7 +28,13 @@ export async function proxy(request: NextRequest) {
   }
   // メンテナンスモード
   const maintenance = await get<Maintenance>("maintenance");
-  await handleMaintenanceMode(request, maintenance ?? null);
+  const maintenanceResponse = await handleMaintenanceMode(
+    request,
+    maintenance ?? null,
+  );
+  if (maintenanceResponse) {
+    return maintenanceResponse;
+  }
 
   // 認証済みユーザーがログインページにアクセス
   if (sessionCookie && currentPath === "/login") {
