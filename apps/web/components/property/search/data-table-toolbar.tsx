@@ -98,7 +98,7 @@ export function DataTableToolbar<TData>({
         <div className="relative">
           <Search className="absolute left-2 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
           <Input
-            placeholder="物件名、オーナー名、号室、備考,担当者名をあいまい検索できます"
+            placeholder="物件名、オーナー名、号室、備考、担当者名を入力して検索"
             value={search}
             onChange={(event) => onSearchChange?.(event.target.value)}
             className="pl-8 h-9 w-[664px]"
@@ -274,7 +274,7 @@ export function DataTableToolbar<TData>({
                 .filter(
                   (column) =>
                     typeof column.accessorFn !== "undefined" &&
-                    column.getCanHide()
+                    column.getCanHide(),
                 )
                 .map((column) => {
                   const displayName = COLUMN_LABELS[column.id] || column.id;

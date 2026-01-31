@@ -52,10 +52,10 @@ export default function SelectForm<T extends FieldValues>({
       control={form.control}
       name={name}
       render={({ field }) => (
-        <FormItem className="flex flex-col @container/select-form">
+        <FormItem className="flex flex-col @container/select-form ">
           <FormLabel>{label}</FormLabel>
           <FormControl>
-            <div className="flex flex-row justify-between @[382px]/select-form:grid @[382px]/select-form:grid-cols-2 ">
+            <div className="flex flex-row justify-between @[382px]/select-form:grid @[382px]/select-form:grid-cols-2 @[382px]/select-form:gap-4 ">
               <Select value={field.value} onValueChange={field.onChange}>
                 <SelectTrigger className="w-4/9 @[382px]/select-form:w-full">
                   <SelectValue placeholder={placeholder} />

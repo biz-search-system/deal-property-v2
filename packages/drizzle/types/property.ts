@@ -106,6 +106,90 @@ export type KeyStatus = (typeof keyStatus)[number];
 export const accountTransfer = ["none", "received", "sent"] as const;
 export type AccountTransfer = (typeof accountTransfer)[number];
 
+// ==================== 新規追加項目（2026-01-17変更仕様） ====================
+
+/** 抵当権抹消ステータス */
+export const mortgageCancellation = [
+  "not_requested",
+  "confirming",
+  "in_progress",
+  "completed",
+  "not_required",
+] as const;
+export type MortgageCancellation = (typeof mortgageCancellation)[number];
+
+/** 本人確認方法 */
+export const identityVerificationMethod = [
+  "not_confirmed",
+  "confirming",
+  "limited_mail",
+  "in_person",
+] as const;
+export type IdentityVerificationMethod =
+  (typeof identityVerificationMethod)[number];
+
+/** 本人確認電話ステータス */
+export const identityVerificationCall = [
+  "not_requested",
+  "schedule_confirming",
+  "in_progress",
+  "completed",
+  "not_required",
+] as const;
+export type IdentityVerificationCall =
+  (typeof identityVerificationCall)[number];
+
+/** 本人確認ステータス */
+export const identityVerificationStatus = [
+  "not_started",
+  "document_sent",
+  "document_received",
+  "document_returned",
+  "completed",
+  "not_required",
+] as const;
+export type IdentityVerificationStatusType =
+  (typeof identityVerificationStatus)[number];
+
+/** 手出し状況ステータス */
+export const sellerFundingStatus = [
+  "not_required",
+  "preliminary_review",
+  "final_review",
+  "review_completed",
+  "funds_ready",
+] as const;
+export type SellerFundingStatus = (typeof sellerFundingStatus)[number];
+
+/** サブリース承継ステータス */
+export const subleaseSuccession = [
+  "not_required",
+  "confirming",
+  "in_progress",
+  "completed",
+] as const;
+export type SubleaseSuccession = (typeof subleaseSuccession)[number];
+
+/** 賃契原本＆鍵ステータス */
+export const rentalContractAndKey = [
+  "not_requested",
+  "confirming",
+  "in_progress",
+  "completed",
+  "not_required",
+] as const;
+export type RentalContractAndKey = (typeof rentalContractAndKey)[number];
+
+/** 保証会社承継ステータス */
+export const guaranteeCompanySuccession = [
+  "not_required",
+  "confirming",
+  "in_progress",
+  "completed",
+] as const;
+export type GuaranteeCompanySuccession =
+  (typeof guaranteeCompanySuccession)[number];
+
 // ==================== テーブル型定義 ====================
 
 export type Property = typeof properties.$inferSelect;

@@ -243,11 +243,38 @@ const propertyCreateBaseSchema = z.object({
   // 決済進捗 司法書士関係
   lawyerRequested: z.boolean().optional(),
   documentsShared: z.boolean().optional(),
+  // 権利証、住所変更、氏名変更
+  propertyTitle: z.boolean().optional(),
+  addressChange: z.boolean().optional(),
+  nameChange: z.boolean().optional(),
+  // 新規項目: 本人確認方法
+  identityVerificationMethod: z.string().nullable().optional(),
+  // 新規項目: 本人確認電話
+  identityVerificationCall: z.string().optional(),
+  // 新規項目: 本人確認電話日時
+  identityVerificationCallSchedule: z.string().optional(),
+  // 新規項目: 本人確認ステータス
+  identityVerificationStatus: z.string().optional(),
+
+  // 決済進捗 銀行関係
+  // 新規項目: 抵当権抹消
+  mortgageCancellation: z.string().optional(),
+  loanCalculationSaved: z.boolean().optional(),
+
+  // 決済進捗 手出し関係
+  // 新規項目: 手出し状況
+  sellerFundingStatus: z.string().optional(),
 
   // 決済進捗 賃貸管理関係
   managementCancelScheduledMonth: z.string().optional(),
   managementCancelRequestedDate: z.string().optional(),
   managementCancelCompletedDate: z.string().optional(),
+  // 新規項目: サブリース承継
+  subleaseSuccession: z.string().optional(),
+  // 新規項目: 賃契原本＆鍵
+  rentalContractAndKey: z.string().optional(),
+  // 新規項目: 保証会社承継
+  guaranteeCompanySuccession: z.string().optional(),
 });
 
 /**

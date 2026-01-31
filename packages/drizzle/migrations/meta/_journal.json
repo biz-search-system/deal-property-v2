@@ -155,6 +155,27 @@
       "when": 1766310000000,
       "tag": "0021_fix_remaining_foreign_keys",
       "breakpoints": true
+    },
+    {
+      "idx": 22,
+      "version": "6",
+      "when": 1769220817849,
+      "tag": "0022_overconfident_mantis",
+      "breakpoints": true
+    },
+    {
+      "idx": 23,
+      "version": "6",
+      "when": 1769221054613,
+      "tag": "0023_gray_jubilee",
+      "breakpoints": true
+    },
+    {
+      "idx": 24,
+      "version": "6",
+      "when": 1769221247967,
+      "tag": "0024_tearful_absorbing_man",
+      "breakpoints": true
     }
   ]
 }

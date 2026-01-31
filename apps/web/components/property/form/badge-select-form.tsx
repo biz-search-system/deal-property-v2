@@ -71,21 +71,21 @@ export default function BadgeSelectForm<
         );
 
         return (
-          <FormItem className={className}>
+          <FormItem className={cn("@container/badge-select-form", className)}>
             {label && (
-              <FormLabel>
+              <FormLabel className="select-text">
                 {label}
                 {required && <span className="text-destructive ml-1">*</span>}
               </FormLabel>
             )}
-            <FormControl>
-              <div className="grid grid-cols-2">
-                <Select
-                  onValueChange={field.onChange}
-                  defaultValue={field.value}
-                  disabled={disabled}
-                >
-                  <SelectTrigger className="w-full">
+            <div className="flex flex-row justify-between @[382px]/badge-select-form:grid @[382px]/badge-select-form:grid-cols-2 @[382px]/badge-select-form:gap-4">
+              <Select
+                onValueChange={field.onChange}
+                defaultValue={field.value}
+                disabled={disabled}
+              >
+                <FormControl>
+                  <SelectTrigger className="w-4/9 @[382px]/badge-select-form:w-full">
                     <SelectValue placeholder={placeholder}>
                       {selectedOption && (
                         <Badge
@@ -97,31 +97,28 @@ export default function BadgeSelectForm<
                       )}
                     </SelectValue>
                   </SelectTrigger>
-                  <SelectContent>
-                    {options.map((option) => (
-                      <SelectItem key={option.value} value={option.value}>
-                        <div className="flex items-center">
-                          <Badge
-                            variant="outline"
-                            className={cn("text-xs", option.color)}
-                          >
-                            {option.label}
-                          </Badge>
-                        </div>
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                {updatedAt && (
-                  <div className="flex justify-end">
-                    <UserActionBadge
-                      timestamp={updatedAt}
-                      user={updatedByUser}
-                    />
-                  </div>
-                )}
-              </div>
-            </FormControl>
+                </FormControl>
+                <SelectContent>
+                  {options.map((option) => (
+                    <SelectItem key={option.value} value={option.value}>
+                      <div className="flex items-center">
+                        <Badge
+                          variant="outline"
+                          className={cn("text-xs", option.color)}
+                        >
+                          {option.label}
+                        </Badge>
+                      </div>
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              {updatedAt && (
+                <div className="flex justify-end">
+                  <UserActionBadge timestamp={updatedAt} user={updatedByUser} />
+                </div>
+              )}
+            </div>
             {description && <FormDescription>{description}</FormDescription>}
             <FormMessage />
           </FormItem>

@@ -49,7 +49,7 @@ export default function DatePickerForm<T extends FieldValues>({
   const [open, setOpen] = useState(false);
   const currentValue = form.watch(name);
   const [selectedMonth, setSelectedMonth] = useState<Date>(
-    currentValue ? new Date(currentValue) : new Date()
+    currentValue ? new Date(currentValue) : new Date(),
   );
 
   // 日付を表示用にフォーマット
@@ -61,7 +61,7 @@ export default function DatePickerForm<T extends FieldValues>({
 
   // 日付文字列をDate型に変換（カレンダー表示用）
   const parseDate = (
-    dateValue: string | null | undefined
+    dateValue: string | null | undefined,
   ): Date | undefined => {
     if (!dateValue) return undefined;
     const date = new Date(dateValue);
@@ -73,102 +73,101 @@ export default function DatePickerForm<T extends FieldValues>({
       control={form.control}
       name={name}
       render={({ field }) => (
-        <FormItem className="flex flex-col">
+        <FormItem className="flex flex-col @container/date-picker-form">
           <FormLabel>{label}</FormLabel>
-          <Popover open={open} onOpenChange={setOpen}>
-            <PopoverTrigger asChild>
-              <FormControl>
-                <div className="grid grid-cols-2 gap-4">
+          <FormControl>
+            <div className="flex flex-row justify-between @[382px]/date-picker-form:grid @[382px]/date-picker-form:grid-cols-2 @[382px]/date-picker-form:gap-4">
+              <Popover open={open} onOpenChange={setOpen}>
+                <PopoverTrigger asChild>
                   <Button
                     variant="outline"
                     type="button"
                     className={cn(
-                      "w-full pl-3 text-left font-normal",
-                      !field.value && "text-muted-foreground"
+                      "w-4/9 @[382px]/date-picker-form:w-full pl-3 text-left font-normal",
+                      !field.value && "text-muted-foreground",
                     )}
                   >
                     {formatDisplayDate(field.value)}
                     <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                   </Button>
-                  {updatedAt && (
-                    <div className="flex justify-end">
-                      <UserActionBadge
-                        timestamp={updatedAt}
-                        user={updatedByUser}
-                      />
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0" align="start">
+                  {/* ヘッダー */}
+                  <div className="flex items-center justify-between px-3 py-2 border-b">
+                    <span className="text-sm font-medium">{label}</span>
+                    <div className="flex gap-1">
+                      {/* 月末予定ボタン */}
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={() => {
+                          const monthEndDate = createMonthEndDate(selectedMonth);
+                          field.onChange(monthEndDate.toISOString());
+                          setOpen(false);
+                        }}
+                        className="h-7 px-2 text-xs"
+                      >
+                        月末予定
+                      </Button>
+                      {/* クリアボタン */}
+                      {field.value && (
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => {
+                            field.onChange("");
+                            setOpen(false);
+                          }}
+                          className="h-7 px-2 text-xs"
+                        >
+                          クリア
+                        </Button>
+                      )}
                     </div>
-                  )}
-                </div>
-              </FormControl>
-            </PopoverTrigger>
-            <PopoverContent className="w-auto p-0" align="start">
-              {/* ヘッダー */}
-              <div className="flex items-center justify-between px-3 py-2 border-b">
-                <span className="text-sm font-medium">{label}</span>
-                <div className="flex gap-1">
-                  {/* 月末予定ボタン */}
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="sm"
-                    onClick={() => {
-                      const monthEndDate = createMonthEndDate(selectedMonth);
-                      field.onChange(monthEndDate.toISOString());
+                  </div>
+
+                  {/* カレンダー */}
+                  <Calendar
+                    mode="single"
+                    selected={parseDate(field.value)}
+                    onSelect={(date) => {
+                      // 同じ日付を選択した場合、react-day-pickerはundefinedを返すことがある
+                      // その場合は現在の日付を使用して「月末予定」から「通常日付」に更新する
+                      let selectedDate = date;
+                      if (!selectedDate && field.value) {
+                        selectedDate = new Date(field.value);
+                      }
+
+                      if (selectedDate) {
+                        // 通常の日付選択: 午前0時0分0秒
+                        selectedDate.setHours(0, 0, 0, 0);
+                        field.onChange(selectedDate.toISOString());
+                      }
                       setOpen(false);
                     }}
-                    className="h-7 px-2 text-xs"
-                  >
-                    月末予定
-                  </Button>
-                  {/* クリアボタン */}
-                  {field.value && (
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => {
-                        field.onChange("");
-                        setOpen(false);
-                      }}
-                      className="h-7 px-2 text-xs"
-                    >
-                      クリア
-                    </Button>
-                  )}
+                    month={selectedMonth}
+                    onMonthChange={setSelectedMonth}
+                    locale={ja}
+                    className="p-3"
+                    captionLayout="dropdown"
+                    startMonth={new Date(new Date().getFullYear() - 5, 0)}
+                    endMonth={new Date(new Date().getFullYear() + 5, 11)}
+                    required
+                  />
+                </PopoverContent>
+              </Popover>
+              {updatedAt && (
+                <div className="flex justify-end">
+                  <UserActionBadge
+                    timestamp={updatedAt}
+                    user={updatedByUser}
+                  />
                 </div>
-              </div>
-
-              {/* カレンダー */}
-              <Calendar
-                mode="single"
-                selected={parseDate(field.value)}
-                onSelect={(date) => {
-                  // 同じ日付を選択した場合、react-day-pickerはundefinedを返すことがある
-                  // その場合は現在の日付を使用して「月末予定」から「通常日付」に更新する
-                  let selectedDate = date;
-                  if (!selectedDate && field.value) {
-                    selectedDate = new Date(field.value);
-                  }
-
-                  if (selectedDate) {
-                    // 通常の日付選択: 午前0時0分0秒
-                    selectedDate.setHours(0, 0, 0, 0);
-                    field.onChange(selectedDate.toISOString());
-                  }
-                  setOpen(false);
-                }}
-                month={selectedMonth}
-                onMonthChange={setSelectedMonth}
-                locale={ja}
-                className="p-3"
-                captionLayout="dropdown"
-                startMonth={new Date(new Date().getFullYear() - 5, 0)}
-                endMonth={new Date(new Date().getFullYear() + 5, 11)}
-                required
-              />
-            </PopoverContent>
-          </Popover>
-
+              )}
+            </div>
+          </FormControl>
           <FormMessage />
         </FormItem>
       )}

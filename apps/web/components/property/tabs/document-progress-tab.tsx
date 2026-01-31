@@ -24,47 +24,23 @@ export default function DocumentProgressTab() {
 
   return (
     <div className="space-y-3">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-        {/* 書類ステータス（全体） */}
-        <SectionCard title="書類ステータス（全体）">
-          <div className="w-full">
-            <BadgeSelectForm
-              form={form}
-              name="documentStatus"
-              label="書類ステータス"
-              options={documentStatus.map((type) => ({
-                value: type,
-                label: DOCUMENT_STATUS_LABELS[type],
-                color: DOCUMENT_STATUS_COLORS[type],
-              }))}
-              updatedAt={property?.documentStatusUpdatedAt}
-              updatedByUser={property?.documentStatusUpdatedByUser}
-            />
-          </div>
-        </SectionCard>
-
-        {/* 銀行関係 */}
-        <SectionCard title="銀行関係">
-          <div className="space-y-4 w-full">
-            <SelectForm
-              form={form}
-              name="documentItem_loan_calculation"
-              label="ローン計算書"
-              options={DOCUMENT_ITEM_STATUS_OPTIONS}
-              updatedAt={
-                property?.documentItems?.find(
-                  (item) => item.itemType === "loan_calculation"
-                )?.updatedAt
-              }
-              updatedByUser={
-                property?.documentItems?.find(
-                  (item) => item.itemType === "loan_calculation"
-                )?.updatedByUser
-              }
-            />
-          </div>
-        </SectionCard>
-      </div>
+      {/* 書類ステータス（全体） */}
+      <SectionCard title="書類ステータス（全体）">
+        <div className="w-full">
+          <BadgeSelectForm
+            form={form}
+            name="documentStatus"
+            label="書類ステータス"
+            options={documentStatus.map((type) => ({
+              value: type,
+              label: DOCUMENT_STATUS_LABELS[type],
+              color: DOCUMENT_STATUS_COLORS[type],
+            }))}
+            updatedAt={property?.documentStatusUpdatedAt}
+            updatedByUser={property?.documentStatusUpdatedByUser}
+          />
+        </div>
+      </SectionCard>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
         {/* 賃貸管理関係 */}
