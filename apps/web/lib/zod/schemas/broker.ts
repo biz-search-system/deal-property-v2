@@ -10,7 +10,7 @@ export const brokerCreateSchema = z.object({
     .trim()
     .min(1, "業者名は必須です")
     .max(200, "業者名は200文字以内で入力してください"),
-  brokerType: brokerTypeSchema.default("buyer"),
+  brokerType: brokerTypeSchema,
   contactName: z
     .string()
     .trim()
@@ -42,7 +42,7 @@ export const brokerCreateSchema = z.object({
     .max(2000, "備考は2000文字以内で入力してください")
     .optional()
     .nullable(),
-  isActive: z.boolean().default(true),
+  isActive: z.boolean(),
   displayOrder: z.number().optional().nullable(),
 });
 
