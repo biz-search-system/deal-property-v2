@@ -12,20 +12,23 @@ import {
   CommandList,
 } from "@workspace/ui/components/command";
 import {
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@workspace/ui/components/form";
+  Field,
+  FieldDescription,
+  FieldError,
+  FieldLabel,
+} from "@workspace/ui/components/field";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@workspace/ui/components/popover";
 import { cn } from "@workspace/utils";
-import type { FieldPath, FieldValues, UseFormReturn } from "react-hook-form";
+import {
+  Controller,
+  type FieldPath,
+  type FieldValues,
+  type UseFormReturn,
+} from "react-hook-form";
 
 export interface ComboboxOption {
   id?: string;
@@ -80,10 +83,10 @@ export default function ComboboxForm<
   const [deletingId, setDeletingId] = useState<string | null>(null);
 
   return (
-    <FormField
+    <Controller
       control={form.control}
       name={name}
-      render={({ field }) => {
+      render={({ field, fieldState }) => {
         // 選択されている値のラベルを取得（カスタム値の場合は値そのまま）
         const selectedOption = options.find(
           (option) => option.value === field.value
@@ -106,30 +109,34 @@ export default function ComboboxForm<
           );
 
         return (
-          <FormItem className={cn("flex flex-col", className)}>
+          <Field
+            data-invalid={fieldState.invalid}
+            data-disabled={disabled}
+            className={className}
+          >
             {label && (
-              <FormLabel>
+              <FieldLabel htmlFor={field.name} className="select-text">
                 {label}
                 {required && <span className="text-destructive ml-1">*</span>}
-              </FormLabel>
+              </FieldLabel>
             )}
             <Popover open={open} onOpenChange={setOpen}>
               <PopoverTrigger asChild>
-                <FormControl>
-                  <Button
-                    variant="outline"
-                    role="combobox"
-                    aria-expanded={open}
-                    disabled={disabled}
-                    className={cn(
-                      "w-full justify-between font-normal",
-                      !field.value && "text-muted-foreground"
-                    )}
-                  >
-                    {displayValue || placeholder}
-                    <ChevronsUpDown className="opacity-50" />
-                  </Button>
-                </FormControl>
+                <Button
+                  id={field.name}
+                  variant="outline"
+                  role="combobox"
+                  aria-expanded={open}
+                  aria-invalid={fieldState.invalid}
+                  disabled={disabled}
+                  className={cn(
+                    "w-full justify-between font-normal",
+                    !field.value && "text-muted-foreground"
+                  )}
+                >
+                  {displayValue || placeholder}
+                  <ChevronsUpDown className="opacity-50" />
+                </Button>
               </PopoverTrigger>
               <PopoverContent className="w-[--radix-popover-trigger-width] p-0">
                 <Command shouldFilter={false}>
@@ -235,9 +242,9 @@ export default function ComboboxForm<
                 </Command>
               </PopoverContent>
             </Popover>
-            {description && <FormDescription>{description}</FormDescription>}
-            <FormMessage />
-          </FormItem>
+            {description && <FieldDescription>{description}</FieldDescription>}
+            {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+          </Field>
         );
       }}
     />

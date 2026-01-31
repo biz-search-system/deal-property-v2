@@ -18,6 +18,14 @@ import {
   guaranteeTransfer,
   keyStatus,
   accountTransfer,
+  mortgageCancellation,
+  identityVerificationMethod,
+  identityVerificationCall,
+  identityVerificationStatus,
+  sellerFundingStatus,
+  subleaseSuccession,
+  rentalContractAndKey,
+  guaranteeCompanySuccession,
 } from "../types/property";
 
 // ==================== Enum定義 ====================
@@ -537,6 +545,119 @@ export const settlementProgress = sqliteTable("settlement_progress", {
   ledgerEntryBy: text("ledger_entry_by").references(() => users.id, {
     onDelete: "set null",
   }),
+  // ==================== 2026-01-17 変更要求追加項目 ====================
+  // 銀行関連 - 抵当権抹消
+  mortgageCancellation: text("mortgage_cancellation", {
+    enum: mortgageCancellation,
+  }).default("not_requested"),
+  mortgageCancellationAt: integer("mortgage_cancellation_at", {
+    mode: "timestamp_ms",
+  }),
+  mortgageCancellationBy: text("mortgage_cancellation_by").references(
+    () => users.id,
+    { onDelete: "set null" }
+  ),
+  // 司法書士関連 - 権利証
+  propertyTitle: integer("property_title", { mode: "boolean" }),
+  propertyTitleAt: integer("property_title_at", { mode: "timestamp_ms" }),
+  propertyTitleBy: text("property_title_by").references(() => users.id, {
+    onDelete: "set null",
+  }),
+  // 司法書士関連 - 住所変更
+  addressChange: integer("address_change", { mode: "boolean" }),
+  addressChangeAt: integer("address_change_at", { mode: "timestamp_ms" }),
+  addressChangeBy: text("address_change_by").references(() => users.id, {
+    onDelete: "set null",
+  }),
+  // 司法書士関連 - 氏名変更
+  nameChange: integer("name_change", { mode: "boolean" }),
+  nameChangeAt: integer("name_change_at", { mode: "timestamp_ms" }),
+  nameChangeBy: text("name_change_by").references(() => users.id, {
+    onDelete: "set null",
+  }),
+  // 司法書士関連 - 本人確認方法
+  identityVerificationMethod: text("identity_verification_method", {
+    enum: identityVerificationMethod,
+  }),
+  identityVerificationMethodAt: integer("identity_verification_method_at", {
+    mode: "timestamp_ms",
+  }),
+  identityVerificationMethodBy: text(
+    "identity_verification_method_by"
+  ).references(() => users.id, { onDelete: "set null" }),
+  // 司法書士関連 - 本人確認電話
+  identityVerificationCall: text("identity_verification_call", {
+    enum: identityVerificationCall,
+  }).default("not_requested"),
+  identityVerificationCallAt: integer("identity_verification_call_at", {
+    mode: "timestamp_ms",
+  }),
+  identityVerificationCallBy: text("identity_verification_call_by").references(
+    () => users.id,
+    { onDelete: "set null" }
+  ),
+  // 司法書士関連 - 本人確認電話日時
+  identityVerificationCallSchedule: text("identity_verification_call_schedule"),
+  identityVerificationCallScheduleAt: integer(
+    "identity_verification_call_schedule_at",
+    { mode: "timestamp_ms" }
+  ),
+  identityVerificationCallScheduleBy: text(
+    "identity_verification_call_schedule_by"
+  ).references(() => users.id, { onDelete: "set null" }),
+  // 司法書士関連 - 本人確認ステータス
+  identityVerificationStatus: text("identity_verification_status", {
+    enum: identityVerificationStatus,
+  }).default("not_started"),
+  identityVerificationStatusAt: integer("identity_verification_status_at", {
+    mode: "timestamp_ms",
+  }),
+  identityVerificationStatusBy: text(
+    "identity_verification_status_by"
+  ).references(() => users.id, { onDelete: "set null" }),
+  // 手出し関係 - 手出し状況
+  sellerFundingStatus: text("seller_funding_status", {
+    enum: sellerFundingStatus,
+  }).default("not_required"),
+  sellerFundingStatusAt: integer("seller_funding_status_at", {
+    mode: "timestamp_ms",
+  }),
+  sellerFundingStatusBy: text("seller_funding_status_by").references(
+    () => users.id,
+    { onDelete: "set null" }
+  ),
+  // 賃管関係 - サブリース承継
+  subleaseSuccession: text("sublease_succession", {
+    enum: subleaseSuccession,
+  }).default("not_required"),
+  subleaseSuccessionAt: integer("sublease_succession_at", {
+    mode: "timestamp_ms",
+  }),
+  subleaseSuccessionBy: text("sublease_succession_by").references(
+    () => users.id,
+    { onDelete: "set null" }
+  ),
+  // 賃管関係 - 賃契原本＆鍵
+  rentalContractAndKey: text("rental_contract_and_key", {
+    enum: rentalContractAndKey,
+  }).default("not_requested"),
+  rentalContractAndKeyAt: integer("rental_contract_and_key_at", {
+    mode: "timestamp_ms",
+  }),
+  rentalContractAndKeyBy: text("rental_contract_and_key_by").references(
+    () => users.id,
+    { onDelete: "set null" }
+  ),
+  // 賃管関係 - 保証会社承継
+  guaranteeCompanySuccession: text("guarantee_company_succession", {
+    enum: guaranteeCompanySuccession,
+  }).default("not_required"),
+  guaranteeCompanySuccessionAt: integer("guarantee_company_succession_at", {
+    mode: "timestamp_ms",
+  }),
+  guaranteeCompanySuccessionBy: text(
+    "guarantee_company_succession_by"
+  ).references(() => users.id, { onDelete: "set null" }),
   ...timestamps,
 });
 
@@ -807,6 +928,76 @@ export const settlementProgressRelations = relations(
       fields: [settlementProgress.managementCancelCompletedDateBy],
       references: [users.id],
       relationName: "managementCancelCompletedDateBy",
+    }),
+    // ==================== 2026-01-17 変更要求追加項目の更新者 ====================
+    // 銀行関連
+    mortgageCancellationByUser: one(users, {
+      fields: [settlementProgress.mortgageCancellationBy],
+      references: [users.id],
+      relationName: "mortgageCancellationBy",
+    }),
+    loanCalculationSavedByUser: one(users, {
+      fields: [settlementProgress.loanCalculationSavedBy],
+      references: [users.id],
+      relationName: "loanCalculationSavedBy",
+    }),
+    // 司法書士関連
+    propertyTitleByUser: one(users, {
+      fields: [settlementProgress.propertyTitleBy],
+      references: [users.id],
+      relationName: "propertyTitleBy",
+    }),
+    addressChangeByUser: one(users, {
+      fields: [settlementProgress.addressChangeBy],
+      references: [users.id],
+      relationName: "addressChangeBy",
+    }),
+    nameChangeByUser: one(users, {
+      fields: [settlementProgress.nameChangeBy],
+      references: [users.id],
+      relationName: "nameChangeBy",
+    }),
+    identityVerificationMethodByUser: one(users, {
+      fields: [settlementProgress.identityVerificationMethodBy],
+      references: [users.id],
+      relationName: "identityVerificationMethodBy",
+    }),
+    identityVerificationCallByUser: one(users, {
+      fields: [settlementProgress.identityVerificationCallBy],
+      references: [users.id],
+      relationName: "identityVerificationCallBy",
+    }),
+    identityVerificationCallScheduleByUser: one(users, {
+      fields: [settlementProgress.identityVerificationCallScheduleBy],
+      references: [users.id],
+      relationName: "identityVerificationCallScheduleBy",
+    }),
+    identityVerificationStatusByUser: one(users, {
+      fields: [settlementProgress.identityVerificationStatusBy],
+      references: [users.id],
+      relationName: "identityVerificationStatusBy",
+    }),
+    // 手出し関係
+    sellerFundingStatusByUser: one(users, {
+      fields: [settlementProgress.sellerFundingStatusBy],
+      references: [users.id],
+      relationName: "sellerFundingStatusBy",
+    }),
+    // 賃管関係
+    subleaseSuccessionByUser: one(users, {
+      fields: [settlementProgress.subleaseSuccessionBy],
+      references: [users.id],
+      relationName: "subleaseSuccessionBy",
+    }),
+    rentalContractAndKeyByUser: one(users, {
+      fields: [settlementProgress.rentalContractAndKeyBy],
+      references: [users.id],
+      relationName: "rentalContractAndKeyBy",
+    }),
+    guaranteeCompanySuccessionByUser: one(users, {
+      fields: [settlementProgress.guaranteeCompanySuccessionBy],
+      references: [users.id],
+      relationName: "guaranteeCompanySuccessionBy",
     }),
   })
 );

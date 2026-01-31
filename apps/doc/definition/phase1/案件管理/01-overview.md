@@ -455,12 +455,12 @@ organization (1) ─────────── (N) properties
 
 ## 8. 関連ドキュメント
 
-- [案件新規登録・編集画面](./property-form.md)
-- [BC確定前案件一覧](./unconfirmed-list.md)
-- [月次案件一覧](./monthly-list.md)
-- [案件検索](./search.md)
-- [案件詳細](./property-detail.md)
-- [インライン編集](./inline-edit.md)
+- [案件新規登録・編集画面](./02-property-form.md)
+- [BC確定前案件一覧](./03-unconfirmed-list.md)
+- [月次案件一覧](./04-monthly-list.md)
+- [案件検索](./05-search.md)
+- [案件詳細](./06-property-detail.md)
+- [インライン編集](./07-inline-edit.md)
 
 ---
 

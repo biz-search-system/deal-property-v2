@@ -4,13 +4,11 @@ import { COMPANY_B_COLORS, COMPANY_B_LABELS } from "@workspace/utils";
 import { companyB } from "@workspace/drizzle/schemas";
 import { Badge } from "@workspace/ui/components/badge";
 import {
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@workspace/ui/components/form";
+  Field,
+  FieldDescription,
+  FieldError,
+  FieldLabel,
+} from "@workspace/ui/components/field";
 import {
   Select,
   SelectContent,
@@ -19,7 +17,12 @@ import {
   SelectValue,
 } from "@workspace/ui/components/select";
 import { cn } from "@workspace/utils";
-import { FieldPath, FieldValues, UseFormReturn } from "react-hook-form";
+import {
+  Controller,
+  type FieldPath,
+  type FieldValues,
+  type UseFormReturn,
+} from "react-hook-form";
 
 export default function CompanyBSelectForm<
   TFieldValues extends FieldValues = FieldValues,
@@ -44,36 +47,43 @@ export default function CompanyBSelectForm<
   className?: string;
 }) {
   return (
-    <FormField
+    <Controller
       control={form.control}
       name={name}
-      render={({ field }) => (
-        <FormItem className={className}>
+      render={({ field, fieldState }) => (
+        <Field
+          data-invalid={fieldState.invalid}
+          data-disabled={disabled}
+          className={className}
+        >
           {label && (
-            <FormLabel>
+            <FieldLabel htmlFor={field.name} className="select-text">
               {label}
               {required && <span className="text-destructive ml-1">*</span>}
-            </FormLabel>
+            </FieldLabel>
           )}
           <Select
+            name={field.name}
+            value={field.value}
             onValueChange={field.onChange}
-            defaultValue={field.value}
             disabled={disabled}
           >
-            <FormControl>
-              <SelectTrigger className="w-1/2">
-                <SelectValue placeholder={placeholder}>
-                  {field.value && (
-                    <Badge
-                      variant="outline"
-                      className={cn("text-xs", COMPANY_B_COLORS[field.value])}
-                    >
-                      {COMPANY_B_LABELS[field.value]}
-                    </Badge>
-                  )}
-                </SelectValue>
-              </SelectTrigger>
-            </FormControl>
+            <SelectTrigger
+              id={field.name}
+              aria-invalid={fieldState.invalid}
+              className="w-1/2"
+            >
+              <SelectValue placeholder={placeholder}>
+                {field.value && (
+                  <Badge
+                    variant="outline"
+                    className={cn("text-xs", COMPANY_B_COLORS[field.value])}
+                  >
+                    {COMPANY_B_LABELS[field.value]}
+                  </Badge>
+                )}
+              </SelectValue>
+            </SelectTrigger>
             <SelectContent>
               {companyB.map((company) => (
                 <SelectItem key={company} value={company}>
@@ -89,9 +99,9 @@ export default function CompanyBSelectForm<
               ))}
             </SelectContent>
           </Select>
-          {description && <FormDescription>{description}</FormDescription>}
-          <FormMessage />
-        </FormItem>
+          {description && <FieldDescription>{description}</FieldDescription>}
+          {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+        </Field>
       )}
     />
   );

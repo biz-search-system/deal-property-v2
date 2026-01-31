@@ -120,6 +120,28 @@ export const getPropertyById = cache(async (id: string) => {
           documentsSharedByUser: {
             columns: { id: true, name: true, email: true, image: true },
           },
+          propertyTitleByUser: {
+            columns: { id: true, name: true, email: true, image: true },
+          },
+          addressChangeByUser: {
+            columns: { id: true, name: true, email: true, image: true },
+          },
+          nameChangeByUser: {
+            columns: { id: true, name: true, email: true, image: true },
+          },
+          // 本人確認関係の更新者ユーザー情報
+          identityVerificationMethodByUser: {
+            columns: { id: true, name: true, email: true, image: true },
+          },
+          identityVerificationCallByUser: {
+            columns: { id: true, name: true, email: true, image: true },
+          },
+          identityVerificationCallScheduleByUser: {
+            columns: { id: true, name: true, email: true, image: true },
+          },
+          identityVerificationStatusByUser: {
+            columns: { id: true, name: true, email: true, image: true },
+          },
           // 賃貸管理関係の更新者ユーザー情報
           managementCancelScheduledMonthByUser: {
             columns: { id: true, name: true, email: true, image: true },
@@ -128,6 +150,26 @@ export const getPropertyById = cache(async (id: string) => {
             columns: { id: true, name: true, email: true, image: true },
           },
           managementCancelCompletedDateByUser: {
+            columns: { id: true, name: true, email: true, image: true },
+          },
+          subleaseSuccessionByUser: {
+            columns: { id: true, name: true, email: true, image: true },
+          },
+          rentalContractAndKeyByUser: {
+            columns: { id: true, name: true, email: true, image: true },
+          },
+          guaranteeCompanySuccessionByUser: {
+            columns: { id: true, name: true, email: true, image: true },
+          },
+          // 銀行関係の更新者ユーザー情報
+          mortgageCancellationByUser: {
+            columns: { id: true, name: true, email: true, image: true },
+          },
+          loanCalculationSavedByUser: {
+            columns: { id: true, name: true, email: true, image: true },
+          },
+          // 手出し関係の更新者ユーザー情報
+          sellerFundingStatusByUser: {
             columns: { id: true, name: true, email: true, image: true },
           },
         },

@@ -1,15 +1,14 @@
 "use client";
 
 import { Badge } from "@workspace/ui/components/badge";
-import {
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@workspace/ui/components/form";
+import { Field, FieldError, FieldLabel } from "@workspace/ui/components/field";
 import { cn } from "@workspace/utils";
-import type { FieldPath, FieldValues, UseFormReturn } from "react-hook-form";
+import {
+  Controller,
+  type FieldPath,
+  type FieldValues,
+  type UseFormReturn,
+} from "react-hook-form";
 import { UserActionBadge } from "../user-action-badge";
 
 interface UserInfo {
@@ -52,10 +51,10 @@ export default function BadgeToggleForm<
   updatedByUser,
 }: BadgeToggleFormProps<TFieldValues, TName, TValue>) {
   return (
-    <FormField
+    <Controller
       control={form.control}
       name={name}
-      render={({ field }) => {
+      render={({ field, fieldState }) => {
         // 現在の値のインデックスを取得（見つからない場合は-1）
         const currentIndex = options.findIndex(
           (option) => option.value === field.value
@@ -75,46 +74,65 @@ export default function BadgeToggleForm<
         };
 
         return (
-          <FormItem className="flex flex-col">
-            {label && <FormLabel>{label}</FormLabel>}
-            <FormControl>
-              <div className="grid grid-cols-2 gap-4">
-                <div className="flex gap-1 flex-wrap items-center">
-                  {options.map((option, index) => {
-                    const isSelected = index <= currentIndex;
-                    const isCurrent = index === currentIndex;
+          <Field
+            data-invalid={fieldState.invalid}
+            data-disabled={disabled}
+          >
+            {label && (
+              <FieldLabel htmlFor={field.name} className="select-text">
+                {label}
+              </FieldLabel>
+            )}
+            <div
+              role="radiogroup"
+              id={field.name}
+              aria-label={label}
+              className="grid grid-cols-2 gap-4"
+            >
+              <div className="flex gap-1 flex-wrap items-center">
+                {options.map((option, index) => {
+                  const isSelected = index <= currentIndex;
+                  const isCurrent = index === currentIndex;
 
-                    return (
-                      <Badge
-                        key={option.value}
-                        variant="outline"
-                        className={cn(
-                          "text-xs cursor-pointer transition-colors border",
-                          isSelected && option.color,
-                          !isSelected &&
-                            "bg-muted/30 text-muted-foreground hover:bg-muted",
-                          isCurrent && "ring-2 ring-offset-1 ring-primary/50",
-                          disabled && "cursor-not-allowed opacity-50"
-                        )}
-                        onClick={() => handleBadgeClick(index)}
-                      >
-                        {option.label}
-                      </Badge>
-                    );
-                  })}
-                </div>
-                {updatedAt && (
-                  <div className="flex justify-end">
-                    <UserActionBadge
-                      timestamp={updatedAt}
-                      user={updatedByUser}
-                    />
-                  </div>
-                )}
+                  return (
+                    <Badge
+                      key={option.value}
+                      role="radio"
+                      aria-checked={isCurrent}
+                      tabIndex={disabled ? -1 : 0}
+                      variant="outline"
+                      className={cn(
+                        "text-xs cursor-pointer transition-colors border",
+                        isSelected && option.color,
+                        !isSelected &&
+                          "bg-muted/30 text-muted-foreground hover:bg-muted",
+                        isCurrent && "ring-2 ring-offset-1 ring-primary/50",
+                        disabled && "cursor-not-allowed opacity-50"
+                      )}
+                      onClick={() => handleBadgeClick(index)}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter" || e.key === " ") {
+                          e.preventDefault();
+                          handleBadgeClick(index);
+                        }
+                      }}
+                    >
+                      {option.label}
+                    </Badge>
+                  );
+                })}
               </div>
-            </FormControl>
-            <FormMessage />
-          </FormItem>
+              {updatedAt && (
+                <div className="flex justify-end">
+                  <UserActionBadge
+                    timestamp={updatedAt}
+                    user={updatedByUser}
+                  />
+                </div>
+              )}
+            </div>
+            {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+          </Field>
         );
       }}
     />

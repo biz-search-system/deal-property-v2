@@ -24,7 +24,7 @@ export const DOCUMENT_ITEM_STATUS_COLORS: Record<DocumentItemStatus, string> = {
   acquired:
     "border-emerald-400 bg-emerald-50 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300",
   not_required:
-    "border-gray-300 bg-gray-100 text-gray-500 dark:bg-gray-800 dark:text-gray-500",
+    "border-gray-400 bg-gray-50 text-gray-700 dark:bg-gray-950 dark:text-gray-300",
 } as const;
 
 /**

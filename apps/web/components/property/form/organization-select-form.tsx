@@ -1,23 +1,13 @@
 "use client";
 
+import { Organization } from "@/lib/types/organization";
+import { OrganizationSlugType } from "@workspace/utils";
 import {
-  Organization,
-  OrganizationWithUserRole,
-} from "@/lib/types/organization";
-import {
-  ORGANIZATION_COLORS,
-  ORGANIZATION_LABELS,
-  OrganizationSlugType,
-} from "@workspace/utils";
-import { Badge } from "@workspace/ui/components/badge";
-import {
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@workspace/ui/components/form";
+  Field,
+  FieldDescription,
+  FieldError,
+  FieldLabel,
+} from "@workspace/ui/components/field";
 import {
   Select,
   SelectContent,
@@ -25,8 +15,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@workspace/ui/components/select";
-import { cn } from "@workspace/utils";
-import { FieldPath, FieldValues, UseFormReturn } from "react-hook-form";
+import {
+  Controller,
+  type FieldPath,
+  type FieldValues,
+  type UseFormReturn,
+} from "react-hook-form";
 import OrganizationBadge from "../badge/organization-badge";
 
 export default function OrganizationSelectForm<
@@ -62,39 +56,46 @@ export default function OrganizationSelectForm<
   );
 
   return (
-    <FormField
+    <Controller
       control={form.control}
       name={name}
-      render={({ field }) => (
-        <FormItem className={className}>
+      render={({ field, fieldState }) => (
+        <Field
+          data-invalid={fieldState.invalid}
+          data-disabled={disabled}
+          className={className}
+        >
           {label && (
-            <FormLabel>
+            <FieldLabel htmlFor={field.name} className="select-text">
               {label}
               {required && <span className="text-destructive ml-1">*</span>}
-            </FormLabel>
+            </FieldLabel>
           )}
           <Select
+            name={field.name}
+            value={field.value}
             onValueChange={(value) => {
               field.onChange(value);
               onValueChange?.(value);
             }}
-            value={field.value}
             disabled={disabled}
           >
-            <FormControl>
-              <SelectTrigger className="w-1/2">
-                <SelectValue placeholder={placeholder}>
-                  {selectedOrganization && (
-                    <OrganizationBadge
-                      organizationSlug={
-                        selectedOrganization.slug as OrganizationSlugType
-                      }
-                      size="medium"
-                    />
-                  )}
-                </SelectValue>
-              </SelectTrigger>
-            </FormControl>
+            <SelectTrigger
+              id={field.name}
+              aria-invalid={fieldState.invalid}
+              className="w-1/2"
+            >
+              <SelectValue placeholder={placeholder}>
+                {selectedOrganization && (
+                  <OrganizationBadge
+                    organizationSlug={
+                      selectedOrganization.slug as OrganizationSlugType
+                    }
+                    size="medium"
+                  />
+                )}
+              </SelectValue>
+            </SelectTrigger>
             <SelectContent>
               {organizations.map((org) => {
                 const organizationSlug = org.slug as OrganizationSlugType;
@@ -109,9 +110,9 @@ export default function OrganizationSelectForm<
               })}
             </SelectContent>
           </Select>
-          {description && <FormDescription>{description}</FormDescription>}
-          <FormMessage />
-        </FormItem>
+          {description && <FieldDescription>{description}</FieldDescription>}
+          {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+        </Field>
       )}
     />
   );

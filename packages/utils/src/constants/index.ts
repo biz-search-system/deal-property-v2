@@ -11,3 +11,4 @@ export * from "./document-status";
 export * from "./document-item";
 export * from "./organization";
 export * from "./settlement-status";
+export * from "./settlement-progress";

@@ -239,6 +239,12 @@ export async function createProperty(
       validatedData.abSettlementStatus ?? "not_created";
     const lawyerRequestedValue = validatedData.lawyerRequested ?? false;
     const documentsSharedValue = validatedData.documentsShared ?? false;
+    const propertyTitleValue = validatedData.propertyTitle ?? false;
+    const addressChangeValue = validatedData.addressChange ?? false;
+    const nameChangeValue = validatedData.nameChange ?? false;
+    const loanCalculationSavedValue =
+      validatedData.loanCalculationSaved ?? false;
+
     await tx.insert(settlementProgress).values({
       propertyId: property.id,
       // 精算書関係 - BC精算書
@@ -264,6 +270,113 @@ export async function createProperty(
       documentsShared: documentsSharedValue,
       documentsSharedAt: documentsSharedValue ? now : null,
       documentsSharedBy: documentsSharedValue ? session.user.id : null,
+      // 司法書士関係 - 権利証、住所変更、氏名変更
+      propertyTitle: propertyTitleValue,
+      propertyTitleAt: propertyTitleValue ? now : null,
+      propertyTitleBy: propertyTitleValue ? session.user.id : null,
+      addressChange: addressChangeValue,
+      addressChangeAt: addressChangeValue ? now : null,
+      addressChangeBy: addressChangeValue ? session.user.id : null,
+      nameChange: nameChangeValue,
+      nameChangeAt: nameChangeValue ? now : null,
+      nameChangeBy: nameChangeValue ? session.user.id : null,
+      // 司法書士関係 - 本人確認
+      identityVerificationMethod:
+        (validatedData.identityVerificationMethod as
+          | "not_confirmed"
+          | "confirming"
+          | "limited_mail"
+          | "in_person"
+          | null) ?? null,
+      identityVerificationMethodAt: validatedData.identityVerificationMethod
+        ? now
+        : null,
+      identityVerificationMethodBy: validatedData.identityVerificationMethod
+        ? session.user.id
+        : null,
+      identityVerificationCall:
+        (validatedData.identityVerificationCall as
+          | "not_requested"
+          | "schedule_confirming"
+          | "in_progress"
+          | "completed"
+          | "not_required") ?? "not_requested",
+      identityVerificationCallAt:
+        validatedData.identityVerificationCall &&
+        validatedData.identityVerificationCall !== "not_requested"
+          ? now
+          : null,
+      identityVerificationCallBy:
+        validatedData.identityVerificationCall &&
+        validatedData.identityVerificationCall !== "not_requested"
+          ? session.user.id
+          : null,
+      identityVerificationCallSchedule:
+        validatedData.identityVerificationCallSchedule || null,
+      identityVerificationCallScheduleAt:
+        validatedData.identityVerificationCallSchedule ? now : null,
+      identityVerificationCallScheduleBy:
+        validatedData.identityVerificationCallSchedule ? session.user.id : null,
+      identityVerificationStatus:
+        (validatedData.identityVerificationStatus as
+          | "not_started"
+          | "document_sent"
+          | "document_received"
+          | "document_returned"
+          | "completed"
+          | "not_required") ?? "not_started",
+      identityVerificationStatusAt:
+        validatedData.identityVerificationStatus &&
+        validatedData.identityVerificationStatus !== "not_started"
+          ? now
+          : null,
+      identityVerificationStatusBy:
+        validatedData.identityVerificationStatus &&
+        validatedData.identityVerificationStatus !== "not_started"
+          ? session.user.id
+          : null,
+      // 銀行関係 - 抵当権抹消
+      mortgageCancellation:
+        (validatedData.mortgageCancellation as
+          | "not_requested"
+          | "confirming"
+          | "in_progress"
+          | "completed"
+          | "not_required") ?? "not_requested",
+      mortgageCancellationAt:
+        validatedData.mortgageCancellation &&
+        validatedData.mortgageCancellation !== "not_requested"
+          ? now
+          : null,
+      mortgageCancellationBy:
+        validatedData.mortgageCancellation &&
+        validatedData.mortgageCancellation !== "not_requested"
+          ? session.user.id
+          : null,
+      // 銀行関係 - ローン計算書保存
+      loanCalculationSaved: loanCalculationSavedValue,
+      loanCalculationSavedAt: loanCalculationSavedValue ? now : null,
+      loanCalculationSavedBy: loanCalculationSavedValue
+        ? session.user.id
+        : null,
+      // 手出し関係
+      sellerFundingStatus:
+        (validatedData.sellerFundingStatus as
+          | "not_required"
+          | "preliminary_review"
+          | "final_review"
+          | "review_completed"
+          | "funds_ready") ?? "not_required",
+      sellerFundingStatusAt:
+        validatedData.sellerFundingStatus &&
+        validatedData.sellerFundingStatus !== "not_required"
+          ? now
+          : null,
+      sellerFundingStatusBy:
+        validatedData.sellerFundingStatus &&
+        validatedData.sellerFundingStatus !== "not_required"
+          ? session.user.id
+          : null,
       // 賃貸管理関係
       managementCancelScheduledMonth:
         validatedData.managementCancelScheduledMonth || null,
@@ -283,6 +396,58 @@ export async function createProperty(
         validatedData.managementCancelCompletedDate ? now : null,
       managementCancelCompletedDateBy:
         validatedData.managementCancelCompletedDate ? session.user.id : null,
+      // 賃貸管理関係 - サブリース承継
+      subleaseSuccession:
+        (validatedData.subleaseSuccession as
+          | "not_required"
+          | "confirming"
+          | "in_progress"
+          | "completed") ?? "not_required",
+      subleaseSuccessionAt:
+        validatedData.subleaseSuccession &&
+        validatedData.subleaseSuccession !== "not_required"
+          ? now
+          : null,
+      subleaseSuccessionBy:
+        validatedData.subleaseSuccession &&
+        validatedData.subleaseSuccession !== "not_required"
+          ? session.user.id
+          : null,
+      // 賃貸管理関係 - 賃契原本＆鍵
+      rentalContractAndKey:
+        (validatedData.rentalContractAndKey as
+          | "not_requested"
+          | "confirming"
+          | "in_progress"
+          | "completed"
+          | "not_required") ?? "not_requested",
+      rentalContractAndKeyAt:
+        validatedData.rentalContractAndKey &&
+        validatedData.rentalContractAndKey !== "not_requested"
+          ? now
+          : null,
+      rentalContractAndKeyBy:
+        validatedData.rentalContractAndKey &&
+        validatedData.rentalContractAndKey !== "not_requested"
+          ? session.user.id
+          : null,
+      // 賃貸管理関係 - 保証会社承継
+      guaranteeCompanySuccession:
+        (validatedData.guaranteeCompanySuccession as
+          | "not_required"
+          | "confirming"
+          | "in_progress"
+          | "completed") ?? "not_required",
+      guaranteeCompanySuccessionAt:
+        validatedData.guaranteeCompanySuccession &&
+        validatedData.guaranteeCompanySuccession !== "not_required"
+          ? now
+          : null,
+      guaranteeCompanySuccessionBy:
+        validatedData.guaranteeCompanySuccession &&
+        validatedData.guaranteeCompanySuccession !== "not_required"
+          ? session.user.id
+          : null,
     });
 
     return property;
@@ -625,6 +790,40 @@ export async function updateProperty(
     const documentsSharedChanged =
       (validatedData.documentsShared ?? false) !==
       (currentSettlement?.documentsShared ?? false);
+    const propertyTitleChanged =
+      (validatedData.propertyTitle ?? false) !==
+      (currentSettlement?.propertyTitle ?? false);
+    const addressChangeChanged =
+      (validatedData.addressChange ?? false) !==
+      (currentSettlement?.addressChange ?? false);
+    const nameChangeChanged =
+      (validatedData.nameChange ?? false) !==
+      (currentSettlement?.nameChange ?? false);
+    const identityVerificationMethodChanged =
+      (validatedData.identityVerificationMethod ?? null) !==
+      (currentSettlement?.identityVerificationMethod ?? null);
+    const identityVerificationCallChanged =
+      (validatedData.identityVerificationCall ?? "not_requested") !==
+      (currentSettlement?.identityVerificationCall ?? "not_requested");
+    const identityVerificationCallScheduleChanged =
+      (validatedData.identityVerificationCallSchedule || null) !==
+      (currentSettlement?.identityVerificationCallSchedule || null);
+    const identityVerificationStatusChanged =
+      (validatedData.identityVerificationStatus ?? "not_started") !==
+      (currentSettlement?.identityVerificationStatus ?? "not_started");
+
+    // 銀行関係 - 状態が変更されたかどうかを判定
+    const mortgageCancellationChanged =
+      (validatedData.mortgageCancellation ?? "not_requested") !==
+      (currentSettlement?.mortgageCancellation ?? "not_requested");
+    const loanCalculationSavedChanged =
+      (validatedData.loanCalculationSaved ?? false) !==
+      (currentSettlement?.loanCalculationSaved ?? false);
+
+    // 手出し関係 - 状態が変更されたかどうかを判定
+    const sellerFundingStatusChanged =
+      (validatedData.sellerFundingStatus ?? "not_required") !==
+      (currentSettlement?.sellerFundingStatus ?? "not_required");
 
     // 賃貸管理関係 - 状態が変更されたかどうかを判定
     const managementCancelScheduledMonthChanged =
@@ -636,6 +835,15 @@ export async function updateProperty(
     const managementCancelCompletedDateChanged =
       (validatedData.managementCancelCompletedDate || null) !==
       (currentSettlement?.managementCancelCompletedDate || null);
+    const subleaseSuccessionChanged =
+      (validatedData.subleaseSuccession ?? "not_required") !==
+      (currentSettlement?.subleaseSuccession ?? "not_required");
+    const rentalContractAndKeyChanged =
+      (validatedData.rentalContractAndKey ?? "not_requested") !==
+      (currentSettlement?.rentalContractAndKey ?? "not_requested");
+    const guaranteeCompanySuccessionChanged =
+      (validatedData.guaranteeCompanySuccession ?? "not_required") !==
+      (currentSettlement?.guaranteeCompanySuccession ?? "not_required");
 
     await tx
       .update(settlementProgress)
@@ -682,6 +890,120 @@ export async function updateProperty(
         documentsSharedBy: documentsSharedChanged
           ? session.user.id
           : currentSettlement?.documentsSharedBy,
+        // 司法書士関係 - 権利証
+        propertyTitle: validatedData.propertyTitle ?? false,
+        propertyTitleAt: propertyTitleChanged
+          ? now
+          : currentSettlement?.propertyTitleAt,
+        propertyTitleBy: propertyTitleChanged
+          ? session.user.id
+          : currentSettlement?.propertyTitleBy,
+        // 司法書士関係 - 住所変更
+        addressChange: validatedData.addressChange ?? false,
+        addressChangeAt: addressChangeChanged
+          ? now
+          : currentSettlement?.addressChangeAt,
+        addressChangeBy: addressChangeChanged
+          ? session.user.id
+          : currentSettlement?.addressChangeBy,
+        // 司法書士関係 - 氏名変更
+        nameChange: validatedData.nameChange ?? false,
+        nameChangeAt: nameChangeChanged
+          ? now
+          : currentSettlement?.nameChangeAt,
+        nameChangeBy: nameChangeChanged
+          ? session.user.id
+          : currentSettlement?.nameChangeBy,
+        // 司法書士関係 - 本人確認方法
+        identityVerificationMethod:
+          (validatedData.identityVerificationMethod as
+            | "not_confirmed"
+            | "confirming"
+            | "limited_mail"
+            | "in_person"
+            | null) ?? null,
+        identityVerificationMethodAt: identityVerificationMethodChanged
+          ? now
+          : currentSettlement?.identityVerificationMethodAt,
+        identityVerificationMethodBy: identityVerificationMethodChanged
+          ? session.user.id
+          : currentSettlement?.identityVerificationMethodBy,
+        // 司法書士関係 - 本人確認電話
+        identityVerificationCall:
+          (validatedData.identityVerificationCall as
+            | "not_requested"
+            | "schedule_confirming"
+            | "in_progress"
+            | "completed"
+            | "not_required") ?? "not_requested",
+        identityVerificationCallAt: identityVerificationCallChanged
+          ? now
+          : currentSettlement?.identityVerificationCallAt,
+        identityVerificationCallBy: identityVerificationCallChanged
+          ? session.user.id
+          : currentSettlement?.identityVerificationCallBy,
+        // 司法書士関係 - 本人確認電話日時
+        identityVerificationCallSchedule:
+          validatedData.identityVerificationCallSchedule || null,
+        identityVerificationCallScheduleAt:
+          identityVerificationCallScheduleChanged
+            ? now
+            : currentSettlement?.identityVerificationCallScheduleAt,
+        identityVerificationCallScheduleBy:
+          identityVerificationCallScheduleChanged
+            ? session.user.id
+            : currentSettlement?.identityVerificationCallScheduleBy,
+        // 司法書士関係 - 本人確認ステータス
+        identityVerificationStatus:
+          (validatedData.identityVerificationStatus as
+            | "not_started"
+            | "document_sent"
+            | "document_received"
+            | "document_returned"
+            | "completed"
+            | "not_required") ?? "not_started",
+        identityVerificationStatusAt: identityVerificationStatusChanged
+          ? now
+          : currentSettlement?.identityVerificationStatusAt,
+        identityVerificationStatusBy: identityVerificationStatusChanged
+          ? session.user.id
+          : currentSettlement?.identityVerificationStatusBy,
+        // 銀行関係 - 抵当権抹消
+        mortgageCancellation:
+          (validatedData.mortgageCancellation as
+            | "not_requested"
+            | "confirming"
+            | "in_progress"
+            | "completed"
+            | "not_required") ?? "not_requested",
+        mortgageCancellationAt: mortgageCancellationChanged
+          ? now
+          : currentSettlement?.mortgageCancellationAt,
+        mortgageCancellationBy: mortgageCancellationChanged
+          ? session.user.id
+          : currentSettlement?.mortgageCancellationBy,
+        // 銀行関係 - ローン計算書保存
+        loanCalculationSaved: validatedData.loanCalculationSaved ?? false,
+        loanCalculationSavedAt: loanCalculationSavedChanged
+          ? now
+          : currentSettlement?.loanCalculationSavedAt,
+        loanCalculationSavedBy: loanCalculationSavedChanged
+          ? session.user.id
+          : currentSettlement?.loanCalculationSavedBy,
+        // 手出し関係 - 手出し状況
+        sellerFundingStatus:
+          (validatedData.sellerFundingStatus as
+            | "not_required"
+            | "preliminary_review"
+            | "final_review"
+            | "review_completed"
+            | "funds_ready") ?? "not_required",
+        sellerFundingStatusAt: sellerFundingStatusChanged
+          ? now
+          : currentSettlement?.sellerFundingStatusAt,
+        sellerFundingStatusBy: sellerFundingStatusChanged
+          ? session.user.id
+          : currentSettlement?.sellerFundingStatusBy,
         // 賃貸管理関係 - 管理解約予定月
         managementCancelScheduledMonth:
           validatedData.managementCancelScheduledMonth || null,
@@ -709,6 +1031,46 @@ export async function updateProperty(
         managementCancelCompletedDateBy: managementCancelCompletedDateChanged
           ? session.user.id
           : currentSettlement?.managementCancelCompletedDateBy,
+        // 賃貸管理関係 - サブリース承継
+        subleaseSuccession:
+          (validatedData.subleaseSuccession as
+            | "not_required"
+            | "confirming"
+            | "in_progress"
+            | "completed") ?? "not_required",
+        subleaseSuccessionAt: subleaseSuccessionChanged
+          ? now
+          : currentSettlement?.subleaseSuccessionAt,
+        subleaseSuccessionBy: subleaseSuccessionChanged
+          ? session.user.id
+          : currentSettlement?.subleaseSuccessionBy,
+        // 賃貸管理関係 - 賃契原本＆鍵
+        rentalContractAndKey:
+          (validatedData.rentalContractAndKey as
+            | "not_requested"
+            | "confirming"
+            | "in_progress"
+            | "completed"
+            | "not_required") ?? "not_requested",
+        rentalContractAndKeyAt: rentalContractAndKeyChanged
+          ? now
+          : currentSettlement?.rentalContractAndKeyAt,
+        rentalContractAndKeyBy: rentalContractAndKeyChanged
+          ? session.user.id
+          : currentSettlement?.rentalContractAndKeyBy,
+        // 賃貸管理関係 - 保証会社承継
+        guaranteeCompanySuccession:
+          (validatedData.guaranteeCompanySuccession as
+            | "not_required"
+            | "confirming"
+            | "in_progress"
+            | "completed") ?? "not_required",
+        guaranteeCompanySuccessionAt: guaranteeCompanySuccessionChanged
+          ? now
+          : currentSettlement?.guaranteeCompanySuccessionAt,
+        guaranteeCompanySuccessionBy: guaranteeCompanySuccessionChanged
+          ? session.user.id
+          : currentSettlement?.guaranteeCompanySuccessionBy,
       })
       .where(eq(settlementProgress.propertyId, validatedData.id));
 
