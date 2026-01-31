@@ -2,13 +2,16 @@
 
 import { Checkbox } from "@workspace/ui/components/checkbox";
 import {
-  FormControl,
-  FormField,
-  FormItem,
-  FormMessage,
-} from "@workspace/ui/components/form";
-import { Label } from "@workspace/ui/components/label";
-import type { FieldPath, FieldValues, UseFormReturn } from "react-hook-form";
+  Field,
+  FieldError,
+  FieldLabel,
+} from "@workspace/ui/components/field";
+import {
+  Controller,
+  type FieldPath,
+  type FieldValues,
+  type UseFormReturn,
+} from "react-hook-form";
 import { UserActionBadge } from "../user-action-badge";
 
 interface UserInfo {
@@ -41,28 +44,37 @@ export default function CheckboxForm<
   updatedByUser,
 }: CheckboxFormProps<TFieldValues, TName>) {
   return (
-    <FormField
+    <Controller
       control={form.control}
       name={name}
-      render={({ field }) => (
-        <FormItem>
-          <FormControl>
-            <div className="flex items-center justify-between py-2">
-              <div className="flex items-center gap-2">
-                <Checkbox
-                  checked={field.value ?? false}
-                  onCheckedChange={field.onChange}
-                  disabled={disabled}
-                />
-                <Label className="cursor-pointer">{label}</Label>
-              </div>
-              {updatedAt && (
-                <UserActionBadge timestamp={updatedAt} user={updatedByUser} />
-              )}
-            </div>
-          </FormControl>
-          <FormMessage />
-        </FormItem>
+      render={({ field, fieldState }) => (
+        <Field
+          orientation="horizontal"
+          data-invalid={fieldState.invalid}
+          data-disabled={disabled}
+          className="justify-between py-2"
+        >
+          <div className="flex items-center gap-2">
+            <Checkbox
+              id={field.name}
+              name={field.name}
+              checked={field.value ?? false}
+              onCheckedChange={field.onChange}
+              disabled={disabled}
+              aria-invalid={fieldState.invalid}
+            />
+            <FieldLabel
+              htmlFor={field.name}
+              className="cursor-pointer select-text"
+            >
+              {label}
+            </FieldLabel>
+          </div>
+          {updatedAt && (
+            <UserActionBadge timestamp={updatedAt} user={updatedByUser} />
+          )}
+          {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+        </Field>
       )}
     />
   );

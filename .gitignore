@@ -43,3 +43,6 @@ npm-debug.log*
 .cursor/
 *S.md
 *E.md
+
+
+packages/drizzle/migrations-back
