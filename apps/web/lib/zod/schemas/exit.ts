@@ -85,7 +85,7 @@ export const exitCreateSchema = z.object({
     .nullable(),
 
   // ステータス
-  status: exitStatusSchema.default("not_purchased"),
+  status: exitStatusSchema,
 });
 
 /** 出口管理作成型 */
