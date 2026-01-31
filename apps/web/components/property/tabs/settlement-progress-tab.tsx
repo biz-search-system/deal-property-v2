@@ -100,9 +100,27 @@ export default function SettlementProgressTab() {
                 updatedAt={settlementProgress?.documentsSharedAt}
                 updatedByUser={settlementProgress?.documentsSharedByUser}
               />
-              <CheckboxForm form={form} name="propertyTitle" label="権利証" />
-              <CheckboxForm form={form} name="addressChange" label="住所変更" />
-              <CheckboxForm form={form} name="nameChange" label="氏名変更" />
+              <CheckboxForm
+                form={form}
+                name="propertyTitle"
+                label="権利証"
+                updatedAt={settlementProgress?.propertyTitleAt}
+                updatedByUser={settlementProgress?.propertyTitleByUser}
+              />
+              <CheckboxForm
+                form={form}
+                name="addressChange"
+                label="住所変更"
+                updatedAt={settlementProgress?.addressChangeAt}
+                updatedByUser={settlementProgress?.addressChangeByUser}
+              />
+              <CheckboxForm
+                form={form}
+                name="nameChange"
+                label="氏名変更"
+                updatedAt={settlementProgress?.nameChangeAt}
+                updatedByUser={settlementProgress?.nameChangeByUser}
+              />
               <BadgeSelectForm
                 form={form}
                 name="identityVerificationMethod"
@@ -113,6 +131,10 @@ export default function SettlementProgressTab() {
                   label: IDENTITY_VERIFICATION_METHOD_LABELS[method],
                   color: IDENTITY_VERIFICATION_METHOD_COLORS[method],
                 }))}
+                updatedAt={settlementProgress?.identityVerificationMethodAt}
+                updatedByUser={
+                  settlementProgress?.identityVerificationMethodByUser
+                }
               />
               <BadgeSelectForm
                 form={form}
@@ -124,11 +146,21 @@ export default function SettlementProgressTab() {
                   label: IDENTITY_VERIFICATION_CALL_LABELS[status],
                   color: IDENTITY_VERIFICATION_CALL_COLORS[status],
                 }))}
+                updatedAt={settlementProgress?.identityVerificationCallAt}
+                updatedByUser={
+                  settlementProgress?.identityVerificationCallByUser
+                }
               />
               <DatePickerForm
                 form={form}
                 name="identityVerificationCallSchedule"
                 label="本人確認電話日時"
+                updatedAt={
+                  settlementProgress?.identityVerificationCallScheduleAt
+                }
+                updatedByUser={
+                  settlementProgress?.identityVerificationCallScheduleByUser
+                }
               />
               <BadgeSelectForm
                 form={form}
@@ -140,6 +172,10 @@ export default function SettlementProgressTab() {
                   label: IDENTITY_VERIFICATION_STATUS_LABELS[status],
                   color: IDENTITY_VERIFICATION_STATUS_COLORS[status],
                 }))}
+                updatedAt={settlementProgress?.identityVerificationStatusAt}
+                updatedByUser={
+                  settlementProgress?.identityVerificationStatusByUser
+                }
               />
             </div>
           </SectionCard>
@@ -184,6 +220,8 @@ export default function SettlementProgressTab() {
                   label: SUBLEASE_SUCCESSION_LABELS[status],
                   color: SUBLEASE_SUCCESSION_COLORS[status],
                 }))}
+                updatedAt={settlementProgress?.subleaseSuccessionAt}
+                updatedByUser={settlementProgress?.subleaseSuccessionByUser}
               />
               <BadgeSelectForm
                 form={form}
@@ -195,6 +233,8 @@ export default function SettlementProgressTab() {
                   label: RENTAL_CONTRACT_AND_KEY_LABELS[status],
                   color: RENTAL_CONTRACT_AND_KEY_COLORS[status],
                 }))}
+                updatedAt={settlementProgress?.rentalContractAndKeyAt}
+                updatedByUser={settlementProgress?.rentalContractAndKeyByUser}
               />
               <BadgeSelectForm
                 form={form}
@@ -206,6 +246,10 @@ export default function SettlementProgressTab() {
                   label: GUARANTEE_COMPANY_SUCCESSION_LABELS[status],
                   color: GUARANTEE_COMPANY_SUCCESSION_COLORS[status],
                 }))}
+                updatedAt={settlementProgress?.guaranteeCompanySuccessionAt}
+                updatedByUser={
+                  settlementProgress?.guaranteeCompanySuccessionByUser
+                }
               />
             </div>
           </SectionCard>
@@ -227,12 +271,15 @@ export default function SettlementProgressTab() {
                   color: MORTGAGE_CANCELLATION_COLORS[status],
                 }))}
                 className="pb-2"
+                updatedAt={settlementProgress?.mortgageCancellationAt}
+                updatedByUser={settlementProgress?.mortgageCancellationByUser}
               />
               <CheckboxForm
                 form={form}
                 name="loanCalculationSaved"
                 label="ローン計算書保存"
                 updatedAt={settlementProgress?.loanCalculationSavedAt}
+                updatedByUser={settlementProgress?.loanCalculationSavedByUser}
               />
             </div>
           </SectionCard>
@@ -250,6 +297,8 @@ export default function SettlementProgressTab() {
                   label: SELLER_FUNDING_STATUS_LABELS[status],
                   color: SELLER_FUNDING_STATUS_COLORS[status],
                 }))}
+                updatedAt={settlementProgress?.sellerFundingStatusAt}
+                updatedByUser={settlementProgress?.sellerFundingStatusByUser}
               />
             </div>
           </SectionCard>

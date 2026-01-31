@@ -190,43 +190,33 @@ function transformToFormValues(
     documentsShared:
       defaultValues?.settlementProgress?.documentsShared ?? false,
     // 権利証、住所変更、氏名変更
-    propertyTitle:
-      ((defaultValues?.settlementProgress as Record<string, unknown>)
-        ?.propertyTitle as boolean) ?? false,
-    addressChange:
-      ((defaultValues?.settlementProgress as Record<string, unknown>)
-        ?.addressChange as boolean) ?? false,
-    nameChange:
-      ((defaultValues?.settlementProgress as Record<string, unknown>)
-        ?.nameChange as boolean) ?? false,
+    propertyTitle: defaultValues?.settlementProgress?.propertyTitle ?? false,
+    addressChange: defaultValues?.settlementProgress?.addressChange ?? false,
+    nameChange: defaultValues?.settlementProgress?.nameChange ?? false,
     // 本人確認方法
     identityVerificationMethod:
-      ((defaultValues?.settlementProgress as Record<string, unknown>)
-        ?.identityVerificationMethod as string) ?? "not_confirmed",
-    // 新規項目: 本人確認電話
+      defaultValues?.settlementProgress?.identityVerificationMethod ??
+      "not_confirmed",
+    // 本人確認電話
     identityVerificationCall:
-      ((defaultValues?.settlementProgress as Record<string, unknown>)
-        ?.identityVerificationCall as string) ?? "not_requested",
-    // 新規項目: 本人確認電話日時
+      defaultValues?.settlementProgress?.identityVerificationCall ??
+      "not_requested",
+    // 本人確認電話日時
     identityVerificationCallSchedule:
-      ((defaultValues?.settlementProgress as Record<string, unknown>)
-        ?.identityVerificationCallSchedule as string) ?? "",
-    // 新規項目: 本人確認ステータス
+      defaultValues?.settlementProgress?.identityVerificationCallSchedule ?? "",
+    // 本人確認ステータス
     identityVerificationStatus:
-      ((defaultValues?.settlementProgress as Record<string, unknown>)
-        ?.identityVerificationStatus as string) ?? "not_started",
+      defaultValues?.settlementProgress?.identityVerificationStatus ??
+      "not_started",
     // 決済進捗 銀行関係
-    // 新規項目: 抵当権抹消
+    // 抵当権抹消
     mortgageCancellation:
-      ((defaultValues?.settlementProgress as Record<string, unknown>)
-        ?.mortgageCancellation as string) ?? "not_requested",
+      defaultValues?.settlementProgress?.mortgageCancellation ?? "not_requested",
     loanCalculationSaved:
       defaultValues?.settlementProgress?.loanCalculationSaved ?? false,
     // 決済進捗 手出し関係
-    // 新規項目: 手出し状況
     sellerFundingStatus:
-      ((defaultValues?.settlementProgress as Record<string, unknown>)
-        ?.sellerFundingStatus as string) ?? "not_required",
+      defaultValues?.settlementProgress?.sellerFundingStatus ?? "not_required",
     // 決済進捗 賃貸管理関係
     managementCancelScheduledMonth:
       defaultValues?.settlementProgress?.managementCancelScheduledMonth || "",
@@ -234,18 +224,16 @@ function transformToFormValues(
       defaultValues?.settlementProgress?.managementCancelRequestedDate || "",
     managementCancelCompletedDate:
       defaultValues?.settlementProgress?.managementCancelCompletedDate || "",
-    // 新規項目: サブリース承継
+    // サブリース承継
     subleaseSuccession:
-      ((defaultValues?.settlementProgress as Record<string, unknown>)
-        ?.subleaseSuccession as string) ?? "not_required",
-    // 新規項目: 賃契原本＆鍵
+      defaultValues?.settlementProgress?.subleaseSuccession ?? "not_required",
+    // 賃契原本＆鍵
     rentalContractAndKey:
-      ((defaultValues?.settlementProgress as Record<string, unknown>)
-        ?.rentalContractAndKey as string) ?? "not_requested",
-    // 新規項目: 保証会社承継
+      defaultValues?.settlementProgress?.rentalContractAndKey ?? "not_requested",
+    // 保証会社承継
     guaranteeCompanySuccession:
-      ((defaultValues?.settlementProgress as Record<string, unknown>)
-        ?.guaranteeCompanySuccession as string) ?? "not_required",
+      defaultValues?.settlementProgress?.guaranteeCompanySuccession ??
+      "not_required",
   };
 }
 

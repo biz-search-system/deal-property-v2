@@ -936,6 +936,11 @@ export const settlementProgressRelations = relations(
       references: [users.id],
       relationName: "mortgageCancellationBy",
     }),
+    loanCalculationSavedByUser: one(users, {
+      fields: [settlementProgress.loanCalculationSavedBy],
+      references: [users.id],
+      relationName: "loanCalculationSavedBy",
+    }),
     // 司法書士関連
     propertyTitleByUser: one(users, {
       fields: [settlementProgress.propertyTitleBy],
