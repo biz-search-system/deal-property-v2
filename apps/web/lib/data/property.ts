@@ -310,6 +310,7 @@ export async function getAllUnconfirmedPropertiesBySettlementDate() {
   const propertyPromises = organizations.map((org) =>
     getUnconfirmedPropertiesBySettlementDate(org.id)
   );
+  // console.log("propertyPromises", propertyPromises);
 
   // 並列実行で高速化
   const propertiesByOrg = await Promise.all(propertyPromises);

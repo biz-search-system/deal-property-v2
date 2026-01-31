@@ -202,7 +202,7 @@ export function SignupForm({
                         <FormMessage>{errors.name.message}</FormMessage>
                       ) : (
                         <FormDescription>
-                          苗字のみを入力してください（例：山田）
+                          名前を入力してください（例：山田 太郎）
                         </FormDescription>
                       )}
                     </FormItem>

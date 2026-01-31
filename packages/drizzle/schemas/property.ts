@@ -558,19 +558,25 @@ export const settlementProgress = sqliteTable("settlement_progress", {
     { onDelete: "set null" }
   ),
   // 司法書士関連 - 権利証
-  propertyTitle: integer("property_title", { mode: "boolean" }),
+  propertyTitle: integer("property_title", { mode: "boolean" })
+    .default(false)
+    .notNull(),
   propertyTitleAt: integer("property_title_at", { mode: "timestamp_ms" }),
   propertyTitleBy: text("property_title_by").references(() => users.id, {
     onDelete: "set null",
   }),
   // 司法書士関連 - 住所変更
-  addressChange: integer("address_change", { mode: "boolean" }),
+  addressChange: integer("address_change", { mode: "boolean" })
+    .default(false)
+    .notNull(),
   addressChangeAt: integer("address_change_at", { mode: "timestamp_ms" }),
   addressChangeBy: text("address_change_by").references(() => users.id, {
     onDelete: "set null",
   }),
   // 司法書士関連 - 氏名変更
-  nameChange: integer("name_change", { mode: "boolean" }),
+  nameChange: integer("name_change", { mode: "boolean" })
+    .default(false)
+    .notNull(),
   nameChangeAt: integer("name_change_at", { mode: "timestamp_ms" }),
   nameChangeBy: text("name_change_by").references(() => users.id, {
     onDelete: "set null",
