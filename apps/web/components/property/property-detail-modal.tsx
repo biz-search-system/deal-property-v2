@@ -136,7 +136,7 @@ export function PropertyDetailModal() {
     setPropertyId(null);
   };
   const handleSuccess = () => {
-    // setPropertyId(null);
+    setPropertyId(null);
   };
 
   // 閉じるリクエスト時のハンドラー（isDirtyをチェック）
