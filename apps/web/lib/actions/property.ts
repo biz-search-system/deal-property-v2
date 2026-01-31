@@ -288,12 +288,16 @@ export async function createProperty(
           | "limited_mail"
           | "in_person"
           | null) ?? null,
-      identityVerificationMethodAt: validatedData.identityVerificationMethod
-        ? now
-        : null,
-      identityVerificationMethodBy: validatedData.identityVerificationMethod
-        ? session.user.id
-        : null,
+      identityVerificationMethodAt:
+        validatedData.identityVerificationMethod &&
+        validatedData.identityVerificationMethod !== "not_confirmed"
+          ? now
+          : null,
+      identityVerificationMethodBy:
+        validatedData.identityVerificationMethod &&
+        validatedData.identityVerificationMethod !== "not_confirmed"
+          ? session.user.id
+          : null,
       identityVerificationCall:
         (validatedData.identityVerificationCall as
           | "not_requested"
@@ -449,6 +453,79 @@ export async function createProperty(
           ? session.user.id
           : null,
     });
+
+    // 6. 書類項目を保存（デフォルト値以外の場合のみ）
+    const documentItemsToInsert: {
+      propertyId: string;
+      itemType: string;
+      status: string;
+      updatedAt: Date;
+      updatedBy: string;
+    }[] = [];
+
+    const documentItemMappings = [
+      // 銀行関係
+      { field: "documentItem_loan_calculation", itemType: "loan_calculation" },
+      // 賃貸管理関係
+      { field: "documentItem_rental_contract", itemType: "rental_contract" },
+      {
+        field: "documentItem_management_contract",
+        itemType: "management_contract",
+      },
+      {
+        field: "documentItem_move_in_application",
+        itemType: "move_in_application",
+      },
+      // 建物管理関係
+      {
+        field: "documentItem_important_matters_report",
+        itemType: "important_matters_report",
+      },
+      { field: "documentItem_management_rules", itemType: "management_rules" },
+      {
+        field: "documentItem_long_term_repair_plan",
+        itemType: "long_term_repair_plan",
+      },
+      {
+        field: "documentItem_general_meeting_minutes",
+        itemType: "general_meeting_minutes",
+      },
+      { field: "documentItem_pamphlet", itemType: "pamphlet" },
+      { field: "documentItem_bank_transfer_form", itemType: "bank_transfer_form" },
+      {
+        field: "documentItem_owner_change_notification",
+        itemType: "owner_change_notification",
+      },
+      // 役所関係
+      { field: "documentItem_tax_certificate", itemType: "tax_certificate" },
+      {
+        field: "documentItem_building_plan_overview",
+        itemType: "building_plan_overview",
+      },
+      { field: "documentItem_ledger_certificate", itemType: "ledger_certificate" },
+      { field: "documentItem_zoning_district", itemType: "zoning_district" },
+      { field: "documentItem_road_ledger", itemType: "road_ledger" },
+    ] as const;
+
+    for (const mapping of documentItemMappings) {
+      const status =
+        validatedData[mapping.field as keyof typeof validatedData] as
+          | string
+          | undefined;
+      if (status && status !== "not_requested") {
+        documentItemsToInsert.push({
+          propertyId: property.id,
+          itemType: mapping.itemType,
+          status: status,
+          updatedAt: now,
+          updatedBy: session.user.id,
+        });
+      }
+    }
+
+    if (documentItemsToInsert.length > 0) {
+      await tx.insert(propertyDocumentItems).values(documentItemsToInsert);
+    }
 
     return property;
   });
