@@ -2,13 +2,11 @@
 
 import { Badge } from "@workspace/ui/components/badge";
 import {
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@workspace/ui/components/form";
+  Field,
+  FieldDescription,
+  FieldError,
+  FieldLabel,
+} from "@workspace/ui/components/field";
 import {
   Select,
   SelectContent,
@@ -17,7 +15,12 @@ import {
   SelectValue,
 } from "@workspace/ui/components/select";
 import { cn } from "@workspace/utils";
-import { FieldPath, FieldValues, UseFormReturn } from "react-hook-form";
+import {
+  Controller,
+  type FieldPath,
+  type FieldValues,
+  type UseFormReturn,
+} from "react-hook-form";
 import { UserActionBadge } from "../user-action-badge";
 
 interface UserInfo {
@@ -62,42 +65,49 @@ export default function BadgeSelectForm<
   updatedByUser?: UserInfo | null;
 }) {
   return (
-    <FormField
+    <Controller
       control={form.control}
       name={name}
-      render={({ field }) => {
+      render={({ field, fieldState }) => {
         const selectedOption = options.find(
           (option) => option.value === field.value
         );
 
         return (
-          <FormItem className={cn("@container/badge-select-form", className)}>
+          <Field
+            data-invalid={fieldState.invalid}
+            data-disabled={disabled}
+            className={cn("@container/badge-select-form", className)}
+          >
             {label && (
-              <FormLabel className="select-text">
+              <FieldLabel htmlFor={field.name} className="select-text">
                 {label}
                 {required && <span className="text-destructive ml-1">*</span>}
-              </FormLabel>
+              </FieldLabel>
             )}
             <div className="flex flex-row justify-between @[382px]/badge-select-form:grid @[382px]/badge-select-form:grid-cols-2 @[382px]/badge-select-form:gap-4">
               <Select
+                name={field.name}
+                value={field.value}
                 onValueChange={field.onChange}
-                defaultValue={field.value}
                 disabled={disabled}
               >
-                <FormControl>
-                  <SelectTrigger className="w-4/9 @[382px]/badge-select-form:w-full">
-                    <SelectValue placeholder={placeholder}>
-                      {selectedOption && (
-                        <Badge
-                          variant="outline"
-                          className={cn("text-xs", selectedOption.color)}
-                        >
-                          {selectedOption.label}
-                        </Badge>
-                      )}
-                    </SelectValue>
-                  </SelectTrigger>
-                </FormControl>
+                <SelectTrigger
+                  id={field.name}
+                  aria-invalid={fieldState.invalid}
+                  className="w-4/9 @[382px]/badge-select-form:w-full"
+                >
+                  <SelectValue placeholder={placeholder}>
+                    {selectedOption && (
+                      <Badge
+                        variant="outline"
+                        className={cn("text-xs", selectedOption.color)}
+                      >
+                        {selectedOption.label}
+                      </Badge>
+                    )}
+                  </SelectValue>
+                </SelectTrigger>
                 <SelectContent>
                   {options.map((option) => (
                     <SelectItem key={option.value} value={option.value}>
@@ -119,9 +129,9 @@ export default function BadgeSelectForm<
                 </div>
               )}
             </div>
-            {description && <FormDescription>{description}</FormDescription>}
-            <FormMessage />
-          </FormItem>
+            {description && <FieldDescription>{description}</FieldDescription>}
+            {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+          </Field>
         );
       }}
     />

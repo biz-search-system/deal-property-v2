@@ -11,28 +11,15 @@ import {
 import { Input } from "@workspace/ui/components/input";
 import { Textarea } from "@workspace/ui/components/textarea";
 import { usePropertyForm } from "../property-form-provider";
-import { Button } from "@workspace/ui/components/button";
-import {
-  DropdownMenu,
-  DropdownMenuCheckboxItem,
-  DropdownMenuContent,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@workspace/ui/components/dropdown-menu";
-import { ChevronDown } from "lucide-react";
 import CompanyBSelectForm from "../form/company-b-select-form";
 import BrokerCompanySelectForm from "../form/broker-company-select-form";
 import BadgeSelectForm from "../form/badge-select-form";
 import ComboboxForm from "../form/combobox-form";
 import OrganizationSelectForm from "../form/organization-select-form";
-import {
-  Organization,
-  OrganizationWithUserRole,
-} from "@/lib/types/organization";
+import StaffSelectForm from "../form/staff-select-form";
+import { Organization } from "@/lib/types/organization";
 import { contractType } from "@workspace/drizzle/schemas";
 import { CONTRACT_TYPE_COLORS, CONTRACT_TYPE_LABELS } from "@workspace/utils";
-import { Badge } from "@workspace/ui/components/badge";
 import SectionCard from "../section-card";
 import { useSelectOptions } from "@/lib/swr/select-option";
 import {
@@ -52,9 +39,7 @@ export default function BasicInfoTab({
 }: BasicInfoTabProps) {
   const form = usePropertyForm();
   const { control, watch, setValue } = form;
-  const selectedStaffIds = watch("staffIds") || [];
   const [availableStaff, setAvailableStaff] = useState(initialStaff);
-  const organizationId = watch("organizationId");
   const contractTypeValue = watch("contractType");
 
   // 違約の場合は金額フィールドを0にして非活性にする
@@ -113,13 +98,13 @@ export default function BasicInfoTab({
   };
 
   // 組織変更時の処理
-  const handleOrganizationChange = async (organizationId: string) => {
-    setValue("organizationId", organizationId);
+  const handleOrganizationChange = async (newOrganizationId: string) => {
+    setValue("organizationId", newOrganizationId);
 
     // 営業チームメンバーを再取得
     try {
       const response = await fetch(
-        `/api/organization/${organizationId}/sales-team`
+        `/api/organization/${newOrganizationId}/sales-team`
       );
       if (response.ok) {
         const data = await response.json();
@@ -129,18 +114,6 @@ export default function BasicInfoTab({
       }
     } catch (error) {
       console.error("Failed to fetch sales team members:", error);
-    }
-  };
-
-  // スタッフの選択/解除を処理
-  const handleStaffToggle = (staffId: string, checked: boolean) => {
-    if (checked) {
-      setValue("staffIds", [...selectedStaffIds, staffId]);
-    } else {
-      setValue(
-        "staffIds",
-        selectedStaffIds.filter((id) => id !== staffId)
-      );
     }
   };
 
@@ -159,72 +132,10 @@ export default function BasicInfoTab({
             />
 
             {/* 担当営業 */}
-            <FormField
-              control={control}
+            <StaffSelectForm
+              form={form}
               name="staffIds"
-              render={() => (
-                <FormItem>
-                  <FormLabel>担当営業</FormLabel>
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button
-                        variant="outline"
-                        className="w-full justify-between"
-                      >
-                        {selectedStaffIds.length > 0 ? (
-                          <div className="flex flex-wrap gap-1">
-                            {availableStaff
-                              .filter((staff) =>
-                                selectedStaffIds.includes(staff.userId)
-                              )
-                              .map((staff) => (
-                                <Badge
-                                  key={staff.userId}
-                                  variant="outline"
-                                  className=""
-                                >
-                                  {staff.users.name || "名前なし"}
-                                </Badge>
-                              ))}
-                          </div>
-                        ) : (
-                          "選択"
-                        )}
-                        <ChevronDown className="shrink-0" />
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent className="w-72">
-                      <DropdownMenuLabel>営業チームメンバー</DropdownMenuLabel>
-                      <DropdownMenuSeparator />
-                      {availableStaff.length > 0 ? (
-                        availableStaff.map((staff) => (
-                          <DropdownMenuCheckboxItem
-                            key={staff.userId}
-                            checked={selectedStaffIds.includes(staff.userId)}
-                            onCheckedChange={(checked) =>
-                              handleStaffToggle(staff.userId, checked)
-                            }
-                          >
-                            <div className="flex flex-col">
-                              <span>{staff.users.name || "名前なし"}</span>
-                              {staff.users.email && (
-                                <span className="text-xs text-muted-foreground">
-                                  {staff.users.email}
-                                </span>
-                              )}
-                            </div>
-                          </DropdownMenuCheckboxItem>
-                        ))
-                      ) : (
-                        <div className="px-2 py-1.5 text-sm text-muted-foreground">
-                          営業チームのメンバーがいません
-                        </div>
-                      )}
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                  <FormMessage />
-                </FormItem>
-              )}
+              availableStaff={availableStaff}
             />
           </div>
         </SectionCard>

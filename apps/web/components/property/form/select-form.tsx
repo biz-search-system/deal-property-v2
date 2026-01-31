@@ -1,12 +1,6 @@
 "use client";
 
-import {
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@workspace/ui/components/form";
+import { Field, FieldError, FieldLabel } from "@workspace/ui/components/field";
 import {
   Select,
   SelectContent,
@@ -14,7 +8,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@workspace/ui/components/select";
-import type { FieldValues, Path, UseFormReturn } from "react-hook-form";
+import {
+  Controller,
+  type FieldValues,
+  type Path,
+  type UseFormReturn,
+} from "react-hook-form";
 import { UserActionBadge } from "../user-action-badge";
 
 interface UserInfo {
@@ -48,35 +47,46 @@ export default function SelectForm<T extends FieldValues>({
   updatedByUser,
 }: SelectFormProps<T>) {
   return (
-    <FormField
+    <Controller
       control={form.control}
       name={name}
-      render={({ field }) => (
-        <FormItem className="flex flex-col @container/select-form ">
-          <FormLabel>{label}</FormLabel>
-          <FormControl>
-            <div className="flex flex-row justify-between @[382px]/select-form:grid @[382px]/select-form:grid-cols-2 @[382px]/select-form:gap-4 ">
-              <Select value={field.value} onValueChange={field.onChange}>
-                <SelectTrigger className="w-4/9 @[382px]/select-form:w-full">
-                  <SelectValue placeholder={placeholder} />
-                </SelectTrigger>
-                <SelectContent>
-                  {options.map((option) => (
-                    <SelectItem key={option.value} value={option.value}>
-                      {option.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              {updatedAt && (
-                <div className="flex justify-end">
-                  <UserActionBadge timestamp={updatedAt} user={updatedByUser} />
-                </div>
-              )}
-            </div>
-          </FormControl>
-          <FormMessage />
-        </FormItem>
+      render={({ field, fieldState }) => (
+        <Field
+          data-invalid={fieldState.invalid}
+          className="@container/select-form"
+        >
+          <FieldLabel htmlFor={field.name} className="select-text">
+            {label}
+          </FieldLabel>
+          <div className="flex flex-row justify-between @[382px]/select-form:grid @[382px]/select-form:grid-cols-2 @[382px]/select-form:gap-4">
+            <Select
+              name={field.name}
+              value={field.value}
+              onValueChange={field.onChange}
+            >
+              <SelectTrigger
+                id={field.name}
+                aria-invalid={fieldState.invalid}
+                className="w-4/9 @[382px]/select-form:w-full"
+              >
+                <SelectValue placeholder={placeholder} />
+              </SelectTrigger>
+              <SelectContent>
+                {options.map((option) => (
+                  <SelectItem key={option.value} value={option.value}>
+                    {option.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            {updatedAt && (
+              <div className="flex justify-end">
+                <UserActionBadge timestamp={updatedAt} user={updatedByUser} />
+              </div>
+            )}
+          </div>
+          {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+        </Field>
       )}
     />
   );
