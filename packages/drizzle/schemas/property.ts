@@ -584,7 +584,7 @@ export const settlementProgress = sqliteTable("settlement_progress", {
   // 司法書士関連 - 本人確認方法
   identityVerificationMethod: text("identity_verification_method", {
     enum: identityVerificationMethod,
-  }),
+  }).default("not_confirmed"),
   identityVerificationMethodAt: integer("identity_verification_method_at", {
     mode: "timestamp_ms",
   }),
