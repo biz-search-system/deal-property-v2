@@ -8,6 +8,40 @@
 
 ---
 
+## 実施記録
+
+| 日付       | フェーズ | 実施内容                                 | 対象ファイル                                                    |
+|------------|----------|------------------------------------------|------------------------------------------------------------------|
+| 2026-01-31 | 1-H      | サイドバーに出口管理メニュー追加         | `components/nav/nav-items.ts`                                    |
+| 2026-01-31 | 1-A      | 業者マスタ型定義にラベル・カラー追加     | `lib/types/broker.ts`                                            |
+| 2026-01-31 | 1-E      | 業者一覧テーブルコンポーネント作成       | `components/exit/broker/broker-columns.tsx`, `broker-table.tsx`  |
+| 2026-01-31 | 1-E      | 業者一覧ページ作成                       | `app/(main)/brokers/page.tsx`                                    |
+| 2026-01-31 | 1-A      | 出口管理型定義作成                       | `lib/types/exit.ts`                                              |
+| 2026-01-31 | 1-A      | 業者マスタ型定義作成                     | `lib/types/broker.ts`                                            |
+| 2026-01-31 | 1-A      | 出口管理モックデータ作成                 | `lib/mocks/exits.ts`                                             |
+| 2026-01-31 | 1-A      | 業者マスタモックデータ作成               | `lib/mocks/brokers.ts`                                           |
+| 2026-01-31 | 1-B      | ステータスバッジコンポーネント作成       | `components/exit/exit-status-badge.tsx`, `situation-badge.tsx`   |
+| 2026-01-31 | 1-B      | 出口管理一覧テーブル作成                 | `components/exit/exit-list-columns.tsx`, `exit-list-table.tsx`   |
+| 2026-01-31 | 1-B      | 出口管理一覧コンポーネント作成           | `components/exit/exit-list.tsx`                                  |
+| 2026-01-31 | 1-B      | 出口管理一覧ページ作成                   | `app/(main)/exits/page.tsx`                                      |
+| 2026-01-31 | 1-A      | ステータス定義を要件定義書に合わせて修正 | `lib/types/exit.ts`                                              |
+| 2026-01-31 | 1-B      | ステータスバッジにツールチップ追加       | `components/exit/exit-status-badge.tsx`                          |
+| 2026-01-31 | 1-B      | ステータスラベルを正式名称に統一         | `lib/types/exit.ts`                                             |
+| 2026-01-31 | 1-B      | ステータス集計サマリーコンポーネント作成 | `components/exit/exit-status-summary.tsx`                       |
+| 2026-01-31 | 1-B      | 集計サマリーをシンプル化（色分けなし）   | `components/exit/exit-status-summary.tsx`                       |
+| 2026-01-31 | 1-B      | バッジにsize/onClickプロパティ追加       | `components/exit/exit-status-badge.tsx`, `situation-badge.tsx`  |
+| 2026-01-31 | 1-B      | 検索・フィルターツールバー作成           | `components/exit/exit-list-toolbar.tsx`                         |
+| 2026-01-31 | 1-B      | テーブルに検索・フィルター機能追加       | `components/exit/exit-list-table.tsx`                           |
+| 2026-01-31 | 1-B      | ツールバーレイアウト調整（横並び）       | `components/exit/exit-list-toolbar.tsx`                         |
+| 2026-01-31 | 1-C      | 出口管理Zodスキーマ作成                  | `lib/zod/schemas/exit.ts`                                       |
+| 2026-01-31 | 1-C      | フォームプロバイダー作成                 | `components/exit/exit-form-provider.tsx`                        |
+| 2026-01-31 | 1-C      | フォームフィールドコンポーネント作成     | `components/exit/form/exit-form-fields.tsx`                     |
+| 2026-01-31 | 1-C      | 新規登録フォームコンポーネント作成       | `components/exit/exit-new-form.tsx`                             |
+| 2026-01-31 | 1-C      | 新規登録ページ作成                       | `app/(main)/exits/new/page.tsx`                                 |
+| 2026-01-31 | 1-B      | 一覧に新規登録ボタン追加                 | `components/exit/exit-list.tsx`                                 |
+
+---
+
 ## 1. 実装方針
 
 ### 1.1 UIファーストアプローチ

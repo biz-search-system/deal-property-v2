@@ -70,6 +70,28 @@ export function SiteHeader({ systemOwnerIds }: { systemOwnerIds?: string[] }) {
             </Button>
           </div>
         )}
+
+        {pathname === "/brokers" && (
+          <div className="ml-auto flex items-center gap-2">
+            <Button size="sm" asChild>
+              <Link href="/brokers/new">
+                <Plus />
+                新規登録
+              </Link>
+            </Button>
+          </div>
+        )}
+
+        {pathname === "/exits" && (
+          <div className="ml-auto flex items-center gap-2">
+            <Button size="sm" asChild>
+              <Link href="/exits/new">
+                <Plus />
+                新規登録
+              </Link>
+            </Button>
+          </div>
+        )}
       </div>
     </header>
   );
