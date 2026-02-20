@@ -90,6 +90,14 @@ export type IdentityVerification = (typeof identityVerification)[number];
 export const propertyTitleStatus = ["unconfirmed", "available", "unavailable"] as const;
 export type PropertyTitleStatus = (typeof propertyTitleStatus)[number];
 
+/** 氏名変更 */
+export const nameChangeStatus = ["unconfirmed", "available", "unavailable"] as const;
+export type NameChangeStatus = (typeof nameChangeStatus)[number];
+
+/** 住所変更 */
+export const addressChangeStatus = ["unconfirmed", "none", "once", "twice_or_more"] as const;
+export type AddressChangeStatus = (typeof addressChangeStatus)[number];
+
 /** 抵当銀行ステータス */
 export const mortgageBankStatus = ["none", "requested", "accepted"] as const;
 export type MortgageBankStatus = (typeof mortgageBankStatus)[number];

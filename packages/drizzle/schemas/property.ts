@@ -564,17 +564,13 @@ export const settlementProgress = sqliteTable("settlement_progress", {
     onDelete: "set null",
   }),
   // 司法書士関連 - 住所変更
-  addressChange: integer("address_change", { mode: "boolean" })
-    .default(false)
-    .notNull(),
+  addressChange: text("address_change").default("unconfirmed"),
   addressChangeAt: integer("address_change_at", { mode: "timestamp_ms" }),
   addressChangeBy: text("address_change_by").references(() => users.id, {
     onDelete: "set null",
   }),
   // 司法書士関連 - 氏名変更
-  nameChange: integer("name_change", { mode: "boolean" })
-    .default(false)
-    .notNull(),
+  nameChange: text("name_change").default("unconfirmed"),
   nameChangeAt: integer("name_change_at", { mode: "timestamp_ms" }),
   nameChangeBy: text("name_change_by").references(() => users.id, {
     onDelete: "set null",

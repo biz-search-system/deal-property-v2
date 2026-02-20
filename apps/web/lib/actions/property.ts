@@ -240,8 +240,8 @@ export async function createProperty(
     const lawyerRequestedValue = validatedData.lawyerRequested ?? false;
     const documentsSharedValue = validatedData.documentsShared ?? false;
     const propertyTitleValue = validatedData.propertyTitle ?? "unconfirmed";
-    const addressChangeValue = validatedData.addressChange ?? false;
-    const nameChangeValue = validatedData.nameChange ?? false;
+    const addressChangeValue = validatedData.addressChange ?? "unconfirmed";
+    const nameChangeValue = validatedData.nameChange ?? "unconfirmed";
     const loanCalculationSavedValue =
       validatedData.loanCalculationSaved ?? false;
 
@@ -275,11 +275,11 @@ export async function createProperty(
       propertyTitleAt: propertyTitleValue !== "" ? now : null,
       propertyTitleBy: propertyTitleValue !== "" ? session.user.id : null,
       addressChange: addressChangeValue,
-      addressChangeAt: addressChangeValue ? now : null,
-      addressChangeBy: addressChangeValue ? session.user.id : null,
+      addressChangeAt: addressChangeValue !== "unconfirmed" ? now : null,
+      addressChangeBy: addressChangeValue !== "unconfirmed" ? session.user.id : null,
       nameChange: nameChangeValue,
-      nameChangeAt: nameChangeValue ? now : null,
-      nameChangeBy: nameChangeValue ? session.user.id : null,
+      nameChangeAt: nameChangeValue !== "unconfirmed" ? now : null,
+      nameChangeBy: nameChangeValue !== "unconfirmed" ? session.user.id : null,
       // 司法書士関係 - 本人確認
       identityVerificationMethod:
         (validatedData.identityVerificationMethod as
@@ -871,11 +871,11 @@ export async function updateProperty(
       (validatedData.propertyTitle ?? "unconfirmed") !==
       (currentSettlement?.propertyTitle ?? "unconfirmed");
     const addressChangeChanged =
-      (validatedData.addressChange ?? false) !==
-      (currentSettlement?.addressChange ?? false);
+      (validatedData.addressChange ?? "unconfirmed") !==
+      (currentSettlement?.addressChange ?? "unconfirmed");
     const nameChangeChanged =
-      (validatedData.nameChange ?? false) !==
-      (currentSettlement?.nameChange ?? false);
+      (validatedData.nameChange ?? "unconfirmed") !==
+      (currentSettlement?.nameChange ?? "unconfirmed");
     const identityVerificationMethodChanged =
       (validatedData.identityVerificationMethod ?? "not_confirmed") !==
       (currentSettlement?.identityVerificationMethod ?? "not_confirmed");
@@ -976,7 +976,7 @@ export async function updateProperty(
           ? session.user.id
           : currentSettlement?.propertyTitleBy,
         // 司法書士関係 - 住所変更
-        addressChange: validatedData.addressChange ?? false,
+        addressChange: validatedData.addressChange ?? "unconfirmed",
         addressChangeAt: addressChangeChanged
           ? now
           : currentSettlement?.addressChangeAt,
@@ -984,7 +984,7 @@ export async function updateProperty(
           ? session.user.id
           : currentSettlement?.addressChangeBy,
         // 司法書士関係 - 氏名変更
-        nameChange: validatedData.nameChange ?? false,
+        nameChange: validatedData.nameChange ?? "unconfirmed",
         nameChangeAt: nameChangeChanged
           ? now
           : currentSettlement?.nameChangeAt,

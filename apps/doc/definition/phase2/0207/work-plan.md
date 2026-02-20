@@ -398,6 +398,35 @@ new Intl.DateTimeFormat("ja-JP-u-ca-japanese", {
 - `required` が `false` かつ値が選択済みの場合のみ×ボタン表示
 - `bank-account-form-card.tsx` を `FormField` / `FormItem` / `FormLabel` / `FormControl` から `Controller` + `Field` / `FieldLabel` に移行
 
+### 作業2: 権利証のUI変更（チェックボックス → 有/無/未確認 選択式） - 完了
+
+**完了日**: 2026-02-21
+
+**変更ファイル**:
+
+- `packages/drizzle/schemas/property.ts` - `propertyTitle` を `integer(boolean)` → `text` に変更、デフォルト `"unconfirmed"`
+- `packages/drizzle/types/property.ts` - `propertyTitleStatus` enum 追加（`"unconfirmed"` | `"available"` | `"unavailable"`）
+- `packages/drizzle/zod-schemas/property.ts` - `z.boolean()` → `z.string()` に変更
+- `packages/utils/src/constants/settlement-status.ts` - `PROPERTY_TITLE_STATUS_LABELS` / `PROPERTY_TITLE_STATUS_COLORS` 追加
+- `apps/web/components/property/tabs/settlement-progress-tab.tsx` - `CheckboxForm` → `BadgeSelectForm` に変更
+- `apps/web/components/property/property-form-provider.tsx` - デフォルト値を `false` → `"unconfirmed"` に変更
+- `apps/web/lib/actions/property.ts` - CREATE/UPDATE ロジックを boolean → string 比較に変更
+- `packages/drizzle/migrations/0024_melodic_santa_claus.sql` - データ変換SQL追記
+
+**選択肢**:
+
+| 値 | ラベル | 説明 |
+| --- | --- | --- |
+| `"unconfirmed"` | 未確認 | デフォルト |
+| `"available"` | 有 | 持っている |
+| `"unavailable"` | 無 | 持っていない |
+
+**既存データ変換**:
+
+- `true`（`1`）→ `"available"`（有）
+- `false`（`0`）→ `"unavailable"`（無）
+- 空 / NULL → `"unconfirmed"`（未確認）
+
 ---
 
 最終更新: 2026-02-21

@@ -191,8 +191,8 @@ function transformToFormValues(
       defaultValues?.settlementProgress?.documentsShared ?? false,
     // 権利証、住所変更、氏名変更
     propertyTitle: defaultValues?.settlementProgress?.propertyTitle ?? "unconfirmed",
-    addressChange: defaultValues?.settlementProgress?.addressChange ?? false,
-    nameChange: defaultValues?.settlementProgress?.nameChange ?? false,
+    addressChange: defaultValues?.settlementProgress?.addressChange ?? "unconfirmed",
+    nameChange: defaultValues?.settlementProgress?.nameChange ?? "unconfirmed",
     // 本人確認方法
     identityVerificationMethod:
       defaultValues?.settlementProgress?.identityVerificationMethod ??

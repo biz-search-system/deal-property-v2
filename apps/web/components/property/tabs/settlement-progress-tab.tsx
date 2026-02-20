@@ -12,6 +12,8 @@ import {
   rentalContractAndKey,
   guaranteeCompanySuccession,
   propertyTitleStatus,
+  nameChangeStatus,
+  addressChangeStatus,
 } from "@workspace/drizzle/types";
 import {
   BC_SETTLEMENT_STATUS_LABELS,
@@ -36,6 +38,10 @@ import {
   GUARANTEE_COMPANY_SUCCESSION_COLORS,
   PROPERTY_TITLE_STATUS_LABELS,
   PROPERTY_TITLE_STATUS_COLORS,
+  NAME_CHANGE_STATUS_LABELS,
+  NAME_CHANGE_STATUS_COLORS,
+  ADDRESS_CHANGE_STATUS_LABELS,
+  ADDRESS_CHANGE_STATUS_COLORS,
 } from "@workspace/utils";
 import BadgeSelectForm from "../form/badge-select-form";
 import BadgeToggleForm from "../form/badge-toggle-form";
@@ -115,20 +121,35 @@ export default function SettlementProgressTab() {
                 }))}
                 updatedAt={settlementProgress?.propertyTitleAt}
                 updatedByUser={settlementProgress?.propertyTitleByUser}
+                required={true}
               />
-              <CheckboxForm
+              <BadgeSelectForm
                 form={form}
                 name="addressChange"
                 label="住所変更"
+                placeholder="選択してください"
+                options={addressChangeStatus.map((status) => ({
+                  value: status,
+                  label: ADDRESS_CHANGE_STATUS_LABELS[status],
+                  color: ADDRESS_CHANGE_STATUS_COLORS[status],
+                }))}
                 updatedAt={settlementProgress?.addressChangeAt}
                 updatedByUser={settlementProgress?.addressChangeByUser}
+                required={true}
               />
-              <CheckboxForm
+              <BadgeSelectForm
                 form={form}
                 name="nameChange"
                 label="氏名変更"
+                placeholder="選択してください"
+                options={nameChangeStatus.map((status) => ({
+                  value: status,
+                  label: NAME_CHANGE_STATUS_LABELS[status],
+                  color: NAME_CHANGE_STATUS_COLORS[status],
+                }))}
                 updatedAt={settlementProgress?.nameChangeAt}
                 updatedByUser={settlementProgress?.nameChangeByUser}
+                required={true}
               />
               <BadgeSelectForm
                 form={form}
