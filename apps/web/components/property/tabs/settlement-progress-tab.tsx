@@ -135,6 +135,7 @@ export default function SettlementProgressTab() {
                 updatedByUser={
                   settlementProgress?.identityVerificationMethodByUser
                 }
+                required={true}
               />
               <BadgeSelectForm
                 form={form}
@@ -150,6 +151,7 @@ export default function SettlementProgressTab() {
                 updatedByUser={
                   settlementProgress?.identityVerificationCallByUser
                 }
+                required={true}
               />
               <DatePickerForm
                 form={form}
@@ -176,6 +178,7 @@ export default function SettlementProgressTab() {
                 updatedByUser={
                   settlementProgress?.identityVerificationStatusByUser
                 }
+                required={true}
               />
             </div>
           </SectionCard>
@@ -222,6 +225,7 @@ export default function SettlementProgressTab() {
                 }))}
                 updatedAt={settlementProgress?.subleaseSuccessionAt}
                 updatedByUser={settlementProgress?.subleaseSuccessionByUser}
+                required={true}
               />
               <BadgeSelectForm
                 form={form}
@@ -235,6 +239,7 @@ export default function SettlementProgressTab() {
                 }))}
                 updatedAt={settlementProgress?.rentalContractAndKeyAt}
                 updatedByUser={settlementProgress?.rentalContractAndKeyByUser}
+                required={true}
               />
               <BadgeSelectForm
                 form={form}
@@ -250,6 +255,7 @@ export default function SettlementProgressTab() {
                 updatedByUser={
                   settlementProgress?.guaranteeCompanySuccessionByUser
                 }
+                required={true}
               />
             </div>
           </SectionCard>
@@ -273,6 +279,7 @@ export default function SettlementProgressTab() {
                 className="pb-2"
                 updatedAt={settlementProgress?.mortgageCancellationAt}
                 updatedByUser={settlementProgress?.mortgageCancellationByUser}
+                required={true}
               />
               <CheckboxForm
                 form={form}
@@ -299,6 +306,7 @@ export default function SettlementProgressTab() {
                 }))}
                 updatedAt={settlementProgress?.sellerFundingStatusAt}
                 updatedByUser={settlementProgress?.sellerFundingStatusByUser}
+                required={true}
               />
             </div>
           </SectionCard>

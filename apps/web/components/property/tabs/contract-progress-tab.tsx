@@ -32,6 +32,7 @@ export default function ContractProgressTab() {
             ]}
             updatedAt={contractProgress?.maisokuDistributionAt}
             updatedByUser={contractProgress?.maisokuDistributionByUser}
+            required={true}
           />
           <BadgeSelectForm
             form={form}
@@ -44,6 +45,7 @@ export default function ContractProgressTab() {
             }))}
             updatedAt={property?.progressStatusUpdatedAt}
             updatedByUser={property?.progressStatusUpdatedByUser}
+            required={true}
           />
         </div>
       </SectionCard>

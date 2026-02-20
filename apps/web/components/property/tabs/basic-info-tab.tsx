@@ -125,6 +125,7 @@ export default function BasicInfoTab({
               name="organizationId"
               organizations={organizations}
               onValueChange={handleOrganizationChange}
+              required={true}
             />
 
             {/* 担当営業 */}

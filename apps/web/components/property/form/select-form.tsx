@@ -8,6 +8,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@workspace/ui/components/select";
+import { Button } from "@workspace/ui/components/button";
+import { X } from "lucide-react";
 import {
   Controller,
   type FieldValues,
@@ -33,6 +35,7 @@ interface SelectFormProps<T extends FieldValues> {
   label: string;
   options: SelectOption[];
   placeholder?: string;
+  required?: boolean;
   updatedAt?: Date | null;
   updatedByUser?: UserInfo | null;
 }
@@ -43,6 +46,7 @@ export default function SelectForm<T extends FieldValues>({
   label,
   options,
   placeholder = "選択してください",
+  required = false,
   updatedAt,
   updatedByUser,
 }: SelectFormProps<T>) {
@@ -59,26 +63,38 @@ export default function SelectForm<T extends FieldValues>({
             {label}
           </FieldLabel>
           <div className="flex flex-row justify-between @[382px]/select-form:grid @[382px]/select-form:grid-cols-2 @[382px]/select-form:gap-4">
-            <Select
-              name={field.name}
-              value={field.value}
-              onValueChange={field.onChange}
-            >
-              <SelectTrigger
-                id={field.name}
-                aria-invalid={fieldState.invalid}
-                className="w-4/9 @[382px]/select-form:w-full"
+            <div className="flex items-center gap-1">
+              <Select
+                name={field.name}
+                value={field.value}
+                onValueChange={field.onChange}
               >
-                <SelectValue placeholder={placeholder} />
-              </SelectTrigger>
-              <SelectContent>
-                {options.map((option) => (
-                  <SelectItem key={option.value} value={option.value}>
-                    {option.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+                <SelectTrigger
+                  id={field.name}
+                  aria-invalid={fieldState.invalid}
+                  className="w-4/9 @[382px]/select-form:w-full"
+                >
+                  <SelectValue placeholder={placeholder} />
+                </SelectTrigger>
+                <SelectContent>
+                  {options.map((option) => (
+                    <SelectItem key={option.value} value={option.value}>
+                      {option.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                onClick={() => field.onChange("")}
+                className={!field.value || required ? "invisible" : ""}
+                aria-label="選択を解除"
+              >
+                <X />
+              </Button>
+            </div>
             {updatedAt && (
               <div className="flex justify-end">
                 <UserActionBadge timestamp={updatedAt} user={updatedByUser} />

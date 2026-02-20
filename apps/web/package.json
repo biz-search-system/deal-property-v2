@@ -9,7 +9,7 @@
     "start": "next start",
     "lint": "next lint",
     "lint:fix": "next lint --fix",
-    "typecheck": "tsc --noEmit",
+    "check-types": "tsc --noEmit",
     "clean": "rm -rf .turbo .next",
     "generate-auth-schema-old": "pnpx @better-auth/cli@latest generate --config ../../packages/auth/src/auth.ts --output ../../packages/drizzle/schemas/auth.ts --yes"
   },

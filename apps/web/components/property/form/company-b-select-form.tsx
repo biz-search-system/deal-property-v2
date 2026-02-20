@@ -17,12 +17,14 @@ import {
   SelectValue,
 } from "@workspace/ui/components/select";
 import { cn } from "@workspace/utils";
+import { X } from "lucide-react";
 import {
   Controller,
   type FieldPath,
   type FieldValues,
   type UseFormReturn,
 } from "react-hook-form";
+import { Button } from "@workspace/ui/components/button";
 
 export default function CompanyBSelectForm<
   TFieldValues extends FieldValues = FieldValues,
@@ -62,43 +64,56 @@ export default function CompanyBSelectForm<
               {required && <span className="text-destructive ml-1">*</span>}
             </FieldLabel>
           )}
-          <Select
-            name={field.name}
-            value={field.value}
-            onValueChange={field.onChange}
-            disabled={disabled}
-          >
-            <SelectTrigger
-              id={field.name}
-              aria-invalid={fieldState.invalid}
-              className="w-1/2"
+          <div className="flex items-center gap-1">
+            <Select
+              name={field.name}
+              value={field.value}
+              onValueChange={field.onChange}
+              disabled={disabled}
             >
-              <SelectValue placeholder={placeholder}>
-                {field.value && (
-                  <Badge
-                    variant="outline"
-                    className={cn("text-xs", COMPANY_B_COLORS[field.value])}
-                  >
-                    {COMPANY_B_LABELS[field.value]}
-                  </Badge>
-                )}
-              </SelectValue>
-            </SelectTrigger>
-            <SelectContent>
-              {companyB.map((company) => (
-                <SelectItem key={company} value={company}>
-                  <div className="flex items-center">
+              <SelectTrigger
+                id={field.name}
+                aria-invalid={fieldState.invalid}
+                className="w-1/2"
+              >
+                <SelectValue placeholder={placeholder}>
+                  {field.value && (
                     <Badge
                       variant="outline"
-                      className={cn("text-xs", COMPANY_B_COLORS[company])}
+                      className={cn("text-xs", COMPANY_B_COLORS[field.value])}
                     >
-                      {COMPANY_B_LABELS[company]}
+                      {COMPANY_B_LABELS[field.value]}
                     </Badge>
-                  </div>
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+                  )}
+                </SelectValue>
+              </SelectTrigger>
+              <SelectContent>
+                {companyB.map((company) => (
+                  <SelectItem key={company} value={company}>
+                    <div className="flex items-center">
+                      <Badge
+                        variant="outline"
+                        className={cn("text-xs", COMPANY_B_COLORS[company])}
+                      >
+                        {COMPANY_B_LABELS[company]}
+                      </Badge>
+                    </div>
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon"
+              onClick={() => field.onChange("")}
+              disabled={disabled}
+              className={cn((!field.value || required) && "invisible")}
+              aria-label="選択を解除"
+            >
+              <X />
+            </Button>
+          </div>
           {description && <FieldDescription>{description}</FieldDescription>}
           {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
         </Field>
