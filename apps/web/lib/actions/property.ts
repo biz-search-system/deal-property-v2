@@ -239,7 +239,7 @@ export async function createProperty(
       validatedData.abSettlementStatus ?? "not_created";
     const lawyerRequestedValue = validatedData.lawyerRequested ?? false;
     const documentsSharedValue = validatedData.documentsShared ?? false;
-    const propertyTitleValue = validatedData.propertyTitle ?? false;
+    const propertyTitleValue = validatedData.propertyTitle ?? "unconfirmed";
     const addressChangeValue = validatedData.addressChange ?? false;
     const nameChangeValue = validatedData.nameChange ?? false;
     const loanCalculationSavedValue =
@@ -272,8 +272,8 @@ export async function createProperty(
       documentsSharedBy: documentsSharedValue ? session.user.id : null,
       // 司法書士関係 - 権利証、住所変更、氏名変更
       propertyTitle: propertyTitleValue,
-      propertyTitleAt: propertyTitleValue ? now : null,
-      propertyTitleBy: propertyTitleValue ? session.user.id : null,
+      propertyTitleAt: propertyTitleValue !== "" ? now : null,
+      propertyTitleBy: propertyTitleValue !== "" ? session.user.id : null,
       addressChange: addressChangeValue,
       addressChangeAt: addressChangeValue ? now : null,
       addressChangeBy: addressChangeValue ? session.user.id : null,
@@ -868,8 +868,8 @@ export async function updateProperty(
       (validatedData.documentsShared ?? false) !==
       (currentSettlement?.documentsShared ?? false);
     const propertyTitleChanged =
-      (validatedData.propertyTitle ?? false) !==
-      (currentSettlement?.propertyTitle ?? false);
+      (validatedData.propertyTitle ?? "unconfirmed") !==
+      (currentSettlement?.propertyTitle ?? "unconfirmed");
     const addressChangeChanged =
       (validatedData.addressChange ?? false) !==
       (currentSettlement?.addressChange ?? false);
@@ -968,7 +968,7 @@ export async function updateProperty(
           ? session.user.id
           : currentSettlement?.documentsSharedBy,
         // 司法書士関係 - 権利証
-        propertyTitle: validatedData.propertyTitle ?? false,
+        propertyTitle: validatedData.propertyTitle ?? "unconfirmed",
         propertyTitleAt: propertyTitleChanged
           ? now
           : currentSettlement?.propertyTitleAt,

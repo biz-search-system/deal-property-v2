@@ -558,9 +558,7 @@ export const settlementProgress = sqliteTable("settlement_progress", {
     { onDelete: "set null" }
   ),
   // 司法書士関連 - 権利証
-  propertyTitle: integer("property_title", { mode: "boolean" })
-    .default(false)
-    .notNull(),
+  propertyTitle: text("property_title").default("unconfirmed"),
   propertyTitleAt: integer("property_title_at", { mode: "timestamp_ms" }),
   propertyTitleBy: text("property_title_by").references(() => users.id, {
     onDelete: "set null",

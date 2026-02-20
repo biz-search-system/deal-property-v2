@@ -5,7 +5,7 @@
 - **作成日**: 2026-02-21
 - **ミーティング日**: 2026-02-07
 - **参照**: [会議メモ](./_2026_02_07%2011_57%20JST%20に開始した会議%20-%20Gemini%20によるメモ.md)
-- **ステータス**: 未着手
+- **ステータス**: 作業中（作業1〜2完了）
 
 ---
 
@@ -369,6 +369,34 @@ new Intl.DateTimeFormat("ja-JP-u-ca-japanese", {
 
 - **日時**: 2026年2月21日（土）12:00〜
 - **確認事項**: 上記作業の進捗報告
+
+---
+
+## 作業記録
+
+### 作業1: 選択項目の解除（空白に戻す）機能 - 完了
+
+**完了日**: 2026-02-21
+
+**変更ファイル**:
+
+- `apps/web/components/property/form/badge-select-form.tsx` - ×クリアボタン追加、`hidden` で表示制御
+- `apps/web/components/property/form/select-form.tsx` - ×クリアボタン追加、`required` prop追加
+- `apps/web/components/property/form/organization-select-form.tsx` - ×クリアボタン追加
+- `apps/web/components/property/form/company-b-select-form.tsx` - ×クリアボタン追加
+- `apps/web/components/property/form/combobox-form.tsx` - ×クリアボタン追加
+- `apps/web/components/property/bank-account-form-card.tsx` - ×クリアボタン追加、shadcn最新パターン（Controller + Field/FieldLabel）に書き換え
+- `apps/web/components/property/tabs/basic-info-tab.tsx` - `OrganizationSelectForm` に `required={true}` 追加
+- `apps/web/components/property/tabs/contract-progress-tab.tsx` - 各項目に `required={true}` 追加
+- `apps/web/components/property/tabs/document-progress-tab.tsx` - 各項目に `required={true}` 追加
+- `apps/web/components/property/tabs/settlement-progress-tab.tsx` - 各項目に `required={true}` 追加
+
+**実装仕様**:
+
+- `Button variant="ghost" size="icon"` + `X` アイコンで統一
+- `required` が `true` または値が未選択の場合は `hidden` でボタン非表示（幅確保せず広がる）
+- `required` が `false` かつ値が選択済みの場合のみ×ボタン表示
+- `bank-account-form-card.tsx` を `FormField` / `FormItem` / `FormLabel` / `FormControl` から `Controller` + `Field` / `FieldLabel` に移行
 
 ---
 

@@ -11,6 +11,7 @@ import {
   subleaseSuccession,
   rentalContractAndKey,
   guaranteeCompanySuccession,
+  propertyTitleStatus,
 } from "@workspace/drizzle/types";
 import {
   BC_SETTLEMENT_STATUS_LABELS,
@@ -33,6 +34,8 @@ import {
   RENTAL_CONTRACT_AND_KEY_COLORS,
   GUARANTEE_COMPANY_SUCCESSION_LABELS,
   GUARANTEE_COMPANY_SUCCESSION_COLORS,
+  PROPERTY_TITLE_STATUS_LABELS,
+  PROPERTY_TITLE_STATUS_COLORS,
 } from "@workspace/utils";
 import BadgeSelectForm from "../form/badge-select-form";
 import BadgeToggleForm from "../form/badge-toggle-form";
@@ -100,10 +103,16 @@ export default function SettlementProgressTab() {
                 updatedAt={settlementProgress?.documentsSharedAt}
                 updatedByUser={settlementProgress?.documentsSharedByUser}
               />
-              <CheckboxForm
+              <BadgeSelectForm
                 form={form}
                 name="propertyTitle"
                 label="権利証"
+                placeholder="選択してください"
+                options={propertyTitleStatus.map((status) => ({
+                  value: status,
+                  label: PROPERTY_TITLE_STATUS_LABELS[status],
+                  color: PROPERTY_TITLE_STATUS_COLORS[status],
+                }))}
                 updatedAt={settlementProgress?.propertyTitleAt}
                 updatedByUser={settlementProgress?.propertyTitleByUser}
               />

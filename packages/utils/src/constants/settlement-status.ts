@@ -1,6 +1,7 @@
 import type {
   BcSettlementStatus,
   AbSettlementStatus,
+  PropertyTitleStatus,
 } from "../../../drizzle/types/property";
 
 /**
@@ -47,4 +48,31 @@ export const AB_SETTLEMENT_STATUS_COLORS: Record<AbSettlementStatus, string> = {
   sent: "border-amber-400 bg-amber-50 text-amber-700 dark:bg-amber-950 dark:text-amber-300",
   cr_done:
     "border-emerald-400 bg-emerald-50 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300",
+};
+
+/**
+ * 権利証ステータスの表示名マッピング
+ */
+export const PROPERTY_TITLE_STATUS_LABELS: Record<
+  PropertyTitleStatus,
+  string
+> = {
+  unconfirmed: "未確認",
+  available: "有",
+  unavailable: "無",
+};
+
+/**
+ * 権利証ステータスのカラーマッピング
+ */
+export const PROPERTY_TITLE_STATUS_COLORS: Record<
+  PropertyTitleStatus,
+  string
+> = {
+  unconfirmed:
+    "border-orange-400 bg-orange-50 text-orange-700 dark:bg-orange-950 dark:text-orange-300",
+  available:
+    "border-emerald-400 bg-emerald-50 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300",
+  unavailable:
+    "border-slate-400 bg-slate-50 text-slate-700 dark:bg-slate-950 dark:text-slate-300",
 };

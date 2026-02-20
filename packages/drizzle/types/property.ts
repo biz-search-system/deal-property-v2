@@ -86,6 +86,10 @@ export const identityVerification = [
 ] as const;
 export type IdentityVerification = (typeof identityVerification)[number];
 
+/** 権利証 */
+export const propertyTitleStatus = ["unconfirmed", "available", "unavailable"] as const;
+export type PropertyTitleStatus = (typeof propertyTitleStatus)[number];
+
 /** 抵当銀行ステータス */
 export const mortgageBankStatus = ["none", "requested", "accepted"] as const;
 export type MortgageBankStatus = (typeof mortgageBankStatus)[number];

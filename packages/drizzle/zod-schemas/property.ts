@@ -244,7 +244,7 @@ const propertyCreateBaseSchema = z.object({
   lawyerRequested: z.boolean().optional(),
   documentsShared: z.boolean().optional(),
   // 権利証、住所変更、氏名変更
-  propertyTitle: z.boolean().optional(),
+  propertyTitle: z.string().optional(),
   addressChange: z.boolean().optional(),
   nameChange: z.boolean().optional(),
   // 新規項目: 本人確認方法
