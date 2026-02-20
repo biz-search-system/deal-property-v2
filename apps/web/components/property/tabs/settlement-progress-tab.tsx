@@ -187,6 +187,7 @@ export default function SettlementProgressTab() {
                 form={form}
                 name="identityVerificationCallSchedule"
                 label="本人確認電話日時"
+                showTime
                 updatedAt={
                   settlementProgress?.identityVerificationCallScheduleAt
                 }

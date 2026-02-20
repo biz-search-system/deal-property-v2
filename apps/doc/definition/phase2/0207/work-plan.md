@@ -588,6 +588,29 @@ new Intl.DateTimeFormat("ja-JP-u-ca-japanese", {
 - テンプレート切替: 切替時に画像位置を初期値にリセット
 - PDF出力は将来実装（ボタン配置済み）
 
+### 本人確認電話日時の時間選択対応 - 完了
+
+**完了日**: 2026-02-21
+
+**変更ファイル**:
+
+- `apps/web/components/property/form/date-picker-form.tsx` - `showTime` prop追加、`<input type="time">` による時間選択UI、カレンダー `w-full` 対応、ヘッダーに `gap-3` 追加、「閉じる」ボタン追加
+- `apps/web/components/property/tabs/settlement-progress-tab.tsx` - `identityVerificationCallSchedule` に `showTime` prop適用
+
+**実装内容**:
+
+- `DatePickerForm` に `showTime?: boolean` propを追加
+- `showTime=true` の場合:
+  - プレースホルダーが「日時を選択」に変更
+  - ボタン表示が「2026年2月21日 10:00」のように日時表示
+  - カレンダー下部に `<input type="time">` で時間選択エリアを表示
+  - 日付選択時は既存の時刻を保持、初回は10:00をデフォルト設定
+  - 日付選択後もポップオーバーは閉じず、時間調整が可能
+  - 時間入力の横に「閉じる」ボタンを配置
+- カレンダーが `w-full` でヘッダー幅に追従して広がるように対応
+- ヘッダーのラベルとボタン間に `gap-3` を追加して重なりを防止
+- shadcn参考実装に基づき `<select>` 2つから `<input type="time">` に変更
+
 ---
 
 最終更新: 2026-02-21
