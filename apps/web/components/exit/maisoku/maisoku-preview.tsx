@@ -2,12 +2,27 @@
 
 import type { ExitListItem } from "@/lib/types/exit";
 import { SITUATION_LABELS } from "@/lib/types/exit";
-import type { MaisokuTemplate } from "./maisoku-editor";
+import { FileImage } from "lucide-react";
+import Image from "next/image";
+import { Rnd } from "react-rnd";
+import type {
+  ImagePosition,
+  ImageSlot,
+  ImageSlotKey,
+  MaisokuTemplate,
+} from "./maisoku-editor";
 
 interface MaisokuPreviewProps {
   exit: ExitListItem;
   template: MaisokuTemplate;
+  images: ImageSlot[];
+  positions: Record<ImageSlotKey, ImagePosition>;
+  onPositionChange: (key: ImageSlotKey, pos: ImagePosition) => void;
 }
+
+/** A4プレビューサイズ */
+const PREVIEW_WIDTH = 595;
+const PREVIEW_HEIGHT = 842;
 
 /** 和暦フォーマット */
 function formatWareki(date: Date | null): string {
@@ -31,7 +46,93 @@ function InfoRow({ label, value }: { label: string; value: string }) {
   );
 }
 
-export function MaisokuPreview({ exit, template }: MaisokuPreviewProps) {
+/** ドラッグ・リサイズ可能な画像 */
+function RndImage({
+  slot,
+  position,
+  onPositionChange,
+}: {
+  slot: ImageSlot;
+  position: ImagePosition;
+  onPositionChange: (key: ImageSlotKey, pos: ImagePosition) => void;
+}) {
+  if (!slot.url) return null;
+
+  return (
+    <Rnd
+      size={{ width: position.width, height: position.height }}
+      position={{ x: position.x, y: position.y }}
+      onDragStop={(_e, d) => {
+        onPositionChange(slot.key, {
+          ...position,
+          x: d.x,
+          y: d.y,
+        });
+      }}
+      onResizeStop={(_e, _direction, ref, _delta, pos) => {
+        onPositionChange(slot.key, {
+          x: pos.x,
+          y: pos.y,
+          width: parseInt(ref.style.width, 10),
+          height: parseInt(ref.style.height, 10),
+        });
+      }}
+      bounds="parent"
+      minWidth={60}
+      minHeight={60}
+      className="group"
+    >
+      <div className="relative h-full w-full overflow-hidden rounded border border-black transition-colors group-hover:border-primary">
+        <Image
+          src={slot.url}
+          alt={slot.label}
+          fill
+          className="pointer-events-none object-cover"
+          unoptimized
+        />
+        <div className="absolute inset-x-0 bottom-0 bg-black/60 px-1.5 py-0.5 text-[9px] text-white opacity-0 transition-opacity group-hover:opacity-100">
+          {slot.label}
+        </div>
+      </div>
+    </Rnd>
+  );
+}
+
+/** 未設定画像のプレースホルダー（テンプレートレイアウト用） */
+function StaticPlaceholder({
+  slot,
+  position,
+}: {
+  slot: ImageSlot;
+  position: ImagePosition;
+}) {
+  if (position.width === 0 || position.height === 0) return null;
+
+  return (
+    <div
+      className="absolute flex items-center justify-center rounded border border-dashed bg-muted text-muted-foreground"
+      style={{
+        left: position.x,
+        top: position.y,
+        width: position.width,
+        height: position.height,
+      }}
+    >
+      <div className="flex flex-col items-center gap-1">
+        <FileImage className="size-5" />
+        <span className="text-[10px]">{slot.label}画像</span>
+      </div>
+    </div>
+  );
+}
+
+export function MaisokuPreview({
+  exit,
+  template,
+  images,
+  positions,
+  onPositionChange,
+}: MaisokuPreviewProps) {
   const infoRows = [
     { label: "物件名", value: exit.propertyName },
     { label: "号室", value: exit.roomNumber || "-" },
@@ -66,82 +167,45 @@ export function MaisokuPreview({ exit, template }: MaisokuPreviewProps) {
     },
   ];
 
+  /** 物件情報テーブルの配置 */
+  const tableStyle =
+    template === "template-a"
+      ? { position: "absolute" as const, top: 16, left: 272, right: 16 }
+      : { position: "absolute" as const, top: 16, left: 16, right: 16 };
+
   return (
     <div className="flex justify-center">
-      {/* A4比率のプレビュー枠 */}
-      <div className="w-[595px] min-h-[842px] border bg-white shadow-sm rounded">
-        {template === "template-a" ? (
-          <TemplateA infoRows={infoRows} />
-        ) : (
-          <TemplateB infoRows={infoRows} />
-        )}
-      </div>
-    </div>
-  );
-}
+      <div
+        className="relative border bg-white shadow-sm rounded"
+        style={{ width: PREVIEW_WIDTH, height: PREVIEW_HEIGHT }}
+      >
+        {/* 物件情報テーブル */}
+        <div style={tableStyle}>
+          <table className="w-full border text-foreground">
+            <tbody>
+              {infoRows.map((row) => (
+                <InfoRow key={row.label} label={row.label} value={row.value} />
+              ))}
+            </tbody>
+          </table>
+        </div>
 
-/** テンプレートA: 左に画像2枚（縦並び）、右に物件情報テーブル */
-function TemplateA({
-  infoRows,
-}: {
-  infoRows: { label: string; value: string }[];
-}) {
-  return (
-    <div className="flex h-full gap-2 p-4">
-      {/* 左: 画像エリア */}
-      <div className="flex w-[240px] shrink-0 flex-col gap-2">
-        <div className="flex h-[200px] items-center justify-center rounded border border-dashed bg-muted text-[10px] text-muted-foreground">
-          外観画像
-        </div>
-        <div className="flex h-[200px] items-center justify-center rounded border border-dashed bg-muted text-[10px] text-muted-foreground">
-          間取り画像
-        </div>
-      </div>
+        {/* 画像レイヤー */}
+        {images.map((slot) => {
+          const pos = positions[slot.key];
+          if (!pos || (pos.width === 0 && pos.height === 0)) return null;
 
-      {/* 右: 物件情報 */}
-      <div className="flex-1">
-        <table className="w-full border text-foreground">
-          <tbody>
-            {infoRows.map((row) => (
-              <InfoRow key={row.label} label={row.label} value={row.value} />
-            ))}
-          </tbody>
-        </table>
-      </div>
-    </div>
-  );
-}
-
-/** テンプレートB: 上部に物件情報、下部に画像3枚（横並び） */
-function TemplateB({
-  infoRows,
-}: {
-  infoRows: { label: string; value: string }[];
-}) {
-  return (
-    <div className="flex h-full flex-col gap-2 p-4">
-      {/* 上: 物件情報 */}
-      <div>
-        <table className="w-full border text-foreground">
-          <tbody>
-            {infoRows.map((row) => (
-              <InfoRow key={row.label} label={row.label} value={row.value} />
-            ))}
-          </tbody>
-        </table>
-      </div>
-
-      {/* 下: 画像エリア */}
-      <div className="flex gap-2">
-        <div className="flex h-[180px] flex-1 items-center justify-center rounded border border-dashed bg-muted text-[10px] text-muted-foreground">
-          外観画像
-        </div>
-        <div className="flex h-[180px] flex-1 items-center justify-center rounded border border-dashed bg-muted text-[10px] text-muted-foreground">
-          エントランス画像
-        </div>
-        <div className="flex h-[180px] flex-1 items-center justify-center rounded border border-dashed bg-muted text-[10px] text-muted-foreground">
-          間取り画像
-        </div>
+          return slot.url ? (
+            <RndImage
+              key={slot.key}
+              slot={slot}
+              position={pos}
+              onPositionChange={onPositionChange}
+            />
+          ) : (
+            <StaticPlaceholder key={slot.key} slot={slot} position={pos} />
+          );
+        })}
       </div>
     </div>
   );
