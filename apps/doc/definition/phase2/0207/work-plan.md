@@ -5,7 +5,7 @@
 - **作成日**: 2026-02-21
 - **ミーティング日**: 2026-02-07
 - **参照**: [会議メモ](./_2026_02_07%2011_57%20JST%20に開始した会議%20-%20Gemini%20によるメモ.md)
-- **ステータス**: 作業中（作業1〜2完了）
+- **ステータス**: 完了（作業1〜11全完了）
 
 ---
 
@@ -426,6 +426,144 @@ new Intl.DateTimeFormat("ja-JP-u-ca-japanese", {
 - `true`（`1`）→ `"available"`（有）
 - `false`（`0`）→ `"unavailable"`（無）
 - 空 / NULL → `"unconfirmed"`（未確認）
+
+### 作業3: 住所変更・氏名変更のUI変更 - 完了
+
+**完了日**: 2026-02-21
+
+**住所変更の変更ファイル**:
+
+- `packages/drizzle/schemas/property.ts` - `addressChange` を `integer(boolean)` → `text` に変更、デフォルト `"unconfirmed"`
+- `packages/drizzle/types/property.ts` - `addressChangeStatus` enum 追加
+- `packages/drizzle/zod-schemas/property.ts` - `z.boolean()` → `z.string()` に変更
+- `packages/utils/src/constants/settlement-status.ts` - `ADDRESS_CHANGE_STATUS_LABELS` / `ADDRESS_CHANGE_STATUS_COLORS` 追加
+- `apps/web/components/property/tabs/settlement-progress-tab.tsx` - `CheckboxForm` → `BadgeSelectForm` に変更
+- `apps/web/components/property/property-form-provider.tsx` - デフォルト値を `false` → `"unconfirmed"` に変更
+- `apps/web/lib/actions/property.ts` - CREATE/UPDATE ロジックを boolean → string 比較に変更
+- `packages/drizzle/migrations/0025_smart_mattie_franklin.sql` - データ変換SQL追記
+
+**住所変更の選択肢**:
+
+| 値 | ラベル |
+| --- | --- |
+| `"unconfirmed"` | 未確認（デフォルト） |
+| `"none"` | なし |
+| `"once"` | 1回 |
+| `"twice_or_more"` | 2回以上 |
+
+**住所変更の既存データ変換**:
+
+- `true`（`1`）→ `"once"`（1回）
+- `false`（`0`）/ 空 / NULL → `"unconfirmed"`（未確認）
+
+**氏名変更の変更ファイル**:
+
+- `packages/drizzle/schemas/property.ts` - `nameChange` を `integer(boolean)` → `text` に変更、デフォルト `"unconfirmed"`
+- `packages/drizzle/types/property.ts` - `nameChangeStatus` enum 追加
+- `packages/drizzle/zod-schemas/property.ts` - `z.boolean()` → `z.string()` に変更
+- `packages/utils/src/constants/settlement-status.ts` - `NAME_CHANGE_STATUS_LABELS` / `NAME_CHANGE_STATUS_COLORS` 追加
+- `apps/web/components/property/tabs/settlement-progress-tab.tsx` - `CheckboxForm` → `BadgeSelectForm` に変更
+- `apps/web/components/property/property-form-provider.tsx` - デフォルト値を `false` → `"unconfirmed"` に変更
+- `apps/web/lib/actions/property.ts` - CREATE/UPDATE ロジックを boolean → string 比較に変更
+- `packages/drizzle/migrations/0026_perpetual_nemesis.sql` - データ変換SQL追記
+
+**氏名変更の選択肢**:
+
+| 値 | ラベル |
+| --- | --- |
+| `"unconfirmed"` | 未確認（デフォルト） |
+| `"available"` | 有 |
+| `"unavailable"` | 無 |
+
+**氏名変更の既存データ変換**:
+
+- `true`（`1`）→ `"available"`（有）
+- `false`（`0`）→ `"unavailable"`（無）
+- 空 / NULL → `"unconfirmed"`（未確認）
+
+### 作業4: 出口管理一覧に「組織」カラム追加 - 完了
+
+**完了日**: 2026-02-21
+
+**変更ファイル**:
+
+- `apps/web/lib/types/exit.ts` - `ExitListItem` に `organizationSlug` フィールド追加
+- `apps/web/components/exit/exit-list-columns.tsx` - 先頭に「組織」カラム追加、`OrganizationBadge` コンポーネントを共通利用
+- `apps/web/lib/mocks/exits.ts` - 全モックデータに `organizationSlug: "reygit"` 追加
+
+**実装方針**:
+
+- 物件管理一覧で使用中の `OrganizationBadge` コンポーネントを共通利用
+- `organizationSlug` を使用して組織名・カラーを自動表示
+
+### 作業5-6: 家賃・担当者カラム - 対応不要（実装済み）
+
+**確認日**: 2026-02-21
+
+既に `exit-list-columns.tsx` に家賃（`rent`）カラムと担当者（`staff`）カラムが実装済みのため、追加作業なし。
+
+### 作業7: 仲手（仲介手数料）フィールド追加 - 完了
+
+**完了日**: 2026-02-21
+
+**変更ファイル**:
+
+- `apps/web/lib/types/exit.ts` - `Exit` インターフェースに `brokerageFee: number | null` 追加
+- `apps/web/lib/mocks/exits.ts` - 全モックデータに `brokerageFee` 値追加
+- `apps/web/components/exit/exit-list-columns.tsx` - マイソク価格の後ろに「仲手」カラム追加
+
+### 作業8: 利益カラム追加 - 完了
+
+**完了日**: 2026-02-21
+
+**変更ファイル**:
+
+- `apps/web/components/exit/exit-list-columns.tsx` - 3番手の後ろに「利益」計算カラム追加
+
+**計算ロジック**:
+
+- 利益 = `confirmedPrice`（確定金額） ?? `rankedResponses[0]?.price`（アッパー） − `purchasePrice`（仕入れ金額）
+- マイナスの場合は `text-destructive` で赤字表示
+
+### 作業9: 金額の万表記対応 - 完了
+
+**完了日**: 2026-02-21
+
+**変更ファイル**:
+
+- `apps/web/components/exit/exit-list-columns.tsx` - `formatPriceMan` に「万」、`formatPriceYen` に「円」サフィックス追加、`RankingCell` の重複「万」を削除
+
+### 作業10: 築年月の和暦表示対応 - 完了
+
+**完了日**: 2026-02-21
+
+**変更ファイル**:
+
+- `apps/web/components/exit/exit-list-columns.tsx` - `formatDate` → `formatDateWareki` に変更、`Intl.DateTimeFormat("ja-JP-u-ca-japanese")` を使用、`formatDateWithMonthEnd` インポート削除
+
+**表示例**: `令和2年10月`（2020年10月）
+
+### 作業11: 新規登録フロー構築 - 完了
+
+**完了日**: 2026-02-21
+
+**変更ファイル**:
+
+- `apps/web/lib/zod/schemas/exit.ts` - `brokerageFee` フィールド追加
+- `apps/web/components/exit/exit-form-provider.tsx` - `brokerageFee` デフォルト値追加、作成後の遷移先を `/exits/${exitId}/maisoku` に変更
+- `apps/web/components/exit/exit-new-form.tsx` - ボタンラベル「保存」→「マイソク作成へ進む」、ArrowRightアイコン追加
+- `apps/web/components/exit/form/exit-form-fields.tsx` - 仲手（万円）入力フィールド追加
+- `apps/web/app/(main)/exits/[exitId]/maisoku/page.tsx` - マイソク作成ページ新規作成
+- `apps/web/components/exit/maisoku/maisoku-editor.tsx` - マイソクエディターコンポーネント（テンプレート選択・画像設定・プレビュー）
+- `apps/web/components/exit/maisoku/maisoku-template-selector.tsx` - テンプレートA/B選択コンポーネント
+- `apps/web/components/exit/maisoku/maisoku-preview.tsx` - マイソクプレビュー（A4比率、物件情報テーブル、画像プレースホルダー）
+
+**実装内容**:
+
+- 新規登録フロー: `/exits/new` → 保存 → `/exits/{exitId}/maisoku` への遷移
+- テンプレートA: 左に画像2枚（外観+間取り）、右に物件情報テーブル
+- テンプレートB: 上部に物件情報テーブル、下部に画像3枚（横並び）
+- 画像アップロード・react-rnd配置・PDF出力は将来実装（UIプレースホルダー配置済み）
 
 ---
 

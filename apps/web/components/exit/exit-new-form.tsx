@@ -3,7 +3,7 @@
 import { Button } from "@workspace/ui/components/button";
 import { ExitFormProvider, useExitForm } from "./exit-form-provider";
 import { ExitFormFields } from "./form/exit-form-fields";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, ArrowRight } from "lucide-react";
 import Link from "next/link";
 
 function FormContent() {
@@ -25,7 +25,8 @@ function FormContent() {
           </Link>
         </Button>
         <Button type="submit" disabled={isSubmitting}>
-          {isSubmitting ? "保存中..." : "保存"}
+          {isSubmitting ? "保存中..." : "マイソク作成へ進む"}
+          <ArrowRight className="size-4" />
         </Button>
       </div>
     </div>

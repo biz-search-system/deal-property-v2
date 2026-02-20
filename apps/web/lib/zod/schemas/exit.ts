@@ -68,6 +68,11 @@ export const exitCreateSchema = z.object({
     .min(0, "マイソク価格は0以上で入力してください")
     .optional()
     .nullable(),
+  brokerageFee: z
+    .number()
+    .min(0, "仲手は0以上で入力してください")
+    .optional()
+    .nullable(),
   expectedYield: z
     .number()
     .min(0, "想定利回りは0以上で入力してください")
