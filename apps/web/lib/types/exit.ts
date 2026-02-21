@@ -33,6 +33,10 @@ export interface Exit {
   maisokuPrice: number | null;
   brokerageFee: number | null;
   expectedYield: number | null;
+  nearestStation: string | null;
+  nearestStation2: string | null;
+  roomType: string | null;
+  totalUnits: number | null;
   staffId: string | null;
   notes: string | null;
   status: ExitStatus;

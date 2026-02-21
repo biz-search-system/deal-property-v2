@@ -21,7 +21,7 @@ export type MaisokuTemplate = "template-a" | "template-b";
 /** 画像スロットのキー */
 export type ImageSlotKey = "exterior" | "entrance" | "floorPlan";
 
-/** 画像の位置・サイズ */
+/** 画像の位置・サイズ（ボディコンテナ相対） */
 export interface ImagePosition {
   x: number;
   y: number;
@@ -36,9 +36,22 @@ export interface ImageSlot {
   url: string | null;
 }
 
-/** テンプレートごとの画像スロット */
+/** 会社情報（マイソクフッター用） */
+export interface CompanyInfo {
+  name: string;
+  logoUrl: string | null;
+  postalCode: string;
+  address: string;
+  tel: string;
+  fax: string | null;
+  licenseNumber: string | null;
+  staffName: string | null;
+  transactionType: string;
+}
+
+/** テンプレートごとの画像スロット（両テンプレートとも3枚） */
 const TEMPLATE_SLOTS: Record<MaisokuTemplate, ImageSlotKey[]> = {
-  "template-a": ["exterior", "floorPlan"],
+  "template-a": ["exterior", "entrance", "floorPlan"],
   "template-b": ["exterior", "entrance", "floorPlan"],
 };
 
@@ -48,28 +61,35 @@ const SLOT_LABELS: Record<ImageSlotKey, string> = {
   floorPlan: "間取り",
 };
 
-/** テンプレートごとの初期位置 */
+/** ボディエリアのサイズ */
+const BODY_WIDTH = 842;
+const BODY_HEIGHT = 505;
+
+/** テンプレートごとの初期位置（ボディコンテナ相対座標） */
 const INITIAL_POSITIONS: Record<
   MaisokuTemplate,
   Record<ImageSlotKey, ImagePosition>
 > = {
+  // テンプレートA: ボディ左側に画像3枚
   "template-a": {
-    exterior: { x: 16, y: 16, width: 240, height: 200 },
-    floorPlan: { x: 16, y: 224, width: 240, height: 200 },
-    entrance: { x: 0, y: 0, width: 0, height: 0 },
+    exterior: { x: 8, y: 8, width: 200, height: 236 },
+    entrance: { x: 214, y: 8, width: 196, height: 236 },
+    floorPlan: { x: 8, y: 252, width: 402, height: 244 },
   },
+  // テンプレートB: ボディ右側に画像3枚
   "template-b": {
-    exterior: { x: 16, y: 340, width: 180, height: 180 },
-    entrance: { x: 204, y: 340, width: 180, height: 180 },
-    floorPlan: { x: 392, y: 340, width: 180, height: 180 },
+    exterior: { x: 428, y: 8, width: 404, height: 276 },
+    entrance: { x: 428, y: 292, width: 198, height: 204 },
+    floorPlan: { x: 632, y: 292, width: 200, height: 204 },
   },
 };
 
 interface MaisokuEditorProps {
   exit: ExitListItem;
+  companyInfo: CompanyInfo;
 }
 
-export function MaisokuEditor({ exit }: MaisokuEditorProps) {
+export function MaisokuEditor({ exit, companyInfo }: MaisokuEditorProps) {
   const [template, setTemplate] = useState<MaisokuTemplate>("template-a");
   const [images, setImages] = useState<Record<ImageSlotKey, string | null>>({
     exterior: null,
@@ -105,11 +125,9 @@ export function MaisokuEditor({ exit }: MaisokuEditorProps) {
         let w: number;
         let h: number;
         if (ratio > maxW / maxH) {
-          // 横長 → 幅基準
           w = maxW;
           h = Math.round(maxW / ratio);
         } else {
-          // 縦長 → 高さ基準
           h = maxH;
           w = Math.round(maxH * ratio);
         }
@@ -121,7 +139,7 @@ export function MaisokuEditor({ exit }: MaisokuEditorProps) {
       };
       img.src = url;
     },
-    [template]
+    [template],
   );
 
   const handleTemplateChange = (t: MaisokuTemplate) => {
@@ -133,7 +151,7 @@ export function MaisokuEditor({ exit }: MaisokuEditorProps) {
     (key: ImageSlotKey, pos: ImagePosition) => {
       setPositions((prev) => ({ ...prev, [key]: pos }));
     },
-    []
+    [],
   );
 
   return (
@@ -180,6 +198,9 @@ export function MaisokuEditor({ exit }: MaisokuEditorProps) {
             images={activeSlots}
             positions={positions}
             onPositionChange={handlePositionChange}
+            companyInfo={companyInfo}
+            bodyWidth={BODY_WIDTH}
+            bodyHeight={BODY_HEIGHT}
           />
         </div>
       </div>

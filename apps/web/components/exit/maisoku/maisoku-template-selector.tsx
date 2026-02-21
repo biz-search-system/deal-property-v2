@@ -13,12 +13,12 @@ const templates: { id: MaisokuTemplate; label: string; description: string }[] =
     {
       id: "template-a",
       label: "テンプレートA",
-      description: "左に画像2枚（縦並び）、右に物件情報テーブル",
+      description: "左に画像3枚、右に物件情報テーブル",
     },
     {
       id: "template-b",
       label: "テンプレートB",
-      description: "上部に物件情報、下部に画像3枚（横並び）",
+      description: "左に物件情報テーブル、右に画像3枚",
     },
   ];
 
