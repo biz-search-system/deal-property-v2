@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "clean": "rm -rf .turbo",
+    "check-types": "tsc --noEmit",
     "dev": "lsof -ti:3333 | xargs kill -9 && email dev --dir ./src/templates -p 3333"
   },
   "dependencies": {

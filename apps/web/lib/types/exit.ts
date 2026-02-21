@@ -31,7 +31,12 @@ export interface Exit {
   managementFee: number | null;
   purchasePrice: number | null;
   maisokuPrice: number | null;
+  brokerageFee: number | null;
   expectedYield: number | null;
+  nearestStation: string | null;
+  nearestStation2: string | null;
+  roomType: string | null;
+  totalUnits: number | null;
   staffId: string | null;
   notes: string | null;
   status: ExitStatus;
@@ -96,6 +101,7 @@ export interface RankedResponse {
 
 /** 一覧表示用の出口管理データ */
 export interface ExitListItem extends Exit {
+  organizationSlug: string | null;
   staff: { id: string; name: string } | null;
   rankedResponses: RankedResponse[];
 }

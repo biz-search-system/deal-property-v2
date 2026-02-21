@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Check, ChevronsUpDown, Plus, Trash2 } from "lucide-react";
+import { Check, ChevronsUpDown, Plus, Trash2, X } from "lucide-react";
 import { Button } from "@workspace/ui/components/button";
 import {
   Command,
@@ -120,24 +120,26 @@ export default function ComboboxForm<
                 {required && <span className="text-destructive ml-1">*</span>}
               </FieldLabel>
             )}
-            <Popover open={open} onOpenChange={setOpen}>
-              <PopoverTrigger asChild>
-                <Button
-                  id={field.name}
-                  variant="outline"
-                  role="combobox"
-                  aria-expanded={open}
-                  aria-invalid={fieldState.invalid}
-                  disabled={disabled}
-                  className={cn(
-                    "w-full justify-between font-normal",
-                    !field.value && "text-muted-foreground"
-                  )}
-                >
-                  {displayValue || placeholder}
-                  <ChevronsUpDown className="opacity-50" />
-                </Button>
-              </PopoverTrigger>
+            <div className="flex items-center gap-1">
+              <div className="min-w-0 flex-1">
+                <Popover open={open} onOpenChange={setOpen}>
+                  <PopoverTrigger asChild>
+                    <Button
+                      id={field.name}
+                      variant="outline"
+                      role="combobox"
+                      aria-expanded={open}
+                      aria-invalid={fieldState.invalid}
+                      disabled={disabled}
+                      className={cn(
+                        "w-full justify-between font-normal",
+                        !field.value && "text-muted-foreground"
+                      )}
+                    >
+                      {displayValue || placeholder}
+                      <ChevronsUpDown className="opacity-50" />
+                    </Button>
+                  </PopoverTrigger>
               <PopoverContent className="w-[--radix-popover-trigger-width] p-0">
                 <Command shouldFilter={false}>
                   <CommandInput
@@ -240,8 +242,21 @@ export default function ComboboxForm<
                     </CommandGroup>
                   </CommandList>
                 </Command>
-              </PopoverContent>
-            </Popover>
+                </PopoverContent>
+                </Popover>
+              </div>
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                onClick={() => field.onChange("")}
+                disabled={disabled}
+                className={cn((!field.value || required) && "invisible")}
+                aria-label="選択を解除"
+              >
+                <X />
+              </Button>
+            </div>
             {description && <FieldDescription>{description}</FieldDescription>}
             {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
           </Field>

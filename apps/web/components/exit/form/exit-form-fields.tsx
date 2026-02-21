@@ -123,6 +123,13 @@ export function ExitFormFields() {
           />
           <AmountInputForm
             form={form}
+            name="brokerageFee"
+            label="仲手（万円）"
+            placeholder="仲介手数料を入力"
+            step={0.1}
+          />
+          <AmountInputForm
+            form={form}
             name="expectedYield"
             label="想定利回り（%）"
             placeholder="想定利回りを入力"

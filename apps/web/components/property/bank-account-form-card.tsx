@@ -3,12 +3,8 @@
 import type { AccountCompany, BankAccount } from "@workspace/drizzle/types";
 import { Alert, AlertDescription } from "@workspace/ui/components/alert";
 import { Badge } from "@workspace/ui/components/badge";
-import {
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-} from "@workspace/ui/components/form";
+import { Button } from "@workspace/ui/components/button";
+import { Field, FieldLabel } from "@workspace/ui/components/field";
 import {
   Select,
   SelectContent,
@@ -29,8 +25,9 @@ import {
   isNearLimit,
   isOverLimit,
 } from "@workspace/utils";
-import { AlertCircle, Loader2 } from "lucide-react";
+import { AlertCircle, Loader2, X } from "lucide-react";
 import { useEffect, useState } from "react";
+import { Controller } from "react-hook-form";
 import { usePropertyForm } from "./property-form-provider";
 import SectionCard from "./section-card";
 
@@ -38,9 +35,7 @@ interface BankAccountFormCardProps {
   propertyId?: string;
 }
 
-export function BankAccountFormCard({
-  propertyId,
-}: BankAccountFormCardProps) {
+export function BankAccountFormCard({ propertyId }: BankAccountFormCardProps) {
   const form = usePropertyForm();
   const selectedAccountCompany = form.watch("accountCompany");
   const selectedBankAccount = form.watch("bankAccount");
@@ -78,7 +73,7 @@ export function BankAccountFormCard({
           params.append("excludeId", propertyId);
         }
         const response = await fetch(
-          `/api/properties/bank-account-total?${params.toString()}`
+          `/api/properties/bank-account-total?${params.toString()}`,
         );
 
         if (response.ok) {
@@ -98,7 +93,7 @@ export function BankAccountFormCard({
   // 上限金額を取得（万円単位）
   const accountLimit = getBankAccountLimit(
     selectedAccountCompany as AccountCompany,
-    selectedBankAccount as BankAccount
+    selectedBankAccount as BankAccount,
   );
 
   // isOverLimit/isNearLimitは万円単位を期待
@@ -108,21 +103,24 @@ export function BankAccountFormCard({
   return (
     <SectionCard title="口座情報">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full">
-        <FormField
+        <Controller
           control={form.control}
           name="accountCompany"
           render={({ field }) => (
-            <FormItem className="space-y-2">
-              <FormLabel>使用口座会社</FormLabel>
-              <FormControl>
+            <Field>
+              <FieldLabel htmlFor={field.name} className="select-text">
+                使用口座会社
+              </FieldLabel>
+              <div className="flex items-center gap-1">
                 <Select
+                  name={field.name}
                   value={field.value || ""}
                   onValueChange={(value) => {
                     field.onChange(value);
-                    form.setValue("bankAccount", ""); // 口座会社変更時に銀行口座をリセット
+                    form.setValue("bankAccount", "");
                   }}
                 >
-                  <SelectTrigger className="w-full">
+                  <SelectTrigger id={field.name} className="w-full">
                     <SelectValue placeholder="選択してください">
                       {field.value && (
                         <Badge
@@ -131,7 +129,7 @@ export function BankAccountFormCard({
                             "text-xs",
                             ACCOUNT_COMPANY_COLORS[
                               field.value as AccountCompany
-                            ]
+                            ],
                           )}
                         >
                           {
@@ -151,34 +149,50 @@ export function BankAccountFormCard({
                             variant="outline"
                             className={cn(
                               "text-xs",
-                              ACCOUNT_COMPANY_COLORS[key as AccountCompany]
+                              ACCOUNT_COMPANY_COLORS[key as AccountCompany],
                             )}
                           >
                             {label}
                           </Badge>
                         </SelectItem>
-                      )
+                      ),
                     )}
                   </SelectContent>
                 </Select>
-              </FormControl>
-            </FormItem>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => {
+                    field.onChange("");
+                    form.setValue("bankAccount", "");
+                  }}
+                  className={cn(!field.value && "hidden")}
+                  aria-label="選択を解除"
+                >
+                  <X />
+                </Button>
+              </div>
+            </Field>
           )}
         />
 
-        <FormField
+        <Controller
           control={form.control}
           name="bankAccount"
           render={({ field }) => (
-            <FormItem className="space-y-2">
-              <FormLabel>使用銀行口座</FormLabel>
-              <FormControl>
+            <Field>
+              <FieldLabel htmlFor={field.name} className="select-text">
+                使用銀行口座
+              </FieldLabel>
+              <div className="flex items-center gap-1">
                 <Select
+                  name={field.name}
                   value={field.value || ""}
                   onValueChange={field.onChange}
                   disabled={!selectedAccountCompany}
                 >
-                  <SelectTrigger className="w-full">
+                  <SelectTrigger id={field.name} className="w-full">
                     <SelectValue
                       placeholder={
                         selectedAccountCompany
@@ -191,7 +205,7 @@ export function BankAccountFormCard({
                           variant="outline"
                           className={cn(
                             "text-xs",
-                            BANK_ACCOUNT_COLORS[field.value as BankAccount]
+                            BANK_ACCOUNT_COLORS[field.value as BankAccount],
                           )}
                         >
                           {BANK_ACCOUNT_LABELS[field.value as BankAccount]}
@@ -202,14 +216,14 @@ export function BankAccountFormCard({
                   <SelectContent>
                     {selectedAccountCompany &&
                       getBankAccountsByCompany(
-                        selectedAccountCompany as AccountCompany
+                        selectedAccountCompany as AccountCompany,
                       ).map((account) => (
                         <SelectItem key={account} value={account}>
                           <Badge
                             variant="outline"
                             className={cn(
                               "text-xs",
-                              BANK_ACCOUNT_COLORS[account]
+                              BANK_ACCOUNT_COLORS[account],
                             )}
                           >
                             {BANK_ACCOUNT_LABELS[account]}
@@ -218,8 +232,19 @@ export function BankAccountFormCard({
                       ))}
                   </SelectContent>
                 </Select>
-              </FormControl>
-            </FormItem>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => field.onChange("")}
+                  disabled={!selectedAccountCompany}
+                  className={cn(!field.value && "hidden")}
+                  aria-label="選択を解除"
+                >
+                  <X />
+                </Button>
+              </div>
+            </Field>
           )}
         />
       </div>
@@ -267,7 +292,8 @@ export function BankAccountFormCard({
                       : "text-muted-foreground"
                 }
               >
-                使用率: {((totalWithCurrentManyen / accountLimit) * 100).toFixed(1)}%
+                使用率:{" "}
+                {((totalWithCurrentManyen / accountLimit) * 100).toFixed(1)}%
               </span>
             </div>
           </>

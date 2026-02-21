@@ -35,6 +35,7 @@ function transformToFormValues(defaultValues?: Partial<Exit>): ExitCreate {
     managementFee: defaultValues?.managementFee || null,
     purchasePrice: defaultValues?.purchasePrice || null,
     maisokuPrice: defaultValues?.maisokuPrice || null,
+    brokerageFee: defaultValues?.brokerageFee || null,
     expectedYield: defaultValues?.expectedYield || null,
     staffId: defaultValues?.staffId || null,
     notes: defaultValues?.notes || null,
@@ -62,10 +63,11 @@ export function ExitFormProvider({
   const onSubmit = async (data: ExitCreate) => {
     try {
       if (mode === "create") {
-        // TODO: createExit action を呼び出す
+        // TODO: createExit action を呼び出し、返却されたIDでマイソク作成画面に遷移する
         console.log("Create exit:", data);
+        const exitId = "new"; // TODO: 実際のcreateExitの返却IDに差し替え
         toast.success("出口管理を作成しました");
-        router.push("/exits");
+        router.push(`/exits/${exitId}/maisoku`);
       } else {
         // TODO: updateExit action を呼び出す
         console.log("Update exit:", data);

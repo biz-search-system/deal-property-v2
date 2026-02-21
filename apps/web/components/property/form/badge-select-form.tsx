@@ -14,7 +14,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@workspace/ui/components/select";
+import { Button } from "@workspace/ui/components/button";
 import { cn } from "@workspace/utils";
+import { X } from "lucide-react";
 import {
   Controller,
   type FieldPath,
@@ -70,7 +72,7 @@ export default function BadgeSelectForm<
       name={name}
       render={({ field, fieldState }) => {
         const selectedOption = options.find(
-          (option) => option.value === field.value
+          (option) => option.value === field.value,
         );
 
         return (
@@ -82,47 +84,60 @@ export default function BadgeSelectForm<
             {label && (
               <FieldLabel htmlFor={field.name} className="select-text">
                 {label}
-                {required && <span className="text-destructive ml-1">*</span>}
+                {/* {required && <span className="text-destructive ml-1">*</span>} */}
               </FieldLabel>
             )}
             <div className="flex flex-row justify-between @[382px]/badge-select-form:grid @[382px]/badge-select-form:grid-cols-2 @[382px]/badge-select-form:gap-4">
-              <Select
-                name={field.name}
-                value={field.value}
-                onValueChange={field.onChange}
-                disabled={disabled}
-              >
-                <SelectTrigger
-                  id={field.name}
-                  aria-invalid={fieldState.invalid}
-                  className="w-4/9 @[382px]/badge-select-form:w-full"
+              <div className="flex items-center gap-1 w-4/9 @[382px]/badge-select-form:w-full">
+                <Select
+                  name={field.name}
+                  value={field.value}
+                  onValueChange={field.onChange}
+                  disabled={disabled}
                 >
-                  <SelectValue placeholder={placeholder}>
-                    {selectedOption && (
-                      <Badge
-                        variant="outline"
-                        className={cn("text-xs", selectedOption.color)}
-                      >
-                        {selectedOption.label}
-                      </Badge>
-                    )}
-                  </SelectValue>
-                </SelectTrigger>
-                <SelectContent>
-                  {options.map((option) => (
-                    <SelectItem key={option.value} value={option.value}>
-                      <div className="flex items-center">
+                  <SelectTrigger
+                    id={field.name}
+                    aria-invalid={fieldState.invalid}
+                    className="w-full"
+                  >
+                    <SelectValue placeholder={placeholder}>
+                      {selectedOption && (
                         <Badge
                           variant="outline"
-                          className={cn("text-xs", option.color)}
+                          className={cn("text-xs", selectedOption.color)}
                         >
-                          {option.label}
+                          {selectedOption.label}
                         </Badge>
-                      </div>
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+                      )}
+                    </SelectValue>
+                  </SelectTrigger>
+                  <SelectContent>
+                    {options.map((option) => (
+                      <SelectItem key={option.value} value={option.value}>
+                        <div className="flex items-center">
+                          <Badge
+                            variant="outline"
+                            className={cn("text-xs", option.color)}
+                          >
+                            {option.label}
+                          </Badge>
+                        </div>
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => field.onChange("")}
+                  disabled={disabled}
+                  className={cn((!field.value || required) && "hidden")}
+                  aria-label="選択を解除"
+                >
+                  <X />
+                </Button>
+              </div>
               {updatedAt && (
                 <div className="flex justify-end">
                   <UserActionBadge timestamp={updatedAt} user={updatedByUser} />

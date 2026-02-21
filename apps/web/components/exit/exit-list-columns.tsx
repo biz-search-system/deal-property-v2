@@ -10,28 +10,33 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@workspace/ui/components/dropdown-menu";
-import { formatDateWithMonthEnd } from "@workspace/utils";
+import { type OrganizationSlugType } from "@workspace/utils";
 import { Edit, Eye, MoreHorizontal, Send } from "lucide-react";
+import OrganizationBadge from "../property/badge/organization-badge";
 import { DataTableColumnHeader } from "../property/search/data-table-column-header";
 import { ExitStatusBadge } from "./exit-status-badge";
 import { SituationBadge } from "./situation-badge";
 
-/** 日付フォーマット */
-const formatDate = (date: Date | null): string => {
+/** 日付フォーマット（和暦） */
+const formatDateWareki = (date: Date | null): string => {
   if (!date) return "-";
-  return formatDateWithMonthEnd(date);
+  return new Intl.DateTimeFormat("ja-JP-u-ca-japanese", {
+    era: "long",
+    year: "numeric",
+    month: "long",
+  }).format(date);
 };
 
 /** 金額フォーマット（万円） */
 const formatPriceMan = (value: number | null): string => {
   if (value == null) return "-";
-  return `${value.toLocaleString()}`;
+  return `${value.toLocaleString()}万`;
 };
 
 /** 金額フォーマット（円） */
 const formatPriceYen = (value: number | null): string => {
   if (value == null) return "-";
-  return `${value.toLocaleString()}`;
+  return `${value.toLocaleString()}円`;
 };
 
 /** 利回りフォーマット */
@@ -51,13 +56,24 @@ function RankingCell({ response }: { response: RankedResponse | undefined }) {
       <span className="font-medium truncate max-w-[60px]">
         {response.brokerName}
       </span>
-      <span>{formatPriceMan(response.price)}万</span>
+      <span>{formatPriceMan(response.price)}</span>
       <span className="text-muted-foreground">{formatYield(response.yield)}</span>
     </div>
   );
 }
 
 export const exitListColumns: ColumnDef<ExitListItem>[] = [
+  {
+    accessorKey: "organizationSlug",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="組織" />
+    ),
+    cell: ({ row }) => (
+      <OrganizationBadge
+        organizationSlug={row.original.organizationSlug as OrganizationSlugType}
+      />
+    ),
+  },
   {
     accessorKey: "status",
     header: ({ column }) => (
@@ -92,7 +108,7 @@ export const exitListColumns: ColumnDef<ExitListItem>[] = [
       <DataTableColumnHeader column={column} title="築年" />
     ),
     cell: ({ row }) => (
-      <span className="text-center block">{formatDate(row.original.builtDate)}</span>
+      <span className="text-center block">{formatDateWareki(row.original.builtDate)}</span>
     ),
   },
   {
@@ -140,6 +156,17 @@ export const exitListColumns: ColumnDef<ExitListItem>[] = [
     ),
   },
   {
+    accessorKey: "brokerageFee",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="仲手" />
+    ),
+    cell: ({ row }) => (
+      <span className="text-right block tabular-nums">
+        {formatPriceMan(row.original.brokerageFee)}
+      </span>
+    ),
+  },
+  {
     accessorKey: "rent",
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="家賃" />
@@ -181,6 +208,25 @@ export const exitListColumns: ColumnDef<ExitListItem>[] = [
     cell: ({ row }) => (
       <RankingCell response={row.original.rankedResponses[2]} />
     ),
+  },
+  {
+    id: "profit",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="利益" />
+    ),
+    cell: ({ row }) => {
+      const upperPrice = row.original.confirmedPrice ?? row.original.rankedResponses[0]?.price ?? null;
+      const purchasePrice = row.original.purchasePrice;
+      if (upperPrice == null || purchasePrice == null) {
+        return <span className="text-muted-foreground text-right block">-</span>;
+      }
+      const profit = upperPrice - purchasePrice;
+      return (
+        <span className={`text-right block tabular-nums ${profit < 0 ? "text-destructive" : ""}`}>
+          {formatPriceMan(profit)}
+        </span>
+      );
+    },
   },
   {
     id: "actions",
