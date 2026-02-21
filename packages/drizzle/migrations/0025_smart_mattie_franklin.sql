@@ -58,5 +58,4 @@ CREATE INDEX `idx_property_staff_user_id` ON `property_staff` (`user_id`);--> st
 CREATE UNIQUE INDEX `uk_settlement_progress_property_id` ON `settlement_progress` (`property_id`);--> statement-breakpoint
 CREATE INDEX `select_options_category_idx` ON `select_options` (`category`);--> statement-breakpoint
 ALTER TABLE `settlement_progress` ALTER COLUMN "address_change" TO "address_change" text DEFAULT 'unconfirmed';--> statement-breakpoint
-UPDATE `settlement_progress` SET `address_change` = 'once' WHERE `address_change` = '1';--> statement-breakpoint
-UPDATE `settlement_progress` SET `address_change` = 'unconfirmed' WHERE `address_change` = '0' OR `address_change` = '' OR `address_change` IS NULL;
+UPDATE `settlement_progress` SET `address_change` = 'unconfirmed';

@@ -28,9 +28,7 @@ DROP INDEX "idx_property_staff_user_id";--> statement-breakpoint
 DROP INDEX "uk_settlement_progress_property_id";--> statement-breakpoint
 DROP INDEX "select_options_category_idx";--> statement-breakpoint
 ALTER TABLE `settlement_progress` ALTER COLUMN "property_title" TO "property_title" text DEFAULT '';--> statement-breakpoint
-UPDATE `settlement_progress` SET `property_title` = 'available' WHERE `property_title` = '1';--> statement-breakpoint
-UPDATE `settlement_progress` SET `property_title` = 'unavailable' WHERE `property_title` = '0';--> statement-breakpoint
-UPDATE `settlement_progress` SET `property_title` = 'unconfirmed' WHERE `property_title` = '' OR `property_title` IS NULL;--> statement-breakpoint
+UPDATE `settlement_progress` SET `property_title` = 'unconfirmed';--> statement-breakpoint
 CREATE INDEX `accounts_userId_idx` ON `accounts` (`user_id`);--> statement-breakpoint
 CREATE INDEX `invitations_organizationId_idx` ON `invitations` (`organization_id`);--> statement-breakpoint
 CREATE INDEX `invitations_email_idx` ON `invitations` (`email`);--> statement-breakpoint
