@@ -19,6 +19,7 @@ import type {
   brokerCompany,
   companyB,
   contractType,
+  maisokuDistributionStatus,
 } from "../schemas/property";
 
 // ==================== Enum型定義 ====================
@@ -37,6 +38,8 @@ export type BrokerCompany = (typeof brokerCompany)[number];
 export type CompanyB = (typeof companyB)[number];
 /** 契約形態の型 */
 export type ContractType = (typeof contractType)[number];
+/** マイソク配布ステータスの型 */
+export type MaisokuDistributionStatus = (typeof maisokuDistributionStatus)[number];
 /** 書類項目ステータスの型 */
 export type DocumentItemStatus = (typeof documentItemStatus)[number];
 /** 書類項目種別の型（全体） */
@@ -85,6 +88,18 @@ export const identityVerification = [
   "returned",
 ] as const;
 export type IdentityVerification = (typeof identityVerification)[number];
+
+/** 権利証 */
+export const propertyTitleStatus = ["unconfirmed", "available", "unavailable"] as const;
+export type PropertyTitleStatus = (typeof propertyTitleStatus)[number];
+
+/** 氏名変更 */
+export const nameChangeStatus = ["unconfirmed", "available", "unavailable"] as const;
+export type NameChangeStatus = (typeof nameChangeStatus)[number];
+
+/** 住所変更 */
+export const addressChangeStatus = ["unconfirmed", "none", "once", "twice_or_more"] as const;
+export type AddressChangeStatus = (typeof addressChangeStatus)[number];
 
 /** 抵当銀行ステータス */
 export const mortgageBankStatus = ["none", "requested", "accepted"] as const;

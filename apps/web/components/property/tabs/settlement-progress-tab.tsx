@@ -11,6 +11,9 @@ import {
   subleaseSuccession,
   rentalContractAndKey,
   guaranteeCompanySuccession,
+  propertyTitleStatus,
+  nameChangeStatus,
+  addressChangeStatus,
 } from "@workspace/drizzle/types";
 import {
   BC_SETTLEMENT_STATUS_LABELS,
@@ -33,6 +36,12 @@ import {
   RENTAL_CONTRACT_AND_KEY_COLORS,
   GUARANTEE_COMPANY_SUCCESSION_LABELS,
   GUARANTEE_COMPANY_SUCCESSION_COLORS,
+  PROPERTY_TITLE_STATUS_LABELS,
+  PROPERTY_TITLE_STATUS_COLORS,
+  NAME_CHANGE_STATUS_LABELS,
+  NAME_CHANGE_STATUS_COLORS,
+  ADDRESS_CHANGE_STATUS_LABELS,
+  ADDRESS_CHANGE_STATUS_COLORS,
 } from "@workspace/utils";
 import BadgeSelectForm from "../form/badge-select-form";
 import BadgeToggleForm from "../form/badge-toggle-form";
@@ -100,26 +109,47 @@ export default function SettlementProgressTab() {
                 updatedAt={settlementProgress?.documentsSharedAt}
                 updatedByUser={settlementProgress?.documentsSharedByUser}
               />
-              <CheckboxForm
+              <BadgeSelectForm
                 form={form}
                 name="propertyTitle"
                 label="権利証"
+                placeholder="選択してください"
+                options={propertyTitleStatus.map((status) => ({
+                  value: status,
+                  label: PROPERTY_TITLE_STATUS_LABELS[status],
+                  color: PROPERTY_TITLE_STATUS_COLORS[status],
+                }))}
                 updatedAt={settlementProgress?.propertyTitleAt}
                 updatedByUser={settlementProgress?.propertyTitleByUser}
+                required={true}
               />
-              <CheckboxForm
+              <BadgeSelectForm
                 form={form}
                 name="addressChange"
                 label="住所変更"
+                placeholder="選択してください"
+                options={addressChangeStatus.map((status) => ({
+                  value: status,
+                  label: ADDRESS_CHANGE_STATUS_LABELS[status],
+                  color: ADDRESS_CHANGE_STATUS_COLORS[status],
+                }))}
                 updatedAt={settlementProgress?.addressChangeAt}
                 updatedByUser={settlementProgress?.addressChangeByUser}
+                required={true}
               />
-              <CheckboxForm
+              <BadgeSelectForm
                 form={form}
                 name="nameChange"
                 label="氏名変更"
+                placeholder="選択してください"
+                options={nameChangeStatus.map((status) => ({
+                  value: status,
+                  label: NAME_CHANGE_STATUS_LABELS[status],
+                  color: NAME_CHANGE_STATUS_COLORS[status],
+                }))}
                 updatedAt={settlementProgress?.nameChangeAt}
                 updatedByUser={settlementProgress?.nameChangeByUser}
+                required={true}
               />
               <BadgeSelectForm
                 form={form}
@@ -135,6 +165,7 @@ export default function SettlementProgressTab() {
                 updatedByUser={
                   settlementProgress?.identityVerificationMethodByUser
                 }
+                required={true}
               />
               <BadgeSelectForm
                 form={form}
@@ -150,11 +181,13 @@ export default function SettlementProgressTab() {
                 updatedByUser={
                   settlementProgress?.identityVerificationCallByUser
                 }
+                required={true}
               />
               <DatePickerForm
                 form={form}
                 name="identityVerificationCallSchedule"
                 label="本人確認電話日時"
+                showTime
                 updatedAt={
                   settlementProgress?.identityVerificationCallScheduleAt
                 }
@@ -176,6 +209,7 @@ export default function SettlementProgressTab() {
                 updatedByUser={
                   settlementProgress?.identityVerificationStatusByUser
                 }
+                required={true}
               />
             </div>
           </SectionCard>
@@ -222,6 +256,7 @@ export default function SettlementProgressTab() {
                 }))}
                 updatedAt={settlementProgress?.subleaseSuccessionAt}
                 updatedByUser={settlementProgress?.subleaseSuccessionByUser}
+                required={true}
               />
               <BadgeSelectForm
                 form={form}
@@ -235,6 +270,7 @@ export default function SettlementProgressTab() {
                 }))}
                 updatedAt={settlementProgress?.rentalContractAndKeyAt}
                 updatedByUser={settlementProgress?.rentalContractAndKeyByUser}
+                required={true}
               />
               <BadgeSelectForm
                 form={form}
@@ -250,6 +286,7 @@ export default function SettlementProgressTab() {
                 updatedByUser={
                   settlementProgress?.guaranteeCompanySuccessionByUser
                 }
+                required={true}
               />
             </div>
           </SectionCard>
@@ -273,6 +310,7 @@ export default function SettlementProgressTab() {
                 className="pb-2"
                 updatedAt={settlementProgress?.mortgageCancellationAt}
                 updatedByUser={settlementProgress?.mortgageCancellationByUser}
+                required={true}
               />
               <CheckboxForm
                 form={form}
@@ -299,6 +337,7 @@ export default function SettlementProgressTab() {
                 }))}
                 updatedAt={settlementProgress?.sellerFundingStatusAt}
                 updatedByUser={settlementProgress?.sellerFundingStatusByUser}
+                required={true}
               />
             </div>
           </SectionCard>

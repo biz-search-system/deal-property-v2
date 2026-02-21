@@ -15,6 +15,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@workspace/ui/components/select";
+import { Button } from "@workspace/ui/components/button";
+import { X } from "lucide-react";
 import {
   Controller,
   type FieldPath,
@@ -71,45 +73,61 @@ export default function OrganizationSelectForm<
               {required && <span className="text-destructive ml-1">*</span>}
             </FieldLabel>
           )}
-          <Select
-            name={field.name}
-            value={field.value}
-            onValueChange={(value) => {
-              field.onChange(value);
-              onValueChange?.(value);
-            }}
-            disabled={disabled}
-          >
-            <SelectTrigger
-              id={field.name}
-              aria-invalid={fieldState.invalid}
-              className="w-1/2"
+          <div className="flex items-center gap-1">
+            <Select
+              name={field.name}
+              value={field.value}
+              onValueChange={(value) => {
+                field.onChange(value);
+                onValueChange?.(value);
+              }}
+              disabled={disabled}
             >
-              <SelectValue placeholder={placeholder}>
-                {selectedOrganization && (
-                  <OrganizationBadge
-                    organizationSlug={
-                      selectedOrganization.slug as OrganizationSlugType
-                    }
-                    size="medium"
-                  />
-                )}
-              </SelectValue>
-            </SelectTrigger>
-            <SelectContent>
-              {organizations.map((org) => {
-                const organizationSlug = org.slug as OrganizationSlugType;
-                return (
-                  <SelectItem key={org.id} value={org.id}>
+              <SelectTrigger
+                id={field.name}
+                aria-invalid={fieldState.invalid}
+                className="w-1/2"
+              >
+                <SelectValue placeholder={placeholder}>
+                  {selectedOrganization && (
                     <OrganizationBadge
-                      organizationSlug={organizationSlug}
+                      organizationSlug={
+                        selectedOrganization.slug as OrganizationSlugType
+                      }
                       size="medium"
                     />
-                  </SelectItem>
-                );
-              })}
-            </SelectContent>
-          </Select>
+                  )}
+                </SelectValue>
+              </SelectTrigger>
+              <SelectContent>
+                {organizations.map((org) => {
+                  const organizationSlug = org.slug as OrganizationSlugType;
+                  return (
+                    <SelectItem key={org.id} value={org.id}>
+                      <OrganizationBadge
+                        organizationSlug={organizationSlug}
+                        size="medium"
+                      />
+                    </SelectItem>
+                  );
+                })}
+              </SelectContent>
+            </Select>
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon"
+              onClick={() => {
+                field.onChange("");
+                onValueChange?.("");
+              }}
+              disabled={disabled}
+              className={!field.value || required ? "invisible" : ""}
+              aria-label="選択を解除"
+            >
+              <X />
+            </Button>
+          </div>
           {description && <FieldDescription>{description}</FieldDescription>}
           {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
         </Field>

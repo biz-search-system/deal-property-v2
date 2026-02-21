@@ -5,6 +5,7 @@
     "generate": "drizzle-kit generate",
     "migrate": "drizzle-kit migrate",
     "gm": "drizzle-kit generate && drizzle-kit migrate",
+    "check-types": "tsc --noEmit",
     "dev": "drizzle-kit studio"
   },
   "exports": {

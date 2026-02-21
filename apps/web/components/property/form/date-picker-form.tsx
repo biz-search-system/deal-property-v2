@@ -34,6 +34,8 @@ interface DatePickerFormProps<T extends FieldValues> {
   form: UseFormReturn<T>;
   name: Path<T>;
   label: string;
+  /** 時間選択を有効にする */
+  showTime?: boolean;
   updatedAt?: Date | null;
   updatedByUser?: UserInfo | null;
 }
@@ -42,25 +44,35 @@ export default function DatePickerForm<T extends FieldValues>({
   form,
   name,
   label,
+  showTime = false,
   updatedAt,
   updatedByUser,
 }: DatePickerFormProps<T>) {
   const [open, setOpen] = useState(false);
   const currentValue = form.watch(name);
   const [selectedMonth, setSelectedMonth] = useState<Date>(
-    currentValue ? new Date(currentValue) : new Date()
+    currentValue ? new Date(currentValue) : new Date(),
   );
 
   // 日付を表示用にフォーマット
   const formatDisplayDate = (dateValue: string | null | undefined): string => {
-    if (!dateValue) return "日付を選択";
+    if (!dateValue) return showTime ? "日時を選択" : "日付を選択";
+    if (showTime) {
+      const d = new Date(dateValue);
+      if (isNaN(d.getTime())) return showTime ? "日時を選択" : "日付を選択";
+      const dateStr = formatDateWithMonthEnd(dateValue);
+      if (dateStr === "-") return "日時を選択";
+      const h = String(d.getHours()).padStart(2, "0");
+      const m = String(d.getMinutes()).padStart(2, "0");
+      return `${dateStr} ${h}:${m}`;
+    }
     const result = formatDateWithMonthEnd(dateValue);
     return result === "-" ? "日付を選択" : result;
   };
 
   // 日付文字列をDate型に変換（カレンダー表示用）
   const parseDate = (
-    dateValue: string | null | undefined
+    dateValue: string | null | undefined,
   ): Date | undefined => {
     if (!dateValue) return undefined;
     const date = new Date(dateValue);
@@ -89,7 +101,7 @@ export default function DatePickerForm<T extends FieldValues>({
                   aria-invalid={fieldState.invalid}
                   className={cn(
                     "w-4/9 @[382px]/date-picker-form:w-full pl-3 text-left font-normal",
-                    !field.value && "text-muted-foreground"
+                    !field.value && "text-muted-foreground",
                   )}
                 >
                   {formatDisplayDate(field.value)}
@@ -98,7 +110,7 @@ export default function DatePickerForm<T extends FieldValues>({
               </PopoverTrigger>
               <PopoverContent className="w-auto p-0" align="start">
                 {/* ヘッダー */}
-                <div className="flex items-center justify-between px-3 py-2 border-b">
+                <div className="flex items-center justify-between px-3 py-2 border-b gap-3">
                   <span className="text-sm font-medium">{label}</span>
                   <div className="flex gap-1">
                     {/* 月末予定ボタン */}
@@ -146,21 +158,76 @@ export default function DatePickerForm<T extends FieldValues>({
                     }
 
                     if (selectedDate) {
-                      // 通常の日付選択: 午前0時0分0秒
-                      selectedDate.setHours(0, 0, 0, 0);
+                      if (showTime && field.value) {
+                        // 時間モード: 既存の時・分を保持
+                        const prev = new Date(field.value);
+                        if (!isNaN(prev.getTime())) {
+                          selectedDate.setHours(
+                            prev.getHours(),
+                            prev.getMinutes(),
+                            0,
+                            0,
+                          );
+                        } else {
+                          selectedDate.setHours(10, 0, 0, 0);
+                        }
+                      } else if (showTime) {
+                        // 時間モード: 初期値 10:00
+                        selectedDate.setHours(10, 0, 0, 0);
+                      } else {
+                        // 通常の日付選択: 午前0時0分0秒
+                        selectedDate.setHours(0, 0, 0, 0);
+                      }
                       field.onChange(selectedDate.toISOString());
                     }
-                    setOpen(false);
+                    if (!showTime) setOpen(false);
                   }}
                   month={selectedMonth}
                   onMonthChange={setSelectedMonth}
                   locale={ja}
-                  className="p-3"
+                  className="w-full p-3"
                   captionLayout="dropdown"
                   startMonth={new Date(new Date().getFullYear() - 5, 0)}
                   endMonth={new Date(new Date().getFullYear() + 5, 11)}
                   required
                 />
+
+                {/* 時間選択 */}
+                {showTime && field.value && (
+                  <div className="flex items-center justify-between border-t px-3 py-2">
+                    <span className="text-xs text-muted-foreground">時間</span>
+                    <div className="flex items-center gap-2">
+                      <input
+                        type="time"
+                        value={(() => {
+                          const d = new Date(field.value);
+                          if (isNaN(d.getTime())) return "10:00";
+                          const h = String(d.getHours()).padStart(2, "0");
+                          const m = String(d.getMinutes()).padStart(2, "0");
+                          return `${h}:${m}`;
+                        })()}
+                        onChange={(e) => {
+                          const parts = e.target.value.split(":");
+                          const h = Number(parts[0] ?? 0);
+                          const m = Number(parts[1] ?? 0);
+                          const d = new Date(field.value);
+                          d.setHours(h, m, 0, 0);
+                          field.onChange(d.toISOString());
+                        }}
+                        className="h-8 w-fit rounded-md border bg-background px-2 text-sm appearance-none [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-calendar-picker-indicator]:appearance-none"
+                      />
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => setOpen(false)}
+                        className="h-7 px-2 text-xs"
+                      >
+                        閉じる
+                      </Button>
+                    </div>
+                  </div>
+                )}
               </PopoverContent>
             </Popover>
             {updatedAt && (

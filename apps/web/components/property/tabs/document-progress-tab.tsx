@@ -31,6 +31,7 @@ export default function DocumentProgressTab() {
           }))}
           updatedAt={property?.documentStatusUpdatedAt}
           updatedByUser={property?.documentStatusUpdatedByUser}
+          required={true}
         />
       </SectionCard>
 
@@ -49,14 +50,15 @@ export default function DocumentProgressTab() {
               }))}
               updatedAt={
                 property?.documentItems?.find(
-                  (item) => item.itemType === "rental_contract"
+                  (item) => item.itemType === "rental_contract",
                 )?.updatedAt
               }
               updatedByUser={
                 property?.documentItems?.find(
-                  (item) => item.itemType === "rental_contract"
+                  (item) => item.itemType === "rental_contract",
                 )?.updatedByUser
               }
+              required={true}
             />
             <BadgeSelectForm
               form={form}
@@ -69,14 +71,15 @@ export default function DocumentProgressTab() {
               }))}
               updatedAt={
                 property?.documentItems?.find(
-                  (item) => item.itemType === "management_contract"
+                  (item) => item.itemType === "management_contract",
                 )?.updatedAt
               }
               updatedByUser={
                 property?.documentItems?.find(
-                  (item) => item.itemType === "management_contract"
+                  (item) => item.itemType === "management_contract",
                 )?.updatedByUser
               }
+              required={true}
             />
             <BadgeSelectForm
               form={form}
@@ -89,14 +92,15 @@ export default function DocumentProgressTab() {
               }))}
               updatedAt={
                 property?.documentItems?.find(
-                  (item) => item.itemType === "move_in_application"
+                  (item) => item.itemType === "move_in_application",
                 )?.updatedAt
               }
               updatedByUser={
                 property?.documentItems?.find(
-                  (item) => item.itemType === "move_in_application"
+                  (item) => item.itemType === "move_in_application",
                 )?.updatedByUser
               }
+              required={true}
             />
           </div>
         </SectionCard>
@@ -115,14 +119,15 @@ export default function DocumentProgressTab() {
               }))}
               updatedAt={
                 property?.documentItems?.find(
-                  (item) => item.itemType === "important_matters_report"
+                  (item) => item.itemType === "important_matters_report",
                 )?.updatedAt
               }
               updatedByUser={
                 property?.documentItems?.find(
-                  (item) => item.itemType === "important_matters_report"
+                  (item) => item.itemType === "important_matters_report",
                 )?.updatedByUser
               }
+              required={true}
             />
             <BadgeSelectForm
               form={form}
@@ -135,14 +140,15 @@ export default function DocumentProgressTab() {
               }))}
               updatedAt={
                 property?.documentItems?.find(
-                  (item) => item.itemType === "management_rules"
+                  (item) => item.itemType === "management_rules",
                 )?.updatedAt
               }
               updatedByUser={
                 property?.documentItems?.find(
-                  (item) => item.itemType === "management_rules"
+                  (item) => item.itemType === "management_rules",
                 )?.updatedByUser
               }
+              required={true}
             />
             <BadgeSelectForm
               form={form}
@@ -155,14 +161,15 @@ export default function DocumentProgressTab() {
               }))}
               updatedAt={
                 property?.documentItems?.find(
-                  (item) => item.itemType === "long_term_repair_plan"
+                  (item) => item.itemType === "long_term_repair_plan",
                 )?.updatedAt
               }
               updatedByUser={
                 property?.documentItems?.find(
-                  (item) => item.itemType === "long_term_repair_plan"
+                  (item) => item.itemType === "long_term_repair_plan",
                 )?.updatedByUser
               }
+              required={true}
             />
             <BadgeSelectForm
               form={form}
@@ -175,14 +182,15 @@ export default function DocumentProgressTab() {
               }))}
               updatedAt={
                 property?.documentItems?.find(
-                  (item) => item.itemType === "general_meeting_minutes"
+                  (item) => item.itemType === "general_meeting_minutes",
                 )?.updatedAt
               }
               updatedByUser={
                 property?.documentItems?.find(
-                  (item) => item.itemType === "general_meeting_minutes"
+                  (item) => item.itemType === "general_meeting_minutes",
                 )?.updatedByUser
               }
+              required={true}
             />
             <BadgeSelectForm
               form={form}
@@ -195,14 +203,15 @@ export default function DocumentProgressTab() {
               }))}
               updatedAt={
                 property?.documentItems?.find(
-                  (item) => item.itemType === "pamphlet"
+                  (item) => item.itemType === "pamphlet",
                 )?.updatedAt
               }
               updatedByUser={
                 property?.documentItems?.find(
-                  (item) => item.itemType === "pamphlet"
+                  (item) => item.itemType === "pamphlet",
                 )?.updatedByUser
               }
+              required={true}
             />
             <BadgeSelectForm
               form={form}
@@ -215,14 +224,15 @@ export default function DocumentProgressTab() {
               }))}
               updatedAt={
                 property?.documentItems?.find(
-                  (item) => item.itemType === "bank_transfer_form"
+                  (item) => item.itemType === "bank_transfer_form",
                 )?.updatedAt
               }
               updatedByUser={
                 property?.documentItems?.find(
-                  (item) => item.itemType === "bank_transfer_form"
+                  (item) => item.itemType === "bank_transfer_form",
                 )?.updatedByUser
               }
+              required={true}
             />
             <BadgeSelectForm
               form={form}
@@ -235,14 +245,15 @@ export default function DocumentProgressTab() {
               }))}
               updatedAt={
                 property?.documentItems?.find(
-                  (item) => item.itemType === "owner_change_notification"
+                  (item) => item.itemType === "owner_change_notification",
                 )?.updatedAt
               }
               updatedByUser={
                 property?.documentItems?.find(
-                  (item) => item.itemType === "owner_change_notification"
+                  (item) => item.itemType === "owner_change_notification",
                 )?.updatedByUser
               }
+              required={true}
             />
           </div>
         </SectionCard>
@@ -261,14 +272,15 @@ export default function DocumentProgressTab() {
               }))}
               updatedAt={
                 property?.documentItems?.find(
-                  (item) => item.itemType === "tax_certificate"
+                  (item) => item.itemType === "tax_certificate",
                 )?.updatedAt
               }
               updatedByUser={
                 property?.documentItems?.find(
-                  (item) => item.itemType === "tax_certificate"
+                  (item) => item.itemType === "tax_certificate",
                 )?.updatedByUser
               }
+              required={true}
             />
             <BadgeSelectForm
               form={form}
@@ -281,14 +293,15 @@ export default function DocumentProgressTab() {
               }))}
               updatedAt={
                 property?.documentItems?.find(
-                  (item) => item.itemType === "building_plan_overview"
+                  (item) => item.itemType === "building_plan_overview",
                 )?.updatedAt
               }
               updatedByUser={
                 property?.documentItems?.find(
-                  (item) => item.itemType === "building_plan_overview"
+                  (item) => item.itemType === "building_plan_overview",
                 )?.updatedByUser
               }
+              required={true}
             />
             <BadgeSelectForm
               form={form}
@@ -301,14 +314,15 @@ export default function DocumentProgressTab() {
               }))}
               updatedAt={
                 property?.documentItems?.find(
-                  (item) => item.itemType === "ledger_certificate"
+                  (item) => item.itemType === "ledger_certificate",
                 )?.updatedAt
               }
               updatedByUser={
                 property?.documentItems?.find(
-                  (item) => item.itemType === "ledger_certificate"
+                  (item) => item.itemType === "ledger_certificate",
                 )?.updatedByUser
               }
+              required={true}
             />
             <BadgeSelectForm
               form={form}
@@ -321,14 +335,15 @@ export default function DocumentProgressTab() {
               }))}
               updatedAt={
                 property?.documentItems?.find(
-                  (item) => item.itemType === "zoning_district"
+                  (item) => item.itemType === "zoning_district",
                 )?.updatedAt
               }
               updatedByUser={
                 property?.documentItems?.find(
-                  (item) => item.itemType === "zoning_district"
+                  (item) => item.itemType === "zoning_district",
                 )?.updatedByUser
               }
+              required={true}
             />
             <BadgeSelectForm
               form={form}
@@ -341,14 +356,15 @@ export default function DocumentProgressTab() {
               }))}
               updatedAt={
                 property?.documentItems?.find(
-                  (item) => item.itemType === "road_ledger"
+                  (item) => item.itemType === "road_ledger",
                 )?.updatedAt
               }
               updatedByUser={
                 property?.documentItems?.find(
-                  (item) => item.itemType === "road_ledger"
+                  (item) => item.itemType === "road_ledger",
                 )?.updatedByUser
               }
+              required={true}
             />
           </div>
         </SectionCard>
