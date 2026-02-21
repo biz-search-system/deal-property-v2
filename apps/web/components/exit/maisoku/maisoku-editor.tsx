@@ -89,6 +89,12 @@ interface MaisokuEditorProps {
   companyInfo: CompanyInfo;
 }
 
+/** テンプレートごとの位置情報 */
+type PositionsByTemplate = Record<
+  MaisokuTemplate,
+  Record<ImageSlotKey, ImagePosition>
+>;
+
 export function MaisokuEditor({ exit, companyInfo }: MaisokuEditorProps) {
   const [template, setTemplate] = useState<MaisokuTemplate>("template-a");
   const [images, setImages] = useState<Record<ImageSlotKey, string | null>>({
@@ -96,9 +102,13 @@ export function MaisokuEditor({ exit, companyInfo }: MaisokuEditorProps) {
     entrance: null,
     floorPlan: null,
   });
-  const [positions, setPositions] = useState<
-    Record<ImageSlotKey, ImagePosition>
-  >(INITIAL_POSITIONS["template-a"]);
+  const [positionsByTemplate, setPositionsByTemplate] =
+    useState<PositionsByTemplate>({
+      "template-a": { ...INITIAL_POSITIONS["template-a"] },
+      "template-b": { ...INITIAL_POSITIONS["template-b"] },
+    });
+
+  const positions = positionsByTemplate[template];
 
   const activeSlots: ImageSlot[] = TEMPLATE_SLOTS[template].map((key) => ({
     key,
@@ -112,46 +122,54 @@ export function MaisokuEditor({ exit, companyInfo }: MaisokuEditorProps) {
 
       if (!url) return;
 
-      // 画像の元サイズを取得して、スロットの初期枠にアスペクト比を合わせる
+      // 画像の元サイズを取得して、全テンプレートの初期枠にアスペクト比を合わせる
       const img = new window.Image();
       img.onload = () => {
-        const basePos = INITIAL_POSITIONS[template][key];
-        if (basePos.width === 0 || basePos.height === 0) return;
-
-        const maxW = basePos.width;
-        const maxH = basePos.height;
         const ratio = img.naturalWidth / img.naturalHeight;
 
-        let w: number;
-        let h: number;
-        if (ratio > maxW / maxH) {
-          w = maxW;
-          h = Math.round(maxW / ratio);
-        } else {
-          h = maxH;
-          w = Math.round(maxH * ratio);
-        }
+        setPositionsByTemplate((prev) => {
+          const next = { ...prev };
+          for (const t of Object.keys(INITIAL_POSITIONS) as MaisokuTemplate[]) {
+            const basePos = INITIAL_POSITIONS[t][key];
+            if (basePos.width === 0 || basePos.height === 0) continue;
 
-        setPositions((prev) => ({
-          ...prev,
-          [key]: { x: basePos.x, y: basePos.y, width: w, height: h },
-        }));
+            const maxW = basePos.width;
+            const maxH = basePos.height;
+            let w: number;
+            let h: number;
+            if (ratio > maxW / maxH) {
+              w = maxW;
+              h = Math.round(maxW / ratio);
+            } else {
+              h = maxH;
+              w = Math.round(maxH * ratio);
+            }
+
+            next[t] = {
+              ...next[t],
+              [key]: { x: basePos.x, y: basePos.y, width: w, height: h },
+            };
+          }
+          return next;
+        });
       };
       img.src = url;
     },
-    [template],
+    [],
   );
 
   const handleTemplateChange = (t: MaisokuTemplate) => {
     setTemplate(t);
-    setPositions(INITIAL_POSITIONS[t]);
   };
 
   const handlePositionChange = useCallback(
     (key: ImageSlotKey, pos: ImagePosition) => {
-      setPositions((prev) => ({ ...prev, [key]: pos }));
+      setPositionsByTemplate((prev) => ({
+        ...prev,
+        [template]: { ...prev[template], [key]: pos },
+      }));
     },
-    [],
+    [template],
   );
 
   return (

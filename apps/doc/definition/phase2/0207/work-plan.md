@@ -611,6 +611,47 @@ new Intl.DateTimeFormat("ja-JP-u-ca-japanese", {
 - ヘッダーのラベルとボタン間に `gap-3` を追加して重なりを防止
 - shadcn参考実装に基づき `<select>` 2つから `<input type="time">` に変更
 
+### マイソク会社情報・レイアウト刷新 - 完了
+
+**完了日**: 2026-02-21
+
+**変更・追加ファイル**:
+
+- `apps/web/app/(main)/exits/[exitId]/maisoku/page.tsx` - `CompanyInfo` 型インポート、MVP用ハードコード会社情報（株式会社レイジット）を定義し `MaisokuEditor` に渡す
+- `apps/web/components/exit/maisoku/maisoku-editor.tsx` - `CompanyInfo` インターフェース追加、テンプレートAを画像3枚対応に変更、ボディエリアサイズ定数追加、初期位置をボディコンテナ相対座標に修正、`companyInfo` propを `MaisokuPreview` に受け渡し
+- `apps/web/components/exit/maisoku/maisoku-preview.tsx` - A4横向きレイアウトに変更（842×595）、ヘッダー・ボディ・フッターの3層構造に刷新、テンプレート別ヘッダーコンポーネント（`HeaderTemplateA` / `HeaderTemplateB`）追加、`MaisokuFooter` コンポーネント追加（会社ロゴ・住所・TEL/FAX・免許番号・取引態様・注記）、テンプレート別 `getInfoRows` 関数で物件情報を出し分け（最寄駅・間取り・総戸数・想定利回り等を追加）、画像レイヤーをボディコンテナ相対座標に変更
+- `apps/web/components/exit/maisoku/maisoku-template-selector.tsx` - テンプレート説明文を更新（A: 左に画像3枚→右に物件情報、B: 左に物件情報→右に画像3枚）
+- `apps/web/lib/types/exit.ts` - `Exit` インターフェースに `nearestStation`、`nearestStation2`、`roomType`、`totalUnits` フィールド追加
+- `apps/web/lib/mocks/exits.ts` - 全モックデータに `nearestStation`、`nearestStation2`、`roomType`、`totalUnits` の値追加
+
+**実装内容**:
+
+- **A4横向きレイアウト**: プレビューを縦向き（595×842）から横向き（842×595）に変更
+- **3層構造**: ヘッダー（50px）・ボディ（505px）・フッター（40px）に分離
+- **テンプレートAヘッダー**: 左に物件名、右に価格（万円）
+- **テンプレートBヘッダー**: 左に価格、右に最寄駅・名称・所在の詳細情報
+- **フッター**: 会社ロゴ（プレースホルダー）、免許番号、社名・住所・TEL/FAX、取引態様、担当者名、注記
+- **会社情報**: MVP段階では `page.tsx` にハードコード（将来的に `organizations.metadata` から取得予定）
+- **テンプレートA変更**: 画像2枚 → 3枚（外観・エントランス・間取り）に拡張
+- **テンプレートB変更**: 上下配置 → 左右配置（左に物件情報テーブル、右に画像3枚）
+- **物件情報テーブル拡充**: 最寄駅①②、間取り、総戸数、想定利回り、修繕積立金、備考を追加
+- **画像座標系**: プレビュー全体相対 → ボディコンテナ相対座標に変更
+
+### テンプレート切替時の画像位置保持対応 - 完了
+
+**完了日**: 2026-02-21
+
+**変更ファイル**:
+
+- `apps/web/components/exit/maisoku/maisoku-editor.tsx` - 画像位置ステートをテンプレートごとに分離、画像セット時に全テンプレートの位置を一括計算
+
+**実装内容**:
+
+- **テンプレートごとの位置ステート**: `positions`（単一）→ `positionsByTemplate`（`Record<MaisokuTemplate, Record<ImageSlotKey, ImagePosition>>`）に変更し、テンプレートA/Bそれぞれが独立した位置情報を保持
+- **テンプレート切替時の位置保持**: `handleTemplateChange` で `setTemplate(t)` のみ実行し、位置のリセットを行わない。`positions` は `positionsByTemplate[template]` から導出
+- **画像セット時の全テンプレート一括計算**: `handleImageSet` で画像のアスペクト比を取得後、全テンプレートの初期枠に対してサイズを計算し一括更新。これにより未表示テンプレートにも正しいサイズが事前設定される
+- **位置変更時のテンプレートスコープ**: `handlePositionChange` で現在のテンプレートの位置のみを更新
+
 ---
 
 最終更新: 2026-02-21
