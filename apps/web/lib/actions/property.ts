@@ -84,7 +84,7 @@ export async function createProperty(
     const propertyData: InsertProperty = {
       organizationId: validatedData.organizationId,
       propertyName: validatedData.propertyName,
-      roomNumber: validatedData.roomNumber || undefined,
+      roomNumber: validatedData.roomNumber || null,
       ownerName: validatedData.ownerName || "", //スキマー更新新する必要ある
       amountA: amountAYen,
       amountExit: amountExitYen,
@@ -93,43 +93,43 @@ export async function createProperty(
       bcDeposit: bcDepositYen,
       contractDateA: validatedData.contractDateA
         ? new Date(validatedData.contractDateA)
-        : undefined,
+        : null,
       contractDateAUpdatedAt: validatedData.contractDateA
         ? new Date()
-        : undefined,
+        : null,
       contractDateAUpdatedBy: validatedData.contractDateA
         ? session.user.id
-        : undefined,
+        : null,
       contractDateBc: validatedData.contractDateBc
         ? new Date(validatedData.contractDateBc)
-        : undefined,
+        : null,
       contractDateBcUpdatedAt: validatedData.contractDateBc
         ? new Date()
-        : undefined,
+        : null,
       contractDateBcUpdatedBy: validatedData.contractDateBc
         ? session.user.id
-        : undefined,
+        : null,
       settlementDate: validatedData.settlementDate
         ? new Date(validatedData.settlementDate)
-        : undefined,
+        : null,
       settlementDateUpdatedAt: validatedData.settlementDate
         ? new Date()
-        : undefined,
+        : null,
       settlementDateUpdatedBy: validatedData.settlementDate
         ? session.user.id
-        : undefined,
+        : null,
       contractType:
         (validatedData.contractType as InsertProperty["contractType"]) ||
-        undefined,
+        null,
       companyB:
-        (validatedData.companyB as InsertProperty["companyB"]) || undefined,
+        (validatedData.companyB as InsertProperty["companyB"]) || null,
       brokerCompany:
         (validatedData.brokerCompany as InsertProperty["brokerCompany"]) ||
-        undefined,
-      buyerCompany: validatedData.buyerCompany || undefined,
-      mortgageBank: validatedData.mortgageBank || undefined,
-      listType: validatedData.listType || undefined,
-      notes: validatedData.notes || undefined,
+        null,
+      buyerCompany: validatedData.buyerCompany || null,
+      mortgageBank: validatedData.mortgageBank || null,
+      listType: validatedData.listType || null,
+      notes: validatedData.notes || null,
       progressStatus:
         (validatedData.progressStatus as InsertProperty["progressStatus"]) ||
         "bc_before_confirmed",
@@ -142,10 +142,10 @@ export async function createProperty(
       documentStatusUpdatedBy: session.user.id,
       accountCompany:
         (validatedData.accountCompany as InsertProperty["accountCompany"]) ||
-        undefined,
+        null,
       bankAccount:
         (validatedData.bankAccount as InsertProperty["bankAccount"]) ||
-        undefined,
+        null,
       createdBy: session.user.id,
       updatedBy: session.user.id,
     };
@@ -625,7 +625,7 @@ export async function updateProperty(
       .set({
         organizationId: validatedData.organizationId,
         propertyName: validatedData.propertyName,
-        roomNumber: validatedData.roomNumber || undefined,
+        roomNumber: validatedData.roomNumber || null,
         ownerName: validatedData.ownerName,
         amountA: amountAYen,
         amountExit: amountExitYen,
@@ -634,7 +634,7 @@ export async function updateProperty(
         bcDeposit: bcDepositYen,
         contractDateA: validatedData.contractDateA
           ? new Date(validatedData.contractDateA)
-          : undefined,
+          : null,
         contractDateAUpdatedAt: contractDateAChanged
           ? now
           : currentProperty?.contractDateAUpdatedAt,
@@ -643,7 +643,7 @@ export async function updateProperty(
           : currentProperty?.contractDateAUpdatedBy,
         contractDateBc: validatedData.contractDateBc
           ? new Date(validatedData.contractDateBc)
-          : undefined,
+          : null,
         contractDateBcUpdatedAt: contractDateBcChanged
           ? now
           : currentProperty?.contractDateBcUpdatedAt,
@@ -652,7 +652,7 @@ export async function updateProperty(
           : currentProperty?.contractDateBcUpdatedBy,
         settlementDate: validatedData.settlementDate
           ? new Date(validatedData.settlementDate)
-          : undefined,
+          : null,
         settlementDateUpdatedAt: settlementDateChanged
           ? now
           : currentProperty?.settlementDateUpdatedAt,
@@ -661,16 +661,16 @@ export async function updateProperty(
           : currentProperty?.settlementDateUpdatedBy,
         contractType:
           (validatedData.contractType as InsertProperty["contractType"]) ||
-          undefined,
+          null,
         companyB:
-          (validatedData.companyB as InsertProperty["companyB"]) || undefined,
+          (validatedData.companyB as InsertProperty["companyB"]) || null,
         brokerCompany:
           (validatedData.brokerCompany as InsertProperty["brokerCompany"]) ||
-          undefined,
-        buyerCompany: validatedData.buyerCompany || undefined,
-        mortgageBank: validatedData.mortgageBank || undefined,
-        listType: validatedData.listType || undefined,
-        notes: validatedData.notes || undefined,
+          null,
+        buyerCompany: validatedData.buyerCompany || null,
+        mortgageBank: validatedData.mortgageBank || null,
+        listType: validatedData.listType || null,
+        notes: validatedData.notes || null,
         progressStatus:
           (validatedData.progressStatus as InsertProperty["progressStatus"]) ||
           undefined,
@@ -691,10 +691,10 @@ export async function updateProperty(
           : currentProperty?.documentStatusUpdatedBy,
         accountCompany:
           (validatedData.accountCompany as InsertProperty["accountCompany"]) ||
-          undefined,
+          null,
         bankAccount:
           (validatedData.bankAccount as InsertProperty["bankAccount"]) ||
-          undefined,
+          null,
         updatedBy: session.user.id,
       })
       .where(eq(properties.id, validatedData.id))

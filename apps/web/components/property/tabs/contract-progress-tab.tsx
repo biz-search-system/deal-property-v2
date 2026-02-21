@@ -1,14 +1,19 @@
 "use client";
 
-import { progressStatus } from "@workspace/drizzle/schemas";
 import {
+  maisokuDistributionStatus,
+  progressStatus,
+} from "@workspace/drizzle/schemas";
+import {
+  MAISOKU_DISTRIBUTION_COLORS,
+  MAISOKU_DISTRIBUTION_LABELS,
   PROGRESS_STATUS_COLORS,
   PROGRESS_STATUS_LABELS,
 } from "@workspace/utils";
 import BadgeSelectForm from "../form/badge-select-form";
 import CheckboxForm from "../form/checkbox-form";
 import DatePickerForm from "../form/date-picker-form";
-import SelectForm from "../form/select-form";
+
 import { usePropertyForm } from "../property-form-provider";
 import SectionCard from "../section-card";
 import { usePropertyOptional } from "../property-provider";
@@ -22,14 +27,15 @@ export default function ContractProgressTab() {
     <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
       <SectionCard title="業務進捗">
         <div className="space-y-4 w-full">
-          <SelectForm
+          <BadgeSelectForm
             form={form}
             name="maisokuDistribution"
             label="マイソク配布"
-            options={[
-              { value: "not_distributed", label: "未配布" },
-              { value: "distributed", label: "配布済" },
-            ]}
+            options={maisokuDistributionStatus.map((status) => ({
+              value: status,
+              label: MAISOKU_DISTRIBUTION_LABELS[status],
+              color: MAISOKU_DISTRIBUTION_COLORS[status],
+            }))}
             updatedAt={contractProgress?.maisokuDistributionAt}
             updatedByUser={contractProgress?.maisokuDistributionByUser}
             required={true}

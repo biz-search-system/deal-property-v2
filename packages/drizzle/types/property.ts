@@ -19,6 +19,7 @@ import type {
   brokerCompany,
   companyB,
   contractType,
+  maisokuDistributionStatus,
 } from "../schemas/property";
 
 // ==================== Enum型定義 ====================
@@ -37,6 +38,8 @@ export type BrokerCompany = (typeof brokerCompany)[number];
 export type CompanyB = (typeof companyB)[number];
 /** 契約形態の型 */
 export type ContractType = (typeof contractType)[number];
+/** マイソク配布ステータスの型 */
+export type MaisokuDistributionStatus = (typeof maisokuDistributionStatus)[number];
 /** 書類項目ステータスの型 */
 export type DocumentItemStatus = (typeof documentItemStatus)[number];
 /** 書類項目種別の型（全体） */
