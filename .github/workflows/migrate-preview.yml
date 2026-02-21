@@ -6,6 +6,7 @@ on:
     branches:
       - preview
       - main-20250131
+      - main-phase2-exit-management-v2
 
 jobs:
   apply_migrations:
